@@ -1,5 +1,6 @@
 package com.xayah.core.service.util
 
+import android.app.AppOpsManagerHidden
 import android.content.Context
 import com.xayah.core.common.util.toLineString
 import com.xayah.core.data.repository.CloudRepository
@@ -362,6 +363,7 @@ class PackagesRestoreUtil @Inject constructor(
         log { "Restoring permissions..." }
 
         val packageName = p.packageName
+        val uid = rootService.getPackageUid(packageName = packageName, userId = userId)
         val user = rootService.getUserHandle(userId)
         val permissions = p.extraInfo.permissions
 
@@ -369,12 +371,16 @@ class PackagesRestoreUtil @Inject constructor(
             Appops.reset(userId = userId, packageName = packageName)
             log { "Permissions size: ${permissions.size}..." }
             permissions.forEach {
-                log { "Permission name: ${it.name}, isGranted: ${it.isGranted}" }
+                log { "Permission name: ${it.name}, isGranted: ${it.isGranted}, op: ${it.op}, mode: ${it.mode}" }
                 runCatching {
-                    if (it.isGranted)
+                    if (it.isGranted) {
                         rootService.grantRuntimePermission(packageName, it.name, user!!)
-                    else
+                    } else {
                         rootService.revokeRuntimePermission(packageName, it.name, user!!)
+                    }
+                    if (it.op != AppOpsManagerHidden.OP_NONE) {
+                        rootService.setOpsMode(it.op, uid, packageName, it.mode)
+                    }
                 }
             }
         } else {

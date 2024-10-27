@@ -3,6 +3,8 @@ package com.xayah.core.rootservice.impl
 import android.annotation.TargetApi
 import android.app.ActivityManagerHidden
 import android.app.ActivityThread
+import android.app.AppOpsManager
+import android.app.AppOpsManagerHidden
 import android.app.usage.StorageStatsManager
 import android.content.Context
 import android.content.pm.IPackageManager
@@ -10,6 +12,7 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PackageInfoFlags
 import android.content.pm.PackageManagerHidden
+import android.content.pm.PermissionInfo
 import android.content.pm.UserInfo
 import android.os.Build
 import android.os.Parcel
@@ -20,10 +23,12 @@ import android.os.UserHandle
 import android.os.UserHandleHidden
 import android.os.UserManagerHidden
 import android.view.SurfaceControlHidden
+import androidx.core.content.pm.PermissionInfoCompat
 import com.android.server.display.DisplayControl
 import com.topjohnwu.superuser.ShellUtils
 import com.xayah.core.datastore.ConstantUtil.DEFAULT_IDLE_TIMEOUT
 import com.xayah.core.hiddenapi.castTo
+import com.xayah.core.model.database.PackagePermission
 import com.xayah.core.rootservice.IRemoteRootService
 import com.xayah.core.rootservice.parcelables.PathParcelable
 import com.xayah.core.rootservice.parcelables.StatFsParcelable
@@ -59,6 +64,7 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     private var packageManagerService: IPackageManager
     private var userManager: UserManagerHidden
     private var activityManager: ActivityManagerHidden
+    private var appOpsManager: AppOpsManagerHidden
 
     private fun getSystemContext(): Context = ActivityThread.systemMain().systemContext
 
@@ -68,6 +74,8 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     private fun getUserManager(): UserManagerHidden = UserManagerHidden.get(systemContext).castTo()
 
     private fun getActivityManager(): ActivityManagerHidden = systemContext.getSystemService(Context.ACTIVITY_SERVICE).castTo()
+
+    private fun getAppOpsManager(): AppOpsManagerHidden = systemContext.getSystemService(Context.APP_OPS_SERVICE).castTo()
 
     init {
         /**
@@ -95,6 +103,7 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         packageManagerService = IPackageManager.Stub.asInterface(ServiceManager.getService("package"))
         userManager = getUserManager()
         activityManager = getActivityManager()
+        appOpsManager = getAppOpsManager()
     }
 
     override fun readStatFs(path: String): StatFsParcelable = synchronized(lock) {
@@ -504,6 +513,37 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
     override fun getApplicationEnabledSetting(packageName: String, userId: Int): Int = synchronized(lock) {
         packageManagerService.getApplicationEnabledSetting(packageName, userId)
+    }
+
+    override fun getPermissions(packageInfo: PackageInfo): List<PackagePermission> = synchronized(lock) {
+        val permissions = mutableListOf<PackagePermission>()
+        val uid = packageInfo.applicationInfo.uid
+        val packageName = packageInfo.packageName
+        val requestedPermissions = packageInfo.requestedPermissions?.toList() ?: listOf()
+        val requestedPermissionsFlags = packageInfo.requestedPermissionsFlags?.toList() ?: listOf()
+        val ops = appOpsManager.getOpsForPackage(uid, packageName, null).getOrNull(0)?.ops?.associate {
+            it.op to it.mode
+        }
+        requestedPermissions.forEachIndexed { i, name ->
+            runCatching {
+                val permissionInfo = packageManager.getPermissionInfo(name, 0)
+                val protection = PermissionInfoCompat.getProtection(permissionInfo)
+                val protectionFlags = PermissionInfoCompat.getProtectionFlags(permissionInfo)
+                val isGranted = (requestedPermissionsFlags[i] and PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0
+                val op = AppOpsManagerHidden.permissionToOpCode(name)
+                val mode = ops?.get(op) ?: AppOpsManager.MODE_IGNORED
+                if ((op != AppOpsManagerHidden.OP_NONE)
+                    || (protection == PermissionInfo.PROTECTION_DANGEROUS || (protectionFlags and PermissionInfo.PROTECTION_FLAG_DEVELOPMENT) != 0)
+                ) {
+                    permissions.add(PackagePermission(name, isGranted, op, mode))
+                }
+            }
+        }
+        permissions
+    }
+
+    override fun setOpsMode(code: Int, uid: Int, packageName: String?, mode: Int) = synchronized(lock) {
+        appOpsManager.setMode(code, uid, packageName, mode)
     }
 
     override fun calculateMD5(src: String): String = synchronized(lock) { HashUtil.calculateMD5(src) }

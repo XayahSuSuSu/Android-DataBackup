@@ -1,5 +1,7 @@
 package com.xayah.dex;
 
+import android.annotation.SuppressLint;
+import android.app.AppOpsManagerHidden;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -9,6 +11,8 @@ import android.os.UserHandle;
 import androidx.core.content.pm.PermissionInfoCompat;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class HiddenApiUtil {
 
@@ -23,6 +27,8 @@ public class HiddenApiUtil {
         System.out.println("  grantRuntimePermission USER_ID PACKAGE PERM_NAME PERM_NAME PERM_NAME ...");
         System.out.println();
         System.out.println("  revokeRuntimePermission USER_ID PACKAGE PERM_NAME PERM_NAME PERM_NAME ...");
+        System.out.println();
+        System.out.println("  setOpsMode USER_ID PACKAGE OP MODE");
     }
 
     private static void onCommand(String cmd, String[] args) {
@@ -35,6 +41,8 @@ public class HiddenApiUtil {
                 grantRuntimePermission(args);
             case "revokeRuntimePermission":
                 revokeRuntimePermission(args);
+            case "setOpsMode":
+                setOpsMode(args);
             case "help":
                 onHelp();
             default:
@@ -67,25 +75,40 @@ public class HiddenApiUtil {
         }
     }
 
+    @SuppressLint("ServiceCast")
     private static void getRuntimePermissions(String[] args) {
         try {
             Context ctx = HiddenApi.getContext();
             PackageManager packageManager = ctx.getPackageManager();
+            AppOpsManagerHidden appOpsManager = (AppOpsManagerHidden) ctx.getSystemService(Context.APP_OPS_SERVICE);
             int userId = Integer.parseInt(args[1]);
             String packageName = args[2];
             PackageInfo packageInfo = HiddenApi.getPackageInfoAsUser(packageManager, packageName, PackageManager.GET_PERMISSIONS, userId);
             String[] requestedPermissions = packageInfo.requestedPermissions;
             int[] requestedPermissionsFlags = packageInfo.requestedPermissionsFlags;
+            AppOpsManagerHidden.PackageOps ops = appOpsManager.getOpsForPackage(packageInfo.applicationInfo.uid, packageName, null).get(0);
+            Map<Integer, Integer> opsMap = null;
+            if (ops != null) {
+                opsMap = ops.getOps().stream().collect(Collectors.toMap(AppOpsManagerHidden.OpEntry::getOp, AppOpsManagerHidden.OpEntry::getMode));
+            }
             for (int i = 0; i < requestedPermissions.length; i++) {
                 try {
                     PermissionInfo permissionInfo = packageManager.getPermissionInfo(requestedPermissions[i], 0);
                     int protection = PermissionInfoCompat.getProtection(permissionInfo);
                     int protectionFlags = PermissionInfoCompat.getProtectionFlags(permissionInfo);
                     boolean isGranted = (requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0;
-                    if (protection == PermissionInfo.PROTECTION_DANGEROUS || (protectionFlags & PermissionInfo.PROTECTION_FLAG_DEVELOPMENT) != 0) {
-                        System.out.println(requestedPermissions[i] + " " + isGranted);
+                    int op = AppOpsManagerHidden.permissionToOpCode(requestedPermissions[i]);
+                    int mode = AppOpsManagerHidden.MODE_IGNORED;
+                    if (opsMap != null) {
+                        mode = opsMap.getOrDefault(op, AppOpsManagerHidden.MODE_IGNORED);
+                    }
+                    if ((op != AppOpsManagerHidden.OP_NONE)
+                            || (protection == PermissionInfo.PROTECTION_DANGEROUS || (protectionFlags & PermissionInfo.PROTECTION_FLAG_DEVELOPMENT) != 0)) {
+                        System.out.println(requestedPermissions[i] + " " + isGranted + " " + op + " " + mode);
                     }
                 } catch (PackageManager.NameNotFoundException ignored) {
+                } catch (Exception e) {
+                    e.printStackTrace(System.out);
                 }
             }
             System.exit(0);
@@ -134,6 +157,25 @@ public class HiddenApiUtil {
                     }
                 }
             }
+            System.exit(0);
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+            System.exit(1);
+        }
+    }
+
+    @SuppressLint("ServiceCast")
+    private static void setOpsMode(String[] args) {
+        try {
+            Context ctx = HiddenApi.getContext();
+            PackageManager packageManager = ctx.getPackageManager();
+            AppOpsManagerHidden appOpsManager = (AppOpsManagerHidden) ctx.getSystemService(Context.APP_OPS_SERVICE);
+            int userId = Integer.parseInt(args[1]);
+            String packageName = args[2];
+            int op = Integer.parseInt(args[3]);
+            int mode = Integer.parseInt(args[4]);
+            PackageInfo packageInfo = HiddenApi.getPackageInfoAsUser(packageManager, packageName, PackageManager.GET_PERMISSIONS, userId);
+            appOpsManager.setMode(op, packageInfo.applicationInfo.uid, packageName, mode);
             System.exit(0);
         } catch (Exception e) {
             e.printStackTrace(System.out);

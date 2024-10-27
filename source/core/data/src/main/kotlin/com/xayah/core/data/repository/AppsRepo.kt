@@ -43,7 +43,6 @@ import com.xayah.core.util.ConfigsPackageRestoreName
 import com.xayah.core.util.DateUtil
 import com.xayah.core.util.IconRelativeDir
 import com.xayah.core.util.PathUtil
-import com.xayah.core.util.PermissionUtil
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.command.PackageUtil
 import com.xayah.core.util.command.Tar
@@ -329,7 +328,7 @@ class AppsRepo @Inject constructor(
             updateEntity.extraInfo.firstUpdated = true
             val uid = info.applicationInfo.uid
             updateEntity.extraInfo.uid = uid
-            updateEntity.extraInfo.permissions = PermissionUtil.getPermission(packageManager = pm, packageInfo = info)
+            updateEntity.extraInfo.permissions = rootService.getPermissions(packageInfo = info)
             updateEntity.extraInfo.hasKeystore = PackageUtil.hasKeystore(context.readCustomSUFile().first(), uid)
             updateEntity.extraInfo.ssaid = rootService.getPackageSsaidAsUser(packageName = info.packageName, uid = uid, userId = userId)
             updateEntity.extraInfo.enabled = info.applicationInfo.enabled

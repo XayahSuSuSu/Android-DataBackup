@@ -20,7 +20,6 @@ import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.IconRelativeDir
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
-import com.xayah.core.util.PermissionUtil
 import com.xayah.core.util.SymbolUtil
 import com.xayah.core.util.command.Tar
 import com.xayah.core.util.filesDir
@@ -371,12 +370,12 @@ class PackagesBackupUtil @Inject constructor(
 
         val packageInfo = rootService.getPackageInfoAsUser(packageName, PackageManager.GET_PERMISSIONS, userId)
         packageInfo?.apply {
-            p.extraInfo.permissions = PermissionUtil.getPermission(packageManager, this)
+            p.extraInfo.permissions = rootService.getPermissions(packageInfo = this)
         }
         val permissions = p.extraInfo.permissions
         log { "Permissions size: ${permissions.size}..." }
         permissions.forEach {
-            log { "Permission name: ${it.name}, isGranted: ${it.isGranted}" }
+            log { "Permission name: ${it.name}, isGranted: ${it.isGranted}, op: ${it.op}, mode: ${it.mode}" }
         }
     }
 

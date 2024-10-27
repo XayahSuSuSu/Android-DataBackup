@@ -15,6 +15,7 @@ import android.os.UserHandle
 import com.google.gson.reflect.TypeToken
 import com.topjohnwu.superuser.ipc.RootService
 import com.xayah.core.datastore.ConstantUtil.DEFAULT_TIMEOUT
+import com.xayah.core.model.database.PackagePermission
 import com.xayah.core.rootservice.IRemoteRootService
 import com.xayah.core.rootservice.impl.RemoteRootServiceImpl
 import com.xayah.core.rootservice.parcelables.PathParcelable
@@ -26,6 +27,7 @@ import com.xayah.core.util.GsonUtil
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.model.ShellResult
+import com.xayah.core.util.withLog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.sync.Mutex
@@ -258,10 +260,10 @@ class RemoteRootService(private val context: Context) {
         runCatching { getService().getPackageInfoAsUser(packageName, flags, userId) }.onFailure(onFailure).getOrNull()
 
     suspend fun grantRuntimePermission(packageName: String, permName: String, user: UserHandle) =
-        runCatching { getService().grantRuntimePermission(packageName, permName, user) }.onFailure(onFailure)
+        runCatching { getService().grantRuntimePermission(packageName, permName, user) }.withLog()
 
     suspend fun revokeRuntimePermission(packageName: String, permName: String, user: UserHandle) =
-        runCatching { getService().revokeRuntimePermission(packageName, permName, user) }.onFailure(onFailure)
+        runCatching { getService().revokeRuntimePermission(packageName, permName, user) }.withLog()
 
     suspend fun getPermissionFlags(packageName: String, permName: String, user: UserHandle) =
         runCatching { getService().getPermissionFlags(packageName, permName, user) }.onFailure(onFailure).getOrElse { 0 }
@@ -319,6 +321,12 @@ class RemoteRootService(private val context: Context) {
 
     suspend fun getApplicationEnabledSetting(packageName: String, userId: Int): Int? =
         runCatching { getService().getApplicationEnabledSetting(packageName, userId) }.onFailure(onFailure).getOrNull()
+
+    suspend fun getPermissions(packageInfo: PackageInfo): List<PackagePermission> =
+        runCatching { getService().getPermissions(packageInfo) }.onFailure(onFailure).getOrElse { listOf() }
+
+    suspend fun setOpsMode(code: Int, uid: Int, packageName: String?, mode: Int) =
+        runCatching { getService().setOpsMode(code, uid, packageName, mode) }.withLog()
 
     suspend fun calculateMD5(src: String): String? =
         runCatching { getService().calculateMD5(src) }.onFailure(onFailure).getOrNull()

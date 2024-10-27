@@ -15,7 +15,7 @@ dependencies {
     implementation(project(":core:util"))
     implementation(project(":core:model"))
     implementation(project(":core:data"))
-    implementation(project(":core:hiddenapi"))
+    compileOnly(project(":core:hiddenapi"))
     implementation(project(":core:rootservice"))
 
     // Hilt navigation

@@ -9,7 +9,6 @@ import android.os.UserHandle;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Objects;
 
 public class HiddenApi {
     public static Context getContext() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {

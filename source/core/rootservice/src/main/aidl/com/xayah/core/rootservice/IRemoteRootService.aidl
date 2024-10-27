@@ -2,6 +2,7 @@ package com.xayah.core.rootservice;
 
 import com.xayah.core.rootservice.parcelables.StatFsParcelable;
 import com.xayah.core.rootservice.parcelables.StorageStatsParcelable;
+import com.xayah.core.model.database.PackagePermission;
 
 interface IRemoteRootService {
     StatFsParcelable readStatFs(String path);
@@ -42,6 +43,8 @@ interface IRemoteRootService {
     void forceStopPackageAsUser(String packageName, int userId);
     void setApplicationEnabledSetting(in String packageName, in int newState, int flags, int userId, String callingPackage);
     int getApplicationEnabledSetting(in String packageName, int userId);
+    List<PackagePermission> getPermissions(in PackageInfo packageInfo);
+    void setOpsMode(int code, int uid, String packageName, int mode);
 
     String calculateMD5(String src);
 }

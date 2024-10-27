@@ -489,8 +489,8 @@ private fun Info(app: PackageEntity) {
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun Permissions(permissions: List<PackagePermission>) {
-    val granted by remember(permissions) { mutableStateOf(permissions.filter { it.isGranted }.map { it.name }) }
-    val denied by remember(permissions) { mutableStateOf(permissions.filter { it.isGranted.not() }.map { it.name }) }
+    val granted by remember(permissions) { mutableStateOf(permissions.filter { it.isGranted || it.isOpsAllowed }.map { it.name }) }
+    val denied by remember(permissions) { mutableStateOf(permissions.filter { it.isGranted.not() && it.isOpsAllowed.not() }.map { it.name }) }
     if (granted.isNotEmpty() || denied.isNotEmpty()) {
         Title(title = stringResource(id = R.string.permissions)) {
             if (granted.isNotEmpty()) {

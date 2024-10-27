@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Script Dex"
 include(":app")
+include(":hiddenapi")

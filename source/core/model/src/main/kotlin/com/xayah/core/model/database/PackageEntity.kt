@@ -1,6 +1,11 @@
 package com.xayah.core.model.database
 
+import android.app.AppOpsManager
+import android.app.AppOpsManagerHidden
 import android.content.pm.ApplicationInfo
+import android.os.Build
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
@@ -14,10 +19,50 @@ import com.xayah.core.model.util.formatSize
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PackagePermission(
-    var name: String,
-    var isGranted: Boolean,
-)
+data class PackagePermission @JvmOverloads constructor(
+    var name: String = "",
+    var isGranted: Boolean = false, // Only for runtime permissions
+    var op: Int = AppOpsManagerHidden.OP_NONE,
+    var mode: Int = AppOpsManager.MODE_IGNORED,
+) : Parcelable {
+    val isOpsAllowed: Boolean
+        get() = run {
+            var allowed = mode == AppOpsManager.MODE_ALLOWED
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                allowed = allowed || mode == AppOpsManager.MODE_FOREGROUND
+            }
+            allowed
+        }
+
+    constructor(parcel: Parcel) : this(
+        parcel.readString() ?: "",
+        parcel.readByte() != 0.toByte(),
+        parcel.readInt(),
+        parcel.readInt()
+    ) {
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(name)
+        parcel.writeByte(if (isGranted) 1 else 0)
+        parcel.writeInt(op)
+        parcel.writeInt(mode)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<PackagePermission> {
+        override fun createFromParcel(parcel: Parcel): PackagePermission {
+            return PackagePermission(parcel)
+        }
+
+        override fun newArray(size: Int): Array<PackagePermission?> {
+            return arrayOfNulls(size)
+        }
+    }
+}
 
 @Serializable
 data class PackageInfo(

@@ -46,7 +46,6 @@ import com.xayah.core.util.DateUtil
 import com.xayah.core.util.IconRelativeDir
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
-import com.xayah.core.util.PermissionUtil
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.command.PackageUtil
 import com.xayah.core.util.command.Tar
@@ -232,7 +231,7 @@ class PackageRepository @Inject constructor(
         userHandle: UserHandle?,
         hasPassedOneDay: Boolean
     ): PackageEntity {
-        val permissions = PermissionUtil.getPermission(packageManager = pm, packageInfo = info)
+        val permissions = rootService.getPermissions(packageInfo = info)
         val uid = info.applicationInfo.uid
         val hasKeystore = if (checkKeystore) PackageUtil.hasKeystore(context.readCustomSUFile().first(), uid) else false
         val ssaid = rootService.getPackageSsaidAsUser(packageName = info.packageName, uid = uid, userId = userId)
