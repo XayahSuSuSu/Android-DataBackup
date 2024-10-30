@@ -28,7 +28,7 @@ public class HiddenApiUtil {
         System.out.println();
         System.out.println("  revokeRuntimePermission USER_ID PACKAGE PERM_NAME PERM_NAME PERM_NAME ...");
         System.out.println();
-        System.out.println("  setOpsMode USER_ID PACKAGE OP MODE");
+        System.out.println("  setOpsMode USER_ID PACKAGE OP MODE OP MODE OP MODE ...");
     }
 
     private static void onCommand(String cmd, String[] args) {
@@ -172,10 +172,22 @@ public class HiddenApiUtil {
             AppOpsManagerHidden appOpsManager = (AppOpsManagerHidden) ctx.getSystemService(Context.APP_OPS_SERVICE);
             int userId = Integer.parseInt(args[1]);
             String packageName = args[2];
-            int op = Integer.parseInt(args[3]);
-            int mode = Integer.parseInt(args[4]);
             PackageInfo packageInfo = HiddenApi.getPackageInfoAsUser(packageManager, packageName, PackageManager.GET_PERMISSIONS, userId);
-            appOpsManager.setMode(op, packageInfo.applicationInfo.uid, packageName, mode);
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 3; i < args.length; i++) {
+                stringBuilder.append(args[i].trim());
+                stringBuilder.append(" ");
+            }
+            String[] opSet = stringBuilder.toString().trim().split(" ");
+            for (int i = 0; i < opSet.length; i += 2) {
+                try {
+                    int op = Integer.parseInt(opSet[i]);
+                    int mode = Integer.parseInt(opSet[i + 1]);
+                    appOpsManager.setMode(op, packageInfo.applicationInfo.uid, packageName, mode);
+                } catch (Exception e) {
+                    System.out.println("Failed, skip: " + e.getMessage());
+                }
+            }
             System.exit(0);
         } catch (Exception e) {
             e.printStackTrace(System.out);
