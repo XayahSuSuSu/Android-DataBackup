@@ -86,7 +86,11 @@ public class HiddenApiUtil {
             PackageInfo packageInfo = HiddenApi.getPackageInfoAsUser(packageManager, packageName, PackageManager.GET_PERMISSIONS, userId);
             String[] requestedPermissions = packageInfo.requestedPermissions;
             int[] requestedPermissionsFlags = packageInfo.requestedPermissionsFlags;
-            AppOpsManagerHidden.PackageOps ops = appOpsManager.getOpsForPackage(packageInfo.applicationInfo.uid, packageName, null).get(0);
+            AppOpsManagerHidden.PackageOps ops = null;
+            try {
+                ops = appOpsManager.getOpsForPackage(packageInfo.applicationInfo.uid, packageName, null).get(0);
+            } catch (Exception ignored) {
+            }
             Map<Integer, Integer> opsMap = null;
             if (ops != null) {
                 opsMap = ops.getOps().stream().collect(Collectors.toMap(AppOpsManagerHidden.OpEntry::getOp, AppOpsManagerHidden.OpEntry::getMode));
