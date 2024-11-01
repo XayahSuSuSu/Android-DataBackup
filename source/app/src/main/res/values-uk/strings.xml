@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="storage">Директорія</string>
+    <string name="storage">Сховище</string>
     <string name="save">Зберегти</string>
     <string name="restoring">Відновлення</string>
     <string name="both">Обидва</string>
@@ -48,7 +48,7 @@
     <string name="grant_root_access">Надання root-доступу</string>
     <string name="update_records">Перелік змін</string>
     <string name="backup_completed">Створення бекапу завершено</string>
-    <string name="backup_dir">Директорія резервних копій</string>
+    <string name="backup_dir">Директорія бекапів</string>
     <string name="backing_up">Створення бекапу…</string>
     <string name="backup_list">Список бекапів</string>
     <string name="remote_service_err_info">Будь ласка, спробуйте перезавантажити пристрій або перевстановити Magisk/KernelSU.</string>
@@ -362,8 +362,8 @@
     <string name="label">Мітка</string>
     <string name="updating_app_list">Оновлення списку програм</string>
     <string name="confirm_freeze">Заморозити цю програму?</string>
-    <string name="no_activities_found">Немає заходів!</string>
-    <string name="granted">Зрозуміло</string>
+    <string name="no_activities_found">Немає актівіті!</string>
+    <string name="granted">Надано</string>
     <string name="denied">Відмовлено</string>
     <string name="unblock">Розблокувати</string>
     <string name="detailed_data_items">Елементи детальних даних</string>
@@ -375,11 +375,11 @@
     <string name="app_is_frozen">Додаток завис!</string>
     <string name="unfreeze">Розморозити</string>
     <string name="confirm_unfreeze">Розморозити цю програму?</string>
-    <string name="history">історія</string>
-    <string name="args_backed_up_at">Резервну копію створено в %1$s</string>
+    <string name="history">Історія</string>
+    <string name="args_backed_up_at">Бекап створено в %1$s</string>
     <string name="args_restored_at">Відновлено о %1$s</string>
-    <string name="args_apps_backed_up_and_failed">Створено резервні копії додатків %1$s, %2$s не вдалося</string>
-    <string name="args_apps_restored_and_failed">Програми %1$s відновлено, %2$s не вдалося</string>
-    <string name="args_files_backed_up_and_failed">Зроблено резервну копію %1$s файлів, %2$s не вдалося</string>
-    <string name="args_files_restored_and_failed">%1$s файлів відновлено, %2$s не вдалося</string>
+    <string name="args_apps_backed_up_and_failed">Створено бекап %1$s додатків, не вдалося - %2$s</string>
+    <string name="args_apps_restored_and_failed">Відновлено %1$s додатків , не вдалося- %2$s</string>
+    <string name="args_files_backed_up_and_failed">Створено бекап %1$s файлів, не вдалося-%2$s</string>
+    <string name="args_files_restored_and_failed">%1$s файлів відновлено, не вдалося- %2$s</string>
 </resources>
