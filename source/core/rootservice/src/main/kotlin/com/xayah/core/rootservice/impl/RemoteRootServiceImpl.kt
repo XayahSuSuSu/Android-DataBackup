@@ -521,9 +521,11 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         val packageName = packageInfo.packageName
         val requestedPermissions = packageInfo.requestedPermissions?.toList() ?: listOf()
         val requestedPermissionsFlags = packageInfo.requestedPermissionsFlags?.toList() ?: listOf()
-        val ops = appOpsManager.getOpsForPackage(uid, packageName, null).getOrNull(0)?.ops?.associate {
-            it.op to it.mode
-        }
+        val ops = runCatching {
+            appOpsManager.getOpsForPackage(uid, packageName, null).getOrNull(0)?.ops?.associate {
+                it.op to it.mode
+            }
+        }.getOrNull()
         requestedPermissions.forEachIndexed { i, name ->
             runCatching {
                 val permissionInfo = packageManager.getPermissionInfo(name, 0)
