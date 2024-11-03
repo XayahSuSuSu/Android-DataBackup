@@ -176,7 +176,7 @@ fun SegmentCircularProgressIndicator(
     strokeCap: StrokeCap = StrokeCap.Round,
 ) {
     val perSegmentProgress = remember(segments) { 1F / segments }
-    var targetProgress by remember { mutableFloatStateOf(progress) }
+    var targetProgress by remember { mutableFloatStateOf(if (progress.isNaN()) 0f else progress) }
     val animatedProgress by animateFloatAsState(
         targetValue = targetProgress,
         animationSpec = tween(durationMillis = 800, delayMillis = 100),
