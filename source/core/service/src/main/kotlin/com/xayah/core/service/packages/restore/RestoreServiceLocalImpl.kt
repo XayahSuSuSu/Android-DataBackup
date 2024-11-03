@@ -50,9 +50,7 @@ internal class RestoreServiceLocalImpl @Inject constructor() : AbstractRestoreSe
     }
 
     override suspend fun getPackages(): List<PackageEntity> {
-        return mPackageRepo.filterRestore(
-            mPackageRepo.queryActivated(OpType.RESTORE, "", mRootDir)
-        )
+        return mPackageRepo.queryActivated(OpType.RESTORE, "", mRootDir)
     }
 
     override suspend fun restore(type: DataType, userId: Int, p: PackageEntity, t: TaskDetailPackageEntity, srcDir: String) {

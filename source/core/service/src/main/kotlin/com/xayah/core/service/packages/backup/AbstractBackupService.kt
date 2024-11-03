@@ -71,7 +71,7 @@ internal abstract class AbstractBackupService : AbstractPackagesService() {
 
     @SuppressLint("StringFormatInvalid")
     override suspend fun onInitializing() {
-        val packages = mPackageRepo.filterBackup(mPackageRepo.queryActivated(OpType.BACKUP))
+        val packages = mPackageRepo.queryActivated(OpType.BACKUP)
         packages.forEach { pkg ->
             mPkgEntities.add(
                 TaskDetailPackageEntity(

@@ -51,7 +51,7 @@ class BackupViewModelImpl @Inject constructor(
     override suspend fun onOtherEvent(state: IndexUiState, intent: ProcessingUiIntent) {
         when (intent) {
             is UpdateApps -> {
-                val packages = mPkgRepo.filterBackup(mPkgRepo.queryActivated(OpType.BACKUP))
+                val packages = mPkgRepo.queryActivated(OpType.BACKUP)
                 var bytes = 0.0
                 packages.forEach {
                     bytes += it.storageStatsBytes

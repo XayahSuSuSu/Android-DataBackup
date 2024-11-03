@@ -7,7 +7,6 @@ import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.MediaRepository
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.datastore.readLastRestoreTime
-import com.xayah.core.datastore.readRestoreFilterFlagIndex
 import com.xayah.core.datastore.saveCloudActivatedAccountName
 import com.xayah.core.model.OpType
 import com.xayah.core.model.StorageMode
@@ -30,7 +29,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -86,7 +84,7 @@ class IndexViewModel @Inject constructor(
                             pkgRepo.queryPackages(OpType.RESTORE, state.cloudEntity.name, state.cloudEntity.remote)
                         }
                     }
-                }).filter(pkgRepo.getFlagPredicateNew(index = context.readRestoreFilterFlagIndex().first()))
+                })
                 var bytes = 0.0
                 packages.forEach { bytes += it.displayStatsBytes }
                 emitState(state.copy(packages = packages, packagesSize = bytes.formatSize()))

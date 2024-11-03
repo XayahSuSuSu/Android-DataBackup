@@ -65,7 +65,7 @@ class RestoreViewModelImpl @Inject constructor(
                     cloud = uiState.value.cloudEntity!!.name
                     backupSaveDir = uiState.value.cloudEntity!!.remote
                 }
-                val packages = mPkgRepo.filterRestore(mPkgRepo.queryActivated(OpType.RESTORE, cloud, backupSaveDir))
+                val packages = mPkgRepo.queryActivated(OpType.RESTORE, cloud, backupSaveDir)
                 LogUtil.log { "RestoreViewModelImpl.UpdateApps" to "Query activated apps, cloud: $cloud, backupDir: $backupSaveDir" }
                 LogUtil.log { "RestoreViewModelImpl.UpdateApps" to "Queried apps count: ${packages.size}" }
                 var bytes = 0.0

@@ -2,8 +2,6 @@ package com.xayah.core.datastore
 
 import android.content.Context
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.KillAppOption
 import com.xayah.core.model.SelectionType
@@ -18,9 +16,6 @@ val KeyCloudActivatedAccountName = stringPreferencesKey("cloud_activated_account
 val KeyLoadedIconMD5 = stringPreferencesKey("loaded_icon_md5")
 val KeySelectionType = stringPreferencesKey("selection_type")
 val KeyThemeType = stringPreferencesKey("theme_type")
-val KeyUserIdList = stringPreferencesKey("user_id_list")
-val KeyBackupUserIdIndex = stringPreferencesKey("backup_user_id_index")
-val KeyRestoreUserIdIndex = stringPreferencesKey("restore_user_id_index")
 val KeyCustomSUFile = stringPreferencesKey("custom_su_file")
 val KeyKillAppOption = stringPreferencesKey("kill_app_option")
 val KeyLanguage = stringPreferencesKey("language")
@@ -33,9 +28,6 @@ fun Context.readCloudActivatedAccountName() = readStoreString(key = KeyCloudActi
 fun Context.readLoadedIconMD5() = readStoreString(key = KeyLoadedIconMD5, defValue = "")
 fun Context.readSelectionType() = readStoreString(key = KeySelectionType, defValue = "").map { SelectionType.of(it) }
 fun Context.readThemeType() = readStoreString(key = KeyThemeType, defValue = "").map { ThemeType.of(it) }
-fun Context.readUserIdList() = readStoreString(key = KeyUserIdList, defValue = "[0]").map { Gson().fromJson<List<Int>>(it, object : TypeToken<List<Int>>() {}.type) }
-fun Context.readBackupUserIdIndex() = readStoreString(key = KeyBackupUserIdIndex, defValue = "[0]").map { Gson().fromJson<List<Int>>(it, object : TypeToken<List<Int>>() {}.type) }
-fun Context.readRestoreUserIdIndex() = readStoreString(key = KeyRestoreUserIdIndex, defValue = "[0]").map { Gson().fromJson<List<Int>>(it, object : TypeToken<List<Int>>() {}.type) }
 fun Context.readKillAppOption() = readStoreString(key = KeyKillAppOption, defValue = "").map { KillAppOption.of(it) }
 fun Context.readLanguage() = readStoreString(key = KeyLanguage, defValue = ConstantUtil.LANGUAGE_SYSTEM)
 
@@ -54,9 +46,6 @@ suspend fun Context.saveCloudActivatedAccountName(value: String) = saveStoreStri
 suspend fun Context.saveLoadedIconMD5(value: String) = saveStoreString(key = KeyLoadedIconMD5, value = value.trim())
 suspend fun Context.saveSelectionType(value: SelectionType) = saveStoreString(key = KeySelectionType, value = value.name.trim())
 suspend fun Context.saveThemeType(value: ThemeType) = saveStoreString(key = KeyThemeType, value = value.name.trim())
-suspend fun Context.saveUserIdList(value: List<Int>) = saveStoreString(key = KeyUserIdList, value = Gson().toJson(value))
-suspend fun Context.saveBackupUserIdIndex(value: List<Int>) = saveStoreString(key = KeyBackupUserIdIndex, value = Gson().toJson(value))
-suspend fun Context.saveRestoreUserIdIndex(value: List<Int>) = saveStoreString(key = KeyRestoreUserIdIndex, value = Gson().toJson(value))
 suspend fun Context.saveBackupSavePath(value: String) = saveStoreString(key = KeyBackupSavePath, value = value.trim())
 suspend fun Context.saveCustomSUFile(value: String) = saveStoreString(key = KeyCustomSUFile, value = value.trim())
 suspend fun Context.saveKillAppOption(value: KillAppOption) = saveStoreString(key = KeyKillAppOption, value = value.name.trim())
