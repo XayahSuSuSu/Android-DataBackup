@@ -66,9 +66,9 @@ fun PagePackagesRestoreProcessingSetup(localNavController: NavHostController, vi
 
     LaunchedEffect(null) {
         viewModel.launchOnIO {
+            viewModel.emitIntent(SetCloudEntity(""))
             viewModel.emitIntent(GetUsers)
             viewModel.emitIntent(UpdateApps)
-            viewModel.emitIntent(SetCloudEntity(""))
         }
     }
 

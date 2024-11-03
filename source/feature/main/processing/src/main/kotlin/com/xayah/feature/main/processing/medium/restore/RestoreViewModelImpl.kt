@@ -19,6 +19,7 @@ import com.xayah.core.ui.material3.SnackbarType
 import com.xayah.core.ui.model.DialogRadioItem
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.viewmodel.IndexUiEffect
+import com.xayah.core.util.LogUtil
 import com.xayah.core.util.decodeURL
 import com.xayah.core.util.localBackupSaveDir
 import com.xayah.core.util.navigateSingle
@@ -54,10 +55,18 @@ class RestoreViewModelImpl @Inject constructor(
     override suspend fun onOtherEvent(state: IndexUiState, intent: ProcessingUiIntent) {
         when (intent) {
             is UpdateFiles -> {
-                val medium = if (uiState.value.cloudEntity == null)
-                    mMediaRepo.queryActivated(OpType.RESTORE, "", mContext.localBackupSaveDir())
-                else
-                    mMediaRepo.queryActivated(OpType.RESTORE, uiState.value.cloudEntity!!.name, uiState.value.cloudEntity!!.remote)
+                val cloud: String
+                val backupSaveDir: String
+                if (uiState.value.cloudEntity == null) {
+                    cloud = ""
+                    backupSaveDir = mContext.localBackupSaveDir()
+                } else {
+                    cloud = uiState.value.cloudEntity!!.name
+                    backupSaveDir = uiState.value.cloudEntity!!.remote
+                }
+                val medium = mMediaRepo.queryActivated(OpType.RESTORE, cloud, backupSaveDir)
+                LogUtil.log { "RestoreViewModelImpl.UpdateApps" to "Query activated files, cloud: $cloud, backupDir: $backupSaveDir" }
+                LogUtil.log { "RestoreViewModelImpl.UpdateApps" to "Queried files count: ${medium.size}" }
                 var bytes = 0.0
                 medium.forEach {
                     bytes += it.displayStatsBytes
