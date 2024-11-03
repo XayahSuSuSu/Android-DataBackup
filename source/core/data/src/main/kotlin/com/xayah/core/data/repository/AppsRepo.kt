@@ -485,7 +485,9 @@ class AppsRepo @Inject constructor(
                         }
                     }
                 }
-                client.clearEmptyDirectoriesRecursively(path)
+                runCatching {
+                    client.clearEmptyDirectoriesRecursively(path)
+                }.withLog()
                 appsDao.queryPackages(OpType.RESTORE, entity.name, entity.remote).forEach {
                     val src = "${path}/${it.archivesRelativeDir}"
                     if (client.exists(src).not()) {
