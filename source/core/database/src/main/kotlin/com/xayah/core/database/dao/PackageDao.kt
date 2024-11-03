@@ -153,9 +153,10 @@ interface PackageDao {
     @Query(
         "SELECT indexInfo_userId, COUNT(*) as iCount FROM PackageEntity WHERE" +
                 " indexInfo_opType = :opType AND extraInfo_blocked = :blocked AND" +
+                " indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir AND" +
                 " extraInfo_activated = 1 GROUP BY indexInfo_userId"
     )
-    fun countUsersMapFlow(opType: OpType, blocked: Boolean):
+    fun countUsersMapFlow(opType: OpType, blocked: Boolean, cloud: String, backupDir: String):
             Flow<Map<@MapColumn(columnName = "indexInfo_userId") Int, @MapColumn(columnName = "iCount") Long>>
 
     @Query(

@@ -69,7 +69,7 @@ class ListDataRepo @Inject constructor(
                 showSystemApps = MutableStateFlow(false)
                 userIndex = MutableStateFlow(0)
                 userList = usersRepo.getUsers(opType)
-                userMap = usersRepo.getUsersMap(opType)
+                userMap = usersRepo.getUsersMap(opType, cloudName, backupDir)
 
                 listData = getAppListData()
                 appList = appsRepo.getApps(opType = opType, listData = listData, refIds = refIds, labelIds = labelIds, cloudName = cloudName, backupDir = backupDir)

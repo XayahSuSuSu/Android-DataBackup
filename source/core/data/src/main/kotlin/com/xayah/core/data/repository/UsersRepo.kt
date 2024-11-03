@@ -32,5 +32,5 @@ class UsersRepo @Inject constructor(
         OpType.RESTORE -> appsDao.queryUserIdsFlow(opType).map { it.map { u -> UserInfo(u, context.getString(R.string.user)) } }
     }
 
-    fun getUsersMap(opType: OpType): Flow<Map<Int, Long>> = appsDao.countUsersMapFlow(opType = opType, blocked = false)
+    fun getUsersMap(opType: OpType, cloud: String, backupDir: String): Flow<Map<Int, Long>> = appsDao.countUsersMapFlow(opType = opType, blocked = false, cloud = cloud, backupDir = backupDir)
 }
