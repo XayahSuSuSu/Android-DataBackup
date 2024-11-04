@@ -242,7 +242,7 @@
     <string name="args_finished_at">%1$s\'de tamamlandı</string>
     <string name="setup_required">Kurulum gerekiyor, bir dizin belirlemek için dokun</string>
     <string name="quick_actions">Hızlı işlemler</string>
-    <string name="backup_apps">Uygulamaları yedekle</string>
+    <string name="backup_apps">Uygulamaları \nyedekle</string>
     <string name="choose_a_custom_path">Özel bir yol seç</string>
     <string name="select_files">Dosyaları seç</string>
     <string name="files">Dosyalar</string>
