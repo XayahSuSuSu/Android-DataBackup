@@ -1,10 +1,12 @@
 package com.xayah.core.model.database
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.xayah.core.model.MMSMessageBox
 import com.xayah.core.model.MessageType
+import com.xayah.core.model.OperationState
 import com.xayah.core.model.SMSMessageBox
 import kotlinx.serialization.Serializable
 
@@ -71,6 +73,9 @@ data class MessageInfo(
 @Entity
 data class MessageEntity(
     @PrimaryKey(autoGenerate = true) var id: Long,
+    val taskId: Long,
+    var state: OperationState = OperationState.IDLE,
+    @ColumnInfo(defaultValue = "0") var processingIndex: Int = 0,
     @Embedded(prefix = "messageInfo_") var messageInfo: MessageInfo,
     @Embedded(prefix = "messageExtraInfo_") var messageExtraInfo: BaseMessageExtraInfo,
 )

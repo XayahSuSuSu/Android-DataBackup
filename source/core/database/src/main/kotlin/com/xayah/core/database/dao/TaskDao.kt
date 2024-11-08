@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import com.xayah.core.model.ProcessingType
+import com.xayah.core.model.database.MessageEntity
 import com.xayah.core.model.database.ProcessingInfoEntity
 import com.xayah.core.model.database.TaskDetailMediaEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
@@ -23,6 +24,9 @@ interface TaskDao {
 
     @Upsert(entity = ProcessingInfoEntity::class)
     suspend fun upsert(item: ProcessingInfoEntity): Long
+
+    @Upsert(entity = MessageEntity::class)
+    suspend fun upsert(item: MessageEntity): Long
 
     @Query("SELECT * FROM TaskEntity WHERE id = :id LIMIT 1")
     fun queryTaskFlow(id: Long): Flow<TaskEntity?>

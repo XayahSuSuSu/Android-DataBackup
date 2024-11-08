@@ -16,6 +16,7 @@ import com.xayah.core.model.ThemeType
 import com.xayah.core.model.ZSTD_SUFFIX
 import com.xayah.core.model.database.Info
 import com.xayah.core.model.database.MediaEntity
+import com.xayah.core.model.database.MessageEntity
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.ProcessingInfoEntity
 import com.xayah.core.model.database.TaskDetailMediaEntity
@@ -107,6 +108,18 @@ fun TaskDetailPackageEntity.set(
     if (state != null) this.state = state
     if (processingIndex != null) this.processingIndex = processingIndex
     if (packageEntity != null) this.packageEntity = packageEntity
+}
+
+fun MessageEntity.set(
+    state: OperationState? = null,
+    processingIndex: Int? = null,
+    messageEntity: MessageEntity? = null,
+) = run {
+    if (state != null) this.state = state
+    if (processingIndex != null) this.processingIndex = processingIndex
+    if (messageEntity?.id != null) this.id = messageEntity.id
+    if (messageEntity?.messageInfo != null) this.messageInfo = messageEntity.messageInfo
+    if (messageEntity?.messageExtraInfo != null) this.messageExtraInfo = messageEntity.messageExtraInfo
 }
 
 fun TaskDetailPackageEntity.set(
