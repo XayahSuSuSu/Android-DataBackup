@@ -1,5 +1,6 @@
 package com.xayah.core.service.messages
 
+import com.xayah.core.database.dao.MessageDao
 import com.xayah.core.model.OperationState
 import com.xayah.core.model.database.MessageEntity
 import com.xayah.core.model.util.set
@@ -17,5 +18,7 @@ internal abstract class AbstractMessagesService : AbstractProcessingService() {
         mTaskDao.upsert(this)
     }
 
+    protected abstract val mMessageDao: MessageDao
+    protected abstract val mRootDir: String
     protected abstract val mMessagesDir: String
 }

@@ -24,6 +24,10 @@ internal abstract class AbstractBackupService : AbstractMessagesService() {
     override suspend fun onInitializingPostProcessingEntities(entities: MutableList<ProcessingInfoEntity>) {
     }
 
+    override suspend fun onInitializing() {
+
+    }
+
     override suspend fun onPreprocessing(entity: ProcessingInfoEntity) {
         when (entity.infoType) {
             ProcessingInfoType.NECESSARY_PREPARATIONS -> {
@@ -35,6 +39,14 @@ internal abstract class AbstractBackupService : AbstractMessagesService() {
 
             else -> {}
         }
+    }
+
+    override suspend fun onProcessing() {
+
+    }
+
+    override suspend fun onPostProcessing(entity: ProcessingInfoEntity) {
+
     }
 
     protected open suspend fun onTargetDirsCreated() {}

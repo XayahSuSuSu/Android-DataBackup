@@ -38,7 +38,8 @@ enum class OpType {
 
 enum class TaskType {
     PACKAGE,
-    MEDIA;
+    MEDIA,
+    MESSAGE;
 
     companion object
 }
