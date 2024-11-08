@@ -1,6 +1,7 @@
 package com.xayah.core.model
 
 import android.content.Context
+import android.provider.Telephony
 
 const val TAR_SUFFIX = "tar"
 const val ZSTD_SUFFIX = "tar.zst"
@@ -169,4 +170,28 @@ enum class ProcessingInfoType {
     BACKUP_ITSELF,
     SAVE_ICONS,
     SET_UP_INST_ENV,
+}
+
+enum class MessageType {
+    SMS,
+    MMS,
+}
+
+enum class SMSMessageBox(val type: Int) {
+    ALL(Telephony.Sms.MESSAGE_TYPE_ALL),
+    DRAFT(Telephony.Sms.MESSAGE_TYPE_DRAFT),
+    FAILED(Telephony.Sms.MESSAGE_TYPE_FAILED),
+    INBOX(Telephony.Sms.MESSAGE_TYPE_INBOX),
+    OUTBOX(Telephony.Sms.MESSAGE_TYPE_OUTBOX),
+    QUEUED(Telephony.Sms.MESSAGE_TYPE_QUEUED),
+    SENT(Telephony.Sms.MESSAGE_TYPE_SENT),
+}
+
+enum class MMSMessageBox(val type: Int) {
+    ALL(Telephony.Mms.MESSAGE_BOX_ALL),
+    DRAFTS(Telephony.Mms.MESSAGE_BOX_DRAFTS),
+    FAILED(Telephony.Mms.MESSAGE_BOX_FAILED),
+    INBOX(Telephony.Mms.MESSAGE_BOX_INBOX),
+    OUTBOX(Telephony.Mms.MESSAGE_BOX_OUTBOX),
+    SENT(Telephony.Mms.MESSAGE_BOX_SENT),
 }
