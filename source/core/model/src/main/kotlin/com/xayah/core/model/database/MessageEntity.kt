@@ -1,11 +1,16 @@
 package com.xayah.core.model.database
 
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.xayah.core.model.MMSMessageBox
 import com.xayah.core.model.MessageType
 import com.xayah.core.model.SMSMessageBox
 import kotlinx.serialization.Serializable
 
-data class MMSExtra(
+interface BaseMessageExtraInfo
+
+data class MMSExtraInfo(
     val id: Long,
     val contentClass: Long,
     val contentLocation: String,
@@ -35,9 +40,9 @@ data class MMSExtra(
 
     // Mms.Part
     val filename: String,
-)
+) : BaseMessageExtraInfo
 
-data class SMSExtra(
+data class SMSExtraInfo(
     val creator: String,
     val errorCode: Long,
     val person: Long,
@@ -45,7 +50,7 @@ data class SMSExtra(
     val replyPathPresent: Long,
     val serviceCenter: String,
     val type: SMSMessageBox,
-)
+) : BaseMessageExtraInfo
 
 @Serializable
 data class MessageInfo(
@@ -60,4 +65,12 @@ data class MessageInfo(
     val status: Long,
     val subject: String,
     val subscriptionId: Long,
+)
+
+@Serializable
+@Entity
+data class MessageEntity(
+    @PrimaryKey(autoGenerate = true) var id: Long,
+    @Embedded(prefix = "messageInfo_") var messageInfo: MessageInfo,
+    @Embedded(prefix = "messageExtraInfo_") var messageExtraInfo: BaseMessageExtraInfo,
 )
