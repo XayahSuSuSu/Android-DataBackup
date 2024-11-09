@@ -105,6 +105,7 @@ class PathUtil @Inject constructor(
     fun getCloudRemoteFilesDir(remote: String): String = getFilesDir(parent = remote)
     fun getLocalMessagesDir(): String = getMessagesDir(parent = context.localBackupSaveDir())
     fun getCloudTmpMessagesDir(): String = getMessagesDir(parent = context.cloudTmpAbsoluteDir())
+    fun getCloudRemoteMessagesDir(remote: String): String = getMessagesDir(parent = remote)
 
 
     fun getTmpApkPath(packageName: String): String = "${context.tmpApksDir()}/$packageName"

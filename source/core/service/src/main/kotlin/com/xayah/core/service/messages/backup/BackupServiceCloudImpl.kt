@@ -1,12 +1,15 @@
 package com.xayah.core.service.messages.backup
 
+import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.TaskRepository
 import com.xayah.core.database.dao.MessageDao
 import com.xayah.core.database.dao.TaskDao
 import com.xayah.core.model.OpType
 import com.xayah.core.model.TaskType
+import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.ProcessingInfoEntity
 import com.xayah.core.model.database.TaskEntity
+import com.xayah.core.network.client.CloudClient
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.service.util.CommonBackupUtil
 import com.xayah.core.util.PathUtil
@@ -44,9 +47,30 @@ internal class BackupServiceCloudImpl @Inject constructor() : AbstractBackupServ
         )
     }
 
+    override suspend fun onTargetDirsCreated() {
+        mCloudRepo.getClient().also { (c, e) ->
+            mCloudEntity = e
+            mClient = c
+        }
+
+        mRemotePath = mCloudEntity.remote
+        mRemoteMessagesDir = mPathUtil.getCloudRemoteMessagesDir(mRemotePath)
+        mTaskEntity.update(cloud = mCloudEntity.name, backupDir = mRemotePath)
+
+        log { "Trying to create: $mRemoteMessagesDir." }
+        mClient.mkdirRecursively(mRemoteMessagesDir)
+    }
+
     @Inject
     override lateinit var mMessageDao: MessageDao
 
+    @Inject
+    lateinit var mCloudRepo: CloudRepository
+
+    private lateinit var mCloudEntity: CloudEntity
+    private lateinit var mClient: CloudClient
     override val mRootDir by lazy { mPathUtil.getCloudTmpDir() }
     override val mMessagesDir by lazy { mPathUtil.getCloudTmpMessagesDir() }
+    private lateinit var mRemotePath: String
+    private lateinit var mRemoteMessagesDir: String
 }
