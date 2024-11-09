@@ -67,10 +67,11 @@ internal class BackupServiceCloudImpl @Inject constructor() : AbstractBackupServ
     @Inject
     lateinit var mCloudRepo: CloudRepository
 
-    private lateinit var mCloudEntity: CloudEntity
-    private lateinit var mClient: CloudClient
     override val mRootDir by lazy { mPathUtil.getCloudTmpDir() }
     override val mMessagesDir by lazy { mPathUtil.getCloudTmpMessagesDir() }
+
+    private lateinit var mCloudEntity: CloudEntity
+    private lateinit var mClient: CloudClient
     private lateinit var mRemotePath: String
     private lateinit var mRemoteMessagesDir: String
 }

@@ -31,7 +31,7 @@ class MediaRepository @Inject constructor(
     private val pathUtil: PathUtil,
 ) {
     companion object {
-        private const val TAG = "PackageRepository"
+        private val TAG = this::class.java.simpleName
     }
 
     private fun log(onMsg: () -> String): String = run {
