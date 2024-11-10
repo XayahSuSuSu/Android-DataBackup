@@ -33,9 +33,9 @@ import com.xayah.core.util.SymbolUtil
 import com.xayah.core.util.toPathList
 import com.xayah.core.util.withLog
 import com.xayah.core.util.withMainContext
+import com.xayah.libpickyou.PickYouLauncher
 import com.xayah.libpickyou.parcelables.DirChildrenParcelable
 import com.xayah.libpickyou.parcelables.FileParcelable
-import com.xayah.libpickyou.ui.PickYouLauncher
 import com.xayah.libpickyou.ui.model.PickerType
 import java.io.File
 import java.io.IOException
@@ -366,26 +366,24 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
     override suspend fun setRemote(context: Context, onSet: suspend (remote: String, extra: String) -> Unit) {
         val extra = entity.getExtraEntity<SMBExtra>()!!
         connect()
-        PickYouLauncher.apply {
-            val prefix = "${context.getString(R.string.cloud)}:"
-            sTraverseBackend = { listFiles(it.replaceFirst(prefix, "")) }
-            sMkdirsBackend = { parent, child ->
+
+        val prefix = "${context.getString(R.string.cloud)}:"
+        val pickYou = PickYouLauncher(
+            checkPermission = false,
+            traverseBackend = { listFiles(it.replaceFirst(prefix, "")) },
+            mkdirsBackend = { parent, child ->
                 val (_, target) = handleOriginalPath("$parent/$child")
                 runCatching { mkdirRecursively(target) }.isSuccess
-            }
-            sTitle = context.getString(R.string.select_target_directory)
-            sPickerType = PickerType.DIRECTORY
-            sLimitation = 1
-            sRootPathList = listOf(prefix)
-            sDefaultPathList = if (extra.share.isNotEmpty()) listOf(prefix, extra.share) else listOf(prefix)
-
-        }
+            },
+            title = context.getString(R.string.select_target_directory),
+            pickerType = PickerType.DIRECTORY,
+            rootPathList = listOf(prefix),
+            defaultPathList = if (extra.share.isNotEmpty()) listOf(prefix, extra.share) else listOf(prefix),
+        )
         withMainContext {
-            val pathList = PickYouLauncher.awaitPickerOnce(context)
-            pathList.firstOrNull()?.also { pathString ->
-                val (share, remote) = handleOriginalPath(pathString)
-                onSet(remote, GsonUtil().toJson(extra.copy(share = share)))
-            }
+            val pathString = pickYou.awaitLaunch(context)
+            val (share, remote) = handleOriginalPath(pathString)
+            onSet(remote, GsonUtil().toJson(extra.copy(share = share)))
         }
         disconnect()
     }

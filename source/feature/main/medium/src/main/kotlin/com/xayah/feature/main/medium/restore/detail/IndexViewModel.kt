@@ -14,7 +14,7 @@ import com.xayah.core.ui.viewmodel.UiIntent
 import com.xayah.core.ui.viewmodel.UiState
 import com.xayah.core.util.decodeURL
 import com.xayah.feature.main.medium.R
-import com.xayah.libpickyou.ui.PickYouLauncher
+import com.xayah.libpickyou.PickYouLauncher
 import com.xayah.libpickyou.ui.model.PermissionType
 import com.xayah.libpickyou.ui.model.PickerType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -75,15 +75,14 @@ class IndexViewModel @Inject constructor(
                 val entity = intent.mediaEntity
                 withMainContext {
                     val context = intent.context
-                    PickYouLauncher().apply {
-                        setTitle(context.getString(R.string.select_target_directory))
-                        setType(PickerType.DIRECTORY)
-                        setLimitation(1)
-                        setPermissionType(PermissionType.ROOT)
-                        val pathList = awaitPickerOnce(context)
-                        pathList.firstOrNull()?.also { pathString ->
-                            mediaRepo.upsert(entity.copy(mediaInfo = entity.mediaInfo.copy(path = pathString), extraInfo = entity.extraInfo.copy(existed = true)))
-                        }
+                    PickYouLauncher(
+                        checkPermission = true,
+                        title = context.getString(R.string.select_target_directory),
+                        pickerType = PickerType.DIRECTORY,
+                        permissionType = PermissionType.ROOT
+                    ).apply {
+                        val pathString = awaitLaunch(context)
+                        mediaRepo.upsert(entity.copy(mediaInfo = entity.mediaInfo.copy(path = pathString), extraInfo = entity.extraInfo.copy(existed = true)))
                     }
                 }
             }

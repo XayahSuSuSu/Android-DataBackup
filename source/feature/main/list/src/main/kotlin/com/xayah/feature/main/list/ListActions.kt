@@ -36,7 +36,7 @@ import com.xayah.core.ui.component.IconButton
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.ModalDropdownMenu
 import com.xayah.core.ui.component.confirm
-import com.xayah.libpickyou.ui.PickYouLauncher
+import com.xayah.libpickyou.PickYouLauncher
 import com.xayah.libpickyou.ui.model.PermissionType
 import com.xayah.libpickyou.ui.model.PickerType
 
@@ -95,13 +95,14 @@ internal fun ListActions(
                         if (uiState.opType == OpType.BACKUP) {
                             AddItem(enabled = uiState.isUpdating.not()) {
                                 moreExpanded = false
-                                PickYouLauncher().apply {
-                                    setTitle(context.getString(R.string.select_target_directory))
-                                    setType(PickerType.DIRECTORY)
-                                    setLimitation(0)
-                                    setPermissionType(PermissionType.ROOT)
+                                PickYouLauncher(
+                                    checkPermission = true,
+                                    title = context.getString(R.string.select_target_directory),
+                                    pickerType = PickerType.DIRECTORY,
+                                    permissionType = PermissionType.ROOT,
+                                ).apply {
                                     launch(context) {
-                                        viewModel.addFiles(it)
+                                        viewModel.addFiles(listOf(it))
                                     }
                                 }
                             }
