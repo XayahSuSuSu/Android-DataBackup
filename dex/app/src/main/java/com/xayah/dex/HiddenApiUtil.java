@@ -3,24 +3,45 @@ package com.xayah.dex;
 import android.annotation.SuppressLint;
 import android.app.AppOpsManagerHidden;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManagerHidden;
 import android.content.pm.PermissionInfo;
 import android.os.UserHandle;
+import android.os.UserHandleHidden;
 
 import androidx.core.content.pm.PermissionInfoCompat;
 
-import java.lang.reflect.InvocationTargetException;
+import java.text.Collator;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import dev.rikka.tools.refine.Refine;
+
 public class HiddenApiUtil {
+    private static final String XPOSED_METADATA = "xposedminversion";
+    private static final String FLAG_USER = "user";
+    private static final String FLAG_SYSTEM = "system";
+    private static final String FLAG_XPOSED = "xposed";
+    private static final String FORMAT_LABEL = "label";
+    private static final String FORMAT_PKG_NAME = "pkgName";
+    private static final String FORMAT_FLAG = "flag";
 
     private static void onHelp() {
         System.out.println("HiddenApiUtil commands:");
         System.out.println("  help");
         System.out.println();
-        System.out.println("  getPackageUid USER_ID PACKAGE");
+        System.out.println("  getPackageUid USER_ID PACKAGE PACKAGE PACKAGE ...");
+        System.out.println();
+        System.out.println("  getPackageLabel USER_ID PACKAGE PACKAGE PACKAGE ...");
+        System.out.println();
+        System.out.println("  getPackageArchiveInfo APK_FILE");
+        System.out.println();
+        System.out.println("  getInstalledPackagesAsUser USER_ID FILTER_FLAG(user|system|xposed) FORMAT(label|pkgName|flag)");
         System.out.println();
         System.out.println("  getRuntimePermissions USER_ID PACKAGE");
         System.out.println();
@@ -35,6 +56,12 @@ public class HiddenApiUtil {
         switch (cmd) {
             case "getPackageUid":
                 getPackageUid(args);
+            case "getPackageLabel":
+                getPackageLabel(args);
+            case "getPackageArchiveInfo":
+                getPackageArchiveInfo(args);
+            case "getInstalledPackagesAsUser":
+                getInstalledPackagesAsUser(args);
             case "getRuntimePermissions":
                 getRuntimePermissions(args);
             case "grantRuntimePermission":
@@ -64,10 +91,156 @@ public class HiddenApiUtil {
 
     private static void getPackageUid(String[] args) {
         try {
-            Context ctx = HiddenApi.getContext();
+            Context ctx = HiddenApiHelper.getContext();
+            PackageManager pm = ctx.getPackageManager();
+            PackageManagerHidden pmHidden = Refine.unsafeCast(pm);
             int userId = Integer.parseInt(args[1]);
-            String packageName = args[2];
-            System.out.println(HiddenApi.getPackageUid(ctx.getPackageManager(), packageName, 0, userId));
+            for (int i = 2; i < args.length; i++) {
+                String[] packageNames = args[i].split(" ");
+                for (String packageName : packageNames) {
+                    try {
+                        PackageInfo packageInfo = pmHidden.getPackageInfoAsUser(packageName, 0, userId);
+                        System.out.println(packageInfo.applicationInfo.uid);
+                    } catch (Exception e) {
+                        System.out.println("Failed, skip: " + packageName);
+                    }
+                }
+            }
+            System.exit(0);
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+            System.exit(1);
+        }
+    }
+
+    private static void getPackageLabel(String[] args) {
+        try {
+            Context ctx = HiddenApiHelper.getContext();
+            PackageManager pm = ctx.getPackageManager();
+            PackageManagerHidden pmHidden = Refine.unsafeCast(pm);
+            int userId = Integer.parseInt(args[1]);
+            for (int i = 2; i < args.length; i++) {
+                String[] packageNames = args[i].split(" ");
+                for (String packageName : packageNames) {
+                    try {
+                        PackageInfo packageInfo = pmHidden.getPackageInfoAsUser(packageName, 0, userId);
+                        System.out.println(packageInfo.applicationInfo.loadLabel(pm).toString().replaceAll(" ", ""));
+                    } catch (Exception e) {
+                        System.out.println("Failed, skip: " + packageName);
+                    }
+                }
+            }
+            System.exit(0);
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+            System.exit(1);
+        }
+    }
+
+    private static void getPackageArchiveInfo(String[] args) {
+        try {
+            Context ctx = HiddenApiHelper.getContext();
+            PackageManager pm = ctx.getPackageManager();
+            String file = args[1];
+            PackageInfo packageInfo = pm.getPackageArchiveInfo(file, 0);
+            if (packageInfo != null && packageInfo.applicationInfo != null) {
+                packageInfo.applicationInfo.sourceDir = file;
+                packageInfo.applicationInfo.publicSourceDir = file;
+                System.out.println(packageInfo.applicationInfo.loadLabel(pm).toString().replaceAll(" ", "") + " " + packageInfo.packageName);
+            } else {
+                throw new PackageManager.NameNotFoundException("Failed to parse package info!");
+            }
+            System.exit(0);
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+            System.exit(1);
+        }
+    }
+
+    private static void getInstalledPackagesAsUser(String[] args) {
+        try {
+            Context ctx = HiddenApiHelper.getContext();
+            PackageManager pm = ctx.getPackageManager();
+            PackageManagerHidden pmHidden = Refine.unsafeCast(pm);
+            int userId = Integer.parseInt(args[1]);
+            List<String> filterFlags = new ArrayList<>();
+            List<String> formatList = new ArrayList<>();
+            try {
+                filterFlags = Arrays.asList(args[2].split("\\|"));
+            } catch (Exception ignored) {
+            }
+            if (filterFlags.isEmpty()) {
+                filterFlags.add(FLAG_USER);
+                filterFlags.add(FLAG_SYSTEM);
+            }
+            try {
+                formatList = Arrays.asList(args[3].split("\\|"));
+            } catch (Exception ignored) {
+            }
+            if (formatList.isEmpty()) {
+                formatList.add(FORMAT_LABEL);
+                formatList.add(FORMAT_PKG_NAME);
+                formatList.add(FORMAT_FLAG);
+            }
+            boolean userFlag = filterFlags.contains(FLAG_USER);
+            boolean systemFlag = filterFlags.contains(FLAG_SYSTEM);
+            boolean xposedFlag = filterFlags.contains(FLAG_XPOSED);
+            List<PackageInfo> packages = pmHidden.getInstalledPackagesAsUser(PackageManager.GET_META_DATA, userId);
+            packages.sort((p1, p2) -> {
+                if (p1 != null && p2 != null) {
+                    Collator collator = Collator.getInstance();
+                    return collator.getCollationKey(p1.applicationInfo.loadLabel(pm).toString())
+                            .compareTo(collator.getCollationKey(p2.applicationInfo.loadLabel(pm).toString()));
+                }
+                return 0;
+            });
+            for (PackageInfo pkg : packages) {
+                boolean isSystemApp = (pkg.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+                boolean isUserApp = !isSystemApp;
+                boolean isXposedApp;
+                try {
+                    isXposedApp = pkg.applicationInfo.metaData.containsKey(XPOSED_METADATA);
+                } catch (Exception ignored) {
+                    isXposedApp = false;
+                }
+                if ((userFlag && isUserApp) || (systemFlag && isSystemApp) || (xposedFlag && isXposedApp)) {
+                    StringBuilder out = new StringBuilder();
+                    for (String format : formatList) {
+                        switch (format) {
+                            case FORMAT_LABEL -> out.append(" ").append(pkg.applicationInfo.loadLabel(pm).toString().replaceAll(" ", ""));
+                            case FORMAT_PKG_NAME -> out.append(" ").append(pkg.packageName);
+                            case FORMAT_FLAG -> {
+                                if (filterFlags.size() == 2) {
+                                    if (systemFlag && xposedFlag) {
+                                        if (isXposedApp) {
+                                            out.append(" ").append(FLAG_XPOSED);
+                                        }
+                                    } else {
+                                        if (isXposedApp) {
+                                            out.append(" ").append(FLAG_XPOSED);
+                                        } else if (isSystemApp) {
+                                            out.append(" ").append(FLAG_SYSTEM);
+                                        }
+                                    }
+                                } else if (filterFlags.size() == 3) {
+                                    List<String> flags = new ArrayList<>();
+                                    if (isXposedApp) {
+                                        flags.add(FLAG_XPOSED);
+                                    }
+                                    if (isSystemApp) {
+                                        flags.add(FLAG_SYSTEM);
+                                    }
+                                    out.append(" ").append(String.join("|", flags));
+                                }
+                            }
+                        }
+                    }
+                    String item = out.toString().trim();
+                    if (!item.isEmpty()) {
+                        System.out.println(item);
+                    }
+                }
+            }
             System.exit(0);
         } catch (Exception e) {
             e.printStackTrace(System.out);
@@ -78,12 +251,13 @@ public class HiddenApiUtil {
     @SuppressLint("ServiceCast")
     private static void getRuntimePermissions(String[] args) {
         try {
-            Context ctx = HiddenApi.getContext();
+            Context ctx = HiddenApiHelper.getContext();
             PackageManager packageManager = ctx.getPackageManager();
+            PackageManagerHidden packageManagerHidden = Refine.unsafeCast(packageManager);
             AppOpsManagerHidden appOpsManager = (AppOpsManagerHidden) ctx.getSystemService(Context.APP_OPS_SERVICE);
             int userId = Integer.parseInt(args[1]);
             String packageName = args[2];
-            PackageInfo packageInfo = HiddenApi.getPackageInfoAsUser(packageManager, packageName, PackageManager.GET_PERMISSIONS, userId);
+            PackageInfo packageInfo = packageManagerHidden.getPackageInfoAsUser(packageName, PackageManager.GET_PERMISSIONS, userId);
             String[] requestedPermissions = packageInfo.requestedPermissions;
             int[] requestedPermissionsFlags = packageInfo.requestedPermissionsFlags;
             AppOpsManagerHidden.PackageOps ops = null;
@@ -124,16 +298,17 @@ public class HiddenApiUtil {
 
     private static void grantRuntimePermission(String[] args) {
         try {
-            Context ctx = HiddenApi.getContext();
+            Context ctx = HiddenApiHelper.getContext();
+            PackageManagerHidden pm = Refine.unsafeCast(ctx.getPackageManager());
             int userId = Integer.parseInt(args[1]);
             String packageName = args[2];
-            UserHandle user = HiddenApi.getUserHandle(userId);
+            UserHandle user = UserHandleHidden.of(userId);
             for (int i = 3; i < args.length; i++) {
                 String[] permNames = args[i].split(" ");
                 for (String permName : permNames) {
                     try {
-                        HiddenApi.grantRuntimePermission(ctx.getPackageManager(), packageName, permName, user);
-                    } catch (InvocationTargetException e) {
+                        pm.grantRuntimePermission(packageName, permName, user);
+                    } catch (Exception e) {
                         System.out.println("Failed, skip: " + permName);
                     }
                 }
@@ -147,16 +322,17 @@ public class HiddenApiUtil {
 
     private static void revokeRuntimePermission(String[] args) {
         try {
-            Context ctx = HiddenApi.getContext();
+            Context ctx = HiddenApiHelper.getContext();
+            PackageManagerHidden pm = Refine.unsafeCast(ctx.getPackageManager());
             int userId = Integer.parseInt(args[1]);
             String packageName = args[2];
-            UserHandle user = HiddenApi.getUserHandle(userId);
+            UserHandle user = UserHandleHidden.of(userId);
             for (int i = 3; i < args.length; i++) {
                 String[] permNames = args[i].split(" ");
                 for (String permName : permNames) {
                     try {
-                        HiddenApi.revokeRuntimePermission(ctx.getPackageManager(), packageName, permName, user);
-                    } catch (InvocationTargetException e) {
+                        pm.revokeRuntimePermission(packageName, permName, user);
+                    } catch (Exception e) {
                         System.out.println("Failed, skip: " + permName);
                     }
                 }
@@ -171,12 +347,12 @@ public class HiddenApiUtil {
     @SuppressLint("ServiceCast")
     private static void setOpsMode(String[] args) {
         try {
-            Context ctx = HiddenApi.getContext();
-            PackageManager packageManager = ctx.getPackageManager();
+            Context ctx = HiddenApiHelper.getContext();
+            PackageManagerHidden packageManager = Refine.unsafeCast(ctx.getPackageManager());
             AppOpsManagerHidden appOpsManager = (AppOpsManagerHidden) ctx.getSystemService(Context.APP_OPS_SERVICE);
             int userId = Integer.parseInt(args[1]);
             String packageName = args[2];
-            PackageInfo packageInfo = HiddenApi.getPackageInfoAsUser(packageManager, packageName, PackageManager.GET_PERMISSIONS, userId);
+            PackageInfo packageInfo = packageManager.getPackageInfoAsUser(packageName, PackageManager.GET_PERMISSIONS, userId);
             StringBuilder stringBuilder = new StringBuilder();
             for (int i = 3; i < args.length; i++) {
                 stringBuilder.append(args[i].trim());

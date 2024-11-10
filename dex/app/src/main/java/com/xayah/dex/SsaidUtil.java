@@ -1,6 +1,9 @@
 package com.xayah.dex;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManagerHidden;
 import android.os.Build;
 import android.os.HandlerThread;
 import android.os.Process;
@@ -11,6 +14,8 @@ import com.android.providers.settings.SettingsStateApi31;
 
 import java.io.File;
 import java.util.Objects;
+
+import dev.rikka.tools.refine.Refine;
 
 public class SsaidUtil {
     private static final String SSAID_USER_KEY = "userkey";
@@ -56,10 +61,13 @@ public class SsaidUtil {
 
     private static void onGet(String[] args) {
         try {
-            Context ctx = HiddenApi.getContext();
+            Context ctx = HiddenApiHelper.getContext();
+            PackageManager pm = ctx.getPackageManager();
+            PackageManagerHidden pmHidden = Refine.unsafeCast(pm);
             int userId = Integer.parseInt(args[1]);
             String packageName = args[2];
-            int uid = HiddenApi.getPackageUid(ctx.getPackageManager(), packageName, 0, userId);
+            PackageInfo packageInfo = pmHidden.getPackageInfoAsUser(packageName, 0, userId);
+            int uid = packageInfo.applicationInfo.uid;
             SettingsState settingsState = getSettingsState(userId);
             System.out.println(settingsState.getSettingLocked(getName(packageName, uid)).getValue());
             System.exit(0);
@@ -72,10 +80,13 @@ public class SsaidUtil {
 
     private static void onSet(String[] args) {
         try {
-            Context ctx = HiddenApi.getContext();
+            Context ctx = HiddenApiHelper.getContext();
+            PackageManager pm = ctx.getPackageManager();
+            PackageManagerHidden pmHidden = Refine.unsafeCast(pm);
             int userId = Integer.parseInt(args[1]);
             String packageName = args[2];
-            int uid = HiddenApi.getPackageUid(ctx.getPackageManager(), packageName, 0, userId);
+            PackageInfo packageInfo = pmHidden.getPackageInfoAsUser(packageName, 0, userId);
+            int uid = packageInfo.applicationInfo.uid;
             String ssaid = args[3];
             SettingsState settingsState = getSettingsState(userId);
             settingsState.insertSettingLocked(getName(packageName, uid), ssaid, null, true, packageName);
