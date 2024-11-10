@@ -167,6 +167,12 @@ interface PackageDao {
 
     @Query(
         "SELECT * FROM PackageEntity WHERE" +
+                " indexInfo_opType = :opType"
+    )
+    fun queryPackagesFlow(opType: OpType): Flow<List<PackageEntity>>
+
+    @Query(
+        "SELECT * FROM PackageEntity WHERE" +
                 " indexInfo_opType = :opType AND indexInfo_cloud = :cloud AND indexInfo_backupDir = :backupDir"
     )
     fun queryPackagesFlow(opType: OpType, cloud: String, backupDir: String): Flow<List<PackageEntity>>

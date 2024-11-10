@@ -382,4 +382,6 @@
     <string name="args_restored_at">恢復于%1$s</string>
     <string name="task_details">任務詳情</string>
     <string name="visit_details">查看詳情</string>
+    <string name="apps_which_have_backups">存在備份</string>
+    <string name="apps_which_have_no_backups">不存在備份</string>
 </resources>

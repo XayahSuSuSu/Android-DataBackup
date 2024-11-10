@@ -393,4 +393,6 @@
     <string name="args_restored_at">Restored at %1$s</string>
     <string name="task_details">Task details</string>
     <string name="visit_details">Visit details</string>
+    <string name="apps_which_have_backups">Apps which have backups</string>
+    <string name="apps_which_have_no_backups">Apps which have no backups</string>
 </resources>

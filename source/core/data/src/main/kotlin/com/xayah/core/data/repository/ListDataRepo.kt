@@ -7,7 +7,6 @@ import com.xayah.core.model.SortType
 import com.xayah.core.model.Target
 import com.xayah.core.model.UserInfo
 import com.xayah.core.util.module.combine
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -37,16 +36,16 @@ class ListDataRepo @Inject constructor(
 
     // Apps
     private lateinit var showDataItemsSheet: MutableStateFlow<Boolean>
-    private lateinit var showSystemApps: MutableStateFlow<Boolean>
+    private lateinit var filters: MutableStateFlow<Filters>
     private lateinit var userIndex: MutableStateFlow<Int>
     private lateinit var userList: Flow<List<UserInfo>>
     private lateinit var userMap: Flow<Map<Int, Long>>
     private lateinit var appList: Flow<List<App>>
+    private lateinit var pkgUserSet: Flow<Set<String>> // "${pkgName}-${userId}"
 
     // Files
     private lateinit var fileList: Flow<List<File>>
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun initialize(target: Target, opType: OpType, cloudName: String, backupDir: String) {
         when (target) {
             Target.Apps -> {
@@ -66,13 +65,32 @@ class ListDataRepo @Inject constructor(
                 }
 
                 showDataItemsSheet = MutableStateFlow(false)
-                showSystemApps = MutableStateFlow(false)
+                filters = MutableStateFlow(
+                    Filters(
+                        cloud = cloudName,
+                        backupDir = backupDir,
+                        showSystemApps = false,
+                        hasBackups = true,
+                        hasNoBackups = true,
+                        installedApps = true,
+                        notInstalledApps = true,
+                    )
+                )
                 userIndex = MutableStateFlow(0)
                 userList = usersRepo.getUsers(opType)
                 userMap = usersRepo.getUsersMap(opType, cloudName, backupDir)
 
                 listData = getAppListData()
-                appList = appsRepo.getApps(opType = opType, listData = listData, refIds = refIds, labelIds = labelIds, cloudName = cloudName, backupDir = backupDir)
+                pkgUserSet = when (opType) {
+                    OpType.BACKUP -> {
+                        appsRepo.getBackups(filters)
+                    }
+
+                    OpType.RESTORE -> {
+                        appsRepo.getInstalledApps(userList)
+                    }
+                }
+                appList = appsRepo.getApps(opType = opType, listData = listData, pkgUserSet = pkgUserSet, refIds = refIds, labelIds = labelIds, cloudName = cloudName, backupDir = backupDir)
             }
 
             Target.Files -> {
@@ -107,12 +125,12 @@ class ListDataRepo @Inject constructor(
         isUpdating,
         labelIds,
         showDataItemsSheet,
-        showSystemApps,
+        filters,
         userIndex,
         userList,
         userMap,
-    ) { s, t, sQuery, sFSheet, sIndex, sType, iUpdating, lIds, sDISheet, sSystemApps, uIndex, uList, uMap ->
-        ListData.Apps(s, t, sQuery, sFSheet, sIndex, sType, iUpdating, lIds, sDISheet, sSystemApps, uIndex, uList, uMap)
+    ) { s, t, sQuery, sFSheet, sIndex, sType, iUpdating, lIds, sDISheet, filters, uIndex, uList, uMap ->
+        ListData.Apps(s, t, sQuery, sFSheet, sIndex, sType, iUpdating, lIds, sDISheet, filters, uIndex, uList, uMap)
     }
 
     private fun getFileListData(): Flow<ListData.Files> = combine(
@@ -134,8 +152,8 @@ class ListDataRepo @Inject constructor(
 
     fun getFileList(): Flow<List<File>> = fileList
 
-    suspend fun setShowSystemApps(block: (Boolean) -> Boolean) {
-        showSystemApps.emit(block(showSystemApps.value))
+    suspend fun setFilters(block: (Filters) -> Filters) {
+        filters.emit(block(filters.value))
     }
 
     suspend fun setSortIndex(block: (Int) -> Int) {
@@ -175,6 +193,16 @@ class ListDataRepo @Inject constructor(
     }
 }
 
+data class Filters(
+    val cloud: String,
+    val backupDir: String,
+    val showSystemApps: Boolean,
+    val hasBackups: Boolean,
+    val hasNoBackups: Boolean,
+    val installedApps: Boolean,
+    val notInstalledApps: Boolean,
+)
+
 sealed class ListData(
     open val selected: Long,
     open val total: Long,
@@ -195,7 +223,7 @@ sealed class ListData(
         override val isUpdating: Boolean,
         override val labelIds: Set<Long>,
         val showDataItemsSheet: Boolean,
-        val showSystemApps: Boolean,
+        val filters: Filters,
         val userIndex: Int,
         val userList: List<UserInfo>,
         val userMap: Map<Int, Long>,
