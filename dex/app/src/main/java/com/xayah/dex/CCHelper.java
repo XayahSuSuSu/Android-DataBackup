@@ -8176,7 +8176,7 @@ public class CCHelper {
                     String[] set = line.split("\t");
                     String key = set[0];
                     String value = set[1];
-                    dict = dict.replaceAll(key, value);
+                    dict = dict.replaceAll("\t" + key, "\t" + value);
                 }
             }
         }
