@@ -8109,8 +8109,6 @@ public class CCHelper {
             """;
 
     /**
-     * Added: 臺 -> 台
-     *
      * @see <a href="https://github.com/BYVoid/OpenCC/blob/71cb906e0880dcb88d0dd8f92a3460ba853a4fe8/data/dictionary/TWVariants.txt">TWVariants.txt</a>
      */
     private static final String TW_VARIANTS = """
@@ -8153,25 +8151,33 @@ public class CCHelper {
             鮎	鯰
             麪	麵
             齶	顎
+            """;
+
+    private static final String TW_REVISION = """
             臺	台
+            志	誌
+            鍾	鐘
+            盡	儘
             """;
 
     CCHelper() {
-        initializeMap(ST_CHARACTERS, TW_VARIANTS, st);
-        initializeMap(TS_CHARACTERS, null, ts);
+        initializeMap(ST_CHARACTERS, st, TW_VARIANTS, TW_REVISION);
+        initializeMap(TS_CHARACTERS, ts);
     }
 
     private HashMap<String, String> st = new HashMap<>();
     private HashMap<String, String> ts = new HashMap<>();
 
-    void initializeMap(String dict, String variants, HashMap<String, String> map) {
-        if (variants != null) {
-            String[] lines = variants.trim().split("\n");
-            for (String line : lines) {
-                String[] set = line.split("\t");
-                String key = set[0];
-                String value = set[1];
-                dict = dict.replaceAll(key, value);
+    void initializeMap(String dict, HashMap<String, String> map, String... revision) {
+        for (String r : revision) {
+            if (r != null) {
+                String[] lines = r.trim().split("\n");
+                for (String line : lines) {
+                    String[] set = line.split("\t");
+                    String key = set[0];
+                    String value = set[1];
+                    dict = dict.replaceAll(key, value);
+                }
             }
         }
         String[] lines = dict.trim().split("\n");
