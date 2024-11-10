@@ -382,4 +382,6 @@
     <string name="args_backed_up_at">Backup feito em %1$s</string>
     <string name="args_restored_at">Restaurado em %1$s</string>
     <string name="visit_details">Detalhes da visita</string>
+    <string name="apps_which_have_backups">Apps que possuem backups</string>
+    <string name="apps_which_have_no_backups">Apps que não possuem backups</string>
 </resources>
