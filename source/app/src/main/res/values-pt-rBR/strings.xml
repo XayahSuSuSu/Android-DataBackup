@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="backup_dir">Diretório de backup</string>
     <string name="compression_type">Tipo de compressão</string>
-    <string name="grant_root_access">Conceda acesso root</string>
+    <string name="grant_root_access">Conceder acesso Root</string>
     <string name="release_prebuilt_binaries">Liberar binários pré-construídos</string>
     <string name="application_desc">Obtenha informações do pacote do app, usada para gerar lista de backup e obter o tamanho dos dados do app.</string>
     <string name="data_size">Tamanho dos dados</string>
@@ -384,4 +384,7 @@
     <string name="visit_details">Detalhes da visita</string>
     <string name="apps_which_have_backups">Apps que possuem backups</string>
     <string name="apps_which_have_no_backups">Apps que não possuem backups</string>
+    <string name="no_labels_here">Não há rótulos aqui.</string>
+    <string name="backup_configs">Config. de backup</string>
+    <string name="backup_configs_desc">Exportar configurações para o diretório de backup</string>
 </resources>
