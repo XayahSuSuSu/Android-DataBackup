@@ -35,7 +35,7 @@ class MediumBackupUtil @Inject constructor(
     private val cloudRepository: CloudRepository,
 ) {
     companion object {
-        private val TAG = this::class.java.simpleName
+        private const val TAG = "MediumBackupUtil"
     }
 
     private fun log(onMsg: () -> String): String = run {

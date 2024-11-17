@@ -19,7 +19,7 @@ class CommonBackupUtil @Inject constructor(
     private val rootService: RemoteRootService,
 ) {
     companion object {
-        private val TAG = this::class.java.simpleName
+        private const val TAG = "CommonBackupUtil"
     }
 
     private fun log(onMsg: () -> String): String = run {

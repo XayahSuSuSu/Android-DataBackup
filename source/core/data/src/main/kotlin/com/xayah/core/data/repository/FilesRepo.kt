@@ -40,7 +40,7 @@ class FilesRepo @Inject constructor(
     private val cloudRepo: CloudRepository,
 ) {
     companion object {
-        private val TAG = this::class.simpleName!!
+        private const val TAG = "FilesRepo"
     }
 
     private fun log(block: () -> String): String = block().also { LogUtil.log { TAG to it } }

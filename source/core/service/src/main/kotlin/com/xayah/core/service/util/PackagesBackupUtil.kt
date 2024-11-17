@@ -42,7 +42,7 @@ class PackagesBackupUtil @Inject constructor(
     private val cloudRepository: CloudRepository,
 ) {
     companion object {
-        private val TAG = this::class.java.simpleName
+        private const val TAG = "PackagesBackupUtil"
     }
 
     private fun log(onMsg: () -> String): String = run {
