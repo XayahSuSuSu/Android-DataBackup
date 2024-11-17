@@ -132,10 +132,9 @@ fun PackageIcons(
             if (index == packages.size - 1) break
             PackageIconImage(
                 packageName = packages[index].packageName,
-                inCircleShape = true,
-                fromLocal = true,
-                size = size,
                 shape = ClippedCircleShape,
+                inCircleShape = true,
+                size = size,
             )
         }
 
@@ -144,7 +143,6 @@ fun PackageIcons(
             PackageIconImage(
                 packageName = packages.last().packageName,
                 inCircleShape = true,
-                fromLocal = true,
                 size = size,
             )
         } else if (packages.size > maxDisplayNum) {

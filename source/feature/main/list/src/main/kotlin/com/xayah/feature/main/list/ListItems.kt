@@ -146,7 +146,7 @@ fun AppItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)
         ) {
-            PackageIconImage(packageName = packageName, size = SizeTokens.Level32, fromLocal = opType == OpType.RESTORE)
+            PackageIconImage(packageName = packageName, size = SizeTokens.Level32)
 
             Column(modifier = Modifier.weight(1f)) {
                 TitleLargeText(text = label.ifEmpty { stringResource(id = R.string.unknown) }, maxLines = 1)
