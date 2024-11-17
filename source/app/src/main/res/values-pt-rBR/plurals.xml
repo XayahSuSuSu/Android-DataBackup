@@ -7,8 +7,8 @@
     </plurals>
     <plurals name="num_minutes_ago">
         <item quantity="one"><xliff:g id="count">%d</xliff:g> min</item>
-        <item quantity="many"><xliff:g id="count">%d</xliff:g> mins</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> mins</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> min</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> min</item>
     </plurals>
     <plurals name="items">
         <item quantity="one"><xliff:g id="count">%d</xliff:g> item</item>
