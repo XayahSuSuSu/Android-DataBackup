@@ -111,7 +111,7 @@ fun PackageIconImage(icon: ImageVector? = null, packageName: String, shape: Shap
                     contentDescription = null,
                     tint = ThemedColorSchemeKeyTokens.Primary.value
                 )
-            } else if (iconForeground != null) {
+            } else {
                 AsyncImage(
                     modifier = Modifier
                         .size(sizeForeground),
