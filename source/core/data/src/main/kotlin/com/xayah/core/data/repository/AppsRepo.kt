@@ -28,6 +28,7 @@ import com.xayah.core.model.DefaultPreserveId
 import com.xayah.core.model.OpType
 import com.xayah.core.model.SettingsData
 import com.xayah.core.model.UserInfo
+import com.xayah.core.model.database.LabelAppCrossRefEntity
 import com.xayah.core.model.database.PackageDataStates
 import com.xayah.core.model.database.PackageDataStatesEntity
 import com.xayah.core.model.database.PackageDataStats
@@ -85,24 +86,26 @@ class AppsRepo @Inject constructor(
         set
     }
 
+    fun getApp(id: Long) = appsDao.queryPackageFlow(id).flowOn(defaultDispatcher)
+
     fun getApps(
         opType: OpType,
         listData: Flow<ListData>,
         pkgUserSet: Flow<Set<String>>,
-        refIds: Flow<List<Long>>,
-        labelIds: Flow<Set<Long>>,
+        refs: Flow<List<LabelAppCrossRefEntity>>,
+        labels: Flow<Set<String>>,
         cloudName: String,
         backupDir: String
     ): Flow<List<App>> = combine(
         listData,
         pkgUserSet,
-        refIds,
-        labelIds,
+        refs,
+        labels,
         when (opType) {
             OpType.BACKUP -> appsDao.queryPackagesFlow(opType = opType, blocked = false)
             OpType.RESTORE -> appsDao.queryPackagesFlow(opType = opType, cloud = cloudName, backupDir = backupDir)
         }
-    ) { lData, pSet, rIds, lIds, apps ->
+    ) { lData, pSet, lRefs, lLabels, apps ->
         val data = lData.castTo<ListData.Apps>()
         apps.asSequence()
             .filter(packageRepo.getKeyPredicateNew(key = data.searchQuery))
@@ -112,7 +115,7 @@ class AppsRepo @Inject constructor(
             .filter(packageRepo.getInstalledPredicate(value = data.filters.installedApps, pkgUserSet = pSet))
             .filter(packageRepo.getNotInstalledPredicate(value = data.filters.notInstalledApps, pkgUserSet = pSet))
             .filter(packageRepo.getUserIdPredicateNew(userId = data.userList.getOrNull(data.userIndex)?.id))
-            .filter { if (lIds.isNotEmpty()) it.id in rIds else true }
+            .filter { if (lLabels.isNotEmpty()) lRefs.find { ref -> it.packageName == ref.packageName && it.userId == ref.userId && it.preserveId == ref.preserveId } != null else true }
             .sortedWith(packageRepo.getSortComparatorNew(sortIndex = data.sortIndex, sortType = data.sortType))
             .sortedByDescending { p -> p.extraInfo.activated }.toList()
             .map(PackageEntity::asExternalModel)

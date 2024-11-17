@@ -34,6 +34,7 @@
     <item name="protect" type="string" />
     <item name="protect_desc" type="string" />
     <item name="delete_desc" type="string" />
+    <item name="no_labels_here" type="string" />
 
     <item name="ic_rounded_person" type="drawable" />
 </resources>

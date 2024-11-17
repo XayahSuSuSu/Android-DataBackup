@@ -10,6 +10,7 @@ import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataType
 import com.xayah.core.model.File
 import com.xayah.core.model.OpType
+import com.xayah.core.model.database.LabelFileCrossRefEntity
 import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.MediaExtraInfo
 import com.xayah.core.model.database.MediaIndexInfo
@@ -44,26 +45,28 @@ class FilesRepo @Inject constructor(
 
     private fun log(block: () -> String): String = block().also { LogUtil.log { TAG to it } }
 
+    fun getFile(id: Long) = filesDao.queryFileFlow(id)
+
     fun getFiles(
         opType: OpType,
         listData: Flow<ListData>,
-        refIds: Flow<List<Long>>,
-        labelIds: Flow<Set<Long>>,
+        refs: Flow<List<LabelFileCrossRefEntity>>,
+        labels: Flow<Set<String>>,
         cloudName: String,
         backupDir: String
     ): Flow<List<File>> = combine(
         listData,
-        refIds,
-        labelIds,
+        refs,
+        labels,
         when (opType) {
             OpType.BACKUP -> filesDao.queryFilesFlow(opType = opType, existed = true, blocked = false)
             OpType.RESTORE -> filesDao.queryFilesFlow(opType = opType, cloud = cloudName, backupDir = backupDir)
         }
-    ) { lData, rIds, lIds, files ->
+    ) { lData, lRefs, lLabels, files ->
         val data = lData.castTo<ListData.Files>()
         files.asSequence()
             .filter(mediaRepo.getKeyPredicateNew(key = data.searchQuery))
-            .filter { if (lIds.isNotEmpty()) it.id in rIds else true }
+            .filter { if (lLabels.isNotEmpty()) lRefs.find { ref -> it.path == ref.path && it.preserveId == ref.preserveId } != null else true }
             .sortedWith(mediaRepo.getSortComparatorNew(sortIndex = data.sortIndex, sortType = data.sortType))
             .sortedByDescending { p -> p.extraInfo.activated }.toList()
             .map(MediaEntity::asExternalModel)

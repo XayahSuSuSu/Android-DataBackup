@@ -395,4 +395,5 @@
     <string name="visit_details">Visit details</string>
     <string name="apps_which_have_backups">Apps which have backups</string>
     <string name="apps_which_have_no_backups">Apps which have no backups</string>
+    <string name="no_labels_here">No labels here.</string>
 </resources>

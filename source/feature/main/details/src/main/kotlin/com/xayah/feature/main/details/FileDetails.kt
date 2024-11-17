@@ -49,8 +49,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.xayah.core.model.OpType
-import com.xayah.core.model.database.FileWithLabels
-import com.xayah.core.model.database.LabelWithFileIds
+import com.xayah.core.model.database.LabelEntity
+import com.xayah.core.model.database.LabelFileCrossRefEntity
 import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.ui.component.ActionSegmentedButton
 import com.xayah.core.ui.component.AnimatedModalDropdownMenu
@@ -82,8 +82,8 @@ internal fun FileDetails(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     uiState: DetailsUiState.Success.File,
     onAddLabel: (String) -> Unit,
-    onDeleteLabel: (Long) -> Unit,
-    onSelectLabel: (Boolean, Long, Long) -> Unit,
+    onDeleteLabel: (String) -> Unit,
+    onSelectLabel: (Boolean, LabelFileCrossRefEntity?) -> Unit,
     onBlock: (Boolean) -> Unit,
     onProtect: () -> Unit,
     onDelete: () -> Unit
@@ -97,10 +97,10 @@ internal fun FileDetails(
             }
         }
     }
-    val file = uiState.fileWithLabels.file
-    val opType = uiState.fileWithLabels.file.indexInfo.opType
+    val file = uiState.file
+    val opType = file.indexInfo.opType
 
-    LabelsBottomSheet(isShow, sheetState, onDismissRequest, uiState.fileWithLabels, uiState.labelWithFileIds, onAddLabel, onDeleteLabel, onSelectLabel)
+    LabelsBottomSheet(isShow, sheetState, onDismissRequest, file, uiState.refs, uiState.labels, onAddLabel, onDeleteLabel, onSelectLabel)
 
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(Modifier.height(SizeTokens.Level12))
@@ -111,7 +111,7 @@ internal fun FileDetails(
 
         HeadlineMediumText(text = file.name, color = ThemedColorSchemeKeyTokens.OnSurface.value)
         BodyLargeText(text = file.path, color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value)
-        LabelsFlow(opType = opType, fileWithLabels = uiState.fileWithLabels) { isShow = true }
+        LabelsFlow(opType = opType, file = file, refs = uiState.refs) { isShow = true }
 
         Spacer(Modifier.height(SizeTokens.Level12))
 
@@ -125,7 +125,7 @@ internal fun FileDetails(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun LabelsFlow(opType: OpType, fileWithLabels: FileWithLabels, onAdd: () -> Unit) {
+private fun LabelsFlow(opType: OpType, file: MediaEntity, refs: List<LabelFileCrossRefEntity>, onAdd: () -> Unit) {
     FlowRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -135,7 +135,7 @@ private fun LabelsFlow(opType: OpType, fileWithLabels: FileWithLabels, onAdd: ()
     ) {
         when (opType) {
             OpType.BACKUP -> {
-                if (fileWithLabels.file.extraInfo.blocked) {
+                if (file.extraInfo.blocked) {
                     FilterChip(
                         onClick = { },
                         selected = true,
@@ -146,7 +146,7 @@ private fun LabelsFlow(opType: OpType, fileWithLabels: FileWithLabels, onAdd: ()
             }
 
             OpType.RESTORE -> {
-                if (fileWithLabels.file.preserveId != 0L) {
+                if (file.preserveId != 0L) {
                     FilterChip(
                         onClick = { },
                         selected = true,
@@ -157,7 +157,7 @@ private fun LabelsFlow(opType: OpType, fileWithLabels: FileWithLabels, onAdd: ()
             }
         }
 
-        fileWithLabels.labels.forEach { item ->
+        refs.forEach { item ->
             AssistChip(
                 onClick = { },
                 label = { Text(item.label) },
@@ -175,71 +175,83 @@ private fun LabelsBottomSheet(
     isShow: Boolean,
     sheetState: SheetState,
     onDismissRequest: () -> Unit,
-    fileWithLabels: FileWithLabels,
-    labelWithFileIds: List<LabelWithFileIds>,
+    file: MediaEntity,
+    refs: List<LabelFileCrossRefEntity>,
+    labels: List<LabelEntity>,
     onAddLabel: (String) -> Unit,
-    onDeleteLabel: (Long) -> Unit,
-    onSelectLabel: (Boolean, Long, Long) -> Unit,
+    onDeleteLabel: (String) -> Unit,
+    onSelectLabel: (Boolean, LabelFileCrossRefEntity?) -> Unit,
 ) {
     val context = LocalContext.current
     val dialogState = LocalSlotScope.current!!.dialogSlot
     if (isShow) {
         ModalBottomSheet(onDismissRequest = onDismissRequest, sheetState = sheetState) {
-            val selectedIds by remember(fileWithLabels.labels) { mutableStateOf(fileWithLabels.labels.map { it.id }) }
+            val selectedLabels by remember(refs) { mutableStateOf(refs.map { it.label }) }
 
             Title(text = stringResource(id = R.string.labels))
-            FlowRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .paddingHorizontal(SizeTokens.Level24),
-                horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
-                verticalArrangement = Arrangement.spacedBy(-SizeTokens.Level8)
-            ) {
-                labelWithFileIds.forEach { item ->
-                    var expanded by remember { mutableStateOf(false) }
-                    Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
-                        val interactionSource = remember { MutableInteractionSource() }
-                        val selected by remember(item.label.id, selectedIds) { mutableStateOf(item.label.id in selectedIds) }
-                        Box {
-                            FilterChip(
-                                onClick = {},
-                                label = { Text(item.label.label) },
-                                selected = selected,
-                                leadingIcon = if (selected) {
-                                    {
-                                        Icon(
-                                            imageVector = Icons.Filled.Done,
-                                            contentDescription = null,
-                                            modifier = Modifier.size(FilterChipDefaults.IconSize)
-                                        )
-                                    }
-                                } else {
-                                    null
-                                },
-                                interactionSource = interactionSource,
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .matchParentSize()
-                                    .combinedClickable(
-                                        onLongClick = { expanded = true },
-                                        onClick = { onSelectLabel(selected, item.label.id, fileWithLabels.file.id) },
-                                        interactionSource = interactionSource,
-                                        indication = null,
-                                    )
-                            )
-                        }
 
-                        AnimatedModalDropdownMenu(
-                            targetState = null,
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = stringResource(id = R.string.delete),
-                                leadingIcon = Icons.Rounded.DeleteForever,
-                                onClick = { onDeleteLabel(item.label.id) },
-                            )
+            if (labels.isEmpty()) {
+                BodyLargeText(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .paddingHorizontal(SizeTokens.Level24),
+                    text = stringResource(R.string.no_labels_here),
+                    color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value
+                )
+            } else {
+                FlowRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .paddingHorizontal(SizeTokens.Level24),
+                    horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
+                    verticalArrangement = Arrangement.spacedBy(-SizeTokens.Level8)
+                ) {
+                    labels.forEach { item ->
+                        var expanded by remember { mutableStateOf(false) }
+                        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+                            val interactionSource = remember { MutableInteractionSource() }
+                            val selected by remember(item.label, selectedLabels) { mutableStateOf(item.label in selectedLabels) }
+                            Box {
+                                FilterChip(
+                                    onClick = {},
+                                    label = { Text(item.label) },
+                                    selected = selected,
+                                    leadingIcon = if (selected) {
+                                        {
+                                            Icon(
+                                                imageVector = Icons.Filled.Done,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                            )
+                                        }
+                                    } else {
+                                        null
+                                    },
+                                    interactionSource = interactionSource,
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .matchParentSize()
+                                        .combinedClickable(
+                                            onLongClick = { expanded = true },
+                                            onClick = { onSelectLabel(selected, LabelFileCrossRefEntity(item.label, file.path, file.preserveId)) },
+                                            interactionSource = interactionSource,
+                                            indication = null,
+                                        )
+                                )
+                            }
+
+                            AnimatedModalDropdownMenu(
+                                targetState = null,
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = stringResource(id = R.string.delete),
+                                    leadingIcon = Icons.Rounded.DeleteForever,
+                                    onClick = { onDeleteLabel(item.label) },
+                                )
+                            }
                         }
                     }
                 }

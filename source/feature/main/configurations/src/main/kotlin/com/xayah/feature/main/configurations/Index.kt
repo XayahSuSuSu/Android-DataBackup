@@ -5,6 +5,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Block
+import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Cloud
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,6 +38,9 @@ fun PageConfigurations() {
     val blockedFilesState by viewModel.blockedFilesState.collectAsStateWithLifecycle()
     val accounts by viewModel.accounts.collectAsStateWithLifecycle()
     val files by viewModel.files.collectAsStateWithLifecycle()
+    val labels by viewModel.labels.collectAsStateWithLifecycle()
+    val labelAppRefs by viewModel.labelAppRefs.collectAsStateWithLifecycle()
+    val labelFileRefs by viewModel.labelFileRefs.collectAsStateWithLifecycle()
 
     ConfigurationsScaffold(
         scrollBehavior = scrollBehavior, snackbarHostState = viewModel.snackbarHostState,
@@ -81,6 +85,14 @@ fun PageConfigurations() {
             checked = uiState.fileSelected,
         ) {
             viewModel.emitStateOnMain(uiState.copy(selectedCount = if (it) uiState.selectedCount - 1 else uiState.selectedCount + 1, fileSelected = it.not()))
+        }
+        Checkable(
+            icon = Icons.Outlined.BookmarkBorder,
+            title = stringResource(id = R.string.labels),
+            value = (labels.size + labelAppRefs.size + labelFileRefs.size).toString(),
+            checked = uiState.labelSelected,
+        ) {
+            viewModel.emitStateOnMain(uiState.copy(selectedCount = if (it) uiState.selectedCount - 1 else uiState.selectedCount + 1, labelSelected = it.not()))
         }
     }
 }

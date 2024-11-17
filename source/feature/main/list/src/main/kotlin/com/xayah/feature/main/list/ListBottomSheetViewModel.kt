@@ -36,7 +36,7 @@ class ListBottomSheetViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val listDataRepo: ListDataRepo,
     private val appsRepo: AppsRepo,
-    private val cloudRepo: CloudRepository,
+    cloudRepo: CloudRepository,
     labelsRepo: LabelsRepo
 ) : ViewModel() {
     private val target: Target = Target.valueOf(savedStateHandle.get<String>(MainRoutes.ARG_TARGET)!!.decodeURL().trim())
@@ -55,8 +55,8 @@ class ListBottomSheetViewModel @Inject constructor(
                 showFilterSheet = listData.showFilterSheet,
                 sortIndex = listData.sortIndex,
                 sortType = listData.sortType,
-                labels = labels,
-                labelIds = listData.labelIds,
+                labelEntities = labels,
+                labels = listData.labels,
                 showDataItemsSheet = listData.showDataItemsSheet,
                 filters = listData.filters,
                 appList = aList,
@@ -75,8 +75,8 @@ class ListBottomSheetViewModel @Inject constructor(
                 showFilterSheet = listData.showFilterSheet,
                 sortIndex = listData.sortIndex,
                 sortType = listData.sortType,
-                labels = labels,
-                labelIds = listData.labelIds,
+                labelEntities = labels,
+                labels = listData.labels,
                 fileList = fList,
             )
         }
@@ -123,14 +123,14 @@ class ListBottomSheetViewModel @Inject constructor(
         }
     }
 
-    fun addOrRemoveLabelId(id: Long) {
+    fun addOrRemoveLabel(label: String) {
         viewModelScope.launchOnDefault {
             if (uiState.value is Success) {
                 val state = uiState.value.castTo<Success>()
-                if (id in state.labelIds) {
-                    listDataRepo.removeLabelId(id)
+                if (label in state.labels) {
+                    listDataRepo.removeLabel(label)
                 } else {
-                    listDataRepo.addLabelId(id)
+                    listDataRepo.addLabel(label)
                 }
             }
         }
@@ -153,30 +153,30 @@ sealed interface ListBottomSheetUiState {
         open val showFilterSheet: Boolean,
         open val sortIndex: Int,
         open val sortType: SortType,
-        open val labels: List<LabelEntity>,
-        open val labelIds: Set<Long>,
+        open val labelEntities: List<LabelEntity>,
+        open val labels: Set<String>,
     ) : ListBottomSheetUiState {
         data class Apps(
             override val opType: OpType,
             override val showFilterSheet: Boolean,
             override val sortIndex: Int,
             override val sortType: SortType,
-            override val labels: List<LabelEntity>,
-            override val labelIds: Set<Long>,
+            override val labelEntities: List<LabelEntity>,
+            override val labels: Set<String>,
             val showDataItemsSheet: Boolean,
             val filters: Filters,
             val appList: List<App>,
             val clouds: List<CloudEntity>,
-        ) : Success(opType, showFilterSheet, sortIndex, sortType, labels, labelIds)
+        ) : Success(opType, showFilterSheet, sortIndex, sortType, labelEntities, labels)
 
         data class Files(
             override val opType: OpType,
             override val showFilterSheet: Boolean,
             override val sortIndex: Int,
             override val sortType: SortType,
-            override val labels: List<LabelEntity>,
-            override val labelIds: Set<Long>,
+            override val labelEntities: List<LabelEntity>,
+            override val labels: Set<String>,
             val fileList: List<File>,
-        ) : Success(opType, showFilterSheet, sortIndex, sortType, labels, labelIds)
+        ) : Success(opType, showFilterSheet, sortIndex, sortType, labelEntities, labels)
     }
 }

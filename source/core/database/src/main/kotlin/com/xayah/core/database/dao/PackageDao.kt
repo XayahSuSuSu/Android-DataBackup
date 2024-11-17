@@ -160,6 +160,11 @@ interface PackageDao {
             Flow<Map<@MapColumn(columnName = "indexInfo_userId") Int, @MapColumn(columnName = "iCount") Long>>
 
     @Query(
+        "SELECT * FROM PackageEntity WHERE id = :id"
+    )
+    fun queryPackageFlow(id: Long): Flow<PackageEntity?>
+
+    @Query(
         "SELECT * FROM PackageEntity WHERE" +
                 " indexInfo_opType = :opType AND extraInfo_blocked = :blocked"
     )

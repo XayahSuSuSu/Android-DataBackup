@@ -3,6 +3,7 @@ package com.xayah.feature.main.configurations
 import android.content.Context
 import androidx.compose.material3.ExperimentalMaterial3Api
 import com.xayah.core.data.repository.CloudRepository
+import com.xayah.core.data.repository.LabelsRepo
 import com.xayah.core.data.repository.MediaRepository
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.datastore.ConstantUtil
@@ -14,6 +15,9 @@ import com.xayah.core.model.ConfigurationsBlacklist
 import com.xayah.core.model.FileItem
 import com.xayah.core.model.OpType
 import com.xayah.core.model.database.CloudEntity
+import com.xayah.core.model.database.LabelAppCrossRefEntity
+import com.xayah.core.model.database.LabelEntity
+import com.xayah.core.model.database.LabelFileCrossRefEntity
 import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.MediaExtraInfo
 import com.xayah.core.model.database.MediaIndexInfo
@@ -50,6 +54,7 @@ data class IndexUiState(
     val blacklistSelected: Boolean,
     val cloudSelected: Boolean,
     val fileSelected: Boolean,
+    val labelSelected: Boolean,
 ) : UiState
 
 sealed class IndexUiIntent : UiIntent {
@@ -65,13 +70,15 @@ class IndexViewModel @Inject constructor(
     private val packageRepo: PackageRepository,
     private val cloudRepo: CloudRepository,
     private val mediaRepo: MediaRepository,
+    private val labelsRepo: LabelsRepo,
     private val pathUtil: PathUtil,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
     IndexUiState(
-        selectedCount = 3,
+        selectedCount = 4,
         blacklistSelected = true,
         cloudSelected = true,
         fileSelected = true,
+        labelSelected = true,
     )
 ) {
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
@@ -81,6 +88,9 @@ class IndexViewModel @Inject constructor(
                     blacklist = ConfigurationsBlacklist(apps = listOf(), files = listOf()),
                     cloud = listOf(),
                     file = listOf(),
+                    labels = listOf(),
+                    labelAppRefs = listOf(),
+                    labelFileRefs = listOf(),
                 )
                 if (state.blacklistSelected) {
                     val apps = mutableListOf<BlacklistAppItem>()
@@ -100,6 +110,11 @@ class IndexViewModel @Inject constructor(
                 if (state.fileSelected) {
                     config.file = files.value.map { FileItem(it.name, it.path) }
                 }
+                if (state.labelSelected) {
+                    config.labels = labels.value
+                    config.labelAppRefs = labelAppRefs.value
+                    config.labelFileRefs = labelFileRefs.value
+                }
                 rootService.mkdirs(pathUtil.getLocalBackupConfigsDir())
                 val dst = "${pathUtil.getLocalBackupConfigsDir()}/$ConfigsConfigurationsName"
                 rootService.writeJson(data = config, dst = dst).apply {
@@ -118,23 +133,23 @@ class IndexViewModel @Inject constructor(
                 if (rootService.exists(src)) {
                     val config = rootService.readJson<Configurations>(src)
                     val items = mutableListOf<DialogCheckBoxItem<String>>()
-                    runCatching {
-                        val appsCount = config?.blacklist?.apps?.size ?: 0
-                        val filesCount = config?.blacklist?.files?.size ?: 0
-                        if (appsCount + filesCount != 0) {
-                            items.add(
-                                DialogCheckBoxItem(
-                                    enum = ConstantUtil.CONFIGURATIONS_KEY_BLACKLIST,
-                                    title = joinOf(
-                                        context.getString(R.string.blacklist),
-                                        " (${appsCount + filesCount})",
+                    if (config != null) {
+                        runCatching {
+                            val appsCount = config.blacklist.apps.size
+                            val filesCount = config.blacklist.files.size
+                            if (appsCount + filesCount != 0) {
+                                items.add(
+                                    DialogCheckBoxItem(
+                                        enum = ConstantUtil.CONFIGURATIONS_KEY_BLACKLIST,
+                                        title = joinOf(
+                                            context.getString(R.string.blacklist),
+                                            " (${appsCount + filesCount})",
+                                        )
                                     )
                                 )
-                            )
-                        }
-                    }.withLog()
-                    runCatching {
-                        if (config?.cloud != null) {
+                            }
+                        }.withLog()
+                        runCatching {
                             if (config.cloud.isNotEmpty()) {
                                 items.add(
                                     DialogCheckBoxItem(
@@ -143,10 +158,8 @@ class IndexViewModel @Inject constructor(
                                     )
                                 )
                             }
-                        }
-                    }.withLog()
-                    runCatching {
-                        if (config?.file != null) {
+                        }.withLog()
+                        runCatching {
                             if (config.file.isNotEmpty()) {
                                 items.add(
                                     DialogCheckBoxItem(
@@ -158,8 +171,33 @@ class IndexViewModel @Inject constructor(
                                     )
                                 )
                             }
-                        }
-                    }.withLog()
+                        }.withLog()
+                        runCatching {
+                            var size = 0
+                            if (config.labels.isNotEmpty()) {
+                                size += config.labels.size
+                            }
+                            if (config.labelAppRefs.isNotEmpty()) {
+                                size += config.labelAppRefs.size
+                            }
+                            if (config.labelFileRefs.isNotEmpty()) {
+                                size += config.labelFileRefs.size
+                            }
+
+                            if (size != 0) {
+                                items.add(
+                                    DialogCheckBoxItem(
+                                        enum = ConstantUtil.CONFIGURATIONS_KEY_LABEL,
+                                        title = joinOf(
+                                            context.getString(R.string.labels),
+                                            " ($size)",
+                                        )
+                                    )
+                                )
+                            }
+                        }.withLog()
+                    }
+
                     if (items.isEmpty()) {
                         emitEffect(IndexUiEffect.DismissSnackbar)
                         emitEffect(IndexUiEffect.ShowSnackbar(type = SnackbarType.Error, message = context.getString(R.string.config_file_may_be_broken), duration = SnackbarDuration.Short))
@@ -252,6 +290,18 @@ class IndexViewModel @Inject constructor(
                                                 mediaRepo.addMedia(config.file.map { it.path })
                                             }
                                         }
+
+                                        ConstantUtil.CONFIGURATIONS_KEY_LABEL -> {
+                                            if (config?.labels != null) {
+                                                labelsRepo.addLabels(config.labels)
+                                            }
+                                            if (config?.labelAppRefs != null) {
+                                                labelsRepo.addLabelAppCrossRefs(config.labelAppRefs)
+                                            }
+                                            if (config?.labelFileRefs != null) {
+                                                labelsRepo.addLabelFileCrossRefs(config.labelFileRefs)
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -279,4 +329,11 @@ class IndexViewModel @Inject constructor(
 
     private val _files: Flow<List<MediaEntity>> = mediaRepo.queryFlow(opType = OpType.BACKUP, blocked = false).flowOnIO()
     val files: StateFlow<List<MediaEntity>> = _files.stateInScope(listOf())
+
+    private val _labels: Flow<List<LabelEntity>> = labelsRepo.getLabels().flowOnIO()
+    private val _labelAppRefs: Flow<List<LabelAppCrossRefEntity>> = labelsRepo.getAppRefsFlow().flowOnIO()
+    private val _labelFileRefs: Flow<List<LabelFileCrossRefEntity>> = labelsRepo.getFileRefsFlow().flowOnIO()
+    val labels: StateFlow<List<LabelEntity>> = _labels.stateInScope(listOf())
+    val labelAppRefs: StateFlow<List<LabelAppCrossRefEntity>> = _labelAppRefs.stateInScope(listOf())
+    val labelFileRefs: StateFlow<List<LabelFileCrossRefEntity>> = _labelFileRefs.stateInScope(listOf())
 }

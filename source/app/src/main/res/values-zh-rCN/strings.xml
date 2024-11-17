@@ -384,4 +384,5 @@
     <string name="visit_details">查看详情</string>
     <string name="apps_which_have_backups">存在备份</string>
     <string name="apps_which_have_no_backups">不存在备份</string>
+    <string name="no_labels_here">这里没有标签。</string>
 </resources>

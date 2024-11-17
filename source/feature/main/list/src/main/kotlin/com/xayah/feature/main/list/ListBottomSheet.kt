@@ -92,9 +92,9 @@ internal fun ListBottomSheet(
                 filters = uiState.filters,
                 sortIndex = uiState.sortIndex,
                 sortType = uiState.sortType,
+                labelEntities = uiState.labelEntities,
                 labels = uiState.labels,
-                labelIds = uiState.labelIds,
-                onClickLabel = viewModel::addOrRemoveLabelId,
+                onClickLabel = viewModel::addOrRemoveLabel,
                 setFilters = viewModel::setFilters,
                 onSortByType = viewModel::setSortByType,
                 onSortByIndex = viewModel::setSortByIndex,
@@ -124,9 +124,9 @@ internal fun ListBottomSheet(
                 sheetState = sheetState,
                 sortIndex = uiState.sortIndex,
                 sortType = uiState.sortType,
+                labelEntities = uiState.labelEntities,
                 labels = uiState.labels,
-                labelIds = uiState.labelIds,
-                onClickLabel = viewModel::addOrRemoveLabelId,
+                onClickLabel = viewModel::addOrRemoveLabel,
                 onSortByType = viewModel::setSortByType,
                 onSortByIndex = viewModel::setSortByIndex,
                 onDismissRequest = onDismissRequest,
@@ -199,7 +199,7 @@ private fun SourceChips(clouds: List<CloudEntity>, onChanged: (cloud: String, ba
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun LabelsFlow(labels: List<LabelEntity>, labelIds: Set<Long>, onClick: (Long) -> Unit) {
+private fun LabelsFlow(labelEntities: List<LabelEntity>, labels: Set<String>, onClick: (String) -> Unit) {
     FlowRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -207,11 +207,11 @@ private fun LabelsFlow(labels: List<LabelEntity>, labelIds: Set<Long>, onClick: 
         horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level8),
         verticalArrangement = Arrangement.spacedBy(-SizeTokens.Level8)
     ) {
-        labels.forEach { item ->
-            val selected by remember(item.id, labelIds) { mutableStateOf(item.id in labelIds) }
+        labelEntities.forEach { item ->
+            val selected by remember(item.label, labels) { mutableStateOf(item.label in labels) }
             FilterChip(
                 onClick = {
-                    onClick(item.id)
+                    onClick(item.label)
                 },
                 label = { Text(item.label) },
                 selected = selected,
@@ -241,9 +241,9 @@ internal fun AppsFilterSheet(
     filters: Filters,
     sortIndex: Int,
     sortType: SortType,
-    labels: List<LabelEntity>,
-    labelIds: Set<Long>,
-    onClickLabel: (Long) -> Unit,
+    labelEntities: List<LabelEntity>,
+    labels: Set<String>,
+    onClickLabel: (String) -> Unit,
     setFilters: (Filters) -> Unit,
     onSortByType: () -> Unit,
     onSortByIndex: (Int) -> Unit,
@@ -270,9 +270,9 @@ internal fun AppsFilterSheet(
                 }
             }
 
-            if (labels.isNotEmpty()) {
+            if (labelEntities.isNotEmpty()) {
                 Title(text = stringResource(id = R.string.labels))
-                LabelsFlow(labels = labels, labelIds = labelIds, onClick = onClickLabel)
+                LabelsFlow(labelEntities = labelEntities, labels = labels, onClick = onClickLabel)
             }
 
             TitleSort(text = stringResource(id = R.string.sort), sortType = sortType, onSort = onSortByType)
@@ -288,18 +288,18 @@ internal fun FilesFilterSheet(
     sheetState: SheetState,
     sortIndex: Int,
     sortType: SortType,
-    labels: List<LabelEntity>,
-    labelIds: Set<Long>,
-    onClickLabel: (Long) -> Unit,
+    labelEntities: List<LabelEntity>,
+    labels: Set<String>,
+    onClickLabel: (String) -> Unit,
     onSortByType: () -> Unit,
     onSortByIndex: (Int) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
     if (isShow) {
         ModalBottomSheet(onDismissRequest = onDismissRequest, sheetState = sheetState) {
-            if (labels.isNotEmpty()) {
+            if (labelEntities.isNotEmpty()) {
                 Title(text = stringResource(id = R.string.labels))
-                LabelsFlow(labels = labels, labelIds = labelIds, onClick = onClickLabel)
+                LabelsFlow(labelEntities = labelEntities, labels = labels, onClick = onClickLabel)
             }
 
             TitleSort(text = stringResource(id = R.string.sort), sortType = sortType, onSort = onSortByType)
