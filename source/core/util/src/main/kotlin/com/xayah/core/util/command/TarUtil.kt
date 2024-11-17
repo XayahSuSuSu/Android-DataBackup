@@ -8,7 +8,7 @@ import com.xayah.core.util.model.ShellResult
 object Tar {
     private suspend fun execute(vararg args: String): ShellResult = BaseUtil.execute("tar", *args)
 
-    suspend fun compressInCur(usePipe: Boolean, cur: String, src: String, dst: String, extra: String): ShellResult {
+    suspend fun compressInCur(cur: String, src: String, dst: String, extra: String): ShellResult {
         // Move to $cur path.
         BaseUtil.execute("cd", cur)
 
@@ -38,7 +38,7 @@ object Tar {
         return result
     }
 
-    suspend fun compress(usePipe: Boolean, exclusionList: List<String>, h: String, srcDir: String, src: String, dst: String, extra: String): ShellResult =
+    suspend fun compress(exclusionList: List<String>, h: String, srcDir: String, src: String, dst: String, extra: String): ShellResult =
         run {
             val exclusion = exclusionList.trim().map { "--exclude=$it" }.toSpaceString()
             if (extra.isEmpty()) {

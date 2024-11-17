@@ -89,20 +89,18 @@ fun PackageIconImage(icon: ImageVector? = null, packageName: String, shape: Shap
 
     Box(modifier = if (shape != null) Modifier.clip(shape) else Modifier, contentAlignment = Alignment.Center) {
         with(LocalDensity.current) {
-            if (iconBackground != null) {
-                AsyncImage(
-                    modifier = Modifier
-                        .size(size)
-                        .clip(CircleShape)
-                        .scale(1.4f)
-                        .background(ThemedColorSchemeKeyTokens.PrimaryContainer.value),
-                    model = ImageRequest.Builder(context)
-                        .data(iconBackground?.toBitmap(sizeForeground.roundToPx(), sizeForeground.roundToPx(), Bitmap.Config.ARGB_8888))
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = null
-                )
-            }
+            AsyncImage(
+                modifier = Modifier
+                    .size(size)
+                    .clip(CircleShape)
+                    .scale(1.4f)
+                    .background(ThemedColorSchemeKeyTokens.PrimaryContainer.value),
+                model = ImageRequest.Builder(context)
+                    .data(iconBackground?.toBitmap(sizeForeground.roundToPx(), sizeForeground.roundToPx(), Bitmap.Config.ARGB_8888))
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null
+            )
             if (icon != null) {
                 Icon(
                     imageVector = icon,

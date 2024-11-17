@@ -45,7 +45,9 @@ fun PageConfigurations() {
     ConfigurationsScaffold(
         scrollBehavior = scrollBehavior, snackbarHostState = viewModel.snackbarHostState,
         title = stringResource(id = R.string.configurations), actions = {
-            OutlinedButton(enabled = blockedPackagesState.size + blockedFilesState.size + accounts.size + files.size != 0 && uiState.selectedCount != 0, onClick = {
+            OutlinedButton(
+                enabled = blockedPackagesState.size + blockedFilesState.size + accounts.size + files.size + labels.size + labelAppRefs.size + labelFileRefs.size != 0 && uiState.selectedCount != 0,
+                onClick = {
                 viewModel.emitIntentOnIO(IndexUiIntent.Export)
             }) {
                 Text(

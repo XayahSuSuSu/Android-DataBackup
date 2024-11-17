@@ -7,12 +7,8 @@ import com.xayah.core.data.repository.LabelsRepo
 import com.xayah.core.data.repository.MediaRepository
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.datastore.ConstantUtil
-import com.xayah.core.model.BlacklistAppItem
-import com.xayah.core.model.BlacklistFileItem
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.Configurations
-import com.xayah.core.model.ConfigurationsBlacklist
-import com.xayah.core.model.FileItem
 import com.xayah.core.model.OpType
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.LabelAppCrossRefEntity
@@ -30,6 +26,7 @@ import com.xayah.core.model.database.PackageIndexInfo
 import com.xayah.core.model.database.PackageInfo
 import com.xayah.core.model.database.PackageStorageStats
 import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.service.util.CommonBackupUtil
 import com.xayah.core.ui.component.DialogState
 import com.xayah.core.ui.component.select
 import com.xayah.core.ui.material3.SnackbarDuration
@@ -71,6 +68,7 @@ class IndexViewModel @Inject constructor(
     private val cloudRepo: CloudRepository,
     private val mediaRepo: MediaRepository,
     private val labelsRepo: LabelsRepo,
+    private val commonBackupUtil: CommonBackupUtil,
     private val pathUtil: PathUtil,
 ) : BaseViewModel<IndexUiState, IndexUiIntent, IndexUiEffect>(
     IndexUiState(
@@ -84,48 +82,10 @@ class IndexViewModel @Inject constructor(
     override suspend fun onEvent(state: IndexUiState, intent: IndexUiIntent) {
         when (intent) {
             is IndexUiIntent.Export -> {
-                val config = Configurations(
-                    blacklist = ConfigurationsBlacklist(apps = listOf(), files = listOf()),
-                    cloud = listOf(),
-                    file = listOf(),
-                    labels = listOf(),
-                    labelAppRefs = listOf(),
-                    labelFileRefs = listOf(),
-                )
-                if (state.blacklistSelected) {
-                    val apps = mutableListOf<BlacklistAppItem>()
-                    blockedPackagesState.value.forEach {
-                        apps.add(BlacklistAppItem(it.packageName, it.userId))
-                    }
-                    val files = mutableListOf<BlacklistFileItem>()
-                    blockedFilesState.value.forEach {
-                        files.add(BlacklistFileItem(it.name, it.path))
-                    }
-                    config.blacklist.apps = apps
-                    config.blacklist.files = files
-                }
-                if (state.cloudSelected) {
-                    config.cloud = accounts.value
-                }
-                if (state.fileSelected) {
-                    config.file = files.value.map { FileItem(it.name, it.path) }
-                }
-                if (state.labelSelected) {
-                    config.labels = labels.value
-                    config.labelAppRefs = labelAppRefs.value
-                    config.labelFileRefs = labelFileRefs.value
-                }
                 rootService.mkdirs(pathUtil.getLocalBackupConfigsDir())
-                val dst = "${pathUtil.getLocalBackupConfigsDir()}/$ConfigsConfigurationsName"
-                rootService.writeJson(data = config, dst = dst).apply {
-                    if (isSuccess) {
-                        emitEffect(IndexUiEffect.DismissSnackbar)
-                        emitEffect(IndexUiEffect.ShowSnackbar(type = SnackbarType.Success, message = "${context.getString(R.string.exported)}: $dst", duration = SnackbarDuration.Short))
-                    } else {
-                        emitEffect(IndexUiEffect.DismissSnackbar)
-                        emitEffect(IndexUiEffect.ShowSnackbar(type = SnackbarType.Error, message = context.getString(R.string.failed), duration = SnackbarDuration.Short))
-                    }
-                }
+                val result = commonBackupUtil.backupConfigs(pathUtil.getLocalBackupConfigsDir())
+                emitEffect(IndexUiEffect.DismissSnackbar)
+                emitEffect(IndexUiEffect.ShowSnackbar(type = if (result.isSuccess) SnackbarType.Success else SnackbarType.Error, message = result.outString, duration = SnackbarDuration.Short))
             }
 
             is IndexUiIntent.Import -> {
@@ -330,7 +290,7 @@ class IndexViewModel @Inject constructor(
     private val _files: Flow<List<MediaEntity>> = mediaRepo.queryFlow(opType = OpType.BACKUP, blocked = false).flowOnIO()
     val files: StateFlow<List<MediaEntity>> = _files.stateInScope(listOf())
 
-    private val _labels: Flow<List<LabelEntity>> = labelsRepo.getLabels().flowOnIO()
+    private val _labels: Flow<List<LabelEntity>> = labelsRepo.getLabelsFlow().flowOnIO()
     private val _labelAppRefs: Flow<List<LabelAppCrossRefEntity>> = labelsRepo.getAppRefsFlow().flowOnIO()
     private val _labelFileRefs: Flow<List<LabelFileCrossRefEntity>> = labelsRepo.getFileRefsFlow().flowOnIO()
     val labels: StateFlow<List<LabelEntity>> = _labels.stateInScope(listOf())

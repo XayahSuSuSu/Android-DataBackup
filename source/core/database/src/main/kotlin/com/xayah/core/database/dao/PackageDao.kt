@@ -172,6 +172,12 @@ interface PackageDao {
 
     @Query(
         "SELECT * FROM PackageEntity WHERE" +
+                " indexInfo_opType = :opType AND extraInfo_blocked = :blocked"
+    )
+    suspend fun queryPackages(opType: OpType, blocked: Boolean): List<PackageEntity>
+
+    @Query(
+        "SELECT * FROM PackageEntity WHERE" +
                 " indexInfo_opType = :opType"
     )
     fun queryPackagesFlow(opType: OpType): Flow<List<PackageEntity>>

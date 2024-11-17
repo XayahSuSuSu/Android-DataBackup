@@ -50,7 +50,7 @@ class DetailsViewModel @Inject constructor(
 
     val uiState: StateFlow<DetailsUiState> = when (target) {
         Target.Apps -> {
-            combine(appsRepo.getApp(id), isRefreshing, labelsRepo.getLabels(), labelsRepo.getAppRefsFlow()) { app, isRefreshing, labels, refs ->
+            combine(appsRepo.getApp(id), isRefreshing, labelsRepo.getLabelsFlow(), labelsRepo.getAppRefsFlow()) { app, isRefreshing, labels, refs ->
                 if (app != null) {
                     Success.App(uuid = UUID.randomUUID(), isRefreshing = isRefreshing, labels = labels, app = app, refs = refs.filter { ref ->
                         labels.find { it.label == ref.label } != null && ref.packageName == app.packageName && ref.userId == app.userId && ref.preserveId == app.preserveId
@@ -62,7 +62,7 @@ class DetailsViewModel @Inject constructor(
         }
 
         Target.Files -> {
-            combine(filesRepo.getFile(id), isRefreshing, labelsRepo.getLabels(), labelsRepo.getFileRefsFlow()) { file, isRefreshing, labels, refs ->
+            combine(filesRepo.getFile(id), isRefreshing, labelsRepo.getLabelsFlow(), labelsRepo.getFileRefsFlow()) { file, isRefreshing, labels, refs ->
                 if (file != null) {
                     Success.File(uuid = UUID.randomUUID(), isRefreshing = isRefreshing, labels = labels, file = file, refs = refs.filter { ref ->
                         labels.find { it.label == ref.label } != null && ref.path == file.path && ref.preserveId == file.preserveId

@@ -35,4 +35,5 @@ internal abstract class AbstractMediumService : AbstractProcessingService() {
     protected abstract val mMediaRepo: MediaRepository
     protected abstract val mRootDir: String
     protected abstract val mFilesDir: String
+    protected abstract val mConfigsDir: String
 }

@@ -261,7 +261,7 @@ internal fun AppsFilterSheet(
             when (opType) {
                 OpType.BACKUP -> {
                     CheckBox(checked = filters.hasBackups, text = stringResource(R.string.apps_which_have_backups), onValueChange = { setFilters(filters.copy(hasBackups = filters.hasBackups.not())) })
-                    CheckBox(checked = filters.hasNoBackups, text = stringResource(R.string.apps_which_have_backups), onValueChange = { setFilters(filters.copy(hasNoBackups = filters.hasNoBackups.not())) })
+                    CheckBox(checked = filters.hasNoBackups, text = stringResource(R.string.apps_which_have_no_backups), onValueChange = { setFilters(filters.copy(hasNoBackups = filters.hasNoBackups.not())) })
                 }
 
                 OpType.RESTORE -> {

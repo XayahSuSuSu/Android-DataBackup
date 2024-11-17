@@ -24,7 +24,7 @@ import com.xayah.core.datastore.KeyBackupItself
 import com.xayah.core.datastore.KeyCheckKeystore
 import com.xayah.core.datastore.KeyCompressionTest
 import com.xayah.core.datastore.KeyFollowSymlinks
-import com.xayah.core.datastore.KeyLoadSystemApps
+import com.xayah.core.datastore.KeyBackupConfigs
 import com.xayah.core.datastore.readKillAppOption
 import com.xayah.core.datastore.saveKillAppOption
 import com.xayah.core.model.KillAppOption
@@ -84,13 +84,6 @@ fun PageBackupSettings() {
                 }
 
                 Switchable(
-                    key = KeyLoadSystemApps,
-                    defValue = false,
-                    title = stringResource(id = R.string.load_system_apps),
-                    checkedText = stringResource(id = com.xayah.feature.setup.R.string.enabled),
-                    notCheckedText = stringResource(id = com.xayah.feature.setup.R.string.not_enabled),
-                )
-                Switchable(
                     key = KeyCheckKeystore,
                     defValue = true,
                     title = stringResource(id = R.string.check_keystore),
@@ -101,6 +94,12 @@ fun PageBackupSettings() {
                     defValue = true,
                     title = stringResource(id = R.string.backup_itself),
                     checkedText = stringResource(id = R.string.backup_itself_desc),
+                )
+                Switchable(
+                    key = KeyBackupConfigs,
+                    defValue = true,
+                    title = stringResource(id = R.string.backup_configs),
+                    checkedText = stringResource(id = R.string.backup_configs_desc),
                 )
                 Switchable(
                     key = KeyCompressionTest,

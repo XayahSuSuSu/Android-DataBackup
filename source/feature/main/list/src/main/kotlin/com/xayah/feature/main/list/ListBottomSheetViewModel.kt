@@ -46,7 +46,7 @@ class ListBottomSheetViewModel @Inject constructor(
         Target.Apps -> combine(
             listDataRepo.getListData(),
             listDataRepo.getAppList(),
-            labelsRepo.getLabels(),
+            labelsRepo.getLabelsFlow(),
             cloudRepo.clouds,
         ) { lData, aList, labels, clouds ->
             val listData = lData.castTo<ListData.Apps>()
@@ -67,7 +67,7 @@ class ListBottomSheetViewModel @Inject constructor(
         Target.Files -> combine(
             listDataRepo.getListData(),
             listDataRepo.getFileList(),
-            labelsRepo.getLabels()
+            labelsRepo.getLabelsFlow()
         ) { lData, fList, labels ->
             val listData = lData.castTo<ListData.Files>()
             Success.Files(

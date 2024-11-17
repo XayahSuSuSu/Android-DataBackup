@@ -1,6 +1,8 @@
 package com.xayah.core.service.medium.backup
 
 import android.annotation.SuppressLint
+import com.xayah.core.common.util.toLineString
+import com.xayah.core.datastore.readBackupConfigs
 import com.xayah.core.datastore.readBackupItself
 import com.xayah.core.datastore.readResetBackupList
 import com.xayah.core.datastore.saveLastBackupTime
@@ -83,6 +85,7 @@ internal abstract class AbstractBackupService : AbstractMediumService() {
     abstract suspend fun backup(m: MediaEntity, r: MediaEntity?, t: TaskDetailMediaEntity, dstDir: String)
     protected open suspend fun onConfigSaved(path: String, archivesRelativeDir: String) {}
     protected open suspend fun onItselfSaved(path: String, entity: ProcessingInfoEntity) {}
+    protected open suspend fun onConfigsSaved(path: String, entity: ProcessingInfoEntity) {}
     protected open suspend fun clear() {}
 
     protected abstract val mMediumBackupUtil: MediumBackupUtil
@@ -183,9 +186,27 @@ internal abstract class AbstractBackupService : AbstractMediumService() {
                     mContext.getString(R.string.wait_for_remaining_data_processing)
                 )
 
+                var isSuccess = true
+                val out = mutableListOf<String>()
+                if (mContext.readBackupConfigs().first()) {
+                    log { "Backup configs enabled." }
+                    mCommonBackupUtil.backupConfigs(dstDir = mConfigsDir).also { result ->
+                        if (result.isSuccess.not()) {
+                            isSuccess = false
+                        }
+                        out.add(result.outString)
+                        if (result.isSuccess) {
+                            onConfigsSaved(path = mCommonBackupUtil.getConfigsDst(mConfigsDir), entity = entity)
+                        }
+                    }
+                }
+                entity.update(progress = 0.5f)
+
                 if (mContext.readResetBackupList().first()) mMediaDao.clearActivated(OpType.BACKUP)
-                val isSuccess = runCatchingOnService { clear() }
-                entity.update(progress = 1f, state = if (isSuccess) OperationState.DONE else OperationState.ERROR)
+                if (runCatchingOnService { clear() }.not()) {
+                    isSuccess = false
+                }
+                entity.set(progress = 1f, state = if (isSuccess) OperationState.DONE else OperationState.ERROR, log = out.toLineString())
             }
 
             else -> {}

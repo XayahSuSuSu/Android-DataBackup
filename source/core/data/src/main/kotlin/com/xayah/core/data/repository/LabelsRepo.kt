@@ -15,11 +15,14 @@ class LabelsRepo @Inject constructor(
     @Dispatcher(Default) private val defaultDispatcher: CoroutineDispatcher,
     private val labelDao: LabelDao,
 ) {
-    fun getLabels(): Flow<List<LabelEntity>> = labelDao.queryLabelsFlow().flowOn(defaultDispatcher)
+    fun getLabelsFlow(): Flow<List<LabelEntity>> = labelDao.queryLabelsFlow().flowOn(defaultDispatcher)
     fun getAppRefsFlow(): Flow<List<LabelAppCrossRefEntity>> = labelDao.queryAppRefsFlow()
     fun getFileRefsFlow(): Flow<List<LabelFileCrossRefEntity>> = labelDao.queryFileRefsFlow()
+    suspend fun getLabels(): List<LabelEntity> = labelDao.queryLabels()
     suspend fun getAppRefs(labelIds: Set<String>): List<LabelAppCrossRefEntity> = labelDao.queryAppRefs(labelIds)
+    suspend fun getAppRefs(): List<LabelAppCrossRefEntity> = labelDao.queryAppRefs()
     suspend fun getFileRefs(labelIds: Set<String>): List<LabelFileCrossRefEntity> = labelDao.queryFileRefs(labelIds)
+    suspend fun getFileRefs(): List<LabelFileCrossRefEntity> = labelDao.queryFileRefs()
 
     /**
      * Add a unique label

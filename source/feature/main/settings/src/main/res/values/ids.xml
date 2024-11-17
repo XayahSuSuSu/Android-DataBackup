@@ -62,6 +62,8 @@
     <item name="kill_app_options_desc" type="string" />
     <item name="language" type="string" />
     <item name="system" type="string" />
+    <item name="backup_configs" type="string" />
+    <item name="backup_configs_desc" type="string" />
 
     <item name="ic_rounded_acute" type="drawable" />
     <item name="ic_rounded_history" type="drawable" />

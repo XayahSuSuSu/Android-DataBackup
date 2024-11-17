@@ -14,4 +14,5 @@
     <item name="set_up_inst_env" type="string"/>
     <item name="args_backup" type="string"/>
     <item name="args_restore" type="string"/>
+    <item name="exported" type="string"/>
 </resources>

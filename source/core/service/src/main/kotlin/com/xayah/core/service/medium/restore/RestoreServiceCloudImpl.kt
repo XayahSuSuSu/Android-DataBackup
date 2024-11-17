@@ -93,6 +93,7 @@ internal class RestoreServiceCloudImpl @Inject constructor() : AbstractRestoreSe
 
     override val mRootDir by lazy { mPathUtil.getCloudTmpDir() }
     override val mFilesDir by lazy { mPathUtil.getCloudTmpFilesDir() }
+    override val mConfigsDir by lazy { mPathUtil.getCloudTmpConfigsDir() }
 
     @Inject
     lateinit var mCloudRepo: CloudRepository

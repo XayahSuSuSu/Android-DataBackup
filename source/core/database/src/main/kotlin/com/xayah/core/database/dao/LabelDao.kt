@@ -32,11 +32,20 @@ interface LabelDao {
     @Query("SELECT * FROM LabelEntity")
     fun queryLabelsFlow(): Flow<List<LabelEntity>>
 
+    @Query("SELECT * FROM LabelEntity")
+    suspend fun queryLabels(): List<LabelEntity>
+
     @Query("SELECT * FROM LabelAppCrossRefEntity WHERE label in (:labels)")
     suspend fun queryAppRefs(labels: Set<String>): List<LabelAppCrossRefEntity>
 
     @Query("SELECT * FROM LabelFileCrossRefEntity WHERE label in (:labels)")
     suspend fun queryFileRefs(labels: Set<String>): List<LabelFileCrossRefEntity>
+
+    @Query("SELECT * FROM LabelAppCrossRefEntity")
+    suspend fun queryAppRefs(): List<LabelAppCrossRefEntity>
+
+    @Query("SELECT * FROM LabelFileCrossRefEntity")
+    suspend fun queryFileRefs(): List<LabelFileCrossRefEntity>
 
     @Query("SELECT * FROM LabelAppCrossRefEntity")
     fun queryAppRefsFlow(): Flow<List<LabelAppCrossRefEntity>>
