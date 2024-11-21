@@ -13,7 +13,7 @@
     <string name="not_exist">Не существует</string>
     <string name="last_backup">Последний бекап</string>
     <string name="confirm_reload">Перезагрузить\?</string>
-    <string name="start_desc">Все данные, созданные этим приложением, используются только для резервного копирования/восстановления и хранятся только локально.</string>
+    <string name="start_desc">Все данные, созданные этим приложением, используются только для создания бекапов/восстановления и хранятся только локально.</string>
     <string name="internal_storage">Внутреннее хранилище</string>
     <string name="overlook">Обзор</string>
     <string name="backup_user_desc">Целевой пользователь при загрузке списка бекапов или при создании бекапа</string>
@@ -25,7 +25,7 @@
     <string name="create_account">Создать аккаунт</string>
     <string name="confirm_delete_selected_restoring_items">Удалить выбранные элементы из базы данных и локальных файлов?</string>
     <string name="abi_validation">Подтвердить ABI</string>
-    <string name="storage_desc">Используется для настройки резервного копирования, чтения и записи архива</string>
+    <string name="storage_desc">Используется для конфигурации бекапа, чтения и записи архива</string>
     <string name="simplify">Упрощенно</string>
     <string name="not_installed">Не установленно</string>
     <string name="reset_backup_list">Сброс списка бекапов</string>
@@ -65,7 +65,7 @@
     <string name="selected_apks">Выбранные APK</string>
     <string name="structure">Дерево файлов</string>
     <string name="apk">APK</string>
-    <string name="backup">Резервное копирование</string>
+    <string name="backup">Бекап</string>
     <string name="network">Сеть</string>
     <string name="processing_exit_confirmation">Закрыть приложение и прервать текущую операцию\?</string>
     <string name="application">Приложение</string>
@@ -212,7 +212,7 @@
     <string name="_continue">Продолжить</string>
     <string name="required">Необходимо</string>
     <string name="root_permission">Разрешение root</string>
-    <string name="root_permission_desc">Резервное копирование и восстановление данных приложений</string>
+    <string name="root_permission_desc">Бекап и восстановление данных приложений</string>
     <string name="optional">Необязательно</string>
     <string name="notification_permission">Разрешение на уведомление</string>
     <string name="notification_permission_desc">Доступ к обработке информации</string>
@@ -222,8 +222,8 @@
     <string name="enabled">Включено</string>
     <string name="not_enabled">Не включено</string>
     <string name="skip_setup">Пропустить установку</string>
-    <string name="setup_backup_dir_desc">Если у вас есть существующий каталог, вам нужно будет выбрать его, чтобы появились резервные копии внутри.</string>
-    <string name="skip_setup_alert">Вы не сможете выполнять резервное копирование или восстановление, пока не выберете каталог для хранения бекапов.</string>
+    <string name="setup_backup_dir_desc">Если у вас есть папка, вам нужно ее выбрать, чтобы внутри появились бекапы.</string>
+    <string name="skip_setup_alert">Вы не сможете создавать и восстанавливать бекапы, пока не выберете папку для их хранения.</string>
     <string name="app_short_desc">Свободное приложение с открытым исходным кодом, для резервного копирования данных</string>
     <string name="abi_validation_desc">Проверьте, поддерживается ли ваше устройство</string>
     <string name="pull_down_to_refresh">Потяните для обновления</string>
@@ -374,11 +374,17 @@
     <string name="granted">Предоставлено</string>
     <string name="denied">Запрещено</string>
     <string name="args_files_restored_and_failed">%1$s файлов восстановлено, %2$s не удалось</string>
-    <string name="args_apps_backed_up_and_failed">%1$s приложений зарезервированы, %2$s не удалось</string>
+    <string name="args_apps_backed_up_and_failed">Создан бекап %1$s приложений, не удалось %2$s</string>
     <string name="args_apps_restored_and_failed">%1$s приложений восстановлено, %2$s не удалось</string>
-    <string name="args_files_backed_up_and_failed">%1$s файлов зарезервированы, %2$s не удалось</string>
+    <string name="args_files_backed_up_and_failed">Создан бекап %1$s файлов, не удалось %2$s</string>
     <string name="history">История</string>
-    <string name="backup_configs">Настройки резервного копирования</string>
-    <string name="task_details">Детали задачи</string>
-    <string name="visit_details">Посмотреть детали</string>
+    <string name="backup_configs">Бекап конфигурации</string>
+    <string name="task_details">Подробности задачи</string>
+    <string name="visit_details">Посмотреть подробности</string>
+    <string name="apps_which_have_backups">Приложения с бекапами</string>
+    <string name="apps_which_have_no_backups">Приложения без бекапов</string>
+    <string name="args_backed_up_at">Бекап создан в %1$s</string>
+    <string name="args_restored_at">Восстановлено в %1$s</string>
+    <string name="no_labels_here">Нет меток</string>
+    <string name="backup_configs_desc">Экспорт конфигураций в папку бекапов</string>
 </resources>
