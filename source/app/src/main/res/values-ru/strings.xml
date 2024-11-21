@@ -379,4 +379,6 @@
     <string name="args_files_backed_up_and_failed">%1$s файлов зарезервированы, %2$s не удалось</string>
     <string name="history">История</string>
     <string name="backup_configs">Настройки резервного копирования</string>
+    <string name="task_details">Детали задачи</string>
+    <string name="visit_details">Посмотреть детали</string>
 </resources>
