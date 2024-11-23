@@ -111,7 +111,7 @@
     <string name="no_browser">Возможно, нет браузера, чтобы открыть</string>
     <string name="environment_detection">Обнаружение окружающей среды</string>
     <string name="succeed">Успешно</string>
-    <string name="compression_test_desc">Проверка целостности архива после создания</string>
+    <string name="compression_test_desc">Проверять целостность архива после создания</string>
     <string name="add">Добавить</string>
     <string name="word_return">Обратно</string>
     <string name="backup_itself">Бекап DataBackup</string>
@@ -386,5 +386,5 @@
     <string name="args_backed_up_at">Бекап создан в %1$s</string>
     <string name="args_restored_at">Восстановлено в %1$s</string>
     <string name="no_labels_here">Нет меток</string>
-    <string name="backup_configs_desc">Экспорт конфигураций в папку бекапов</string>
+    <string name="backup_configs_desc">Экспортировать конфигурации в папку бекапов</string>
 </resources>
