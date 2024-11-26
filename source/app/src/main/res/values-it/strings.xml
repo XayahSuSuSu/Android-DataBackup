@@ -340,4 +340,5 @@
     <string name="download">Scaricato</string>
     <string name="changelog">Log delle modifiche</string>
     <string name="args_update_from">Puoi aggiornare dalla versione %1$s alla versione %2$s</string>
+    <string name="args_apps_restored">%1$s app ripristinate</string>
 </resources>
