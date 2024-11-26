@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DataBackup</string>
-    <string name="update_records">Hồ sơ cập nhật</string>
+    <string name="app_name">Lưu trữ dữ liệu</string>
+    <string name="update_records">Cập nhật hồ sơ</string>
     <string name="environment_detection">Phát hiện môi trường</string>
     <string name="start_desc">Mọi dữ liệu được tạo ra từ ứng dụng này sẽ chỉ được dùng cho sao lưu/khôi phục, và chỉ được lưu cục bộ.</string>
     <string name="network">Mạng</string>
     <string name="application">Ứng dụng</string>
-    <string name="application_desc">Lấy thông tin gói ứng dụng, được dùng để tạo danh sách sao lưu và lấy kích thước dữ liệu của ứng dụng</string>
+    <string name="application_desc">Nhận thông tin gói ứng dụng, được dùng để tạo danh sách sao lưu và lấy kích thước dữ liệu của ứng dụng</string>
     <string name="storage">Lưu trữ</string>
     <string name="storage_desc">Được dùng cho cấu hình sao lưu, đọc ghi tệp nén</string>
     <string name="loading">Đang tải</string>
     <string name="loading_failed">Tải thất bại</string>
     <string name="grant_root_access">Cấp quyền truy cập root</string>
-    <string name="release_prebuilt_binaries">Các tệp nhị phân có sẵn</string>
+    <string name="release_prebuilt_binaries">Các tệp nhị phân đã được build</string>
     <string name="overlook">Tổng quan</string>
     <string name="last_backup">Bản sao lưu cuối</string>
     <string name="none">Không chọn</string>
@@ -20,7 +20,7 @@
     <string name="activities">Hoạt động</string>
     <string name="directory">Lưu trữ</string>
     <string name="structure">Cây thư mục</string>
-    <string name="log">Nhật kí</string>
+    <string name="log">Logs</string>
     <string name="app_and_data">Ứng dụng</string>
     <string name="media">Đa phương tiện</string>
     <string name="telephony">Nhật kí cuộc gọi</string>
@@ -65,10 +65,10 @@
     <string name="keep_screen_on_desc">Giữ cho thiết bị bật khi xử lí</string>
     <string name="compression_type">Loại nén</string>
     <string name="compression_type_desc">Ảnh hưởng đến cả việc sao lưu và khôi phục. Chỉ người dùng nâng cao nên thay đổi cài đặt này.</string>
-    <string name="welcome_to_use">Chào mừng đến với DataBackup</string>
+    <string name="welcome_to_use">Chào mừng đến với phần Lưu trữ dữ liệu</string>
     <string name="start">Bắt đầu</string>
     <string name="start_subtitle">Bạn cần đọc và đồng ý với Thỏa thuận người dùng và Chính sách quyền riêng tư trước khi bắt đầu sử dụng ứng dụng này</string>
-    <string name="network_desc">Được dùng để lấy thông tin cập nhật, rà soát</string>
+    <string name="network_desc">Được dùng để lấy thông tin cập nhật, phân tích ứng dụng</string>
     <string name="confirm">Xác nhận</string>
     <string name="cancel">Huỷ bỏ</string>
     <string name="internal_storage">Bộ nhớ trong</string>
