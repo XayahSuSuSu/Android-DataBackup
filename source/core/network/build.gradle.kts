@@ -33,6 +33,7 @@ dependencies {
     implementation(libs.guava.compat)
     implementation(libs.smbj.rpc) {
         exclude(group = "org.bouncycastle", module = "bcprov-jdk15on")
+        exclude(group = "com.hierynomus", module = "smbj")
     }
     implementation(libs.sshj)
     implementation(libs.sardine.next)

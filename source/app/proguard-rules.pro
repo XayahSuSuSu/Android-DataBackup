@@ -33,6 +33,7 @@
 
 # smbj-rpc
 -dontwarn java.rmi.UnmarshalException
+-dontwarn com.google.j2objc.annotations.RetainedWith
 
 # awt
 -dontwarn java.awt.**
@@ -56,6 +57,7 @@
 
 # smbj-rpc
 -keep class java.rmi.UnmarshalException
+-keep class com.google.j2objc.annotations.RetainedWith
 
 # awt
 -keep class java.awt.**
