@@ -8,10 +8,15 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManagerHidden;
 import android.content.pm.PermissionInfo;
+import android.os.Build;
+import android.os.IBinder;
 import android.os.UserHandle;
 import android.os.UserHandleHidden;
+import android.view.SurfaceControlHidden;
 
 import androidx.core.content.pm.PermissionInfoCompat;
+
+import com.android.server.display.DisplayControlHidden;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -50,6 +55,8 @@ public class HiddenApiUtil {
         System.out.println("  revokeRuntimePermission USER_ID PACKAGE PERM_NAME PERM_NAME PERM_NAME ...");
         System.out.println();
         System.out.println("  setOpsMode USER_ID PACKAGE OP MODE OP MODE OP MODE ...");
+        System.out.println();
+        System.out.println("  setDisplayPowerMode MODE(POWER_MODE_OFF: 0, POWER_MODE_NORMAL: 2)");
     }
 
     private static void onCommand(String cmd, String[] args) {
@@ -70,6 +77,8 @@ public class HiddenApiUtil {
                 revokeRuntimePermission(args);
             case "setOpsMode":
                 setOpsMode(args);
+            case "setDisplayPowerMode":
+                setDisplayPowerMode(args);
             case "help":
                 onHelp();
             default:
@@ -367,6 +376,35 @@ public class HiddenApiUtil {
                 } catch (Exception e) {
                     System.out.println("Failed, skip: " + e.getMessage());
                 }
+            }
+            System.exit(0);
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+            System.exit(1);
+        }
+    }
+
+    public static void setDisplayPowerMode(String[] args) {
+        try {
+            int mode = Integer.parseInt(args[1]);
+            long[] physicalDisplayIds;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                physicalDisplayIds = DisplayControlHidden.getPhysicalDisplayIds();
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                physicalDisplayIds = SurfaceControlHidden.getPhysicalDisplayIds();
+            } else {
+                physicalDisplayIds = new long[]{0L};
+            }
+            for (long id : physicalDisplayIds) {
+                IBinder token;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    token = DisplayControlHidden.getPhysicalDisplayToken(id);
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    token = SurfaceControlHidden.getPhysicalDisplayToken(id);
+                } else {
+                    token = SurfaceControlHidden.getBuiltInDisplay((int) id);
+                }
+                SurfaceControlHidden.setDisplayPowerMode(token, mode);
             }
             System.exit(0);
         } catch (Exception e) {
