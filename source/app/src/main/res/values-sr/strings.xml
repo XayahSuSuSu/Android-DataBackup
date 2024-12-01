@@ -385,6 +385,6 @@
     <string name="apps_which_have_no_backups">Апликације које немају резервне копије</string>
     <string name="apps_which_have_backups">Апликације које имају резервне копије</string>
     <string name="no_labels_here">Нема ознака овде.</string>
-    <string name="backup_configs">Резервне конфигурације</string>
+    <string name="backup_configs">Конфигурације резервних копија</string>
     <string name="backup_configs_desc">Извоз конфигурација у резервни директоријум</string>
 </resources>
