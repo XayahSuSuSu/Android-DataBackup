@@ -225,9 +225,9 @@ public class HiddenApiUtil {
                                             out.append(" ").append(FLAG_XPOSED);
                                         }
                                     } else {
-                                        if (isXposedApp) {
+                                        if (xposedFlag && isXposedApp) {
                                             out.append(" ").append(FLAG_XPOSED);
-                                        } else if (isSystemApp) {
+                                        } else if (systemFlag && isSystemApp) {
                                             out.append(" ").append(FLAG_SYSTEM);
                                         }
                                     }
