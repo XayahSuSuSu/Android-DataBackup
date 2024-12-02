@@ -6,6 +6,7 @@ plugins {
 
 android {
     namespace = "com.xayah.core.rootservice"
+    ndkVersion = "25.2.9519653"
 
     buildTypes {
         release {
