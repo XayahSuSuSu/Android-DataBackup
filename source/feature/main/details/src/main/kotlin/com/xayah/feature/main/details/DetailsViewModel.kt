@@ -22,6 +22,7 @@ import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.util.decodeURL
 import com.xayah.core.util.launchOnDefault
+import com.xayah.core.util.withMainContext
 import com.xayah.feature.main.details.DetailsUiState.Error
 import com.xayah.feature.main.details.DetailsUiState.Loading
 import com.xayah.feature.main.details.DetailsUiState.Success
@@ -130,7 +131,9 @@ class DetailsViewModel @Inject constructor(
     fun addLabel(label: String) {
         viewModelScope.launchOnDefault {
             if (label.trim().isEmpty() || labelsRepo.addLabel(label.trim()) == -1L) {
-                Toast.makeText(context, context.getString(R.string.failed), Toast.LENGTH_SHORT).show()
+                withMainContext {
+                    Toast.makeText(context, context.getString(R.string.failed), Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
