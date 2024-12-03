@@ -52,6 +52,7 @@ import com.xayah.core.util.filesDir
 import com.xayah.core.util.iconDir
 import com.xayah.core.util.localBackupSaveDir
 import com.xayah.core.util.withLog
+import com.xayah.core.util.withMainContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -555,13 +556,17 @@ class AppsRepo @Inject constructor(
         val user = rootService.getUserHandle(userId)
         if (launcherApps.isPackageEnabled(packageName, user).not()) {
             // Package not enabled
-            Toast.makeText(context, context.getString(R.string.app_is_frozen), Toast.LENGTH_SHORT).show()
+            withMainContext {
+                Toast.makeText(context, context.getString(R.string.app_is_frozen), Toast.LENGTH_SHORT).show()
+            }
             return
         }
         val activityInfoList = launcherApps.getActivityList(packageName, user)
         if (activityInfoList.isEmpty()) {
             // No activities
-            Toast.makeText(context, context.getString(R.string.no_activities_found), Toast.LENGTH_SHORT).show()
+            withMainContext {
+                Toast.makeText(context, context.getString(R.string.no_activities_found), Toast.LENGTH_SHORT).show()
+            }
             return
         }
 
