@@ -384,7 +384,7 @@
     <string name="visit_details">查看詳情</string>
     <string name="apps_which_have_backups">存在備份</string>
     <string name="apps_which_have_no_backups">不存在備份</string>
-    <string name="no_labels_here">這裏沒有標簽</string>
+    <string name="no_labels_here">這裏沒有標籤。</string>
     <string name="backup_configs">備份配置</string>
     <string name="backup_configs_desc">將配置文件導出到備份目錄</string>
 </resources>
