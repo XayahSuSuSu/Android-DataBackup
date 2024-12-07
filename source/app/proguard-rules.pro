@@ -34,6 +34,7 @@
 # smbj-rpc
 -dontwarn java.rmi.UnmarshalException
 -dontwarn com.google.j2objc.annotations.RetainedWith
+-dontwarn com.google.j2objc.annotations.Weak
 
 # awt
 -dontwarn java.awt.**
@@ -41,6 +42,8 @@
 # sftp
 -dontwarn sun.security.x509.X509Key
 
+-keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
+-keep public class * extends java.lang.Exception  # Optional: Keep custom exceptions.
 -keep class com.xayah.** { *; }
 -keep class android.** { *; }
 -keep class com.android.** { *; }
@@ -58,6 +61,7 @@
 # smbj-rpc
 -keep class java.rmi.UnmarshalException
 -keep class com.google.j2objc.annotations.RetainedWith
+-keep class com.google.j2objc.annotations.Weak
 
 # awt
 -keep class java.awt.**
