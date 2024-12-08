@@ -1,5 +1,27 @@
 # Changelog
 
+## [2.0.5](https://github.com/XayahSuSuSu/Android-DataBackup/compare/2.0.4...v2.0.5) (2024-12-08)
+
+
+### gradle
+
+* Version 2.0.5 ([e92f86f](https://github.com/XayahSuSuSu/Android-DataBackup/commit/e92f86f11b6abbf24e56c87beb3152e835ca8595))
+
+
+### Features
+
+* [#321](https://github.com/XayahSuSuSu/Android-DataBackup/issues/321) ([5ee40e9](https://github.com/XayahSuSuSu/Android-DataBackup/commit/5ee40e9c56bb3c73c37096eca6b1d5dbc61b44db))
+* Add permissions and ssaid options in restore settings ([d59e6e0](https://github.com/XayahSuSuSu/Android-DataBackup/commit/d59e6e0f5613dcf8a764cd514972ebba27c1049a))
+* Update translators ([34603f0](https://github.com/XayahSuSuSu/Android-DataBackup/commit/34603f043a734508387b8e397c13ca3af81a93e5))
+
+
+### Bug Fixes
+
+* Potential IndexOutOfBoundsException ([4fce510](https://github.com/XayahSuSuSu/Android-DataBackup/commit/4fce510a2f734df5dc2c676cd14bb8e627c7a52c))
+* Potential NoShellException ([d3b6bfc](https://github.com/XayahSuSuSu/Android-DataBackup/commit/d3b6bfc92e9cd9abe6908f7e2c4db309ae1cee72))
+* Toast on non-main thread ([a15fe02](https://github.com/XayahSuSuSu/Android-DataBackup/commit/a15fe022bf641f247385c8f3db6f07515704cd32))
+* Toast on non-main thread ([7f3b5e9](https://github.com/XayahSuSuSu/Android-DataBackup/commit/7f3b5e9565204eaa93000e126d95536443d09ded))
+
 ## [2.0.4](https://github.com/XayahSuSuSu/Android-DataBackup/compare/2.0.3...v2.0.4) (2024-12-01)
 
 
