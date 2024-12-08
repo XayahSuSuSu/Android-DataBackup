@@ -16,6 +16,8 @@ val KeyReloadDumpApk = booleanPreferencesKey("reload_dump_apk")
 val KeyAutoScreenOff = booleanPreferencesKey("auto_screen_off")
 val KeyLoadSystemApps = booleanPreferencesKey("load_system_apps")
 val KeyBackupConfigs = booleanPreferencesKey("backup_configs")
+val KeyRestorePermissions = booleanPreferencesKey("restore_permissions")
+val KeyRestoreSsaid = booleanPreferencesKey("restore_ssaid")
 
 // -----------------------------------------Read-----------------------------------------
 fun Context.readMonet() = readStoreBoolean(key = KeyMonet, defValue = true)
@@ -30,6 +32,8 @@ fun Context.readLoadSystemApps() = readStoreBoolean(key = KeyLoadSystemApps, def
 fun Context.readReloadDumpApk() = readStoreBoolean(key = KeyReloadDumpApk, defValue = true)
 fun Context.readAutoScreenOff() = readStoreBoolean(key = KeyAutoScreenOff, defValue = false)
 fun Context.readBackupConfigs() = readStoreBoolean(key = KeyBackupConfigs, defValue = true)
+fun Context.readRestorePermissions() = readStoreBoolean(key = KeyRestorePermissions, defValue = true)
+fun Context.readRestoreSsaid() = readStoreBoolean(key = KeyRestoreSsaid, defValue = true)
 
 // -----------------------------------------Write-----------------------------------------
 suspend fun Context.saveMonet(value: Boolean) = saveStoreBoolean(key = KeyMonet, value = value)
@@ -44,3 +48,5 @@ suspend fun Context.saveLoadSystemApps(value: Boolean) = saveStoreBoolean(key = 
 suspend fun Context.saveReloadDumpApk(value: Boolean) = saveStoreBoolean(key = KeyReloadDumpApk, value = value)
 suspend fun Context.saveAutoScreenOff(value: Boolean) = saveStoreBoolean(key = KeyAutoScreenOff, value = value)
 suspend fun Context.saveBackupConfigs(value: Boolean) = saveStoreBoolean(key = KeyBackupConfigs, value = value)
+suspend fun Context.saveRestorePermissions(value: Boolean) = saveStoreBoolean(key = KeyRestorePermissions, value = value)
+suspend fun Context.saveRestoreSsaid(value: Boolean) = saveStoreBoolean(key = KeyRestoreSsaid, value = value)

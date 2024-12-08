@@ -387,4 +387,8 @@
     <string name="no_labels_here">這裏沒有標簽</string>
     <string name="backup_configs">備份配置</string>
     <string name="backup_configs_desc">將配置文件導出到備份目錄</string>
+    <string name="restore_permissions">恢復權限</string>
+    <string name="restore_permissions_desc">恢復應用權限</string>
+    <string name="restore_ssaid">恢復Android id</string>
+    <string name="restore_ssaid_desc">恢復應用Android id，需要在恢復后立即重啓以生效</string>
 </resources>

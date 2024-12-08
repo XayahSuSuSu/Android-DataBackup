@@ -20,6 +20,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.xayah.core.datastore.KeyRestorePermissions
+import com.xayah.core.datastore.KeyRestoreSsaid
 import com.xayah.core.datastore.readKillAppOption
 import com.xayah.core.datastore.saveKillAppOption
 import com.xayah.core.model.KillAppOption
@@ -27,6 +29,7 @@ import com.xayah.core.model.util.indexOf
 import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.Selectable
+import com.xayah.core.ui.component.Switchable
 import com.xayah.core.ui.component.select
 import com.xayah.core.ui.model.DialogRadioItem
 import com.xayah.core.ui.token.SizeTokens
@@ -85,6 +88,19 @@ fun PageRestoreSettings() {
                  *     checkedText = stringResource(id = R.string.clean_restoring_desc),
                  * )
                  */
+
+                Switchable(
+                    key = KeyRestorePermissions,
+                    defValue = true,
+                    title = stringResource(id = R.string.restore_permissions),
+                    checkedText = stringResource(id = R.string.restore_permissions_desc),
+                )
+                Switchable(
+                    key = KeyRestoreSsaid,
+                    defValue = true,
+                    title = stringResource(id = R.string.restore_ssaid),
+                    checkedText = stringResource(id = R.string.restore_ssaid_desc),
+                )
             }
             InnerBottomSpacer(innerPadding = it)
         }

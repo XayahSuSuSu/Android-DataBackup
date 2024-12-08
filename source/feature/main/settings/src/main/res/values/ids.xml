@@ -64,6 +64,10 @@
     <item name="system" type="string" />
     <item name="backup_configs" type="string" />
     <item name="backup_configs_desc" type="string" />
+    <item name="restore_permissions" type="string" />
+    <item name="restore_permissions_desc" type="string" />
+    <item name="restore_ssaid" type="string" />
+    <item name="restore_ssaid_desc" type="string" />
 
     <item name="ic_rounded_acute" type="drawable" />
     <item name="ic_rounded_history" type="drawable" />

@@ -398,4 +398,8 @@
     <string name="no_labels_here">No labels here.</string>
     <string name="backup_configs">Backup configs</string>
     <string name="backup_configs_desc">Export configurations to backup directory</string>
+    <string name="restore_permissions">Restore permissions</string>
+    <string name="restore_permissions_desc">Restore apps permissions</string>
+    <string name="restore_ssaid">Restore Android id</string>
+    <string name="restore_ssaid_desc">Restore apps Android id, it needs immediate reboot after restoring to take effect</string>
 </resources>
