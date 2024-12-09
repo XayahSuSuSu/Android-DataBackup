@@ -393,4 +393,13 @@
     <string name="args_restored_at">Restored at %1$s</string>
     <string name="task_details">Task details</string>
     <string name="visit_details">Visit details</string>
+    <string name="apps_which_have_backups">Apps which have backups</string>
+    <string name="apps_which_have_no_backups">Apps which have no backups</string>
+    <string name="no_labels_here">No labels here.</string>
+    <string name="backup_configs">Backup configs</string>
+    <string name="backup_configs_desc">Export configurations to backup directory</string>
+    <string name="restore_permissions">Restore permissions</string>
+    <string name="restore_permissions_desc">Restore apps permissions</string>
+    <string name="restore_ssaid">Restore Android id</string>
+    <string name="restore_ssaid_desc">Restore apps Android id, it needs immediate reboot after restoring to take effect</string>
 </resources>

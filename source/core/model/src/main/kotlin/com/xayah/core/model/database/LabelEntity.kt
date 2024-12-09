@@ -1,109 +1,31 @@
 package com.xayah.core.model.database
 
-import androidx.room.Embedded
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.Index
-import androidx.room.Junction
 import androidx.room.PrimaryKey
-import androidx.room.Relation
 
 @Entity(indices = [Index(value = ["label"], unique = true)])
 data class LabelEntity(
-    @PrimaryKey(autoGenerate = true) var id: Long = 0,
-    var label: String,
+    @PrimaryKey var label: String,
 )
 
 @Entity(
-    indices = [Index(value = ["labelId", "appId"], unique = true)],
-    primaryKeys = ["labelId", "appId"],
-    foreignKeys = [
-        ForeignKey(
-            entity = LabelEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["labelId"],
-            onUpdate = ForeignKey.CASCADE,
-            onDelete = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = PackageEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["appId"],
-            onUpdate = ForeignKey.CASCADE,
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+    indices = [Index(value = ["label", "packageName", "userId", "preserveId"], unique = true)],
+    primaryKeys = ["label", "packageName", "userId", "preserveId"],
 )
 data class LabelAppCrossRefEntity(
-    var labelId: Long,
-    var appId: Long,
+    var label: String,
+    var packageName: String,
+    var userId: Int,
+    var preserveId: Long,
 )
 
 @Entity(
-    indices = [Index(value = ["labelId", "fileId"], unique = true)],
-    primaryKeys = ["labelId", "fileId"],
-    foreignKeys = [
-        ForeignKey(
-            entity = LabelEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["labelId"],
-            onUpdate = ForeignKey.CASCADE,
-            onDelete = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = MediaEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["fileId"],
-            onUpdate = ForeignKey.CASCADE,
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+    indices = [Index(value = ["label", "path", "preserveId"], unique = true)],
+    primaryKeys = ["label", "path", "preserveId"],
 )
 data class LabelFileCrossRefEntity(
-    var labelId: Long,
-    var fileId: Long,
-)
-
-data class AppWithLabels(
-    @Embedded val app: PackageEntity,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "id",
-        associateBy = Junction(LabelAppCrossRefEntity::class, parentColumn = "appId", entityColumn = "labelId")
-    )
-    val labels: List<LabelEntity>
-)
-
-data class FileWithLabels(
-    @Embedded val file: MediaEntity,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "id",
-        associateBy = Junction(LabelFileCrossRefEntity::class, parentColumn = "fileId", entityColumn = "labelId")
-    )
-    val labels: List<LabelEntity>
-)
-
-data class LabelWithAppIds(
-    @Embedded val label: LabelEntity,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "id",
-        entity = PackageEntity::class,
-        associateBy = Junction(LabelAppCrossRefEntity::class, parentColumn = "labelId", entityColumn = "appId"),
-        projection = ["id"]
-    )
-    val ids: List<Long>
-)
-
-data class LabelWithFileIds(
-    @Embedded val label: LabelEntity,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "id",
-        entity = MediaEntity::class,
-        associateBy = Junction(LabelFileCrossRefEntity::class, parentColumn = "labelId", entityColumn = "fileId"),
-        projection = ["id"]
-    )
-    val ids: List<Long>
+    var label: String,
+    var path: String,
+    var preserveId: Long,
 )

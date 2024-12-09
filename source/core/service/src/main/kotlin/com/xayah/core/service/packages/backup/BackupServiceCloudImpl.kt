@@ -135,6 +135,24 @@ internal class BackupServiceCloudImpl @Inject constructor() : AbstractBackupServ
         flag = false
     }
 
+    override suspend fun onConfigsSaved(path: String, entity: ProcessingInfoEntity) {
+        entity.update(state = OperationState.UPLOADING)
+        var flag = true
+        var progress = 0f
+        with(CoroutineScope(coroutineContext)) {
+            launch {
+                while (flag) {
+                    entity.update(content = "${(progress * 100).toInt()}%")
+                    delay(500)
+                }
+            }
+        }
+        mCloudRepo.upload(client = mClient, src = path, dstDir = mRemoteConfigsDir, onUploading = { read, total -> progress = read.toFloat() / total }).apply {
+            entity.update(state = if (isSuccess) OperationState.DONE else OperationState.ERROR, log = if (isSuccess) null else outString, content = "100%")
+        }
+        flag = false
+    }
+
     override suspend fun clear() {
         mRootService.deleteRecursively(mRootDir)
         mClient.disconnect()

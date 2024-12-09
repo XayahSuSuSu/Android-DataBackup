@@ -80,6 +80,8 @@
     <item name="necessary_remaining_data_processing" type="string" />
     <item name="files" type="string" />
     <item name="visit_details" type="string" />
+    <item name="backup_configs" type="string" />
+    <item name="backup_configs_desc" type="string" />
 
     <item name="backup_sort_type_items_apps" type="array" />
     <item name="flag_type_items" type="array" />

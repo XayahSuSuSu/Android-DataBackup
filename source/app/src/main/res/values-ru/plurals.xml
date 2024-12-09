@@ -24,4 +24,10 @@
         <item quantity="many"><xliff:g id="count">%d</xliff:g> дней</item>
         <item quantity="other"><xliff:g id="count">%d</xliff:g> дней</item>
     </plurals>
+    <plurals name="items">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> элемент</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> элемента</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> элементов</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> элементов</item>
+    </plurals>
 </resources>

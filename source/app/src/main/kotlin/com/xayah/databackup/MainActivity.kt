@@ -29,14 +29,6 @@ import com.xayah.feature.main.directory.PageDirectory
 import com.xayah.feature.main.history.HistoryRoute
 import com.xayah.feature.main.history.TaskDetailsRoute
 import com.xayah.feature.main.list.ListRoute
-import com.xayah.feature.main.medium.backup.detail.PageMediumBackupDetail
-import com.xayah.feature.main.medium.backup.list.PageMediumBackupList
-import com.xayah.feature.main.medium.restore.detail.PageMediumRestoreDetail
-import com.xayah.feature.main.medium.restore.list.PageMediumRestoreList
-import com.xayah.feature.main.packages.backup.detail.PagePackagesBackupDetail
-import com.xayah.feature.main.packages.backup.list.PagePackagesBackupList
-import com.xayah.feature.main.packages.restore.detail.PagePackagesRestoreDetail
-import com.xayah.feature.main.packages.restore.list.PagePackagesRestoreList
 import com.xayah.feature.main.processing.medium.backup.MediumBackupProcessingGraph
 import com.xayah.feature.main.processing.medium.restore.MediumRestoreProcessingGraph
 import com.xayah.feature.main.processing.packages.backup.PackagesBackupProcessingGraph
@@ -103,9 +95,6 @@ class MainActivity : AppCompatActivity() {
                         composable(MainRoutes.SFTPSetup.route) {
                             PageSFTPSetup()
                         }
-                        composable(MainRoutes.PackagesBackupList.route) {
-                            PagePackagesBackupList()
-                        }
                         composable(MainRoutes.List.route) {
                             ListRoute()
                         }
@@ -118,35 +107,14 @@ class MainActivity : AppCompatActivity() {
                         composable(MainRoutes.TaskDetails.route) {
                             TaskDetailsRoute()
                         }
-                        composable(MainRoutes.PackagesBackupDetail.route) {
-                            PagePackagesBackupDetail()
-                        }
                         composable(MainRoutes.PackagesBackupProcessingGraph.route) {
                             PackagesBackupProcessingGraph()
-                        }
-                        composable(MainRoutes.PackagesRestoreList.route) {
-                            PagePackagesRestoreList()
-                        }
-                        composable(MainRoutes.PackagesRestoreDetail.route) {
-                            PagePackagesRestoreDetail()
                         }
                         composable(MainRoutes.PackagesRestoreProcessingGraph.route) {
                             PackagesRestoreProcessingGraph()
                         }
-                        composable(MainRoutes.MediumBackupList.route) {
-                            PageMediumBackupList()
-                        }
-                        composable(MainRoutes.MediumBackupDetail.route) {
-                            PageMediumBackupDetail()
-                        }
                         composable(MainRoutes.MediumBackupProcessingGraph.route) {
                             MediumBackupProcessingGraph()
-                        }
-                        composable(MainRoutes.MediumRestoreList.route) {
-                            PageMediumRestoreList()
-                        }
-                        composable(MainRoutes.MediumRestoreDetail.route) {
-                            PageMediumRestoreDetail()
                         }
                         composable(MainRoutes.MediumRestoreProcessingGraph.route) {
                             MediumRestoreProcessingGraph()

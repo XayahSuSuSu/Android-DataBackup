@@ -27,6 +27,8 @@ import com.xayah.core.model.DataType
 import com.xayah.core.model.DefaultPreserveId
 import com.xayah.core.model.OpType
 import com.xayah.core.model.SettingsData
+import com.xayah.core.model.UserInfo
+import com.xayah.core.model.database.LabelAppCrossRefEntity
 import com.xayah.core.model.database.PackageDataStates
 import com.xayah.core.model.database.PackageDataStatesEntity
 import com.xayah.core.model.database.PackageDataStats
@@ -50,12 +52,14 @@ import com.xayah.core.util.filesDir
 import com.xayah.core.util.iconDir
 import com.xayah.core.util.localBackupSaveDir
 import com.xayah.core.util.withLog
+import com.xayah.core.util.withMainContext
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class AppsRepo @Inject constructor(
@@ -68,28 +72,51 @@ class AppsRepo @Inject constructor(
     private val pathUtil: PathUtil,
     private val cloudRepo: CloudRepository
 ) {
+    fun getBackups(filters: Flow<Filters>): Flow<Set<String>> = combine(
+        filters,
+        appsDao.queryPackagesFlow(opType = OpType.RESTORE).flowOn(defaultDispatcher),
+    ) { f, p ->
+        p.filter { it.indexInfo.cloud == f.cloud && it.indexInfo.backupDir == f.backupDir }.map { it.pkgUserKey }.toSet()
+    }
+
+    fun getInstalledApps(users: Flow<List<UserInfo>>): Flow<Set<String>> = users.map { u ->
+        val set = mutableSetOf<String>()
+        u.forEach {
+            set.addAll(rootService.getInstalledPackagesAsUser(0, it.id).map { p -> "${p.packageName}-${it.id}" }.toSet())
+        }
+        set
+    }
+
+    fun getApp(id: Long) = appsDao.queryPackageFlow(id).flowOn(defaultDispatcher)
+
     fun getApps(
         opType: OpType,
         listData: Flow<ListData>,
-        refIds: Flow<List<Long>>,
-        labelIds: Flow<Set<Long>>,
+        pkgUserSet: Flow<Set<String>>,
+        refs: Flow<List<LabelAppCrossRefEntity>>,
+        labels: Flow<Set<String>>,
         cloudName: String,
         backupDir: String
     ): Flow<List<App>> = combine(
         listData,
-        refIds,
-        labelIds,
+        pkgUserSet,
+        refs,
+        labels,
         when (opType) {
             OpType.BACKUP -> appsDao.queryPackagesFlow(opType = opType, blocked = false)
             OpType.RESTORE -> appsDao.queryPackagesFlow(opType = opType, cloud = cloudName, backupDir = backupDir)
         }
-    ) { lData, rIds, lIds, apps ->
+    ) { lData, pSet, lRefs, lLabels, apps ->
         val data = lData.castTo<ListData.Apps>()
         apps.asSequence()
             .filter(packageRepo.getKeyPredicateNew(key = data.searchQuery))
-            .filter(packageRepo.getShowSystemAppsPredicate(value = data.showSystemApps))
+            .filter(packageRepo.getShowSystemAppsPredicate(value = data.filters.showSystemApps))
+            .filter(packageRepo.getHasBackupsPredicate(value = data.filters.hasBackups, pkgUserSet = pSet))
+            .filter(packageRepo.getHasNoBackupsPredicate(value = data.filters.hasNoBackups, pkgUserSet = pSet))
+            .filter(packageRepo.getInstalledPredicate(value = data.filters.installedApps, pkgUserSet = pSet))
+            .filter(packageRepo.getNotInstalledPredicate(value = data.filters.notInstalledApps, pkgUserSet = pSet))
             .filter(packageRepo.getUserIdPredicateNew(userId = data.userList.getOrNull(data.userIndex)?.id))
-            .filter { if (lIds.isNotEmpty()) it.id in rIds else true }
+            .filter { if (lLabels.isNotEmpty()) lRefs.find { ref -> it.packageName == ref.packageName && it.userId == ref.userId && it.preserveId == ref.preserveId } != null else true }
             .sortedWith(packageRepo.getSortComparatorNew(sortIndex = data.sortIndex, sortType = data.sortType))
             .sortedByDescending { p -> p.extraInfo.activated }.toList()
             .map(PackageEntity::asExternalModel)
@@ -529,13 +556,17 @@ class AppsRepo @Inject constructor(
         val user = rootService.getUserHandle(userId)
         if (launcherApps.isPackageEnabled(packageName, user).not()) {
             // Package not enabled
-            Toast.makeText(context, context.getString(R.string.app_is_frozen), Toast.LENGTH_SHORT).show()
+            withMainContext {
+                Toast.makeText(context, context.getString(R.string.app_is_frozen), Toast.LENGTH_SHORT).show()
+            }
             return
         }
         val activityInfoList = launcherApps.getActivityList(packageName, user)
         if (activityInfoList.isEmpty()) {
             // No activities
-            Toast.makeText(context, context.getString(R.string.no_activities_found), Toast.LENGTH_SHORT).show()
+            withMainContext {
+                Toast.makeText(context, context.getString(R.string.no_activities_found), Toast.LENGTH_SHORT).show()
+            }
             return
         }
 

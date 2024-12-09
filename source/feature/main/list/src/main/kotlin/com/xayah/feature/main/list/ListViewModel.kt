@@ -15,6 +15,7 @@ import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.util.decodeURL
 import com.xayah.core.util.ifEmptyEncodeURLWithSpace
 import com.xayah.core.util.launchOnDefault
+import com.xayah.core.util.localBackupSaveDir
 import com.xayah.core.util.navigateSingle
 import com.xayah.core.work.WorkManagerInitializer
 import com.xayah.feature.main.list.ListUiState.Loading
@@ -36,7 +37,7 @@ class ListViewModel @Inject constructor(
     private val target: Target = Target.valueOf(savedStateHandle.get<String>(MainRoutes.ARG_TARGET)!!.decodeURL().trim())
     private val opType: OpType = OpType.of(savedStateHandle.get<String>(MainRoutes.ARG_OP_TYPE)?.decodeURL()?.trim())
     private val cloudName: String = savedStateHandle.get<String>(MainRoutes.ARG_ACCOUNT_NAME)?.decodeURL()?.trim() ?: ""
-    private val backupDir: String = savedStateHandle.get<String>(MainRoutes.ARG_ACCOUNT_REMOTE)?.decodeURL()?.trim() ?: ""
+    private val backupDir: String = savedStateHandle.get<String>(MainRoutes.ARG_ACCOUNT_REMOTE)?.decodeURL()?.trim()?.ifEmpty { context.localBackupSaveDir() } ?: context.localBackupSaveDir()
 
     init {
         // Reset list data

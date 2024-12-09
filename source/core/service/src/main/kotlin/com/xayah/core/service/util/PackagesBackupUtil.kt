@@ -6,7 +6,6 @@ import com.xayah.core.common.util.toLineString
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.database.dao.TaskDao
-import com.xayah.core.datastore.readCompatibleMode
 import com.xayah.core.datastore.readFollowSymlinks
 import com.xayah.core.datastore.readSelectionType
 import com.xayah.core.model.CompressionType
@@ -29,7 +28,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import kotlin.coroutines.coroutineContext
 
@@ -42,7 +40,7 @@ class PackagesBackupUtil @Inject constructor(
     private val cloudRepository: CloudRepository,
 ) {
     companion object {
-        private val TAG = this::class.java.simpleName
+        private const val TAG = "PackagesBackupUtil"
     }
 
     private fun log(onMsg: () -> String): String = run {
@@ -50,9 +48,6 @@ class PackagesBackupUtil @Inject constructor(
         LogUtil.log { TAG to msg }
         msg
     }
-
-    private val usePipe = runBlocking { context.readCompatibleMode().first() }
-    private val packageManager by lazy { context.packageManager }
 
     private suspend fun PackageEntity.getDataSelected(dataType: DataType) = when (context.readSelectionType().first()) {
         SelectionType.DEFAULT -> {
@@ -199,7 +194,6 @@ class PackagesBackupUtil @Inject constructor(
         val out = mutableListOf<String>()
 
         Tar.compress(
-            usePipe = usePipe,
             exclusionList = listOf(),
             h = "",
             srcDir = context.filesDir(),
@@ -246,7 +240,7 @@ class PackagesBackupUtil @Inject constructor(
                     t.updateInfo(dataType = dataType, state = OperationState.SKIP)
                     out.add(log { "Data has not changed." })
                 } else {
-                    Tar.compressInCur(usePipe = usePipe, cur = srcDir, src = "./*.apk", dst = dst, extra = ct.compressPara)
+                    Tar.compressInCur(cur = srcDir, src = "./*.apk", dst = dst, extra = ct.compressPara)
                         .also { result ->
                             isSuccess = result.isSuccess
                             out.addAll(result.out)
@@ -335,7 +329,6 @@ class PackagesBackupUtil @Inject constructor(
             } else {
                 // Compress and test.
                 Tar.compress(
-                    usePipe = usePipe,
                     exclusionList = exclusionList,
                     h = if (context.readFollowSymlinks().first()) "-h" else "",
                     srcDir = srcDir,

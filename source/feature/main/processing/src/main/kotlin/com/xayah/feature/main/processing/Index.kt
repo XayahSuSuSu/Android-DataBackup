@@ -267,12 +267,14 @@ fun PageProcessing(
 
                                 else -> {
                                     // Processing
-                                    val item = dataItems[it - 1]
-                                    val index = item.processingIndex
-                                    title = item.title
-                                    subtitle = item.items.getOrNull(index)?.let { it.title + if (it.content.isEmpty()) "" else " (${it.content})" } ?: stringResource(id = R.string.necessary_remaining_data_processing)
-                                    segments = item.items.size
-                                    segmentProgress = item.progress
+                                    val item = dataItems.getOrNull(it - 1)
+                                    if (item != null) {
+                                        val index = item.processingIndex
+                                        title = item.title
+                                        subtitle = item.items.getOrNull(index)?.let { it.title + if (it.content.isEmpty()) "" else " (${it.content})" } ?: stringResource(id = R.string.necessary_remaining_data_processing)
+                                        segments = item.items.size
+                                        segmentProgress = item.progress
+                                    }
                                 }
                             }
 
@@ -337,22 +339,25 @@ fun PageProcessing(
                     }
                     items(count = dataItems.size) {
                         var expanded by rememberSaveable(task, it) { mutableStateOf((task?.processingIndex?.minus(1) ?: -1) == it) }
-                        ProcessingCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .paddingHorizontal(SizeTokens.Level24),
-                            title = dataItems[it].title,
-                            state = dataItems[it].state,
-                            packageName = dataItems[it].key,
-                            expanded = expanded,
-                            items = dataItems[it].items,
-                            processingIndex = dataItems[it].processingIndex,
-                            onActionBarClick = {
-                                if (uiState.state == OperationState.DONE) {
-                                    expanded = expanded.not()
+                        val item = dataItems.getOrNull(it)
+                        if (item != null) {
+                            ProcessingCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .paddingHorizontal(SizeTokens.Level24),
+                                title = item.title,
+                                state = item.state,
+                                packageName = item.key,
+                                expanded = expanded,
+                                items = item.items,
+                                processingIndex = item.processingIndex,
+                                onActionBarClick = {
+                                    if (uiState.state == OperationState.DONE) {
+                                        expanded = expanded.not()
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                     item {
                         Spacer(modifier = Modifier.size(SizeTokens.Level12 + it))

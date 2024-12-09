@@ -12,15 +12,17 @@ import com.xayah.core.data.repository.LabelsRepo
 import com.xayah.core.hiddenapi.castTo
 import com.xayah.core.model.OpType
 import com.xayah.core.model.Target
-import com.xayah.core.model.database.AppWithLabels
-import com.xayah.core.model.database.FileWithLabels
-import com.xayah.core.model.database.LabelWithAppIds
-import com.xayah.core.model.database.LabelWithFileIds
+import com.xayah.core.model.database.LabelAppCrossRefEntity
+import com.xayah.core.model.database.LabelEntity
+import com.xayah.core.model.database.LabelFileCrossRefEntity
+import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.PackageDataStates
+import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.util.decodeURL
 import com.xayah.core.util.launchOnDefault
+import com.xayah.core.util.withMainContext
 import com.xayah.feature.main.details.DetailsUiState.Error
 import com.xayah.feature.main.details.DetailsUiState.Loading
 import com.xayah.feature.main.details.DetailsUiState.Success
@@ -49,9 +51,11 @@ class DetailsViewModel @Inject constructor(
 
     val uiState: StateFlow<DetailsUiState> = when (target) {
         Target.Apps -> {
-            combine(labelsRepo.getAppWithLabels(id), isRefreshing, labelsRepo.getLabelWithAppIds()) { app, isRefreshing, labelWithAppIds ->
+            combine(appsRepo.getApp(id), isRefreshing, labelsRepo.getLabelsFlow(), labelsRepo.getAppRefsFlow()) { app, isRefreshing, labels, refs ->
                 if (app != null) {
-                    Success.App(uuid = UUID.randomUUID(), isRefreshing = isRefreshing, labelWithAppIds = labelWithAppIds, appWithLabels = app)
+                    Success.App(uuid = UUID.randomUUID(), isRefreshing = isRefreshing, labels = labels, app = app, refs = refs.filter { ref ->
+                        labels.find { it.label == ref.label } != null && ref.packageName == app.packageName && ref.userId == app.userId && ref.preserveId == app.preserveId
+                    })
                 } else {
                     Error
                 }
@@ -59,9 +63,11 @@ class DetailsViewModel @Inject constructor(
         }
 
         Target.Files -> {
-            combine(labelsRepo.getFileWithLabels(id), isRefreshing, labelsRepo.getLabelWithFileIds()) { file, isRefreshing, labelWithFileIds ->
+            combine(filesRepo.getFile(id), isRefreshing, labelsRepo.getLabelsFlow(), labelsRepo.getFileRefsFlow()) { file, isRefreshing, labels, refs ->
                 if (file != null) {
-                    Success.File(uuid = UUID.randomUUID(), isRefreshing = isRefreshing, labelWithFileIds = labelWithFileIds, fileWithLabels = file)
+                    Success.File(uuid = UUID.randomUUID(), isRefreshing = isRefreshing, labels = labels, file = file, refs = refs.filter { ref ->
+                        labels.find { it.label == ref.label } != null && ref.path == file.path && ref.preserveId == file.preserveId
+                    })
                 } else {
                     Error
                 }
@@ -78,17 +84,17 @@ class DetailsViewModel @Inject constructor(
             when (uiState.value) {
                 is Success.App -> {
                     val state: Success.App = uiState.value.castTo()
-                    when (state.appWithLabels.app.indexInfo.opType) {
+                    when (state.app.indexInfo.opType) {
                         OpType.BACKUP -> {
                             isRefreshing.emit(true)
-                            appsRepo.updateApp(state.appWithLabels.app, state.appWithLabels.app.userId)
-                            appsRepo.calculateLocalAppSize(state.appWithLabels.app)
+                            appsRepo.updateApp(state.app, state.app.userId)
+                            appsRepo.calculateLocalAppSize(state.app)
                             isRefreshing.emit(false)
                         }
 
                         OpType.RESTORE -> {
                             isRefreshing.emit(true)
-                            appsRepo.calculateLocalAppArchiveSize(state.appWithLabels.app)
+                            appsRepo.calculateLocalAppArchiveSize(state.app)
                             isRefreshing.emit(false)
                         }
                     }
@@ -96,16 +102,16 @@ class DetailsViewModel @Inject constructor(
 
                 is Success.File -> {
                     val state: Success.File = uiState.value.castTo()
-                    when (state.fileWithLabels.file.indexInfo.opType) {
+                    when (state.file.indexInfo.opType) {
                         OpType.BACKUP -> {
                             isRefreshing.emit(true)
-                            filesRepo.calculateLocalFileSize(state.fileWithLabels.file)
+                            filesRepo.calculateLocalFileSize(state.file)
                             isRefreshing.emit(false)
                         }
 
                         OpType.RESTORE -> {
                             isRefreshing.emit(true)
-                            filesRepo.calculateLocalFileArchiveSize(state.fileWithLabels.file)
+                            filesRepo.calculateLocalFileArchiveSize(state.file)
                             isRefreshing.emit(false)
                         }
                     }
@@ -125,37 +131,39 @@ class DetailsViewModel @Inject constructor(
     fun addLabel(label: String) {
         viewModelScope.launchOnDefault {
             if (label.trim().isEmpty() || labelsRepo.addLabel(label.trim()) == -1L) {
-                Toast.makeText(context, context.getString(R.string.failed), Toast.LENGTH_SHORT).show()
+                withMainContext {
+                    Toast.makeText(context, context.getString(R.string.failed), Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
 
-    fun deleteLabel(id: Long) {
+    fun deleteLabel(label: String) {
         viewModelScope.launchOnDefault {
-            labelsRepo.deleteLabel(id)
+            labelsRepo.deleteLabel(label)
         }
     }
 
-    fun selectLabel(selected: Boolean, labelId: Long, id: Long) {
+    fun selectAppLabel(selected: Boolean, ref: LabelAppCrossRefEntity?) {
         viewModelScope.launchOnDefault {
-            when (uiState.value) {
-                is Success.App -> {
-                    if (selected) {
-                        labelsRepo.deleteLabelAppCrossRef(labelId, id)
-                    } else {
-                        labelsRepo.addLabelAppCrossRef(labelId, id)
-                    }
+            if (ref != null) {
+                if (selected) {
+                    labelsRepo.deleteLabelAppCrossRef(ref)
+                } else {
+                    labelsRepo.addLabelAppCrossRef(ref)
                 }
+            }
+        }
+    }
 
-                is Success.File -> {
-                    if (selected) {
-                        labelsRepo.deleteLabelFileCrossRef(labelId, id)
-                    } else {
-                        labelsRepo.addLabelFileCrossRef(labelId, id)
-                    }
+    fun selectFileLabel(selected: Boolean, ref: LabelFileCrossRefEntity?) {
+        viewModelScope.launchOnDefault {
+            if (ref != null) {
+                if (selected) {
+                    labelsRepo.deleteLabelFileCrossRef(ref)
+                } else {
+                    labelsRepo.addLabelFileCrossRef(ref)
                 }
-
-                else -> {}
             }
         }
     }
@@ -165,12 +173,12 @@ class DetailsViewModel @Inject constructor(
             when (uiState.value) {
                 is Success.App -> {
                     val state = uiState.value.castTo<Success.App>()
-                    appsRepo.setBlocked(state.appWithLabels.app.id, blocked.not())
+                    appsRepo.setBlocked(state.app.id, blocked.not())
                 }
 
                 is Success.File -> {
                     val state = uiState.value.castTo<Success.File>()
-                    filesRepo.setBlocked(state.fileWithLabels.file.id, blocked.not())
+                    filesRepo.setBlocked(state.file.id, blocked.not())
                 }
 
                 else -> {}
@@ -184,7 +192,7 @@ class DetailsViewModel @Inject constructor(
             when (uiState.value) {
                 is Success.App -> {
                     val state = uiState.value.castTo<Success.App>()
-                    val app = state.appWithLabels.app
+                    val app = state.app
                     if (frozen) {
                         rootService.setApplicationEnabledSetting(app.packageName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, 0, app.userId, null)
                     } else {
@@ -203,7 +211,7 @@ class DetailsViewModel @Inject constructor(
             when (uiState.value) {
                 is Success.App -> {
                     val state = uiState.value.castTo<Success.App>()
-                    val app = state.appWithLabels.app
+                    val app = state.app
                     appsRepo.launchApp(app.packageName, app.userId)
                 }
 
@@ -217,13 +225,13 @@ class DetailsViewModel @Inject constructor(
             when (uiState.value) {
                 is Success.App -> {
                     val state = uiState.value.castTo<Success.App>()
-                    val app = state.appWithLabels.app
+                    val app = state.app
                     appsRepo.protectApp(app.indexInfo.cloud, app)
                 }
 
                 else -> {
                     val state = uiState.value.castTo<Success.File>()
-                    val file = state.fileWithLabels.file
+                    val file = state.file
                     filesRepo.protectFile(file.indexInfo.cloud, file)
                 }
             }
@@ -235,13 +243,13 @@ class DetailsViewModel @Inject constructor(
             when (uiState.value) {
                 is Success.App -> {
                     val state = uiState.value.castTo<Success.App>()
-                    val app = state.appWithLabels.app
+                    val app = state.app
                     appsRepo.deleteApp(app.indexInfo.cloud, app)
                 }
 
                 is Success.File -> {
                     val state = uiState.value.castTo<Success.File>()
-                    val file = state.fileWithLabels.file
+                    val file = state.file
                     when (file.indexInfo.opType) {
                         OpType.BACKUP -> {
                             filesRepo.delete(file.id)
@@ -264,20 +272,23 @@ sealed interface DetailsUiState {
     sealed class Success(
         open val uuid: UUID,
         open val isRefreshing: Boolean,
+        open val labels: List<LabelEntity>,
     ) : DetailsUiState {
         data class App(
             override val uuid: UUID,
             override val isRefreshing: Boolean,
-            val labelWithAppIds: List<LabelWithAppIds>,
-            val appWithLabels: AppWithLabels
-        ) : Success(uuid, isRefreshing)
+            override val labels: List<LabelEntity>,
+            val app: PackageEntity,
+            val refs: List<LabelAppCrossRefEntity>,
+        ) : Success(uuid, isRefreshing, labels)
 
         data class File(
             override val uuid: UUID,
             override val isRefreshing: Boolean,
-            val labelWithFileIds: List<LabelWithFileIds>,
-            val fileWithLabels: FileWithLabels
-        ) : Success(uuid, isRefreshing)
+            override val labels: List<LabelEntity>,
+            val file: MediaEntity,
+            val refs: List<LabelFileCrossRefEntity>,
+        ) : Success(uuid, isRefreshing, labels)
     }
 
     data object Error : DetailsUiState

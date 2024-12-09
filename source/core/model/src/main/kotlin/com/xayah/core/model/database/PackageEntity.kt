@@ -257,6 +257,9 @@ data class PackageEntity(
 
     val archivesRelativeDir: String
         get() = "${packageName}/user_${userId}${if (preserveId == 0L) "" else "@$preserveId"}"
+
+    val pkgUserKey: String
+        get() = "${packageName}-${userId}"
 }
 
 

@@ -2,6 +2,9 @@ package com.xayah.core.model
 
 import com.google.gson.annotations.SerializedName
 import com.xayah.core.model.database.CloudEntity
+import com.xayah.core.model.database.LabelAppCrossRefEntity
+import com.xayah.core.model.database.LabelEntity
+import com.xayah.core.model.database.LabelFileCrossRefEntity
 
 const val DefaultPreserveId = 0L
 
@@ -28,7 +31,10 @@ data class ConfigurationsBlacklist(
 data class Configurations(
     val blacklist: ConfigurationsBlacklist,
     var cloud: List<CloudEntity>,
-    var file: List<FileItem>
+    var file: List<FileItem>,
+    var labels: List<LabelEntity>,
+    var labelAppRefs: List<LabelAppCrossRefEntity>,
+    var labelFileRefs: List<LabelFileCrossRefEntity>,
 )
 
 data class ContributorItem(

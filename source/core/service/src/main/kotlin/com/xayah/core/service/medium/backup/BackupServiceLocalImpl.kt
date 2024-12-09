@@ -65,4 +65,5 @@ internal class BackupServiceLocalImpl @Inject constructor() : AbstractBackupServ
 
     override val mRootDir by lazy { mContext.localBackupSaveDir() }
     override val mFilesDir by lazy { mPathUtil.getLocalBackupFilesDir() }
+    override val mConfigsDir by lazy { mPathUtil.getLocalBackupConfigsDir() }
 }

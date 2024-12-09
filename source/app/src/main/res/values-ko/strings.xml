@@ -141,4 +141,8 @@
     <string name="both">둘다</string>
     <string name="export">내보내기</string>
     <string name="modify">수정하다</string>
+    <string name="cloud">클라우드</string>
+    <string name="settings">설정</string>
+    <string name="installation_time">설치 시간</string>
+    <string name="not_selected">선택되지 않음</string>
 </resources>

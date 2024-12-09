@@ -10,7 +10,7 @@ import com.xayah.core.ui.viewmodel.BaseViewModel
 import com.xayah.core.ui.viewmodel.IndexUiEffect
 import com.xayah.core.ui.viewmodel.UiIntent
 import com.xayah.core.ui.viewmodel.UiState
-import com.xayah.libpickyou.ui.PickYouLauncher
+import com.xayah.libpickyou.PickYouLauncher
 import com.xayah.libpickyou.ui.model.PermissionType
 import com.xayah.libpickyou.ui.model.PickerType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -58,17 +58,16 @@ class IndexViewModel @Inject constructor(
             is IndexUiIntent.Add -> {
                 withMainContext {
                     val context = intent.context
-                    PickYouLauncher().apply {
-                        setTitle(context.getString(R.string.select_target_directory))
-                        setType(PickerType.DIRECTORY)
-                        setLimitation(0)
-                        setPermissionType(PermissionType.ROOT)
-                        launch(context) { pathList ->
+                    PickYouLauncher(
+                        checkPermission = true,
+                        title = context.getString(R.string.select_target_directory),
+                        pickerType = PickerType.DIRECTORY,
+                        permissionType = PermissionType.ROOT,
+                    ).apply {
+                        launch(context) { pathString ->
                             launchOnIO {
-                                if (pathList.isNotEmpty()) {
-                                    directoryRepo.addDir(pathList)
-                                    emitIntent(IndexUiIntent.Update)
-                                }
+                                directoryRepo.addDir(listOf(pathString))
+                                emitIntent(IndexUiIntent.Update)
                             }
                         }
                     }

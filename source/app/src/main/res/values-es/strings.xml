@@ -382,4 +382,9 @@
     <string name="args_backed_up_at">Respaldado en %1$s</string>
     <string name="args_restored_at">Restaurado en %1$s</string>
     <string name="task_details">Detalles de la tarea</string>
+    <string name="apps_which_have_no_backups">Aplicaciones sin copias de seguridad</string>
+    <string name="apps_which_have_backups">Aplicaciones con copias de seguridad</string>
+    <string name="no_labels_here">Sin etiquetas.</string>
+    <string name="backup_configs_desc">Exportar configuraciones al directorio de copia de seguridad</string>
+    <string name="backup_configs">Ajustes de copia de seguridad</string>
 </resources>

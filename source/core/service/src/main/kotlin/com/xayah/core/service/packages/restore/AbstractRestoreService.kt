@@ -3,6 +3,8 @@ package com.xayah.core.service.packages.restore
 import android.annotation.SuppressLint
 import com.xayah.core.datastore.readKillAppOption
 import com.xayah.core.datastore.readResetRestoreList
+import com.xayah.core.datastore.readRestorePermissions
+import com.xayah.core.datastore.readRestoreSsaid
 import com.xayah.core.datastore.readRestoreUser
 import com.xayah.core.datastore.saveLastRestoreTime
 import com.xayah.core.model.DataType
@@ -134,8 +136,12 @@ internal abstract class AbstractRestoreService : AbstractPackagesService() {
                 restore(type = DataType.PACKAGE_DATA, userId = userId, p = p, t = pkg, srcDir = srcDir)
                 restore(type = DataType.PACKAGE_OBB, userId = userId, p = p, t = pkg, srcDir = srcDir)
                 restore(type = DataType.PACKAGE_MEDIA, userId = userId, p = p, t = pkg, srcDir = srcDir)
-                mPackagesRestoreUtil.restorePermissions(userId = userId, p = p)
-                mPackagesRestoreUtil.restoreSsaid(userId = userId, p = p)
+                if (mContext.readRestorePermissions().first()) {
+                    mPackagesRestoreUtil.restorePermissions(userId = userId, p = p)
+                }
+                if (mContext.readRestoreSsaid().first()) {
+                    mPackagesRestoreUtil.restoreSsaid(userId = userId, p = p)
+                }
 
                 if (pkg.isSuccess) {
                     pkg.update(packageEntity = p)

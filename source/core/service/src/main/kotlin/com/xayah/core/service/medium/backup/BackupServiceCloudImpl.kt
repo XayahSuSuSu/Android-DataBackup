@@ -64,10 +64,13 @@ internal class BackupServiceCloudImpl @Inject constructor() : AbstractBackupServ
 
         mRemotePath = mCloudEntity.remote
         mRemoteFilesDir = mPathUtil.getCloudRemoteFilesDir(mRemotePath)
+        mRemoteConfigsDir = mPathUtil.getCloudRemoteConfigsDir(mRemotePath)
         mTaskEntity.update(cloud = mCloudEntity.name, backupDir = mRemotePath)
 
         log { "Trying to create: $mRemoteFilesDir." }
+        log { "Trying to create: $mRemoteConfigsDir." }
         mClient.mkdirRecursively(mRemoteFilesDir)
+        mClient.mkdirRecursively(mRemoteConfigsDir)
     }
 
     private fun getRemoteFileDir(archivesRelativeDir: String) = "${mRemoteFilesDir}/${archivesRelativeDir}"
@@ -109,6 +112,24 @@ internal class BackupServiceCloudImpl @Inject constructor() : AbstractBackupServ
         flag = false
     }
 
+    override suspend fun onConfigsSaved(path: String, entity: ProcessingInfoEntity) {
+        entity.update(state = OperationState.UPLOADING)
+        var flag = true
+        var progress = 0f
+        with(CoroutineScope(coroutineContext)) {
+            launch {
+                while (flag) {
+                    entity.update(content = "${(progress * 100).toInt()}%")
+                    delay(500)
+                }
+            }
+        }
+        mCloudRepo.upload(client = mClient, src = path, dstDir = mRemoteConfigsDir, onUploading = { read, total -> progress = read.toFloat() / total }).apply {
+            entity.update(state = if (isSuccess) OperationState.DONE else OperationState.ERROR, log = if (isSuccess) null else outString, content = "100%")
+        }
+        flag = false
+    }
+
     override suspend fun clear() {
         mRootService.deleteRecursively(mRootDir)
         mClient.disconnect()
@@ -125,6 +146,7 @@ internal class BackupServiceCloudImpl @Inject constructor() : AbstractBackupServ
 
     override val mRootDir by lazy { mPathUtil.getCloudTmpDir() }
     override val mFilesDir by lazy { mPathUtil.getCloudTmpFilesDir() }
+    override val mConfigsDir by lazy { mPathUtil.getCloudTmpConfigsDir() }
 
     @Inject
     lateinit var mCloudRepo: CloudRepository
@@ -133,4 +155,5 @@ internal class BackupServiceCloudImpl @Inject constructor() : AbstractBackupServ
     private lateinit var mClient: CloudClient
     private lateinit var mRemotePath: String
     private lateinit var mRemoteFilesDir: String
+    private lateinit var mRemoteConfigsDir: String
 }

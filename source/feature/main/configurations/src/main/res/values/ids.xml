@@ -12,6 +12,7 @@
     <item name="imported" type="string" />
     <item name="blacklist" type="string" />
     <item name="files" type="string" />
+    <item name="labels" type="string" />
 
     <item name="ic_rounded_folder_open" type="drawable" />
 </resources>

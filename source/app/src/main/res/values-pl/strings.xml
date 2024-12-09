@@ -24,4 +24,16 @@
     <string name="start_desc">Wszystkie dane generowane przez tę aplikację są używane wyłącznie do tworzenia kopii zapasowych/przywracania i są przechowywane tylko lokalnie.</string>
     <string name="grant_root_access">Dostęp do root\'a</string>
     <string name="network_desc">Służy do uzyskiwania informacji o aktualizacjach aplikacji, oraz analizy aplikacji</string>
+    <string name="release_prebuilt_binaries">Zwolić zbudowane pliki binarne</string>
+    <string name="media">Media</string>
+    <string name="last_backup">Ostatnia kopia zapasowa</string>
+    <string name="internal_storage">Pamięć wewnętrzna</string>
+    <string name="succeed">Sukcess</string>
+    <string name="failed">Nie powiodło się</string>
+    <string name="storage_desc">Używane dla konfiguracji kopi zapasowej, archiwum odczytu i zapisu</string>
+    <string name="loading_failed">Ładowanie nie powiodło się</string>
+    <string name="app_and_data">Aplicakje</string>
+    <string name="telephony">Historia połączeń</string>
+    <string name="fetch_failed">Pobieranie nie powiodło się</string>
+    <string name="unsupported_format">Nieobsługiwany format</string>
 </resources>

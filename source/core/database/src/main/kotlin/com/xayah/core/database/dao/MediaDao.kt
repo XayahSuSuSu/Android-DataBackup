@@ -123,6 +123,11 @@ interface MediaDao {
     suspend fun delete(ids: List<Long>)
 
     @Query(
+        "SELECT * FROM MediaEntity WHERE id = :id"
+    )
+    fun queryFileFlow(id:Long): Flow<MediaEntity?>
+
+    @Query(
         "SELECT * FROM MediaEntity WHERE" +
                 " indexInfo_opType = :opType AND extraInfo_existed = :existed AND extraInfo_blocked = :blocked"
     )

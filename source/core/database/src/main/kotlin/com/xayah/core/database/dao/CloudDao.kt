@@ -24,6 +24,9 @@ interface CloudDao {
     @Query("SELECT * FROM CloudEntity")
     fun queryFlow(): Flow<List<CloudEntity>>
 
+    @Query("SELECT * FROM CloudEntity")
+    suspend fun query(): List<CloudEntity>
+
     @Delete(entity = CloudEntity::class)
     suspend fun delete(item: CloudEntity)
 }

@@ -62,50 +62,25 @@ sealed class MainRoutes(val route: String) {
         fun getRoute(id: Long) = "main_task_details/${id}"
     }
 
-    data object PackagesBackupList : MainRoutes(route = "main_packages_backup_list")
-    data object PackagesBackupDetail : MainRoutes(route = "main_packages_backup_detail/{$ARG_PACKAGE_NAME}/{$ARG_USER_ID}") {
-        fun getRoute(packageName: String, userId: Int) = "main_packages_backup_detail/${packageName}/${userId}"
-    }
-    data object PackagesBackupProcessingGraph : MainRoutes(route = "main_packages_backup_processing_graph")
+    data object Directory : MainRoutes(route = "main_directory")
+
     data object PackagesBackupProcessing : MainRoutes(route = "main_packages_backup_processing")
     data object PackagesBackupProcessingSetup : MainRoutes(route = "main_packages_backup_processing_setup")
+    data object PackagesBackupProcessingGraph : MainRoutes(route = "main_packages_backup_processing_graph")
 
-    data object PackagesRestoreList : MainRoutes(route = "main_packages_restore_list/{$ARG_ACCOUNT_NAME}/{$ARG_ACCOUNT_REMOTE}") {
-        fun getRoute(name: String, remote: String) = "main_packages_restore_list/${name}/${remote}"
-    }
-
-    data object PackagesRestoreDetail : MainRoutes(route = "main_packages_restore_detail/{$ARG_PACKAGE_NAME}/{$ARG_USER_ID}/{$ARG_PRESERVE_ID}") {
-        fun getRoute(packageName: String, userId: Int, preserveId: Long) = "main_packages_restore_detail/${packageName}/${userId}/${preserveId}"
-    }
-
+    data object PackagesRestoreProcessing : MainRoutes(route = "main_packages_restore_processing")
+    data object PackagesRestoreProcessingSetup : MainRoutes(route = "main_packages_restore_processing_setup")
     data object PackagesRestoreProcessingGraph : MainRoutes(route = "main_packages_restore_processing_graph/{$ARG_ACCOUNT_NAME}/{$ARG_ACCOUNT_REMOTE}") {
         fun getRoute(cloudName: String = encodedURLWithSpace, backupDir: String = encodedURLWithSpace) = "main_packages_restore_processing_graph/${cloudName}/${backupDir}"
     }
-    data object PackagesRestoreProcessing : MainRoutes(route = "main_packages_restore_processing")
-    data object PackagesRestoreProcessingSetup : MainRoutes(route = "main_packages_restore_processing_setup")
 
-    data object MediumBackupList : MainRoutes(route = "main_medium_backup_list")
-    data object MediumBackupDetail : MainRoutes(route = "main_medium_backup_detail/{$ARG_MEDIA_NAME}") {
-        fun getRoute(name: String) = "main_medium_backup_detail/${name}"
-    }
-    data object MediumBackupProcessingGraph : MainRoutes(route = "main_medium_backup_processing_graph")
     data object MediumBackupProcessing : MainRoutes(route = "main_medium_backup_processing")
     data object MediumBackupProcessingSetup : MainRoutes(route = "main_medium_backup_processing_setup")
-
-    data object MediumRestoreList : MainRoutes(route = "main_medium_restore_list/{$ARG_ACCOUNT_NAME}/{$ARG_ACCOUNT_REMOTE}") {
-        fun getRoute(name: String, remote: String) = "main_medium_restore_list/${name}/${remote}"
-    }
-
-    data object MediumRestoreDetail : MainRoutes(route = "main_medium_restore_detail/{$ARG_MEDIA_NAME}/{$ARG_PRESERVE_ID}") {
-        fun getRoute(name: String, preserveId: Long) = "main_medium_restore_detail/${name}/${preserveId}"
-    }
-
-    data object MediumRestoreProcessingGraph : MainRoutes(route = "main_medium_restore_processing_graph/{$ARG_ACCOUNT_NAME}/{$ARG_ACCOUNT_REMOTE}") {
-        fun getRoute(cloudName: String = encodedURLWithSpace, backupDir: String = encodedURLWithSpace) = "main_medium_restore_processing_graph/${cloudName}/${backupDir}"
-    }
+    data object MediumBackupProcessingGraph : MainRoutes(route = "main_medium_backup_processing_graph")
 
     data object MediumRestoreProcessing : MainRoutes(route = "main_medium_restore_processing")
     data object MediumRestoreProcessingSetup : MainRoutes(route = "main_medium_restore_processing_setup")
-
-    data object Directory : MainRoutes(route = "main_directory")
+    data object MediumRestoreProcessingGraph : MainRoutes(route = "main_medium_restore_processing_graph/{$ARG_ACCOUNT_NAME}/{$ARG_ACCOUNT_REMOTE}") {
+        fun getRoute(cloudName: String = encodedURLWithSpace, backupDir: String = encodedURLWithSpace) = "main_medium_restore_processing_graph/${cloudName}/${backupDir}"
+    }
 }

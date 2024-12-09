@@ -5,7 +5,6 @@ import com.xayah.core.common.util.toLineString
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.MediaRepository
 import com.xayah.core.database.dao.TaskDao
-import com.xayah.core.datastore.readCompatibleMode
 import com.xayah.core.datastore.readFollowSymlinks
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OperationState
@@ -22,7 +21,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import kotlin.coroutines.coroutineContext
 
@@ -35,7 +33,7 @@ class MediumBackupUtil @Inject constructor(
     private val cloudRepository: CloudRepository,
 ) {
     companion object {
-        private val TAG = this::class.java.simpleName
+        private const val TAG = "MediumBackupUtil"
     }
 
     private fun log(onMsg: () -> String): String = run {
@@ -43,8 +41,6 @@ class MediumBackupUtil @Inject constructor(
         LogUtil.log { TAG to msg }
         msg
     }
-
-    private val usePipe = runBlocking { context.readCompatibleMode().first() }
 
     private fun MediaEntity.getDataBytes() = mediaInfo.dataBytes
 
@@ -98,7 +94,6 @@ class MediumBackupUtil @Inject constructor(
         } else {
             // Compress and test.
             Tar.compress(
-                usePipe = usePipe,
                 exclusionList = listOf(),
                 h = if (context.readFollowSymlinks().first()) "-h" else "",
                 srcDir = srcDir,

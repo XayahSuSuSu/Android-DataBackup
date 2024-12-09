@@ -36,6 +36,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.xayah.core.datastore.KeyAutoScreenOff
+import com.xayah.core.datastore.KeyBackupConfigs
 import com.xayah.core.datastore.KeyResetBackupList
 import com.xayah.core.model.StorageMode
 import com.xayah.core.ui.component.Clickable
@@ -180,6 +181,12 @@ fun PageMediumBackupProcessingSetup(localNavController: NavHostController, viewM
                     defValue = false,
                     title = stringResource(id = R.string.reset_backup_list),
                     checkedText = stringResource(id = R.string.reset_backup_list_desc),
+                )
+                Switchable(
+                    key = KeyBackupConfigs,
+                    defValue = true,
+                    title = stringResource(id = R.string.backup_configs),
+                    checkedText = stringResource(id = R.string.backup_configs_desc),
                 )
             }
         }

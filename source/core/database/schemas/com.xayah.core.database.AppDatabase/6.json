@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 6,
-    "identityHash": "fa59edfe6e5a6f2d0ccc263a8edc342b",
+    "identityHash": "f8e83eee995afb492ee97d579e8be4e4",
     "entities": [
       {
         "tableName": "PackageEntity",
@@ -1427,14 +1427,8 @@
       },
       {
         "tableName": "LabelEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `label` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`label` TEXT NOT NULL, PRIMARY KEY(`label`))",
         "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
           {
             "fieldPath": "label",
             "columnName": "label",
@@ -1443,9 +1437,9 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": true,
+          "autoGenerate": false,
           "columnNames": [
-            "id"
+            "label"
           ]
         },
         "indices": [
@@ -1463,17 +1457,29 @@
       },
       {
         "tableName": "LabelAppCrossRefEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`labelId` INTEGER NOT NULL, `appId` INTEGER NOT NULL, PRIMARY KEY(`labelId`, `appId`), FOREIGN KEY(`labelId`) REFERENCES `LabelEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`appId`) REFERENCES `PackageEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`label` TEXT NOT NULL, `packageName` TEXT NOT NULL, `userId` INTEGER NOT NULL, `preserveId` INTEGER NOT NULL, PRIMARY KEY(`label`, `packageName`, `userId`, `preserveId`))",
         "fields": [
           {
-            "fieldPath": "labelId",
-            "columnName": "labelId",
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "appId",
-            "columnName": "appId",
+            "fieldPath": "preserveId",
+            "columnName": "preserveId",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -1481,60 +1487,47 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "labelId",
-            "appId"
+            "label",
+            "packageName",
+            "userId",
+            "preserveId"
           ]
         },
         "indices": [
           {
-            "name": "index_LabelAppCrossRefEntity_labelId_appId",
+            "name": "index_LabelAppCrossRefEntity_label_packageName_userId_preserveId",
             "unique": true,
             "columnNames": [
-              "labelId",
-              "appId"
+              "label",
+              "packageName",
+              "userId",
+              "preserveId"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_LabelAppCrossRefEntity_labelId_appId` ON `${TABLE_NAME}` (`labelId`, `appId`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_LabelAppCrossRefEntity_label_packageName_userId_preserveId` ON `${TABLE_NAME}` (`label`, `packageName`, `userId`, `preserveId`)"
           }
         ],
-        "foreignKeys": [
-          {
-            "table": "LabelEntity",
-            "onDelete": "CASCADE",
-            "onUpdate": "CASCADE",
-            "columns": [
-              "labelId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          },
-          {
-            "table": "PackageEntity",
-            "onDelete": "CASCADE",
-            "onUpdate": "CASCADE",
-            "columns": [
-              "appId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          }
-        ]
+        "foreignKeys": []
       },
       {
         "tableName": "LabelFileCrossRefEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`labelId` INTEGER NOT NULL, `fileId` INTEGER NOT NULL, PRIMARY KEY(`labelId`, `fileId`), FOREIGN KEY(`labelId`) REFERENCES `LabelEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`fileId`) REFERENCES `MediaEntity`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`label` TEXT NOT NULL, `path` TEXT NOT NULL, `preserveId` INTEGER NOT NULL, PRIMARY KEY(`label`, `path`, `preserveId`))",
         "fields": [
           {
-            "fieldPath": "labelId",
-            "columnName": "labelId",
-            "affinity": "INTEGER",
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "fileId",
-            "columnName": "fileId",
+            "fieldPath": "path",
+            "columnName": "path",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "preserveId",
+            "columnName": "preserveId",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -1542,52 +1535,31 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "labelId",
-            "fileId"
+            "label",
+            "path",
+            "preserveId"
           ]
         },
         "indices": [
           {
-            "name": "index_LabelFileCrossRefEntity_labelId_fileId",
+            "name": "index_LabelFileCrossRefEntity_label_path_preserveId",
             "unique": true,
             "columnNames": [
-              "labelId",
-              "fileId"
+              "label",
+              "path",
+              "preserveId"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_LabelFileCrossRefEntity_labelId_fileId` ON `${TABLE_NAME}` (`labelId`, `fileId`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_LabelFileCrossRefEntity_label_path_preserveId` ON `${TABLE_NAME}` (`label`, `path`, `preserveId`)"
           }
         ],
-        "foreignKeys": [
-          {
-            "table": "LabelEntity",
-            "onDelete": "CASCADE",
-            "onUpdate": "CASCADE",
-            "columns": [
-              "labelId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          },
-          {
-            "table": "MediaEntity",
-            "onDelete": "CASCADE",
-            "onUpdate": "CASCADE",
-            "columns": [
-              "fileId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          }
-        ]
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fa59edfe6e5a6f2d0ccc263a8edc342b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f8e83eee995afb492ee97d579e8be4e4')"
     ]
   }
 }

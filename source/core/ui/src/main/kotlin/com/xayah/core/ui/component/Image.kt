@@ -50,7 +50,7 @@ import kotlin.math.sqrt
 
 @ExperimentalFoundationApi
 @Composable
-fun PackageIconImage(icon: ImageVector? = null, packageName: String, shape: Shape? = null, inCircleShape: Boolean = false, fromLocal: Boolean = false, size: Dp = SizeTokens.Level32) {
+fun PackageIconImage(icon: ImageVector? = null, packageName: String, shape: Shape? = null, inCircleShape: Boolean = false, size: Dp = SizeTokens.Level32) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var iconForeground by remember(packageName, icon) { mutableStateOf<Drawable?>(null) }
@@ -60,26 +60,24 @@ fun PackageIconImage(icon: ImageVector? = null, packageName: String, shape: Shap
         if (icon == null) {
             scope.launch(Dispatchers.IO) {
                 val iconDrawable = runCatching { context.packageManager.getApplicationIcon(packageName) }.getOrNull()
-                if (inCircleShape) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && iconDrawable is AdaptiveIconDrawable) {
-                        iconBackground = LayerDrawable(arrayOf(iconDrawable.background, iconDrawable.foreground))
+                if (iconDrawable != null) {
+                    if (inCircleShape) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && iconDrawable is AdaptiveIconDrawable) {
+                            iconBackground = LayerDrawable(arrayOf(iconDrawable.background, iconDrawable.foreground))
+                        } else {
+                            iconBackground = null
+                            iconForeground = iconDrawable
+                        }
                     } else {
-                        iconBackground = null
                         iconForeground = iconDrawable
                     }
                 } else {
-                    iconForeground = iconDrawable
-                }
-
-                if (fromLocal) {
-                    if (iconForeground == null && iconBackground == null) {
-                        var localDrawable = BaseUtil.readIcon(context, PathUtil.getPackageIconPath(context, packageName, true))
-                        if (localDrawable != null) {
-                            iconBackground = localDrawable
-                        } else {
-                            localDrawable = BaseUtil.readIcon(context, PathUtil.getPackageIconPath(context, packageName, false))
-                            iconForeground = localDrawable
-                        }
+                    var localDrawable = BaseUtil.readIcon(context, PathUtil.getPackageIconPath(context, packageName, true))
+                    if (localDrawable != null) {
+                        iconBackground = localDrawable
+                    } else {
+                        localDrawable = BaseUtil.readIcon(context, PathUtil.getPackageIconPath(context, packageName, false))
+                        iconForeground = localDrawable
                     }
                 }
                 if (iconForeground == null && iconBackground == null) {
@@ -91,19 +89,18 @@ fun PackageIconImage(icon: ImageVector? = null, packageName: String, shape: Shap
 
     Box(modifier = if (shape != null) Modifier.clip(shape) else Modifier, contentAlignment = Alignment.Center) {
         with(LocalDensity.current) {
-            if (inCircleShape)
-                AsyncImage(
-                    modifier = Modifier
-                        .size(size)
-                        .clip(CircleShape)
-                        .scale(1.4f)
-                        .background(ThemedColorSchemeKeyTokens.PrimaryContainer.value),
-                    model = ImageRequest.Builder(context)
-                        .data(iconBackground?.toBitmap(sizeForeground.roundToPx(), sizeForeground.roundToPx(), Bitmap.Config.ARGB_8888))
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = null
-                )
+            AsyncImage(
+                modifier = Modifier
+                    .size(size)
+                    .clip(CircleShape)
+                    .scale(1.4f)
+                    .background(ThemedColorSchemeKeyTokens.PrimaryContainer.value),
+                model = ImageRequest.Builder(context)
+                    .data(iconBackground?.toBitmap(sizeForeground.roundToPx(), sizeForeground.roundToPx(), Bitmap.Config.ARGB_8888))
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null
+            )
             if (icon != null) {
                 Icon(
                     imageVector = icon,
@@ -125,7 +122,6 @@ fun PackageIconImage(icon: ImageVector? = null, packageName: String, shape: Shap
             }
         }
     }
-
 }
 
 @ExperimentalFoundationApi

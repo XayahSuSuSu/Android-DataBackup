@@ -1,6 +1,8 @@
 package com.xayah.core.service.packages.backup
 
 import android.annotation.SuppressLint
+import com.xayah.core.common.util.toLineString
+import com.xayah.core.datastore.readBackupConfigs
 import com.xayah.core.datastore.readBackupItself
 import com.xayah.core.datastore.readKillAppOption
 import com.xayah.core.datastore.readResetBackupList
@@ -99,6 +101,7 @@ internal abstract class AbstractBackupService : AbstractPackagesService() {
     abstract suspend fun backup(type: DataType, p: PackageEntity, r: PackageEntity?, t: TaskDetailPackageEntity, dstDir: String)
     protected open suspend fun onConfigSaved(path: String, archivesRelativeDir: String) {}
     protected open suspend fun onItselfSaved(path: String, entity: ProcessingInfoEntity) {}
+    protected open suspend fun onConfigsSaved(path: String, entity: ProcessingInfoEntity) {}
     protected open suspend fun onIconsSaved(path: String, entity: ProcessingInfoEntity) {}
     protected open suspend fun clear() {}
 
@@ -246,6 +249,22 @@ internal abstract class AbstractBackupService : AbstractPackagesService() {
                     mContext.getString(R.string.wait_for_remaining_data_processing)
                 )
 
+                var isSuccess = true
+                val out = mutableListOf<String>()
+                if (mContext.readBackupConfigs().first()) {
+                    log { "Backup configs enabled." }
+                    mCommonBackupUtil.backupConfigs(dstDir = mConfigsDir).also { result ->
+                        if (result.isSuccess.not()) {
+                            isSuccess = false
+                        }
+                        out.add(result.outString)
+                        if (result.isSuccess) {
+                            onConfigsSaved(path = mCommonBackupUtil.getConfigsDst(mConfigsDir), entity = entity)
+                        }
+                    }
+                }
+                entity.update(progress = 0.5f)
+
                 // Restore keyboard and services.
                 if (necessaryInfo.inputMethods.isNotEmpty()) {
                     PreparationUtil.setInputMethods(inputMethods = necessaryInfo.inputMethods)
@@ -260,8 +279,10 @@ internal abstract class AbstractBackupService : AbstractPackagesService() {
                     log { "AccessibilityServices is empty, skip restoring." }
                 }
                 if (mContext.readResetBackupList().first()) mPackageDao.clearActivated(OpType.BACKUP)
-                val isSuccess = runCatchingOnService { clear() }
-                entity.update(progress = 1f, state = if (isSuccess) OperationState.DONE else OperationState.ERROR)
+                if (runCatchingOnService { clear() }.not()) {
+                    isSuccess = false
+                }
+                entity.set(progress = 1f, state = if (isSuccess) OperationState.DONE else OperationState.ERROR, log = out.toLineString())
             }
 
             else -> {}
