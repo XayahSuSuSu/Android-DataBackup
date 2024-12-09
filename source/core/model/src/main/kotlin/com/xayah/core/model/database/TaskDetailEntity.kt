@@ -58,6 +58,15 @@ data class TaskDetailMediaEntity(
 }
 
 @Entity
+data class TaskDetailMessageEntity(
+    @PrimaryKey(autoGenerate = true) var id: Long = 0,
+    var taskId: Long,
+    var state: OperationState = OperationState.IDLE,
+    @ColumnInfo(defaultValue = "0") var processingIndex: Int = 0,
+    @Embedded(prefix = "messageEntity_") var messageEntity: MessageEntity,
+)
+
+@Entity
 data class ProcessingInfoEntity(
     @PrimaryKey(autoGenerate = true) var id: Long = 0,
     var taskId: Long,

@@ -20,6 +20,7 @@ import com.xayah.core.model.database.MessageEntity
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.ProcessingInfoEntity
 import com.xayah.core.model.database.TaskDetailMediaEntity
+import com.xayah.core.model.database.TaskDetailMessageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.database.TaskEntity
 import java.text.DecimalFormat
@@ -110,16 +111,14 @@ fun TaskDetailPackageEntity.set(
     if (packageEntity != null) this.packageEntity = packageEntity
 }
 
-fun MessageEntity.set(
+fun TaskDetailMessageEntity.set(
     state: OperationState? = null,
     processingIndex: Int? = null,
     messageEntity: MessageEntity? = null,
 ) = run {
     if (state != null) this.state = state
     if (processingIndex != null) this.processingIndex = processingIndex
-    if (messageEntity?.id != null) this.id = messageEntity.id
-    if (messageEntity?.messageInfo != null) this.messageInfo = messageEntity.messageInfo
-    if (messageEntity?.messageExtraInfo != null) this.messageExtraInfo = messageEntity.messageExtraInfo
+    if (messageEntity != null) this.messageEntity = messageEntity
 }
 
 fun TaskDetailPackageEntity.set(

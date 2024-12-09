@@ -4,13 +4,26 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.xayah.core.model.CompressionType
 import com.xayah.core.model.MMSMessageBox
 import com.xayah.core.model.MessageType
+import com.xayah.core.model.OpType
 import com.xayah.core.model.OperationState
 import com.xayah.core.model.SMSMessageBox
 import kotlinx.serialization.Serializable
 
 interface BaseMessageExtraInfo
+
+@Serializable
+data class MessageIndexInfo(
+    var opType: OpType,
+    var name: String,
+    var compressionType: CompressionType,
+    var preserveId: Long,
+    var cloud: String,
+    var backupDir: String,
+    var messageType: MessageType,
+)
 
 data class MMSExtraInfo(
     val id: Long,
@@ -55,8 +68,7 @@ data class SMSExtraInfo(
 ) : BaseMessageExtraInfo
 
 @Serializable
-data class MessageInfo(
-    val messageInfoType: MessageType,
+data class MessageBaseInfo(
     val address: String,
     val body: String, // SMS: body, MMS: text
     val date: Long,
@@ -73,9 +85,8 @@ data class MessageInfo(
 @Entity
 data class MessageEntity(
     @PrimaryKey(autoGenerate = true) var id: Long,
-    val taskId: Long,
-    var state: OperationState = OperationState.IDLE,
     @ColumnInfo(defaultValue = "0") var processingIndex: Int = 0,
-    @Embedded(prefix = "messageInfo_") var messageInfo: MessageInfo,
+    @Embedded(prefix = "indexInfo_") var indexInfo: MessageIndexInfo,
+    @Embedded(prefix = "messageBaseInfo_") var messageBaseInfo: MessageBaseInfo,
     @Embedded(prefix = "messageExtraInfo_") var messageExtraInfo: BaseMessageExtraInfo,
 )

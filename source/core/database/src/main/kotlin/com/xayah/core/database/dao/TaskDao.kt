@@ -7,6 +7,7 @@ import com.xayah.core.model.ProcessingType
 import com.xayah.core.model.database.MessageEntity
 import com.xayah.core.model.database.ProcessingInfoEntity
 import com.xayah.core.model.database.TaskDetailMediaEntity
+import com.xayah.core.model.database.TaskDetailMessageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.database.TaskEntity
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +22,9 @@ interface TaskDao {
 
     @Upsert(entity = TaskDetailMediaEntity::class)
     suspend fun upsert(item: TaskDetailMediaEntity): Long
+
+    @Upsert(entity = TaskDetailMessageEntity::class)
+    suspend fun upsert(item: TaskDetailMessageEntity): Long
 
     @Upsert(entity = ProcessingInfoEntity::class)
     suspend fun upsert(item: ProcessingInfoEntity): Long
