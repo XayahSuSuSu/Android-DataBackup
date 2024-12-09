@@ -373,4 +373,7 @@
     <string name="no_activities_found">لم يتم العثور على أنشطة!</string>
     <string name="granted">ممنوح</string>
     <string name="denied">مرفوض</string>
+    <string name="task_details">تفاصيل المهمة</string>
+    <string name="visit_details">زيارة التفاصيل</string>
+    <string name="history">السجل</string>
 </resources>
