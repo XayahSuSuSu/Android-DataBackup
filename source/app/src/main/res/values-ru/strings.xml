@@ -56,7 +56,7 @@
     <string name="version">Версия</string>
     <string name="databases_reload_failed">Не удалось перезагрузить базы данных</string>
     <string name="backup_itself_desc">Копировать apk DataBackup в папку бекапов при создании бекапа</string>
-    <string name="monet">Моне</string>
+    <string name="monet">Monet</string>
     <string name="account">Аккаунт</string>
     <string name="clean_restoring_desc">Очистка целевой папки перед восстановлением</string>
     <string name="network_desc">Используется только для получения информации об обновлении приложения, аналитика приложений</string>
@@ -390,5 +390,5 @@
     <string name="restore_permissions">Восстановить разрешения</string>
     <string name="restore_permissions_desc">Восстановить разрешения приложений</string>
     <string name="restore_ssaid">Восстановить Android ID</string>
-    <string name="restore_ssaid_desc">Восстановите идентификатор Android приложения. Для вступления изменений в силу потребуется немедленная перезагрузка</string>
+    <string name="restore_ssaid_desc">Восстановить Android ID приложений. Для вступления изменений в силу требуется немедленная перезагрузка</string>
 </resources>
