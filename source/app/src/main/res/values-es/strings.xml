@@ -387,4 +387,8 @@
     <string name="no_labels_here">Sin etiquetas.</string>
     <string name="backup_configs_desc">Exportar configuraciones al directorio de copia de seguridad</string>
     <string name="backup_configs">Ajustes de copia de seguridad</string>
+    <string name="restore_ssaid_desc">Restaure la identificación de Android de la aplicación; es necesario reiniciarla inmediatamente después de la restauración para que surta efecto</string>
+    <string name="restore_permissions_desc">Restaurar permisos de aplicaciones</string>
+    <string name="restore_permissions">Restaurar permisos</string>
+    <string name="restore_ssaid">Restaurar identificación de Android</string>
 </resources>
