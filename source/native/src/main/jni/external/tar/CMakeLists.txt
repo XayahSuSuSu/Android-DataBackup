@@ -1,3 +1,5 @@
+set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR})
+
 add_compile_options(
         -DHAVE_CONFIG_H
         -O3
@@ -306,3 +308,4 @@ target_link_libraries(tar
         libgnu
         libtar
 )
+install(TARGETS tar DESTINATION bin)
