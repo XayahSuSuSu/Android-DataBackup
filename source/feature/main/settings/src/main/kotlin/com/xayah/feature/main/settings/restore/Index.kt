@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.xayah.core.datastore.KeyCleanRestoring
 import com.xayah.core.datastore.KeyRestorePermissions
 import com.xayah.core.datastore.KeyRestoreSsaid
 import com.xayah.core.datastore.readKillAppOption
@@ -80,14 +81,12 @@ fun PageRestoreSettings() {
                     }
                 }
 
-                /**
-                 * Switchable(
-                 *     key = KeyCleanRestoring,
-                 *     defValue = false,
-                 *     title = stringResource(id = R.string.clean_restoring),
-                 *     checkedText = stringResource(id = R.string.clean_restoring_desc),
-                 * )
-                 */
+                Switchable(
+                    key = KeyCleanRestoring,
+                    defValue = false,
+                    title = stringResource(id = R.string.clean_restoring),
+                    checkedText = stringResource(id = R.string.clean_restoring_desc),
+                )
 
                 Switchable(
                     key = KeyRestorePermissions,
