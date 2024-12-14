@@ -6,7 +6,6 @@ plugins {
 
 android {
     namespace = "com.xayah.core.rootservice"
-    ndkVersion = "25.2.9519653"
 
     buildTypes {
         release {
@@ -17,13 +16,6 @@ android {
     buildFeatures {
         aidl = true
     }
-
-    externalNativeBuild {
-        cmake {
-            path("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
-        }
-    }
 }
 
 dependencies {
@@ -33,6 +25,7 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:datastore"))
     implementation(project(":core:model"))
+    implementation(project(":native"))
 
     // AndroidX
     implementation(libs.androidx.core.ktx)

@@ -1,4 +1,4 @@
-package com.xayah.core.rootservice.util
+package com.xayah.libnative
 
 object NativeLib {
     external fun calculateSize(path: String): Long
