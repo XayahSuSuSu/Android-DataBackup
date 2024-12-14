@@ -6,6 +6,7 @@ import com.xayah.core.common.util.toLineString
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.PackageRepository
 import com.xayah.core.database.dao.TaskDao
+import com.xayah.core.datastore.readCompressionLevel
 import com.xayah.core.datastore.readFollowSymlinks
 import com.xayah.core.datastore.readSelectionType
 import com.xayah.core.model.CompressionType
@@ -14,6 +15,7 @@ import com.xayah.core.model.OperationState
 import com.xayah.core.model.SelectionType
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
+import com.xayah.core.model.util.getCompressPara
 import com.xayah.core.network.client.CloudClient
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.IconRelativeDir
@@ -199,7 +201,7 @@ class PackagesBackupUtil @Inject constructor(
             srcDir = context.filesDir(),
             src = IconRelativeDir,
             dst = dst,
-            extra = tarCt.compressPara
+            extra = tarCt.getCompressPara(context.readCompressionLevel().first())
         ).also { result ->
             isSuccess = result.isSuccess
             out.addAll(result.out)
@@ -240,7 +242,7 @@ class PackagesBackupUtil @Inject constructor(
                     t.updateInfo(dataType = dataType, state = OperationState.SKIP)
                     out.add(log { "Data has not changed." })
                 } else {
-                    Tar.compressInCur(cur = srcDir, src = "./*.apk", dst = dst, extra = ct.compressPara)
+                    Tar.compressInCur(cur = srcDir, src = "./*.apk", dst = dst, extra = ct.getCompressPara(context.readCompressionLevel().first()))
                         .also { result ->
                             isSuccess = result.isSuccess
                             out.addAll(result.out)
@@ -334,7 +336,7 @@ class PackagesBackupUtil @Inject constructor(
                     srcDir = srcDir,
                     src = packageName,
                     dst = dst,
-                    extra = ct.compressPara
+                    extra = ct.getCompressPara(context.readCompressionLevel().first())
                 ).also { result ->
                     isSuccess = result.isSuccess
                     out.addAll(result.out)

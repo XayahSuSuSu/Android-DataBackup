@@ -1,6 +1,5 @@
 package com.xayah.core.model.util
 
-import android.os.Build
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataType
 import com.xayah.core.model.KillAppOption
@@ -244,4 +243,9 @@ fun TaskEntity.set(
     if (isProcessing != null) this.isProcessing = isProcessing
     if (cloud != null) this.cloud = cloud
     if (backupDir != null) this.backupDir = backupDir
+}
+
+fun CompressionType.getCompressPara(level: Int): String = when (this) {
+    CompressionType.TAR -> compressPara
+    CompressionType.ZSTD, CompressionType.LZ4 -> "$compressPara -$level"
 }
