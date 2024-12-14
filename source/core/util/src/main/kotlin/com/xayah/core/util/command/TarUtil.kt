@@ -14,22 +14,20 @@ object Tar {
 
         // Compress
         val result = if (extra.isEmpty()) {
-            // tar --totals -cpf - ”$src“ > "$dst"
+            // tar --totals -cpf - $src > "$dst"
             execute(
                 "--totals",
                 "-cpf",
-                "-",
-                "${SymbolUtil.QUOTE}$src${SymbolUtil.QUOTE}",
+                "- $src",
                 ">",
                 "${SymbolUtil.QUOTE}$dst${SymbolUtil.QUOTE}",
             )
         } else {
-            // tar --totals -cpf - "$src“ | $extra > "$dst"
+            // tar --totals -cpf - $src | $extra > "$dst"
             execute(
                 "--totals",
                 "-cpf",
-                "-",
-                "${SymbolUtil.QUOTE}$src${SymbolUtil.QUOTE}",
+                "- $src",
                 "|",
                 extra,
                 ">",
