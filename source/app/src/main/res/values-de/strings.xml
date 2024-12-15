@@ -379,4 +379,8 @@
     <string name="args_apps_restored_and_failed">%1$s Apps wiederhergestellt, %2$s fehlgeschlagen</string>
     <string name="args_files_backed_up_and_failed">%1$s Dateien gesichert, %2$s fehlgeschlagen</string>
     <string name="args_files_restored_and_failed">%1$s Dateien wiederhergestellt, %2$s fehlgeschlagen</string>
+    <string name="args_current_level">Aktuelle Stufe: %1$s</string>
+    <string name="compression_level_desc">Niedrigere Zahlen sorgen für eine schnellere Komprimierung, höhere Zahlen ergeben bessere Komprimierungsraten</string>
+    <string name="compression_level">Komprimierungsstufe</string>
+    <string name="restore_permissions">Berechtigungen wiederherstellen</string>
 </resources>
