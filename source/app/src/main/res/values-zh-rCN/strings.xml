@@ -391,4 +391,7 @@
     <string name="restore_permissions_desc">恢复应用权限</string>
     <string name="restore_ssaid">恢复Android id</string>
     <string name="restore_ssaid_desc">恢复应用Android id，需要在恢复后立即重启以生效</string>
+    <string name="compression_level">压缩等级</string>
+    <string name="compression_level_desc">数字越小，压缩速度越快，数字越大，压缩率越高</string>
+    <string name="args_current_level">当前等级：%1$s</string>
 </resources>

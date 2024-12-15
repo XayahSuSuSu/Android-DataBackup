@@ -5,11 +5,13 @@ import com.xayah.core.common.util.toLineString
 import com.xayah.core.data.repository.CloudRepository
 import com.xayah.core.data.repository.MediaRepository
 import com.xayah.core.database.dao.TaskDao
+import com.xayah.core.datastore.readCompressionLevel
 import com.xayah.core.datastore.readFollowSymlinks
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OperationState
 import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.TaskDetailMediaEntity
+import com.xayah.core.model.util.getCompressPara
 import com.xayah.core.network.client.CloudClient
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.LogUtil
@@ -99,7 +101,7 @@ class MediumBackupUtil @Inject constructor(
                 srcDir = srcDir,
                 src = PathUtil.getFileName(src),// the name is not always the actual file name of the source,but the src does contain
                 dst = dst,
-                extra = ct.compressPara
+                extra = ct.getCompressPara(context.readCompressionLevel().first())
             ).also { result ->
                 isSuccess = result.isSuccess
                 out.addAll(result.out)

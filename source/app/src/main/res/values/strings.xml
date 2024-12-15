@@ -402,4 +402,7 @@
     <string name="restore_permissions_desc">Restore apps permissions</string>
     <string name="restore_ssaid">Restore Android id</string>
     <string name="restore_ssaid_desc">Restore apps Android id, it needs immediate reboot after restoring to take effect</string>
+    <string name="compression_level">Compression level</string>
+    <string name="compression_level_desc">Lower numbers provide faster compression, higher numbers yield better compression ratios</string>
+    <string name="args_current_level">Current level: %1$s</string>
 </resources>

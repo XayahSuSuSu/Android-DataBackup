@@ -1,5 +1,6 @@
 package com.xayah.feature.main.settings.backup
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,30 +16,37 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.xayah.core.datastore.KeyBackupConfigs
 import com.xayah.core.datastore.KeyBackupItself
 import com.xayah.core.datastore.KeyCheckKeystore
 import com.xayah.core.datastore.KeyCompressionTest
 import com.xayah.core.datastore.KeyFollowSymlinks
-import com.xayah.core.datastore.KeyBackupConfigs
+import com.xayah.core.datastore.readCompressionLevel
 import com.xayah.core.datastore.readKillAppOption
+import com.xayah.core.datastore.saveCompressionLevel
 import com.xayah.core.datastore.saveKillAppOption
 import com.xayah.core.model.KillAppOption
 import com.xayah.core.model.util.indexOf
 import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.LocalSlotScope
 import com.xayah.core.ui.component.Selectable
+import com.xayah.core.ui.component.Slideable
 import com.xayah.core.ui.component.Switchable
 import com.xayah.core.ui.component.select
 import com.xayah.core.ui.model.DialogRadioItem
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.feature.main.settings.R
 import com.xayah.feature.main.settings.SettingsScaffold
+import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
+@SuppressLint("StringFormatInvalid")
 @ExperimentalLayoutApi
 @ExperimentalAnimationApi
 @ExperimentalMaterial3Api
@@ -60,6 +68,20 @@ fun PageBackupSettings() {
             verticalArrangement = Arrangement.spacedBy(SizeTokens.Level24)
         ) {
             Column {
+                val scope = rememberCoroutineScope()
+                val level by context.readCompressionLevel().collectAsStateWithLifecycle(initialValue = 1)
+                Slideable(
+                    title = stringResource(id = R.string.compression_level),
+                    value = level.toFloat(),
+                    valueRange = 1F..22F,
+                    steps = 20,
+                    desc = remember(level) { "${context.getString(R.string.args_current_level, level)}\n${context.getString(R.string.compression_level_desc)}" }
+                ) {
+                    scope.launch {
+                        context.saveCompressionLevel(it.roundToInt())
+                    }
+                }
+
                 val items = stringArrayResource(id = R.array.kill_app_options)
                 val dialogItems by remember(items) {
                     mutableStateOf(items.mapIndexed { index, s ->

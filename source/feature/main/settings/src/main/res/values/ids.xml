@@ -68,6 +68,9 @@
     <item name="restore_permissions_desc" type="string" />
     <item name="restore_ssaid" type="string" />
     <item name="restore_ssaid_desc" type="string" />
+    <item name="compression_level" type="string" />
+    <item name="compression_level_desc" type="string" />
+    <item name="args_current_level" type="string" />
 
     <item name="ic_rounded_acute" type="drawable" />
     <item name="ic_rounded_history" type="drawable" />

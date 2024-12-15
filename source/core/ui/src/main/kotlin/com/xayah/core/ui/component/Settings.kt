@@ -20,6 +20,7 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,6 +47,7 @@ import kotlinx.coroutines.launch
 fun Clickable(
     enabled: Boolean = true,
     desc: String? = null,
+    descPadding: Boolean = false,
     onClick: () -> Unit, indication: Indication? = rememberRipple(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable BoxScope.() -> Unit
@@ -61,9 +63,15 @@ fun Clickable(
             interactionSource = interactionSource
         ) {
             Box(
-                modifier = Modifier
-                    .paddingHorizontal(SizeTokens.Level24)
-                    .paddingVertical(SizeTokens.Level16),
+                modifier = if (descPadding) {
+                    Modifier
+                        .paddingHorizontal(SizeTokens.Level24)
+                        .paddingTop(SizeTokens.Level16)
+                } else {
+                    Modifier
+                        .paddingHorizontal(SizeTokens.Level24)
+                        .paddingVertical(SizeTokens.Level16)
+                },
                 contentAlignment = Alignment.Center
             ) {
                 content()
@@ -71,7 +79,13 @@ fun Clickable(
         }
         if (desc != null)
             TitleSmallText(
-                modifier = Modifier.paddingHorizontal(SizeTokens.Level24),
+                modifier = if (descPadding) {
+                    Modifier
+                        .paddingHorizontal(SizeTokens.Level24)
+                        .paddingBottom(SizeTokens.Level16)
+                } else {
+                    Modifier.paddingHorizontal(SizeTokens.Level24)
+                },
                 enabled = enabled,
                 text = desc,
                 color = ThemedColorSchemeKeyTokens.OnSurfaceVariant.value,
@@ -297,6 +311,67 @@ fun Switchable(
                 onClick(stored)
             }
         }
+    )
+}
+
+@ExperimentalAnimationApi
+@Composable
+fun Slideable(
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    title: String,
+    value: Float,
+    onValueChange: (Float) -> Unit,
+    valueRange: ClosedFloatingPointRange<Float>,
+    steps: Int,
+    desc: String? = null,
+    leadingContent: (@Composable RowScope.() -> Unit)? = null,
+    trailingContent: (@Composable RowScope.() -> Unit)? = null,
+    onClick: () -> Unit = {}
+) {
+    Clickable(enabled = enabled, desc = desc, descPadding = true, onClick = onClick, indication = if (readOnly) null else rememberRipple()) {
+        Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)) {
+            if (leadingContent != null) leadingContent()
+            Column(modifier = Modifier.weight(1f)) {
+                AnimatedTextContainer(targetState = title) { text ->
+                    TitleLargeText(enabled = enabled, text = text, color = ThemedColorSchemeKeyTokens.OnSurface.value.withState(enabled), fontWeight = FontWeight.Normal)
+                }
+                Slider(
+                    value = value,
+                    onValueChange = onValueChange,
+                    steps = steps,
+                    valueRange = valueRange
+                )
+            }
+            if (trailingContent != null) trailingContent()
+        }
+    }
+}
+
+@ExperimentalAnimationApi
+@Composable
+fun Slideable(
+    enabled: Boolean = true,
+    icon: ImageVector? = null,
+    title: String,
+    value: Float,
+    valueRange: ClosedFloatingPointRange<Float>,
+    steps: Int,
+    desc: String? = null,
+    onValueChange: (Float) -> Unit,
+) {
+    Slideable(
+        enabled = enabled,
+        title = title,
+        value = value,
+        valueRange = valueRange,
+        steps = steps,
+        desc = desc,
+        onValueChange = onValueChange,
+        leadingContent = {
+            if (icon != null) Icon(imageVector = icon, contentDescription = null)
+        },
+        onClick = {}
     )
 }
 

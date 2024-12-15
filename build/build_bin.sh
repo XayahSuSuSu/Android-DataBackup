@@ -13,7 +13,7 @@ ZSTD_DEV=false
 
 NDK_VERSION=r25c
 
-BIN_VERSION=2.0
+BIN_VERSION=2.1
 ZLIB_VERSION=1.3.1                                               # https://github.com/madler/zlib/releases
 XZ_VERSION=5.6.2                                                 # https://github.com/tukaani-project/xz/releases
 LZ4_VERSION=1.9.4                                                # https://github.com/lz4/lz4/releases
@@ -207,6 +207,30 @@ build_zstd() {
     rm -rf zstd-$ZSTD_VERSION
 }
 
+build_external() {
+    cp -r $ROOT_PATH/../source/native/src/main/jni jni
+    cd jni
+    sed -i '/^# add_subdirectory(external)/s/^# //' CMakeLists.txt
+    sed -i '/^add_subdirectory(nativelib)/s/^/# /' CMakeLists.txt
+    mkdir builddir && cd builddir
+    cmake \
+    -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake \
+    -DANDROID_ABI=$TARGET_ARCH \
+    -DANDROID_NATIVE_API_LEVEL=$API \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX= \
+    -DCMAKE_EXE_LINKER_FLAGS="$BUILD_LDFLAGS_STATIC" \
+    -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} $BUILD_CFLAGS" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_C_FLAGS} $BUILD_CFLAGS" \
+    ..
+    make -j8
+    make install prefix= DESTDIR=$LOCAL_PATH/external
+
+    $STRIP $LOCAL_PATH/external/bin/tar
+    cd ../../
+    rm -rf jni
+}
+
 build_busybox() {
     git clone https://github.com/XayahSuSuSu/ndk-box-kitchen -b $NDK_VERSION && cd ndk-box-kitchen
     wget https://git.busybox.net/busybox/snapshot/busybox-$BUSYBOX_VERSION.tar.bz2
@@ -228,13 +252,14 @@ build_busybox() {
 build_built_in() {
     build_zstd
     build_busybox
+    build_external
 }
 
 package_built_in() {
     # Built-in modules
     mkdir -p built_in/$TARGET_ARCH
     echo "$BIN_VERSION" > built_in/version
-    zip -pj built_in/$TARGET_ARCH/bin built_in/version zstd/bin/zstd busybox/bin/busybox
+    zip -pj built_in/$TARGET_ARCH/bin built_in/version zstd/bin/zstd busybox/bin/busybox external/bin/tar
     strip-nondeterminism built_in/$TARGET_ARCH/bin.zip
 }
 
@@ -262,7 +287,7 @@ package() {
     esac
 }
 ##################################################
-
+ROOT_PATH=$(dirname $(readlink -f "$0"))
 # Start to build
 set_up_utils
 

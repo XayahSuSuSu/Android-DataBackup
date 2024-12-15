@@ -387,4 +387,11 @@
     <string name="no_labels_here">Não há rótulos aqui.</string>
     <string name="backup_configs">Config. de backup</string>
     <string name="backup_configs_desc">Exportar configurações para o diretório de backup</string>
+    <string name="restore_permissions_desc">Restaurar permissões de apps</string>
+    <string name="restore_ssaid_desc">Restaure apps do Android ID, ele precisa de reinicialização imediata após a restauração para entrar em vigor.</string>
+    <string name="restore_permissions">Restaurar permissões</string>
+    <string name="restore_ssaid">Restaurar ID do Android</string>
+    <string name="args_current_level">Nível atual: %1$s</string>
+    <string name="compression_level_desc">Números mais baixos proporcionam compactação mais rápida, números mais altos geram melhores taxas de compactação.</string>
+    <string name="compression_level">Nível de compressão</string>
 </resources>

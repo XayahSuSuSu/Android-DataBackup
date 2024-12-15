@@ -14,7 +14,7 @@ namespace NativeNS {
 }
 
 extern "C" JNIEXPORT jlong JNICALL
-Java_com_xayah_core_rootservice_util_NativeLib_calculateSize(JNIEnv *env, jobject, jstring path) {
+Java_com_xayah_libnative_NativeLib_calculateSize(JNIEnv *env, jobject, jstring path) {
     NativeNS::total_size = 0;
     const char *p_path = env->GetStringUTFChars(path, JNI_FALSE);
     ftw(p_path, &NativeNS::on_walking, 1024);
@@ -22,7 +22,7 @@ Java_com_xayah_core_rootservice_util_NativeLib_calculateSize(JNIEnv *env, jobjec
 }
 
 extern "C" JNIEXPORT jintArray JNICALL
-Java_com_xayah_core_rootservice_util_NativeLib_getUidGid(JNIEnv *env, jobject, jstring path) {
+Java_com_xayah_libnative_NativeLib_getUidGid(JNIEnv *env, jobject, jstring path) {
     struct stat file_stat{};
     jintArray result = env->NewIntArray(2); // result[0] - uid, result[1] - gid
     jint *p_result = env->GetIntArrayElements(result, nullptr);

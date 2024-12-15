@@ -387,4 +387,8 @@
     <string name="args_restored_at">Восстановлено в %1$s</string>
     <string name="no_labels_here">Нет меток</string>
     <string name="backup_configs_desc">Экспортировать конфигурации в папку бекапов</string>
+    <string name="restore_permissions">Восстановить разрешения</string>
+    <string name="restore_permissions_desc">Восстановить разрешения приложений</string>
+    <string name="restore_ssaid">Восстановить Android ID</string>
+    <string name="restore_ssaid_desc">Восстановить Android ID приложений. Для вступления изменений в силу требуется немедленная перезагрузка</string>
 </resources>
