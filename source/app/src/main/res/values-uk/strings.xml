@@ -391,7 +391,7 @@
     <string name="restore_ssaid">Відновити Android ID</string>
     <string name="restore_permissions">Відновити дозволи</string>
     <string name="restore_ssaid_desc">Відновлення ідентифікатора Android програм, потрібно негайно перезавантажити його після відновлення, щоб набуло чинності</string>
-    <string name="args_current_level">Поточний рівень: %1$s</string>
+    <string name="args_current_level">Поточний ступінь: %1$s</string>
     <string name="compression_level_desc">Менші числа забезпечують швидше стиснення, вищі числа дають кращі коефіцієнти стиснення</string>
-    <string name="compression_level">Рівень стиснення</string>
+    <string name="compression_level">Ступінь стиснення</string>
 </resources>
