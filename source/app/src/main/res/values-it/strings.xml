@@ -341,4 +341,15 @@
     <string name="changelog">Log delle modifiche</string>
     <string name="args_update_from">Puoi aggiornare dalla versione %1$s alla versione %2$s</string>
     <string name="args_apps_restored">%1$s app ripristinate</string>
+    <string name="about">Informazioni</string>
+    <string name="about_app">Informazioni applicazione</string>
+    <string name="no_item_selected">Nessuna voce selezionata</string>
+    <string name="apk_selected">APK selezionato</string>
+    <string name="data_selected">Dati selezionati</string>
+    <string name="unselect_all">Deseleziona tutto</string>
+    <string name="reverse_selection">Inverti selezione</string>
+    <string name="block">Blocca</string>
+    <string name="unblock">Sblocca</string>
+    <string name="refresh">Ricarica</string>
+    <string name="args_files_restored">%1$s file ripristinati</string>
 </resources>
