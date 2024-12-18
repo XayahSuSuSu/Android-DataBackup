@@ -387,4 +387,11 @@
     <string name="no_labels_here">Henüz bir etiket yok.</string>
     <string name="backup_configs">Yedekleme yapılandırmaları</string>
     <string name="backup_configs_desc">Yedekleme dizinine yapılandırmaları dışa aktar</string>
+    <string name="compression_level_desc">Daha düşük sayılar daha hızlı sıkıştırma sağlar, daha yüksek sayılar daha iyi sıkıştırma oranları verir</string>
+    <string name="compression_level">Sıkıştırma düzeyi</string>
+    <string name="args_current_level">Mevcut seviye: %1$s</string>
+    <string name="restore_permissions">İzinleri geri yükle</string>
+    <string name="restore_permissions_desc">Uygulamaların izinlerini geri yükle</string>
+    <string name="restore_ssaid">Android kimliğini geri yükle</string>
+    <string name="restore_ssaid_desc">Uygulamaların Android kimliğini geri yükleyin, etkili olması için geri yükledikten sonra hemen yeniden başlatılması gerekir</string>
 </resources>
