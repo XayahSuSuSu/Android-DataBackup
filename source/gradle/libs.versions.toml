@@ -44,12 +44,12 @@ datastore-preferences = "1.1.1"
 serialization-protobuf = "1.6.0"
 apache-commons = "3.10.0"
 apache-commons-codec = "1.16.1"
-smbj = "0.13.0"
+smbj = "0.14.0"
 smbj-rpc = "0.12.9"
 sshj = "0.38.0"
 guava-compat = "9999.0-empty-to-avoid-conflict-with-guava"
 sardine-next = "1.0.2"
-bountycastle = "1.76"
+bountycastle = "1.79"
 animation-graphics = "1.6.8"
 
 # plugins
@@ -115,7 +115,7 @@ pickyou = { module = "com.github.xayahsususu:libpickyou", version.ref = "pickyou
 serialization-protobuf = { module = "org.jetbrains.kotlinx:kotlinx-serialization-protobuf", version.ref = "serialization-protobuf" }
 apache-commons-net = { module = "commons-net:commons-net", version.ref = "apache-commons" }
 apache-commons-codec = { module = "commons-codec:commons-codec", version.ref = "apache-commons-codec" }
-smbj = { module = "com.github.xayahsususu:smbj", version.ref = "smbj" }
+smbj = { module = "com.hierynomus:smbj", version.ref = "smbj" }
 smbj-rpc = { module = "com.rapid7.client:dcerpc", version.ref = "smbj-rpc" }
 sshj = { module = "com.hierynomus:sshj", version.ref = "sshj" }
 guava-compat = { module = "com.google.guava:listenablefuture", version.ref = "guava-compat" }
