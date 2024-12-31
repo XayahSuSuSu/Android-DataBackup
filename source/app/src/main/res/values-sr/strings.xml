@@ -387,4 +387,11 @@
     <string name="no_labels_here">Нема ознака овде.</string>
     <string name="backup_configs">Конфигурације резервних копија</string>
     <string name="backup_configs_desc">Извоз конфигурација у резервни директоријум</string>
+    <string name="compression_level">Ниво компресије</string>
+    <string name="args_current_level">Тренутни ниво: %1$s</string>
+    <string name="restore_ssaid">Врати Андроид ид</string>
+    <string name="restore_ssaid_desc">Вратите апликацијама Андроид ид, ово захтева поновно покретање система да би имало ефекта</string>
+    <string name="compression_level_desc">Мањи број омогућује брже компресовање, већи број даје бољи однос компресије</string>
+    <string name="restore_permissions_desc">Вратите дозволе апликацијама</string>
+    <string name="restore_permissions">Вратите дозволе</string>
 </resources>
