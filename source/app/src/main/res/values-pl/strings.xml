@@ -391,4 +391,7 @@
     <string name="keystore_desc">Ta aplikacja korzysta z dostawcy Android Keystore, jego przywrócenie może spowodować nieoczekiwane błędy</string>
     <string name="edit">Edytuj</string>
     <string name="args_files_backed_up_and_failed">Utworzono kopię zapasową dla %1$s plików, %2$s plikom nie udało się wykonać kopii zapasowej</string>
+    <string name="compression_level">Poziom kompresji</string>
+    <string name="args_current_level">Aktualny poziom:%1$s</string>
+    <string name="compression_level_desc">Niższe liczby zapewniają szybszą kompresację, a wyższe lepsze ratio kompresacji</string>
 </resources>
