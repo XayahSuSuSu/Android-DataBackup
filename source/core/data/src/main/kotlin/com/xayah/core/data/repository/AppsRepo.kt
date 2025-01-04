@@ -258,18 +258,18 @@ class AppsRepo @Inject constructor(
                 backupDir = "",
             ),
             packageInfo = PackageInfo(
-                info.applicationInfo.loadLabel(pm).toString(),
+                info.applicationInfo?.loadLabel(pm).toString(),
                 versionName = info.versionName ?: "",
                 versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     info.longVersionCode
                 } else {
                     info.versionCode.toLong()
                 },
-                flags = info.applicationInfo.flags,
+                flags = info.applicationInfo?.flags ?: 0,
                 firstInstallTime = info.firstInstallTime,
             ),
             extraInfo = PackageExtraInfo(
-                uid = info.applicationInfo.uid,
+                uid = info.applicationInfo?.uid ?: -1,
                 hasKeystore = false,
                 permissions = listOf(),
                 ssaid = "",
@@ -353,12 +353,12 @@ class AppsRepo @Inject constructor(
             }.withLog()
 
             updateEntity.extraInfo.firstUpdated = true
-            val uid = info.applicationInfo.uid
+            val uid = info.applicationInfo?.uid ?: -1
             updateEntity.extraInfo.uid = uid
             updateEntity.extraInfo.permissions = rootService.getPermissions(packageInfo = info)
             updateEntity.extraInfo.hasKeystore = PackageUtil.hasKeystore(context.readCustomSUFile().first(), uid)
             updateEntity.extraInfo.ssaid = rootService.getPackageSsaidAsUser(packageName = info.packageName, uid = uid, userId = userId)
-            updateEntity.extraInfo.enabled = info.applicationInfo.enabled
+            updateEntity.extraInfo.enabled = info.applicationInfo?.enabled ?: false
 
             if (userHandle != null) {
                 rootService.queryStatsForPackage(info, userHandle).also { stats ->

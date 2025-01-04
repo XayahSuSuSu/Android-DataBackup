@@ -23,7 +23,6 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,8 +30,9 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -428,13 +428,13 @@ fun ActionChip(
 @ExperimentalMaterial3Api
 @Composable
 fun RoundChip(modifier: Modifier = Modifier, onClick: (() -> Unit)? = null, label: @Composable () -> Unit) {
-    CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
         com.xayah.core.ui.material3.Surface(
             modifier = modifier,
             onClick = { onClick?.invoke() },
             shape = CircleShape,
             color = ThemedColorSchemeKeyTokens.PrimaryContainer.value.withState(),
-            indication = if (onClick != null) rememberRipple() else null,
+            indication = if (onClick != null) ripple() else null,
         ) {
             Box(
                 modifier = Modifier.wrapContentSize(),

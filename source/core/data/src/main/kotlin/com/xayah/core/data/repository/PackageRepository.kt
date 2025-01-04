@@ -170,26 +170,26 @@ class PackageRepository @Inject constructor(
         hasPassedOneDay: Boolean
     ): PackageEntity {
         val permissions = rootService.getPermissions(packageInfo = info)
-        val uid = info.applicationInfo.uid
+        val uid = info.applicationInfo?.uid ?: -1
         val hasKeystore = if (checkKeystore) PackageUtil.hasKeystore(context.readCustomSUFile().first(), uid) else false
         val ssaid = rootService.getPackageSsaidAsUser(packageName = info.packageName, uid = uid, userId = userId)
         val iconPath = pathUtil.getPackageIconPath(info.packageName, false)
         val iconExists = rootService.exists(iconPath)
         if (iconExists.not() || (iconExists && hasPassedOneDay)) {
             runCatching {
-                val icon = info.applicationInfo.loadIcon(pm)
+                val icon = info.applicationInfo!!.loadIcon(pm)
                 BaseUtil.writeIcon(icon = icon, dst = iconPath)
             }.withLog()
         }
         val packageInfo = PackageInfo(
-            label = info.applicationInfo.loadLabel(pm).toString(),
+            label = info.applicationInfo?.loadLabel(pm).toString(),
             versionName = info.versionName ?: "",
             versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 info.longVersionCode
             } else {
                 info.versionCode.toLong()
             },
-            flags = info.applicationInfo.flags,
+            flags = info.applicationInfo?.flags ?: 0,
             firstInstallTime = info.firstInstallTime,
         )
         val extraInfo = PackageExtraInfo(
@@ -268,7 +268,7 @@ class PackageRepository @Inject constructor(
             val hasPassedOneDay = DateUtil.getNumberOfDaysPassed(iconUpdateTime, now) >= 1
             if (hasPassedOneDay) context.saveIconUpdateTime(now)
             installedPackages.forEachIndexed { index, info ->
-                val isSystemApp = (info.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+                val isSystemApp = ((info.applicationInfo?.flags ?: 0) and ApplicationInfo.FLAG_SYSTEM) != 0
                 if (loadSystemApps || isSystemApp.not()) {
                     val packageEntity = handlePackage(pm, info, checkKeystore, userId, userHandle, hasPassedOneDay)
                     upsert(packageEntity)
@@ -776,19 +776,23 @@ class PackageRepository @Inject constructor(
                                         rootService.listFilePaths(tmpApkPath).also { pathList ->
                                             if (pathList.isNotEmpty()) {
                                                 rootService.getPackageArchiveInfo(pathList.first())?.apply {
-                                                    packageEntity.packageInfo.label = applicationInfo.loadLabel(packageManager).toString()
+                                                    packageEntity.packageInfo.label = applicationInfo?.loadLabel(packageManager).toString()
                                                     packageEntity.packageInfo.versionName = versionName ?: ""
                                                     packageEntity.packageInfo.versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                                                         longVersionCode
                                                     } else {
                                                         versionCode.toLong()
                                                     }
-                                                    packageEntity.packageInfo.flags = applicationInfo.flags
+                                                    packageEntity.packageInfo.flags = applicationInfo?.flags ?: 0
                                                     val iconPath = pathUtil.getPackageIconPath(packageName, false)
                                                     val iconExists = rootService.exists(iconPath)
                                                     if (iconExists.not()) {
-                                                        val icon = applicationInfo.loadIcon(packageManager)
-                                                        BaseUtil.writeIcon(icon = icon, dst = iconPath)
+                                                        val icon = applicationInfo?.loadIcon(packageManager)
+                                                        if (icon != null) {
+                                                            BaseUtil.writeIcon(icon = icon, dst = iconPath)
+                                                        } else {
+                                                            log { "Failed to get icon." }
+                                                        }
                                                     }
                                                     log { "Icon and config updated." }
                                                 }
@@ -1113,19 +1117,23 @@ class PackageRepository @Inject constructor(
                                                     rootService.listFilePaths(tmpApkPath).also { pathList ->
                                                         if (pathList.isNotEmpty()) {
                                                             rootService.getPackageArchiveInfo(pathList.first())?.apply {
-                                                                packageEntity.packageInfo.label = applicationInfo.loadLabel(packageManager).toString()
+                                                                packageEntity.packageInfo.label = applicationInfo?.loadLabel(packageManager).toString()
                                                                 packageEntity.packageInfo.versionName = versionName ?: ""
                                                                 packageEntity.packageInfo.versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                                                                     longVersionCode
                                                                 } else {
                                                                     versionCode.toLong()
                                                                 }
-                                                                packageEntity.packageInfo.flags = applicationInfo.flags
+                                                                packageEntity.packageInfo.flags = applicationInfo?.flags ?: 0
                                                                 val iconPath = pathUtil.getPackageIconPath(packageName, false)
                                                                 val iconExists = rootService.exists(iconPath)
                                                                 if (iconExists.not()) {
-                                                                    val icon = applicationInfo.loadIcon(packageManager)
-                                                                    BaseUtil.writeIcon(icon = icon, dst = iconPath)
+                                                                    val icon = applicationInfo?.loadIcon(packageManager)
+                                                                    if (icon != null) {
+                                                                        BaseUtil.writeIcon(icon = icon, dst = iconPath)
+                                                                    } else {
+                                                                        log { "Failed to get icon." }
+                                                                    }
                                                                 }
                                                                 log { "Icon and config updated." }
                                                             }

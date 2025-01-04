@@ -1,7 +1,6 @@
 package com.xayah.feature.main.list
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +12,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -33,7 +31,6 @@ import com.xayah.core.ui.component.SearchBar
 import com.xayah.core.ui.component.SecondaryTopBar
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.component.paddingVertical
-import com.xayah.core.ui.token.AnimationTokens
 import com.xayah.core.ui.token.SizeTokens
 
 @Composable
@@ -125,18 +122,11 @@ private fun UserTabs(selected: Int, userList: List<UserInfo>, usersMap: Map<Int,
     PrimaryScrollableTabRow(
         selectedTabIndex = selected,
         edgePadding = SizeTokens.Level0,
-        indicator = @Composable { tabPositions ->
-            if (selected < tabPositions.size) {
-                val width by animateDpAsState(
-                    targetValue = tabPositions[selected].contentWidth,
-                    label = AnimationTokens.AnimatedProgressLabel
-                )
-                TabRowDefaults.PrimaryIndicator(
-                    modifier = Modifier.tabIndicatorOffset(tabPositions[selected]),
-                    width = width,
-                    shape = CircleShape
-                )
-            }
+        indicator = @Composable {
+            TabRowDefaults.PrimaryIndicator(
+                Modifier.tabIndicatorOffset(selected, matchContentSize = true),
+                shape = CircleShape
+            )
         },
         divider = {
             Divider(modifier = Modifier.fillMaxWidth())

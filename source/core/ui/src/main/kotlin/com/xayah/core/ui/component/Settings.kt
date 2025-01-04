@@ -16,13 +16,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -48,7 +48,7 @@ fun Clickable(
     enabled: Boolean = true,
     desc: String? = null,
     descPadding: Boolean = false,
-    onClick: () -> Unit, indication: Indication? = rememberRipple(),
+    onClick: () -> Unit, indication: Indication? = ripple(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable BoxScope.() -> Unit
 ) {
@@ -106,7 +106,7 @@ fun Clickable(
     trailingContent: (@Composable RowScope.() -> Unit)? = null,
     onClick: () -> Unit = {}
 ) {
-    Clickable(enabled = enabled, desc = desc, onClick = onClick, indication = if (readOnly) null else rememberRipple()) {
+    Clickable(enabled = enabled, desc = desc, onClick = onClick, indication = if (readOnly) null else ripple()) {
         Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)) {
             if (leadingContent != null) leadingContent()
             Column(modifier = Modifier.weight(1f)) {
@@ -156,7 +156,7 @@ fun Clickable(
     content: @Composable (ColumnScope.() -> Unit)? = null,
     onClick: () -> Unit = {}
 ) {
-    Clickable(enabled = enabled, desc = desc, onClick = onClick, indication = rememberRipple(), interactionSource = interactionSource) {
+    Clickable(enabled = enabled, desc = desc, onClick = onClick, indication = ripple(), interactionSource = interactionSource) {
         Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)) {
             if (leadingIcon != null) {
                 Icon(imageVector = leadingIcon, contentDescription = null, tint = LocalContentColor.current.withState(enabled))
@@ -189,7 +189,7 @@ fun Clickable(
     content: @Composable (ColumnScope.() -> Unit)? = null,
     onClick: () -> Unit = {}
 ) {
-    Clickable(enabled = enabled, desc = desc, onClick = onClick, indication = rememberRipple(), interactionSource = interactionSource) {
+    Clickable(enabled = enabled, desc = desc, onClick = onClick, indication = ripple(), interactionSource = interactionSource) {
         Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)) {
             leadingIcon?.invoke(this)
             Column(modifier = Modifier.weight(1f)) {
@@ -329,7 +329,7 @@ fun Slideable(
     trailingContent: (@Composable RowScope.() -> Unit)? = null,
     onClick: () -> Unit = {}
 ) {
-    Clickable(enabled = enabled, desc = desc, descPadding = true, onClick = onClick, indication = if (readOnly) null else rememberRipple()) {
+    Clickable(enabled = enabled, desc = desc, descPadding = true, onClick = onClick, indication = if (readOnly) null else ripple()) {
         Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(SizeTokens.Level16)) {
             if (leadingContent != null) leadingContent()
             Column(modifier = Modifier.weight(1f)) {
