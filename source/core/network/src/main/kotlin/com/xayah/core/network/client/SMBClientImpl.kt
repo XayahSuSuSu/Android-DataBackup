@@ -13,6 +13,7 @@ import com.hierynomus.smbj.auth.AuthenticationContext
 import com.hierynomus.smbj.common.SMBRuntimeException
 import com.hierynomus.smbj.session.Session
 import com.hierynomus.smbj.share.Directory
+import com.hierynomus.smbj.share.DiskEntry
 import com.hierynomus.smbj.share.DiskShare
 import com.hierynomus.smbj.share.Share
 import com.rapid7.client.dcerpc.mssrvs.ServerService
@@ -162,21 +163,32 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         }
     }
 
-    private fun openDirectory(src: String): Directory = withDiskShare { diskShare ->
-        diskShare.openDirectory(
+    private fun openOnRename(src: String): DiskEntry = withDiskShare { diskShare ->
+        diskShare.open(
             src,
-            setOf(AccessMask.GENERIC_ALL),
-            null,
+            setOf(AccessMask.DELETE),
+            setOf(FileAttributes.FILE_ATTRIBUTE_NORMAL),
             SMB2ShareAccess.ALL,
-            SMB2CreateDisposition.FILE_OPEN,
-            null
+            SMB2CreateDisposition.FILE_OPEN_IF,
+            setOf(SMB2CreateOptions.FILE_RANDOM_ACCESS)
         )
     }
 
-    private fun openFile(src: String): com.hierynomus.smbj.share.File = withDiskShare { diskShare ->
+    private fun openFileOnRead(src: String): com.hierynomus.smbj.share.File = withDiskShare { diskShare ->
         diskShare.openFile(
             src,
-            setOf(AccessMask.GENERIC_ALL),
+            setOf(AccessMask.FILE_READ_DATA, AccessMask.FILE_READ_ATTRIBUTES, AccessMask.FILE_READ_EA),
+            setOf(FileAttributes.FILE_ATTRIBUTE_NORMAL),
+            SMB2ShareAccess.ALL,
+            SMB2CreateDisposition.FILE_OPEN_IF,
+            setOf(SMB2CreateOptions.FILE_RANDOM_ACCESS)
+        )
+    }
+
+    private fun openFileOnWrite(src: String): com.hierynomus.smbj.share.File = withDiskShare { diskShare ->
+        diskShare.openFile(
+            src,
+            setOf(AccessMask.FILE_WRITE_DATA, AccessMask.FILE_WRITE_ATTRIBUTES, AccessMask.FILE_WRITE_EA, AccessMask.DELETE),
             setOf(FileAttributes.FILE_ATTRIBUTE_NORMAL),
             SMB2ShareAccess.ALL,
             SMB2CreateDisposition.FILE_OPEN_IF,
@@ -187,10 +199,10 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
     override fun renameTo(src: String, dst: String): Unit = withDiskShare { diskShare ->
         log { "renameTo: from $src to $dst" }
         if (diskShare.folderExists(src)) {
-            val dir = openDirectory(src)
+            val dir = openOnRename(src)
             dir.rename(dst.replace("/", SymbolUtil.BACKSLASH.toString()), false)
         } else if (diskShare.fileExists(src)) {
-            val file = openFile(src)
+            val file = openOnRename(src)
             file.rename(dst, false)
         }
     }
@@ -199,7 +211,7 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         val name = PathUtil.getFileName(src)
         val dstPath = "$dst/$name"
         log { "upload: $src to $dstPath" }
-        val dstFile = openFile(dstPath)
+        val dstFile = openFileOnWrite(dstPath)
         val dstStream = dstFile.outputStream
         val srcFile = File(src)
         val srcFileSize = srcFile.length()
@@ -218,7 +230,7 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         val dstPath = "$dst/$name"
         log { "download: $src to $dstPath" }
         val dstOutputStream = File(dstPath).outputStream()
-        val srcFile = openFile(src)
+        val srcFile = openFileOnRead(src)
         val countingStream = CountingOutputStreamImpl(dstOutputStream, -1) { written, total -> onDownloading(written, total) }
         srcFile.read(countingStream)
         srcFile.close()
