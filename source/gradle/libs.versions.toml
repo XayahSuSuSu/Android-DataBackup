@@ -3,11 +3,10 @@
 compileSdk = "35"
 minSdk = "24"
 targetSdk = "35"
-# __(API)_(feature)___(version)_(abi)
-# TODO: Feature bit is no longer useful, drop when next api releases
-versionCode = "3411110"
+# __(API)____(version)_(abi)
+versionCode = "3501120"
 versionCodeAlpha = "22"
-versionName = "2.0.5"
+versionName = "2.0.6"
 
 # libraries
 accompanist = "0.30.1"
