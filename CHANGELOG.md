@@ -1,5 +1,31 @@
 # Changelog
 
+## [2.0.6](https://github.com/XayahSuSuSu/Android-DataBackup/compare/2.0.5...v2.0.6) (2025-01-05)
+
+
+### gradle
+
+* Version 2.0.6 ([d7a72a8](https://github.com/XayahSuSuSu/Android-DataBackup/commit/d7a72a80519830c78c663e858aa04ef92d2f618c))
+
+
+### Features
+
+* [#323](https://github.com/XayahSuSuSu/Android-DataBackup/issues/323) ([8c52bb3](https://github.com/XayahSuSuSu/Android-DataBackup/commit/8c52bb3f8ef12abba3b2001cbd6a219474bf6c9a))
+* Build gnu tar via cmake ([40c58c1](https://github.com/XayahSuSuSu/Android-DataBackup/commit/40c58c1fc14c79a0182403027df9f305af4ad44b))
+* Migrate to native module ([d03e099](https://github.com/XayahSuSuSu/Android-DataBackup/commit/d03e099f994ad0fff3970b36a4a31b87c84377e9))
+* Switch back to gnu tar ([52ac6b3](https://github.com/XayahSuSuSu/Android-DataBackup/commit/52ac6b3588e86540a27950480f9554f85c7217cc))
+* Update translators ([2f9c699](https://github.com/XayahSuSuSu/Android-DataBackup/commit/2f9c699d627545ff3165343dbe5a55df5eadf101))
+* Update translators ([42c8ecc](https://github.com/XayahSuSuSu/Android-DataBackup/commit/42c8ecc75df891071f4c5c5b63e87a95a9f2a4c9))
+
+
+### Bug Fixes
+
+* [#327](https://github.com/XayahSuSuSu/Android-DataBackup/issues/327) ([0509d27](https://github.com/XayahSuSuSu/Android-DataBackup/commit/0509d27a7ccccfc0e24e102abb6b4011d415445f))
+* [#331](https://github.com/XayahSuSuSu/Android-DataBackup/issues/331) ([286d00b](https://github.com/XayahSuSuSu/Android-DataBackup/commit/286d00b96049a0634f2c2c602392d9c20c1dd520))
+* Add bottom padding in list page ([d2314db](https://github.com/XayahSuSuSu/Android-DataBackup/commit/d2314db67d7fbfc2d65de32b7ea62c9620fc02f8))
+* Add install() for tar CMakeLists.txt ([84398c2](https://github.com/XayahSuSuSu/Android-DataBackup/commit/84398c2825a6fda0841926ea92fbb7c87f91165e))
+* Incorrect media info in task details page ([1d03bf6](https://github.com/XayahSuSuSu/Android-DataBackup/commit/1d03bf60417a081d4ef3e284079dd9a6b8e97269))
+
 ## [2.0.5](https://github.com/XayahSuSuSu/Android-DataBackup/compare/2.0.4...v2.0.5) (2024-12-08)
 
 
