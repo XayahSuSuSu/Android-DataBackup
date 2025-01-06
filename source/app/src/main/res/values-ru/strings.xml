@@ -393,4 +393,5 @@
     <string name="restore_ssaid_desc">Восстановить Android ID приложений. Для вступления изменений в силу требуется немедленная перезагрузка</string>
     <string name="compression_level">Уровень сжатия</string>
     <string name="args_current_level">Текущий уровень: %1$s</string>
+    <string name="compression_level_desc">Низкие значения дают быстрое сжатие, высокие значения повышают степень сжатия</string>
 </resources>
