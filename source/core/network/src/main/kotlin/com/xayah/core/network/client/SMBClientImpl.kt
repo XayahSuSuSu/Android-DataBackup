@@ -12,7 +12,6 @@ import com.hierynomus.smbj.SmbConfig
 import com.hierynomus.smbj.auth.AuthenticationContext
 import com.hierynomus.smbj.common.SMBRuntimeException
 import com.hierynomus.smbj.session.Session
-import com.hierynomus.smbj.share.Directory
 import com.hierynomus.smbj.share.DiskEntry
 import com.hierynomus.smbj.share.DiskShare
 import com.hierynomus.smbj.share.Share
@@ -369,8 +368,8 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
     private fun handleOriginalPath(path: String): Pair<String, String> = run {
         val pathSplit = path.toPathList().toMutableList()
         // Remove “$Cloud:/$share”
-        pathSplit.removeFirst()
-        val share = pathSplit.removeFirst()
+        pathSplit.removeFirstOrNull()
+        val share = pathSplit.removeAt(0)
         val target = pathSplit.toPathString()
         share to target
     }

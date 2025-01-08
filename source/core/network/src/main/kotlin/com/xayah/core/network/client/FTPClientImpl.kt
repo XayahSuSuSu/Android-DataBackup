@@ -133,7 +133,7 @@ class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra
             val paths = mutableListOf(src)
 
             while (paths.isNotEmpty()) {
-                val dir = paths.removeFirst()
+                val dir = paths.removeAt(0)
                 val files = client.listFiles(dir)
                 if (files.isEmpty()) {
                     emptyDirs.add(dir)
@@ -193,7 +193,7 @@ class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra
                         dirs.add(path)
                     }
                 }
-                paths.removeFirst()
+                paths.removeFirstOrNull()
             }
 
             // Remove reversed empty dirs.
@@ -268,7 +268,7 @@ class FTPClientImpl(private val entity: CloudEntity, private val extra: FTPExtra
     private fun handleOriginalPath(path: String): String = run {
         val pathSplit = path.toPathList().toMutableList()
         // Remove “$Cloud:”
-        pathSplit.removeFirst()
+        pathSplit.removeFirstOrNull()
         pathSplit.toPathString()
     }
 

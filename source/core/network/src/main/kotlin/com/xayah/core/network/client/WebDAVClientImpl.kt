@@ -212,7 +212,7 @@ class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
     private fun handleOriginalPath(path: String): String = run {
         val pathSplit = path.toPathList().toMutableList()
         // Remove “$Cloud:”
-        pathSplit.removeFirst()
+        pathSplit.removeFirstOrNull()
         pathSplit.toPathString()
     }
 
