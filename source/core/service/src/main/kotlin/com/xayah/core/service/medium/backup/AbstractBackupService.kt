@@ -202,7 +202,9 @@ internal abstract class AbstractBackupService : AbstractMediumService() {
                 }
                 entity.update(progress = 0.5f)
 
-                if (mContext.readResetBackupList().first()) mMediaDao.clearActivated(OpType.BACKUP)
+                if (mContext.readResetBackupList().first() && mTaskEntity.failureCount == 0) {
+                    mMediaDao.clearActivated(OpType.BACKUP)
+                }
                 if (runCatchingOnService { clear() }.not()) {
                     isSuccess = false
                 }

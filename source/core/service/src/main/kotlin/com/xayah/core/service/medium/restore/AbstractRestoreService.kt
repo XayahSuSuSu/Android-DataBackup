@@ -126,7 +126,9 @@ internal abstract class AbstractRestoreService : AbstractMediumService() {
                     mContext.getString(R.string.wait_for_remaining_data_processing)
                 )
 
-                if (mContext.readResetRestoreList().first()) mMediaDao.clearActivated(OpType.RESTORE)
+                if (mContext.readResetRestoreList().first() && mTaskEntity.failureCount == 0) {
+                    mMediaDao.clearActivated(OpType.RESTORE)
+                }
                 val isSuccess = runCatchingOnService { clear() }
                 entity.update(progress = 1f, state = if (isSuccess) OperationState.DONE else OperationState.ERROR)
             }
