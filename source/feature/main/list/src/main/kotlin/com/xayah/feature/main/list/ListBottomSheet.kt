@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.data.repository.Filters
+import com.xayah.core.datastore.saveLoadSystemApps
 import com.xayah.core.hiddenapi.castTo
 import com.xayah.core.model.OpType
 import com.xayah.core.model.SortType
@@ -49,6 +50,7 @@ import com.xayah.core.ui.component.TitleSort
 import com.xayah.core.ui.component.paddingHorizontal
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.util.localBackupSaveDir
+import com.xayah.core.work.WorkManagerInitializer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -249,6 +251,8 @@ internal fun AppsFilterSheet(
     onSortByIndex: (Int) -> Unit,
     onDismissRequest: () -> Unit,
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     if (isShow) {
         ModalBottomSheet(onDismissRequest = onDismissRequest, sheetState = sheetState) {
             Title(text = stringResource(id = R.string.filters))
@@ -257,7 +261,15 @@ internal fun AppsFilterSheet(
                     setFilters(filters.copy(cloud = cloud, backupDir = backupDir))
                 }
             }
-            CheckBox(checked = filters.showSystemApps, text = stringResource(id = R.string.load_system_apps), onValueChange = { setFilters(filters.copy(showSystemApps = filters.showSystemApps.not())) })
+            CheckBox(checked = filters.showSystemApps, text = stringResource(id = R.string.load_system_apps), onValueChange = {
+                scope.launch {
+                    if (filters.showSystemApps.not()) {
+                        WorkManagerInitializer.fastInitializeAndUpdateApps(context)
+                    }
+                    context.saveLoadSystemApps(filters.showSystemApps.not())
+                    setFilters(filters.copy(showSystemApps = filters.showSystemApps.not()))
+                }
+            })
             when (opType) {
                 OpType.BACKUP -> {
                     CheckBox(checked = filters.hasBackups, text = stringResource(R.string.apps_which_have_backups), onValueChange = { setFilters(filters.copy(hasBackups = filters.hasBackups.not())) })
