@@ -63,3 +63,20 @@ Ssaid commands:
   set USER_ID PACKAGE SSAID
     Set ssaid.
 ```
+
+```
+NotificationUtil commands:
+  help
+
+  notify [flags] <tag> <text>
+
+
+flags:
+  -t|--title <text>
+  -p|--progress <max> <progress> <indeterminate>
+
+examples:
+  notify -t 'This is title' 'This is tag' 'This is content.'
+  notify -p 100 50 false -t 'This is title' 'This is tag' 'This is content.'
+  notify -p 0 0 true -t 'This is title' 'This is tag' 'This is content.'
+```
