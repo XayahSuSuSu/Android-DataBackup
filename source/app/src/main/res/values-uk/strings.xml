@@ -394,4 +394,5 @@
     <string name="args_current_level">Поточний ступінь: %1$s</string>
     <string name="compression_level_desc">Менші числа забезпечують швидше стиснення, вищі числа дають кращі коефіцієнти стиснення</string>
     <string name="compression_level">Ступінь стиснення</string>
+    <string name="last_update">Останнє оновлення</string>
 </resources>
