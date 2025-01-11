@@ -172,6 +172,7 @@ internal abstract class AbstractBackupService : AbstractPackagesService() {
 
                     if (pkg.isSuccess) {
                         // Save config
+                        p.extraInfo.lastBackupTime = DateUtil.getTimestamp()
                         val id = restoreEntity?.id ?: 0
                         restoreEntity = p.copy(
                             id = id,

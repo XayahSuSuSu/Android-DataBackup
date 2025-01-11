@@ -35,6 +35,9 @@
     <item name="protect_desc" type="string" />
     <item name="delete_desc" type="string" />
     <item name="no_labels_here" type="string" />
+    <item name="last_backup" type="string" />
+    <item name="last_update" type="string" />
 
     <item name="ic_rounded_person" type="drawable" />
+    <item name="ic_rounded_acute" type="drawable" />
 </resources>

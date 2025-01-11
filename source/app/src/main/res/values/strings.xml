@@ -405,4 +405,5 @@
     <string name="compression_level">Compression level</string>
     <string name="compression_level_desc">Lower numbers provide faster compression, higher numbers yield better compression ratios</string>
     <string name="args_current_level">Current level: %1$s</string>
+    <string name="last_update">Last update</string>
 </resources>

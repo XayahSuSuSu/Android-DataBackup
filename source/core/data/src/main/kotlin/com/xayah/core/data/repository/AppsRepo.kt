@@ -279,12 +279,14 @@ class AppsRepo @Inject constructor(
                 },
                 flags = info.applicationInfo?.flags ?: 0,
                 firstInstallTime = info.firstInstallTime,
+                lastUpdateTime = info.lastUpdateTime,
             ),
             extraInfo = PackageExtraInfo(
                 uid = info.applicationInfo?.uid ?: -1,
                 hasKeystore = false,
                 permissions = listOf(),
                 ssaid = "",
+                lastBackupTime = 0L,
                 blocked = false,
                 activated = false,
                 firstUpdated = false,
@@ -346,7 +348,7 @@ class AppsRepo @Inject constructor(
 
     private suspend fun updateApp(pm: PackageManager, pkg: PackageEntity, userId: Int, userHandle: UserHandle?): PackageUpdateEntity? {
         val info = rootService.getPackageInfoAsUser(pkg.packageName, PackageManager.GET_PERMISSIONS, userId)
-        val updateEntity = PackageUpdateEntity(pkg.id, pkg.extraInfo, pkg.storageStats)
+        val updateEntity = PackageUpdateEntity(pkg.id, pkg.packageInfo, pkg.extraInfo, pkg.storageStats)
         if (info != null) {
             runCatching {
                 val iconPath: String
@@ -363,6 +365,17 @@ class AppsRepo @Inject constructor(
                     BaseUtil.writeIcon(icon = icon, dst = iconPath)
                 }
             }.withLog()
+
+            updateEntity.packageInfo.label = info.applicationInfo?.loadLabel(pm).toString()
+            updateEntity.packageInfo.versionName = info.versionName ?: ""
+            updateEntity.packageInfo.versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                info.longVersionCode
+            } else {
+                info.versionCode.toLong()
+            }
+            updateEntity.packageInfo.flags = info.applicationInfo?.flags ?: 0
+            updateEntity.packageInfo.firstInstallTime = info.firstInstallTime
+            updateEntity.packageInfo.lastUpdateTime = info.lastUpdateTime
 
             updateEntity.extraInfo.firstUpdated = true
             val uid = info.applicationInfo?.uid ?: -1

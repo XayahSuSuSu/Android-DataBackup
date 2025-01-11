@@ -141,6 +141,7 @@ class FilesRepo @Inject constructor(
                             displayBytes = 0,
                         ),
                         extraInfo = MediaExtraInfo(
+                            lastBackupTime = 0,
                             blocked = false,
                             activated = true,
                             existed = true,
@@ -268,6 +269,7 @@ class FilesRepo @Inject constructor(
                             displayBytes = 0,
                         ),
                         extraInfo = MediaExtraInfo(
+                            lastBackupTime = 0,
                             activated = true,
                             blocked = false,
                             existed = true

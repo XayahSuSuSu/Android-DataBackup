@@ -1,0 +1,1607 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 7,
+    "identityHash": "eeb421d9aa92c96681fb1a9a3482713d",
+    "entities": [
+      {
+        "tableName": "PackageEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `indexInfo_opType` TEXT NOT NULL, `indexInfo_packageName` TEXT NOT NULL, `indexInfo_userId` INTEGER NOT NULL, `indexInfo_compressionType` TEXT NOT NULL, `indexInfo_preserveId` INTEGER NOT NULL, `indexInfo_cloud` TEXT NOT NULL, `indexInfo_backupDir` TEXT NOT NULL, `packageInfo_label` TEXT NOT NULL, `packageInfo_versionName` TEXT NOT NULL, `packageInfo_versionCode` INTEGER NOT NULL, `packageInfo_flags` INTEGER NOT NULL, `packageInfo_firstInstallTime` INTEGER NOT NULL, `packageInfo_lastUpdateTime` INTEGER NOT NULL DEFAULT 0, `extraInfo_uid` INTEGER NOT NULL, `extraInfo_hasKeystore` INTEGER NOT NULL, `extraInfo_permissions` TEXT NOT NULL, `extraInfo_ssaid` TEXT NOT NULL, `extraInfo_lastBackupTime` INTEGER NOT NULL DEFAULT 0, `extraInfo_blocked` INTEGER NOT NULL, `extraInfo_activated` INTEGER NOT NULL, `extraInfo_firstUpdated` INTEGER NOT NULL DEFAULT 1, `extraInfo_enabled` INTEGER NOT NULL DEFAULT 1, `dataStates_apkState` TEXT NOT NULL, `dataStates_userState` TEXT NOT NULL, `dataStates_userDeState` TEXT NOT NULL, `dataStates_dataState` TEXT NOT NULL, `dataStates_obbState` TEXT NOT NULL, `dataStates_mediaState` TEXT NOT NULL, `dataStates_permissionState` TEXT NOT NULL, `dataStates_ssaidState` TEXT NOT NULL, `storageStats_appBytes` INTEGER NOT NULL, `storageStats_cacheBytes` INTEGER NOT NULL, `storageStats_dataBytes` INTEGER NOT NULL, `storageStats_externalCacheBytes` INTEGER NOT NULL, `dataStats_apkBytes` INTEGER NOT NULL, `dataStats_userBytes` INTEGER NOT NULL, `dataStats_userDeBytes` INTEGER NOT NULL, `dataStats_dataBytes` INTEGER NOT NULL, `dataStats_obbBytes` INTEGER NOT NULL, `dataStats_mediaBytes` INTEGER NOT NULL, `displayStats_apkBytes` INTEGER NOT NULL, `displayStats_userBytes` INTEGER NOT NULL, `displayStats_userDeBytes` INTEGER NOT NULL, `displayStats_dataBytes` INTEGER NOT NULL, `displayStats_obbBytes` INTEGER NOT NULL, `displayStats_mediaBytes` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.opType",
+            "columnName": "indexInfo_opType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.packageName",
+            "columnName": "indexInfo_packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.userId",
+            "columnName": "indexInfo_userId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.compressionType",
+            "columnName": "indexInfo_compressionType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.preserveId",
+            "columnName": "indexInfo_preserveId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.cloud",
+            "columnName": "indexInfo_cloud",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.backupDir",
+            "columnName": "indexInfo_backupDir",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageInfo.label",
+            "columnName": "packageInfo_label",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageInfo.versionName",
+            "columnName": "packageInfo_versionName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageInfo.versionCode",
+            "columnName": "packageInfo_versionCode",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageInfo.flags",
+            "columnName": "packageInfo_flags",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageInfo.firstInstallTime",
+            "columnName": "packageInfo_firstInstallTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageInfo.lastUpdateTime",
+            "columnName": "packageInfo_lastUpdateTime",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "extraInfo.uid",
+            "columnName": "extraInfo_uid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extraInfo.hasKeystore",
+            "columnName": "extraInfo_hasKeystore",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extraInfo.permissions",
+            "columnName": "extraInfo_permissions",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extraInfo.ssaid",
+            "columnName": "extraInfo_ssaid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extraInfo.lastBackupTime",
+            "columnName": "extraInfo_lastBackupTime",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "extraInfo.blocked",
+            "columnName": "extraInfo_blocked",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extraInfo.activated",
+            "columnName": "extraInfo_activated",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extraInfo.firstUpdated",
+            "columnName": "extraInfo_firstUpdated",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "extraInfo.enabled",
+            "columnName": "extraInfo_enabled",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "dataStates.apkState",
+            "columnName": "dataStates_apkState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataStates.userState",
+            "columnName": "dataStates_userState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataStates.userDeState",
+            "columnName": "dataStates_userDeState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataStates.dataState",
+            "columnName": "dataStates_dataState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataStates.obbState",
+            "columnName": "dataStates_obbState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataStates.mediaState",
+            "columnName": "dataStates_mediaState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataStates.permissionState",
+            "columnName": "dataStates_permissionState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataStates.ssaidState",
+            "columnName": "dataStates_ssaidState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storageStats.appBytes",
+            "columnName": "storageStats_appBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storageStats.cacheBytes",
+            "columnName": "storageStats_cacheBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storageStats.dataBytes",
+            "columnName": "storageStats_dataBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "storageStats.externalCacheBytes",
+            "columnName": "storageStats_externalCacheBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataStats.apkBytes",
+            "columnName": "dataStats_apkBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataStats.userBytes",
+            "columnName": "dataStats_userBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataStats.userDeBytes",
+            "columnName": "dataStats_userDeBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataStats.dataBytes",
+            "columnName": "dataStats_dataBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataStats.obbBytes",
+            "columnName": "dataStats_obbBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataStats.mediaBytes",
+            "columnName": "dataStats_mediaBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayStats.apkBytes",
+            "columnName": "displayStats_apkBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayStats.userBytes",
+            "columnName": "displayStats_userBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayStats.userDeBytes",
+            "columnName": "displayStats_userDeBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayStats.dataBytes",
+            "columnName": "displayStats_dataBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayStats.obbBytes",
+            "columnName": "displayStats_obbBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayStats.mediaBytes",
+            "columnName": "displayStats_mediaBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "MediaEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `indexInfo_opType` TEXT NOT NULL, `indexInfo_name` TEXT NOT NULL, `indexInfo_compressionType` TEXT NOT NULL, `indexInfo_preserveId` INTEGER NOT NULL, `indexInfo_cloud` TEXT NOT NULL, `indexInfo_backupDir` TEXT NOT NULL, `mediaInfo_path` TEXT NOT NULL, `mediaInfo_dataBytes` INTEGER NOT NULL, `mediaInfo_displayBytes` INTEGER NOT NULL, `extraInfo_lastBackupTime` INTEGER NOT NULL DEFAULT 0, `extraInfo_blocked` INTEGER NOT NULL, `extraInfo_activated` INTEGER NOT NULL, `extraInfo_existed` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.opType",
+            "columnName": "indexInfo_opType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.name",
+            "columnName": "indexInfo_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.compressionType",
+            "columnName": "indexInfo_compressionType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.preserveId",
+            "columnName": "indexInfo_preserveId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.cloud",
+            "columnName": "indexInfo_cloud",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "indexInfo.backupDir",
+            "columnName": "indexInfo_backupDir",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.path",
+            "columnName": "mediaInfo_path",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.dataBytes",
+            "columnName": "mediaInfo_dataBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.displayBytes",
+            "columnName": "mediaInfo_displayBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extraInfo.lastBackupTime",
+            "columnName": "extraInfo_lastBackupTime",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "extraInfo.blocked",
+            "columnName": "extraInfo_blocked",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extraInfo.activated",
+            "columnName": "extraInfo_activated",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extraInfo.existed",
+            "columnName": "extraInfo_existed",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "DirectoryEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `parent` TEXT NOT NULL, `child` TEXT NOT NULL, `type` TEXT NOT NULL DEFAULT '', `tags` TEXT NOT NULL DEFAULT '[]', `error` TEXT NOT NULL DEFAULT '', `childUsedBytes` INTEGER NOT NULL DEFAULT 0, `availableBytes` INTEGER NOT NULL DEFAULT 0, `totalBytes` INTEGER NOT NULL DEFAULT 0, `storageType` TEXT NOT NULL DEFAULT 'INTERNAL', `selected` INTEGER NOT NULL DEFAULT 0, `enabled` INTEGER NOT NULL DEFAULT 1, `active` INTEGER NOT NULL DEFAULT 0)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "parent",
+            "columnName": "parent",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "child",
+            "columnName": "child",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "tags",
+            "columnName": "tags",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'[]'"
+          },
+          {
+            "fieldPath": "error",
+            "columnName": "error",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          },
+          {
+            "fieldPath": "childUsedBytes",
+            "columnName": "childUsedBytes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "availableBytes",
+            "columnName": "availableBytes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "totalBytes",
+            "columnName": "totalBytes",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "storageType",
+            "columnName": "storageType",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'INTERNAL'"
+          },
+          {
+            "fieldPath": "selected",
+            "columnName": "selected",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "enabled",
+            "columnName": "enabled",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "active",
+            "columnName": "active",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "CloudEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `type` TEXT NOT NULL, `host` TEXT NOT NULL, `user` TEXT NOT NULL, `pass` TEXT NOT NULL, `remote` TEXT NOT NULL, `extra` TEXT NOT NULL, `activated` INTEGER NOT NULL, PRIMARY KEY(`name`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "host",
+            "columnName": "host",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "user",
+            "columnName": "user",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pass",
+            "columnName": "pass",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "remote",
+            "columnName": "remote",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "extra",
+            "columnName": "extra",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "activated",
+            "columnName": "activated",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "name"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "TaskEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `opType` TEXT NOT NULL, `taskType` TEXT NOT NULL, `startTimestamp` INTEGER NOT NULL, `endTimestamp` INTEGER NOT NULL, `rawBytes` REAL NOT NULL, `availableBytes` REAL NOT NULL, `totalBytes` REAL NOT NULL, `totalCount` INTEGER NOT NULL, `successCount` INTEGER NOT NULL, `failureCount` INTEGER NOT NULL, `preprocessingIndex` INTEGER NOT NULL DEFAULT 0, `processingIndex` INTEGER NOT NULL, `postProcessingIndex` INTEGER NOT NULL DEFAULT 0, `isProcessing` INTEGER NOT NULL, `cloud` TEXT NOT NULL, `backupDir` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "opType",
+            "columnName": "opType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskType",
+            "columnName": "taskType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startTimestamp",
+            "columnName": "startTimestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endTimestamp",
+            "columnName": "endTimestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rawBytes",
+            "columnName": "rawBytes",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "availableBytes",
+            "columnName": "availableBytes",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalBytes",
+            "columnName": "totalBytes",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalCount",
+            "columnName": "totalCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "successCount",
+            "columnName": "successCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "failureCount",
+            "columnName": "failureCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "preprocessingIndex",
+            "columnName": "preprocessingIndex",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "processingIndex",
+            "columnName": "processingIndex",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "postProcessingIndex",
+            "columnName": "postProcessingIndex",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "isProcessing",
+            "columnName": "isProcessing",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cloud",
+            "columnName": "cloud",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "backupDir",
+            "columnName": "backupDir",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "TaskDetailPackageEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `state` TEXT NOT NULL, `processingIndex` INTEGER NOT NULL DEFAULT 0, `packageEntity_id` INTEGER NOT NULL, `packageEntity_indexInfo_opType` TEXT NOT NULL, `packageEntity_indexInfo_packageName` TEXT NOT NULL, `packageEntity_indexInfo_userId` INTEGER NOT NULL, `packageEntity_indexInfo_compressionType` TEXT NOT NULL, `packageEntity_indexInfo_preserveId` INTEGER NOT NULL, `packageEntity_indexInfo_cloud` TEXT NOT NULL, `packageEntity_indexInfo_backupDir` TEXT NOT NULL, `packageEntity_packageInfo_label` TEXT NOT NULL, `packageEntity_packageInfo_versionName` TEXT NOT NULL, `packageEntity_packageInfo_versionCode` INTEGER NOT NULL, `packageEntity_packageInfo_flags` INTEGER NOT NULL, `packageEntity_packageInfo_firstInstallTime` INTEGER NOT NULL, `packageEntity_packageInfo_lastUpdateTime` INTEGER NOT NULL DEFAULT 0, `packageEntity_extraInfo_uid` INTEGER NOT NULL, `packageEntity_extraInfo_hasKeystore` INTEGER NOT NULL, `packageEntity_extraInfo_permissions` TEXT NOT NULL, `packageEntity_extraInfo_ssaid` TEXT NOT NULL, `packageEntity_extraInfo_lastBackupTime` INTEGER NOT NULL DEFAULT 0, `packageEntity_extraInfo_blocked` INTEGER NOT NULL, `packageEntity_extraInfo_activated` INTEGER NOT NULL, `packageEntity_extraInfo_firstUpdated` INTEGER NOT NULL DEFAULT 1, `packageEntity_extraInfo_enabled` INTEGER NOT NULL DEFAULT 1, `packageEntity_dataStates_apkState` TEXT NOT NULL, `packageEntity_dataStates_userState` TEXT NOT NULL, `packageEntity_dataStates_userDeState` TEXT NOT NULL, `packageEntity_dataStates_dataState` TEXT NOT NULL, `packageEntity_dataStates_obbState` TEXT NOT NULL, `packageEntity_dataStates_mediaState` TEXT NOT NULL, `packageEntity_dataStates_permissionState` TEXT NOT NULL, `packageEntity_dataStates_ssaidState` TEXT NOT NULL, `packageEntity_storageStats_appBytes` INTEGER NOT NULL, `packageEntity_storageStats_cacheBytes` INTEGER NOT NULL, `packageEntity_storageStats_dataBytes` INTEGER NOT NULL, `packageEntity_storageStats_externalCacheBytes` INTEGER NOT NULL, `packageEntity_dataStats_apkBytes` INTEGER NOT NULL, `packageEntity_dataStats_userBytes` INTEGER NOT NULL, `packageEntity_dataStats_userDeBytes` INTEGER NOT NULL, `packageEntity_dataStats_dataBytes` INTEGER NOT NULL, `packageEntity_dataStats_obbBytes` INTEGER NOT NULL, `packageEntity_dataStats_mediaBytes` INTEGER NOT NULL, `packageEntity_displayStats_apkBytes` INTEGER NOT NULL, `packageEntity_displayStats_userBytes` INTEGER NOT NULL, `packageEntity_displayStats_userDeBytes` INTEGER NOT NULL, `packageEntity_displayStats_dataBytes` INTEGER NOT NULL, `packageEntity_displayStats_obbBytes` INTEGER NOT NULL, `packageEntity_displayStats_mediaBytes` INTEGER NOT NULL, `apk_bytes` INTEGER NOT NULL, `apk_log` TEXT NOT NULL, `apk_title` TEXT NOT NULL, `apk_content` TEXT NOT NULL, `apk_progress` REAL NOT NULL, `apk_state` TEXT NOT NULL, `user_bytes` INTEGER NOT NULL, `user_log` TEXT NOT NULL, `user_title` TEXT NOT NULL, `user_content` TEXT NOT NULL, `user_progress` REAL NOT NULL, `user_state` TEXT NOT NULL, `userDe_bytes` INTEGER NOT NULL, `userDe_log` TEXT NOT NULL, `userDe_title` TEXT NOT NULL, `userDe_content` TEXT NOT NULL, `userDe_progress` REAL NOT NULL, `userDe_state` TEXT NOT NULL, `data_bytes` INTEGER NOT NULL, `data_log` TEXT NOT NULL, `data_title` TEXT NOT NULL, `data_content` TEXT NOT NULL, `data_progress` REAL NOT NULL, `data_state` TEXT NOT NULL, `obb_bytes` INTEGER NOT NULL, `obb_log` TEXT NOT NULL, `obb_title` TEXT NOT NULL, `obb_content` TEXT NOT NULL, `obb_progress` REAL NOT NULL, `obb_state` TEXT NOT NULL, `media_bytes` INTEGER NOT NULL, `media_log` TEXT NOT NULL, `media_title` TEXT NOT NULL, `media_content` TEXT NOT NULL, `media_progress` REAL NOT NULL, `media_state` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskId",
+            "columnName": "taskId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "processingIndex",
+            "columnName": "processingIndex",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "packageEntity.id",
+            "columnName": "packageEntity_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.indexInfo.opType",
+            "columnName": "packageEntity_indexInfo_opType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.indexInfo.packageName",
+            "columnName": "packageEntity_indexInfo_packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.indexInfo.userId",
+            "columnName": "packageEntity_indexInfo_userId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.indexInfo.compressionType",
+            "columnName": "packageEntity_indexInfo_compressionType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.indexInfo.preserveId",
+            "columnName": "packageEntity_indexInfo_preserveId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.indexInfo.cloud",
+            "columnName": "packageEntity_indexInfo_cloud",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.indexInfo.backupDir",
+            "columnName": "packageEntity_indexInfo_backupDir",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.packageInfo.label",
+            "columnName": "packageEntity_packageInfo_label",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.packageInfo.versionName",
+            "columnName": "packageEntity_packageInfo_versionName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.packageInfo.versionCode",
+            "columnName": "packageEntity_packageInfo_versionCode",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.packageInfo.flags",
+            "columnName": "packageEntity_packageInfo_flags",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.packageInfo.firstInstallTime",
+            "columnName": "packageEntity_packageInfo_firstInstallTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.packageInfo.lastUpdateTime",
+            "columnName": "packageEntity_packageInfo_lastUpdateTime",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "packageEntity.extraInfo.uid",
+            "columnName": "packageEntity_extraInfo_uid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.extraInfo.hasKeystore",
+            "columnName": "packageEntity_extraInfo_hasKeystore",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.extraInfo.permissions",
+            "columnName": "packageEntity_extraInfo_permissions",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.extraInfo.ssaid",
+            "columnName": "packageEntity_extraInfo_ssaid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.extraInfo.lastBackupTime",
+            "columnName": "packageEntity_extraInfo_lastBackupTime",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "packageEntity.extraInfo.blocked",
+            "columnName": "packageEntity_extraInfo_blocked",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.extraInfo.activated",
+            "columnName": "packageEntity_extraInfo_activated",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.extraInfo.firstUpdated",
+            "columnName": "packageEntity_extraInfo_firstUpdated",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "packageEntity.extraInfo.enabled",
+            "columnName": "packageEntity_extraInfo_enabled",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "packageEntity.dataStates.apkState",
+            "columnName": "packageEntity_dataStates_apkState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.dataStates.userState",
+            "columnName": "packageEntity_dataStates_userState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.dataStates.userDeState",
+            "columnName": "packageEntity_dataStates_userDeState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.dataStates.dataState",
+            "columnName": "packageEntity_dataStates_dataState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.dataStates.obbState",
+            "columnName": "packageEntity_dataStates_obbState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.dataStates.mediaState",
+            "columnName": "packageEntity_dataStates_mediaState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.dataStates.permissionState",
+            "columnName": "packageEntity_dataStates_permissionState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.dataStates.ssaidState",
+            "columnName": "packageEntity_dataStates_ssaidState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.storageStats.appBytes",
+            "columnName": "packageEntity_storageStats_appBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.storageStats.cacheBytes",
+            "columnName": "packageEntity_storageStats_cacheBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.storageStats.dataBytes",
+            "columnName": "packageEntity_storageStats_dataBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.storageStats.externalCacheBytes",
+            "columnName": "packageEntity_storageStats_externalCacheBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.dataStats.apkBytes",
+            "columnName": "packageEntity_dataStats_apkBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.dataStats.userBytes",
+            "columnName": "packageEntity_dataStats_userBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.dataStats.userDeBytes",
+            "columnName": "packageEntity_dataStats_userDeBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.dataStats.dataBytes",
+            "columnName": "packageEntity_dataStats_dataBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.dataStats.obbBytes",
+            "columnName": "packageEntity_dataStats_obbBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.dataStats.mediaBytes",
+            "columnName": "packageEntity_dataStats_mediaBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.displayStats.apkBytes",
+            "columnName": "packageEntity_displayStats_apkBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.displayStats.userBytes",
+            "columnName": "packageEntity_displayStats_userBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.displayStats.userDeBytes",
+            "columnName": "packageEntity_displayStats_userDeBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.displayStats.dataBytes",
+            "columnName": "packageEntity_displayStats_dataBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.displayStats.obbBytes",
+            "columnName": "packageEntity_displayStats_obbBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageEntity.displayStats.mediaBytes",
+            "columnName": "packageEntity_displayStats_mediaBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "apkInfo.bytes",
+            "columnName": "apk_bytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "apkInfo.log",
+            "columnName": "apk_log",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "apkInfo.title",
+            "columnName": "apk_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "apkInfo.content",
+            "columnName": "apk_content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "apkInfo.progress",
+            "columnName": "apk_progress",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "apkInfo.state",
+            "columnName": "apk_state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userInfo.bytes",
+            "columnName": "user_bytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userInfo.log",
+            "columnName": "user_log",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userInfo.title",
+            "columnName": "user_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userInfo.content",
+            "columnName": "user_content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userInfo.progress",
+            "columnName": "user_progress",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userInfo.state",
+            "columnName": "user_state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userDeInfo.bytes",
+            "columnName": "userDe_bytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userDeInfo.log",
+            "columnName": "userDe_log",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userDeInfo.title",
+            "columnName": "userDe_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userDeInfo.content",
+            "columnName": "userDe_content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userDeInfo.progress",
+            "columnName": "userDe_progress",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userDeInfo.state",
+            "columnName": "userDe_state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataInfo.bytes",
+            "columnName": "data_bytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataInfo.log",
+            "columnName": "data_log",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataInfo.title",
+            "columnName": "data_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataInfo.content",
+            "columnName": "data_content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataInfo.progress",
+            "columnName": "data_progress",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dataInfo.state",
+            "columnName": "data_state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "obbInfo.bytes",
+            "columnName": "obb_bytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "obbInfo.log",
+            "columnName": "obb_log",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "obbInfo.title",
+            "columnName": "obb_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "obbInfo.content",
+            "columnName": "obb_content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "obbInfo.progress",
+            "columnName": "obb_progress",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "obbInfo.state",
+            "columnName": "obb_state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.bytes",
+            "columnName": "media_bytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.log",
+            "columnName": "media_log",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.title",
+            "columnName": "media_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.content",
+            "columnName": "media_content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.progress",
+            "columnName": "media_progress",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.state",
+            "columnName": "media_state",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "TaskDetailMediaEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `state` TEXT NOT NULL, `processingIndex` INTEGER NOT NULL DEFAULT 0, `mediaEntity_id` INTEGER NOT NULL, `mediaEntity_indexInfo_opType` TEXT NOT NULL, `mediaEntity_indexInfo_name` TEXT NOT NULL, `mediaEntity_indexInfo_compressionType` TEXT NOT NULL, `mediaEntity_indexInfo_preserveId` INTEGER NOT NULL, `mediaEntity_indexInfo_cloud` TEXT NOT NULL, `mediaEntity_indexInfo_backupDir` TEXT NOT NULL, `mediaEntity_mediaInfo_path` TEXT NOT NULL, `mediaEntity_mediaInfo_dataBytes` INTEGER NOT NULL, `mediaEntity_mediaInfo_displayBytes` INTEGER NOT NULL, `mediaEntity_extraInfo_lastBackupTime` INTEGER NOT NULL DEFAULT 0, `mediaEntity_extraInfo_blocked` INTEGER NOT NULL, `mediaEntity_extraInfo_activated` INTEGER NOT NULL, `mediaEntity_extraInfo_existed` INTEGER NOT NULL, `media_bytes` INTEGER NOT NULL, `media_log` TEXT NOT NULL, `media_title` TEXT NOT NULL, `media_content` TEXT NOT NULL, `media_progress` REAL NOT NULL, `media_state` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskId",
+            "columnName": "taskId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "processingIndex",
+            "columnName": "processingIndex",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "mediaEntity.id",
+            "columnName": "mediaEntity_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.indexInfo.opType",
+            "columnName": "mediaEntity_indexInfo_opType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.indexInfo.name",
+            "columnName": "mediaEntity_indexInfo_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.indexInfo.compressionType",
+            "columnName": "mediaEntity_indexInfo_compressionType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.indexInfo.preserveId",
+            "columnName": "mediaEntity_indexInfo_preserveId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.indexInfo.cloud",
+            "columnName": "mediaEntity_indexInfo_cloud",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.indexInfo.backupDir",
+            "columnName": "mediaEntity_indexInfo_backupDir",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.mediaInfo.path",
+            "columnName": "mediaEntity_mediaInfo_path",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.mediaInfo.dataBytes",
+            "columnName": "mediaEntity_mediaInfo_dataBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.mediaInfo.displayBytes",
+            "columnName": "mediaEntity_mediaInfo_displayBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.extraInfo.lastBackupTime",
+            "columnName": "mediaEntity_extraInfo_lastBackupTime",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "mediaEntity.extraInfo.blocked",
+            "columnName": "mediaEntity_extraInfo_blocked",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.extraInfo.activated",
+            "columnName": "mediaEntity_extraInfo_activated",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaEntity.extraInfo.existed",
+            "columnName": "mediaEntity_extraInfo_existed",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.bytes",
+            "columnName": "media_bytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.log",
+            "columnName": "media_log",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.title",
+            "columnName": "media_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.content",
+            "columnName": "media_content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.progress",
+            "columnName": "media_progress",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mediaInfo.state",
+            "columnName": "media_state",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "ProcessingInfoEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `type` TEXT NOT NULL, `infoType` TEXT NOT NULL DEFAULT 'NONE', `bytes` INTEGER NOT NULL, `log` TEXT NOT NULL, `title` TEXT NOT NULL, `content` TEXT NOT NULL, `progress` REAL NOT NULL, `state` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskId",
+            "columnName": "taskId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "infoType",
+            "columnName": "infoType",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'NONE'"
+          },
+          {
+            "fieldPath": "bytes",
+            "columnName": "bytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "log",
+            "columnName": "log",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "content",
+            "columnName": "content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "progress",
+            "columnName": "progress",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "LabelEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`label` TEXT NOT NULL, PRIMARY KEY(`label`))",
+        "fields": [
+          {
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "label"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_LabelEntity_label",
+            "unique": true,
+            "columnNames": [
+              "label"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_LabelEntity_label` ON `${TABLE_NAME}` (`label`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "LabelAppCrossRefEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`label` TEXT NOT NULL, `packageName` TEXT NOT NULL, `userId` INTEGER NOT NULL, `preserveId` INTEGER NOT NULL, PRIMARY KEY(`label`, `packageName`, `userId`, `preserveId`))",
+        "fields": [
+          {
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "packageName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "preserveId",
+            "columnName": "preserveId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "label",
+            "packageName",
+            "userId",
+            "preserveId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_LabelAppCrossRefEntity_label_packageName_userId_preserveId",
+            "unique": true,
+            "columnNames": [
+              "label",
+              "packageName",
+              "userId",
+              "preserveId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_LabelAppCrossRefEntity_label_packageName_userId_preserveId` ON `${TABLE_NAME}` (`label`, `packageName`, `userId`, `preserveId`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "LabelFileCrossRefEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`label` TEXT NOT NULL, `path` TEXT NOT NULL, `preserveId` INTEGER NOT NULL, PRIMARY KEY(`label`, `path`, `preserveId`))",
+        "fields": [
+          {
+            "fieldPath": "label",
+            "columnName": "label",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "path",
+            "columnName": "path",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "preserveId",
+            "columnName": "preserveId",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "label",
+            "path",
+            "preserveId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_LabelFileCrossRefEntity_label_path_preserveId",
+            "unique": true,
+            "columnNames": [
+              "label",
+              "path",
+              "preserveId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_LabelFileCrossRefEntity_label_path_preserveId` ON `${TABLE_NAME}` (`label`, `path`, `preserveId`)"
+          }
+        ],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'eeb421d9aa92c96681fb1a9a3482713d')"
+    ]
+  }
+}

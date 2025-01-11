@@ -24,7 +24,7 @@ import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.database.TaskEntity
 
 @Database(
-    version = 6,
+    version = 7,
     exportSchema = true,
     entities = [
         PackageEntity::class,
@@ -45,6 +45,7 @@ import com.xayah.core.model.database.TaskEntity
         AutoMigration(from = 3, to = 4, spec = DatabaseMigrations.Schema3to4::class),
         AutoMigration(from = 4, to = 5),
         AutoMigration(from = 5, to = 6, spec = DatabaseMigrations.Schema5to6::class),
+        AutoMigration(from = 6, to = 7),
     ]
 )
 @TypeConverters(StringListConverters::class)
