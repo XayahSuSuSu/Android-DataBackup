@@ -5,7 +5,7 @@ minSdk = "24"
 targetSdk = "35"
 # __(API)____(version)_(abi)
 versionCode = "3501130"
-versionCodeAlpha = "22"
+versionCodeAlpha = "23"
 versionName = "2.0.6_1"
 
 # libraries
