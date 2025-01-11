@@ -119,39 +119,40 @@ internal fun ListTopBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun UserTabs(selected: Int, userList: List<UserInfo>, usersMap: Map<Int, Long>, onTabClick: (index: Int) -> Unit) {
-    PrimaryScrollableTabRow(
-        selectedTabIndex = selected,
-        edgePadding = SizeTokens.Level0,
-        indicator = @Composable {
-            TabRowDefaults.PrimaryIndicator(
-                Modifier.tabIndicatorOffset(selected, matchContentSize = true),
-                shape = CircleShape
-            )
-        },
-        divider = {
-            Divider(modifier = Modifier.fillMaxWidth())
-        }
-    ) {
-        userList.forEachIndexed { index, user ->
-            Tab(
-                selected = selected == index,
-                onClick = {
-                    onTabClick(index)
-                },
-                text = {
-                    BadgedBox(
-                        modifier = Modifier.fillMaxSize(),
-                        badge = {
-                            if (usersMap.containsKey(user.id)) {
-                                Badge { Text(text = usersMap[user.id].toString()) }
+    if (userList.isNotEmpty()) {
+        PrimaryScrollableTabRow(
+            selectedTabIndex = selected,
+            edgePadding = SizeTokens.Level0,
+            indicator = @Composable {
+                TabRowDefaults.PrimaryIndicator(
+                    Modifier.tabIndicatorOffset(selected, matchContentSize = true),
+                    shape = CircleShape
+                )
+            },
+            divider = {
+                Divider(modifier = Modifier.fillMaxWidth())
+            }
+        ) {
+            userList.forEachIndexed { index, user ->
+                Tab(
+                    selected = selected == index,
+                    onClick = {
+                        onTabClick(index)
+                    },
+                    text = {
+                        BadgedBox(
+                            modifier = Modifier.fillMaxSize(),
+                            badge = {
+                                if (usersMap.containsKey(user.id)) {
+                                    Badge { Text(text = usersMap[user.id].toString()) }
+                                }
                             }
+                        ) {
+                            Text(text = "${user.name} (${user.id})", maxLines = 2, overflow = TextOverflow.Ellipsis)
                         }
-                    ) {
-                        Text(text = "${user.name} (${user.id})", maxLines = 2, overflow = TextOverflow.Ellipsis)
                     }
-                }
-            )
+                )
+            }
         }
     }
 }
-
