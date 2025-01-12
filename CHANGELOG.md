@@ -1,5 +1,27 @@
 # Changelog
 
+## [2.0.7](https://github.com/XayahSuSuSu/Android-DataBackup/compare/2.0.6...v2.0.7) (2025-01-12)
+
+
+### gradle
+
+* Version 2.0.7 ([56bdf01](https://github.com/XayahSuSuSu/Android-DataBackup/commit/56bdf01242a89d7270cec8b8d9fe31720ab6b06a))
+
+
+### Features
+
+* Add last update and last backup info for details page ([2303b39](https://github.com/XayahSuSuSu/Android-DataBackup/commit/2303b39e857c7042f19d27f7f4ed89771241cfdf))
+* **dex:** Implement NotificationUtil ([7d689db](https://github.com/XayahSuSuSu/Android-DataBackup/commit/7d689db233778f0b0b3fea4b91e826c1e2bd6c9a))
+* Do not reset list if operation failed ([e259323](https://github.com/XayahSuSuSu/Android-DataBackup/commit/e259323ff36dbeb247d262e50a751dea0ec2ae08))
+* Save loadSystemApps state ([4a3b9e8](https://github.com/XayahSuSuSu/Android-DataBackup/commit/4a3b9e8ff7781c6732977e2b7911f1b8ebaeef7d))
+
+
+### Bug Fixes
+
+* Crash on entering app list for the first time ([8eda2d9](https://github.com/XayahSuSuSu/Android-DataBackup/commit/8eda2d91c5b20a80f44b7f1d51c659e22bc7f366))
+* Files config export ([c2d95e2](https://github.com/XayahSuSuSu/Android-DataBackup/commit/c2d95e267be954ecf439c958dd34d03a9564d403))
+* removeLast() crash on API 35 ([cf76bf5](https://github.com/XayahSuSuSu/Android-DataBackup/commit/cf76bf53c681fb342be3296526fda790aff01841))
+
 ## [2.0.6](https://github.com/XayahSuSuSu/Android-DataBackup/compare/2.0.5...v2.0.6) (2025-01-05)
 
 
