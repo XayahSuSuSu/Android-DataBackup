@@ -114,4 +114,5 @@
     <string name="backup_itself">La sauvegarde elle-même</string>
     <string name="backup_user_desc">Cibler l\'utilisateur lors du chargement de la liste de sauvegarde ou de la sauvegarde.</string>
     <string name="apps_which_have_backups">Les applications possédant des sauvegardes</string>
+    <string name="compression_test_desc">Regarder si les archives compressées fonctionnent après avoir été créées</string>
 </resources>
