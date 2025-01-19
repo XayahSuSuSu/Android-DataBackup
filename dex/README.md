@@ -10,6 +10,7 @@ app_process /system/bin com.xayah.dex.CCUtil help
 app_process /system/bin com.xayah.dex.HiddenApiUtil help
 app_process /system/bin com.xayah.dex.HttpUtil help
 app_process /system/bin com.xayah.dex.SsaidUtil help
+app_process /system/bin com.xayah.dex.NotificationUtil help
 ```
 
 # Commands
