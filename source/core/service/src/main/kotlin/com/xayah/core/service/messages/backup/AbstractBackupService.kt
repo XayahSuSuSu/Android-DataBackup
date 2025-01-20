@@ -81,9 +81,8 @@ internal abstract class AbstractBackupService : AbstractMessagesService() {
                 log { "Current message: $p" }
 
                 message.update(state = OperationState.PROCESSING)
-                val dstDir = mMessagesDir
 
-
+                val jsonString = message.messageEntity.asString()
             }
             mTaskEntity.update(processingIndex = mTaskEntity.processingIndex + 1)
         }

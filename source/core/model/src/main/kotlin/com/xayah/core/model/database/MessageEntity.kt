@@ -4,15 +4,16 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.MMSMessageBox
 import com.xayah.core.model.MessageType
 import com.xayah.core.model.OpType
-import com.xayah.core.model.OperationState
 import com.xayah.core.model.SMSMessageBox
 import kotlinx.serialization.Serializable
 
-interface BaseMessageExtraInfo
+interface BaseMessageTypeInfo
 
 @Serializable
 data class MessageIndexInfo(
@@ -25,7 +26,7 @@ data class MessageIndexInfo(
     var messageType: MessageType,
 )
 
-data class MMSExtraInfo(
+data class MMSTypeInfo(
     val id: Long,
     val contentClass: Long,
     val contentLocation: String,
@@ -55,9 +56,9 @@ data class MMSExtraInfo(
 
     // Mms.Part
     val filename: String,
-) : BaseMessageExtraInfo
+) : BaseMessageTypeInfo
 
-data class SMSExtraInfo(
+data class SMSTypeInfo(
     val creator: String,
     val errorCode: Long,
     val person: Long,
@@ -65,7 +66,7 @@ data class SMSExtraInfo(
     val replyPathPresent: Long,
     val serviceCenter: String,
     val type: SMSMessageBox,
-) : BaseMessageExtraInfo
+) : BaseMessageTypeInfo
 
 @Serializable
 data class MessageBaseInfo(
@@ -82,11 +83,30 @@ data class MessageBaseInfo(
 )
 
 @Serializable
+data class MessageToggleInfo(
+    var blocked: Boolean,
+    var activated: Boolean,
+    var existed: Boolean,
+)
+
+@Serializable
 @Entity
 data class MessageEntity(
     @PrimaryKey(autoGenerate = true) var id: Long,
     @ColumnInfo(defaultValue = "0") var processingIndex: Int = 0,
     @Embedded(prefix = "indexInfo_") var indexInfo: MessageIndexInfo,
-    @Embedded(prefix = "messageBaseInfo_") var messageBaseInfo: MessageBaseInfo,
-    @Embedded(prefix = "messageExtraInfo_") var messageExtraInfo: BaseMessageExtraInfo,
-)
+    @Embedded(prefix = "baseInfo_") var messageBaseInfo: MessageBaseInfo,
+    @Embedded(prefix = "typeInfo_") var messageTypeInfo: BaseMessageTypeInfo,
+    @Embedded(prefix = "toggleInfo_") var messageToggleInfo: MessageToggleInfo,
+) {
+    fun asString(): String {
+        return Gson().let {
+            it.toJson(
+                mapOf(
+                    Pair("baseInfo", it.toJsonTree(messageBaseInfo)),
+                    Pair("typeInfo", it.toJsonTree(messageTypeInfo)),
+                )
+            )
+        }
+    }
+}
