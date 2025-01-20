@@ -1,24 +1,14 @@
 package com.xayah.core.data.repository
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import android.os.Build
-import android.os.UserHandle
 import com.xayah.core.data.util.srcDir
 import com.xayah.core.database.dao.PackageDao
-import com.xayah.core.datastore.readCheckKeystore
 import com.xayah.core.datastore.readCompressionType
-import com.xayah.core.datastore.readCustomSUFile
-import com.xayah.core.datastore.readIconUpdateTime
-import com.xayah.core.datastore.readLoadSystemApps
 import com.xayah.core.datastore.readReloadDumpApk
-import com.xayah.core.datastore.saveIconUpdateTime
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataState
 import com.xayah.core.model.DataType
-import com.xayah.core.model.DefaultPreserveId
 import com.xayah.core.model.OpType
 import com.xayah.core.model.SortType
 import com.xayah.core.model.database.MediaEntity
@@ -38,7 +28,6 @@ import com.xayah.core.util.DateUtil
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.BaseUtil
-import com.xayah.core.util.command.PackageUtil
 import com.xayah.core.util.command.Tar
 import com.xayah.core.util.iconDir
 import com.xayah.core.util.localBackupSaveDir
@@ -79,18 +68,9 @@ class PackageRepository @Inject constructor(
 
     fun getArchiveDst(dstDir: String, dataType: DataType, ct: CompressionType) = "${dstDir}/${dataType.type}.${ct.suffix}"
 
-    private suspend fun getPackage(packageName: String, opType: OpType, userId: Int, preserveId: Long, cloud: String, backupDir: String) =
-        packageDao.query(packageName, opType, userId, preserveId, cloud, backupDir)
-
-    private suspend fun getInstalledPackages(userId: Int) = rootService.getInstalledPackagesAsUser(PackageManager.GET_PERMISSIONS, userId).filter {
-        // Filter itself
-        it.packageName != context.packageName
-    }
-
     fun getKeyPredicateNew(key: String): (PackageEntity) -> Boolean = { p ->
         p.packageInfo.label.lowercase().contains(key.lowercase()) || p.packageName.lowercase().contains(key.lowercase())
     }
-
 
     fun getShowSystemAppsPredicate(value: Boolean): (PackageEntity) -> Boolean = { p ->
         value || p.isSystemApp.not()
@@ -160,121 +140,6 @@ class PackageRepository @Inject constructor(
         1 -> sortByInstallTimeNew(sortType)
         2 -> sortByDataSizeNew(sortType)
         else -> sortByAlphabetNew(sortType)
-    }
-
-    private suspend fun handlePackage(
-        pm: PackageManager,
-        info: android.content.pm.PackageInfo,
-        checkKeystore: Boolean, userId: Int,
-        userHandle: UserHandle?,
-        hasPassedOneDay: Boolean
-    ): PackageEntity {
-        val permissions = rootService.getPermissions(packageInfo = info)
-        val uid = info.applicationInfo.uid
-        val hasKeystore = if (checkKeystore) PackageUtil.hasKeystore(context.readCustomSUFile().first(), uid) else false
-        val ssaid = rootService.getPackageSsaidAsUser(packageName = info.packageName, uid = uid, userId = userId)
-        val iconPath = pathUtil.getPackageIconPath(info.packageName, false)
-        val iconExists = rootService.exists(iconPath)
-        if (iconExists.not() || (iconExists && hasPassedOneDay)) {
-            runCatching {
-                val icon = info.applicationInfo.loadIcon(pm)
-                BaseUtil.writeIcon(icon = icon, dst = iconPath)
-            }.withLog()
-        }
-        val packageInfo = PackageInfo(
-            label = info.applicationInfo.loadLabel(pm).toString(),
-            versionName = info.versionName ?: "",
-            versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                info.longVersionCode
-            } else {
-                info.versionCode.toLong()
-            },
-            flags = info.applicationInfo.flags,
-            firstInstallTime = info.firstInstallTime,
-        )
-        val extraInfo = PackageExtraInfo(
-            uid = uid,
-            hasKeystore = hasKeystore,
-            permissions = permissions,
-            ssaid = ssaid,
-            blocked = false,
-            activated = false,
-            firstUpdated = true,
-            enabled = true,
-        )
-        val indexInfo = PackageIndexInfo(
-            opType = OpType.BACKUP,
-            packageName = info.packageName,
-            userId = userId,
-            compressionType = context.readCompressionType().first(),
-            preserveId = DefaultPreserveId,
-            cloud = "",
-            backupDir = ""
-        )
-        val packageEntity =
-            getPackage(packageName = info.packageName, opType = OpType.BACKUP, userId = userId, preserveId = DefaultPreserveId, cloud = "", backupDir = "")
-                ?: PackageEntity(
-                    id = 0,
-                    indexInfo = indexInfo,
-                    packageInfo = packageInfo,
-                    extraInfo = extraInfo,
-                    dataStates = PackageDataStates(),
-                    storageStats = PackageStorageStats(),
-                    dataStats = PackageDataStats(),
-                    displayStats = PackageDataStats(),
-                )
-        // Update if exists.
-        packageEntity.apply {
-            this.packageInfo = packageInfo
-            this.extraInfo.uid = uid
-            this.extraInfo.hasKeystore = hasKeystore
-            this.extraInfo.permissions = permissions
-            this.extraInfo.ssaid = ssaid
-        }
-        if (userHandle != null) {
-            rootService.queryStatsForPackage(info, userHandle).also { stats ->
-                if (stats != null) {
-                    packageEntity.apply {
-                        this.storageStats.appBytes = stats.appBytes
-                        this.storageStats.cacheBytes = stats.cacheBytes
-                        this.storageStats.dataBytes = stats.dataBytes
-                        this.storageStats.externalCacheBytes = stats.externalCacheBytes
-                    }
-                }
-            }
-        }
-        return packageEntity
-    }
-
-    @SuppressLint("StringFormatInvalid")
-    suspend fun refresh() = run {
-        val checkKeystore = context.readCheckKeystore().first()
-        val loadSystemApps = context.readLoadSystemApps().first()
-        val pm = context.packageManager
-        val userInfoList = rootService.getUsers()
-        for (userInfo in userInfoList) {
-            val userId = userInfo.id
-            val userHandle = rootService.getUserHandle(userId)
-            val installedPackages = getInstalledPackages(userId)
-            val installedPackagesCount = (installedPackages.size - 1).coerceAtLeast(1)
-
-            // Get 1/10 of total count.
-            val epoch: Int = ((installedPackagesCount + 1) / 10).coerceAtLeast(1)
-
-            // Update packages' info.
-            BaseUtil.mkdirs(context.iconDir())
-            val iconUpdateTime = context.readIconUpdateTime().first()
-            val now = DateUtil.getTimestamp()
-            val hasPassedOneDay = DateUtil.getNumberOfDaysPassed(iconUpdateTime, now) >= 1
-            if (hasPassedOneDay) context.saveIconUpdateTime(now)
-            installedPackages.forEachIndexed { index, info ->
-                val isSystemApp = (info.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0
-                if (loadSystemApps || isSystemApp.not()) {
-                    val packageEntity = handlePackage(pm, info, checkKeystore, userId, userHandle, hasPassedOneDay)
-                    upsert(packageEntity)
-                }
-            }
-        }
     }
 
     fun getDataSrcDir(dataType: DataType, userId: Int) = dataType.srcDir(userId)
@@ -736,12 +601,14 @@ class PackageRepository @Inject constructor(
                         versionCode = 0,
                         flags = 0,
                         firstInstallTime = 0,
+                        lastUpdateTime = 0,
                     ),
                     extraInfo = PackageExtraInfo(
                         uid = -1,
                         hasKeystore = false,
                         permissions = listOf(),
                         ssaid = "",
+                        lastBackupTime = 0,
                         blocked = false,
                         activated = false,
                         firstUpdated = true,
@@ -776,19 +643,23 @@ class PackageRepository @Inject constructor(
                                         rootService.listFilePaths(tmpApkPath).also { pathList ->
                                             if (pathList.isNotEmpty()) {
                                                 rootService.getPackageArchiveInfo(pathList.first())?.apply {
-                                                    packageEntity.packageInfo.label = applicationInfo.loadLabel(packageManager).toString()
+                                                    packageEntity.packageInfo.label = applicationInfo?.loadLabel(packageManager).toString()
                                                     packageEntity.packageInfo.versionName = versionName ?: ""
                                                     packageEntity.packageInfo.versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                                                         longVersionCode
                                                     } else {
                                                         versionCode.toLong()
                                                     }
-                                                    packageEntity.packageInfo.flags = applicationInfo.flags
+                                                    packageEntity.packageInfo.flags = applicationInfo?.flags ?: 0
                                                     val iconPath = pathUtil.getPackageIconPath(packageName, false)
                                                     val iconExists = rootService.exists(iconPath)
                                                     if (iconExists.not()) {
-                                                        val icon = applicationInfo.loadIcon(packageManager)
-                                                        BaseUtil.writeIcon(icon = icon, dst = iconPath)
+                                                        val icon = applicationInfo?.loadIcon(packageManager)
+                                                        if (icon != null) {
+                                                            BaseUtil.writeIcon(icon = icon, dst = iconPath)
+                                                        } else {
+                                                            log { "Failed to get icon." }
+                                                        }
                                                     }
                                                     log { "Icon and config updated." }
                                                 }
@@ -932,6 +803,7 @@ class PackageRepository @Inject constructor(
                         displayBytes = 0L,
                     ),
                     extraInfo = MediaExtraInfo(
+                        lastBackupTime = 0L,
                         blocked = false,
                         activated = false,
                         existed = true,
@@ -1071,12 +943,14 @@ class PackageRepository @Inject constructor(
                                 versionCode = 0,
                                 flags = 0,
                                 firstInstallTime = 0,
+                                lastUpdateTime = 0,
                             ),
                             extraInfo = PackageExtraInfo(
                                 uid = -1,
                                 hasKeystore = false,
                                 permissions = listOf(),
                                 ssaid = "",
+                                lastBackupTime = 0,
                                 blocked = false,
                                 activated = false,
                                 firstUpdated = true,
@@ -1113,19 +987,23 @@ class PackageRepository @Inject constructor(
                                                     rootService.listFilePaths(tmpApkPath).also { pathList ->
                                                         if (pathList.isNotEmpty()) {
                                                             rootService.getPackageArchiveInfo(pathList.first())?.apply {
-                                                                packageEntity.packageInfo.label = applicationInfo.loadLabel(packageManager).toString()
+                                                                packageEntity.packageInfo.label = applicationInfo?.loadLabel(packageManager).toString()
                                                                 packageEntity.packageInfo.versionName = versionName ?: ""
                                                                 packageEntity.packageInfo.versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                                                                     longVersionCode
                                                                 } else {
                                                                     versionCode.toLong()
                                                                 }
-                                                                packageEntity.packageInfo.flags = applicationInfo.flags
+                                                                packageEntity.packageInfo.flags = applicationInfo?.flags ?: 0
                                                                 val iconPath = pathUtil.getPackageIconPath(packageName, false)
                                                                 val iconExists = rootService.exists(iconPath)
                                                                 if (iconExists.not()) {
-                                                                    val icon = applicationInfo.loadIcon(packageManager)
-                                                                    BaseUtil.writeIcon(icon = icon, dst = iconPath)
+                                                                    val icon = applicationInfo?.loadIcon(packageManager)
+                                                                    if (icon != null) {
+                                                                        BaseUtil.writeIcon(icon = icon, dst = iconPath)
+                                                                    } else {
+                                                                        log { "Failed to get icon." }
+                                                                    }
                                                                 }
                                                                 log { "Icon and config updated." }
                                                             }
@@ -1283,6 +1161,7 @@ class PackageRepository @Inject constructor(
                                 displayBytes = 0L,
                             ),
                             extraInfo = MediaExtraInfo(
+                                lastBackupTime = 0L,
                                 blocked = false,
                                 activated = false,
                                 existed = true,

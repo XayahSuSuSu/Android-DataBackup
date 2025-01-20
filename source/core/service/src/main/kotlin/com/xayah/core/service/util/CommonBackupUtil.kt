@@ -127,16 +127,18 @@ class CommonBackupUtil @Inject constructor(
         )
 
 
-        val apps = mutableListOf<BlacklistAppItem>()
+        val blockedApps = mutableListOf<BlacklistAppItem>()
         appRepo.queryPackages(opType = OpType.BACKUP, blocked = true).forEach {
-            apps.add(BlacklistAppItem(it.packageName, it.userId))
+            blockedApps.add(BlacklistAppItem(it.packageName, it.userId))
         }
-        val files = mutableListOf<BlacklistFileItem>()
+        val blockedFiles = mutableListOf<BlacklistFileItem>()
         fileRepo.query(opType = OpType.BACKUP, blocked = true).forEach {
-            files.add(BlacklistFileItem(it.name, it.path))
+            blockedFiles.add(BlacklistFileItem(it.name, it.path))
         }
-        config.blacklist.apps = apps
-        config.blacklist.files = files
+        mutableListOf<BlacklistFileItem>()
+        val files = fileRepo.query(opType = OpType.BACKUP, blocked = false)
+        config.blacklist.apps = blockedApps
+        config.blacklist.files = blockedFiles
         config.cloud = cloudRepo.query()
         config.file = files.map { FileItem(it.name, it.path) }
         config.labels = labelsRepo.getLabels()

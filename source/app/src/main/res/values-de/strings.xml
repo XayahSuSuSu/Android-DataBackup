@@ -383,4 +383,6 @@
     <string name="compression_level_desc">Niedrigere Zahlen sorgen für eine schnellere Komprimierung, höhere Zahlen ergeben bessere Komprimierungsraten</string>
     <string name="compression_level">Komprimierungsstufe</string>
     <string name="restore_permissions">Berechtigungen wiederherstellen</string>
+    <string name="args_restored_at">zurückgesetzt um %1$s</string>
+    <string name="visit_details">Zeige Details</string>
 </resources>

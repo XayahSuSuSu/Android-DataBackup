@@ -287,17 +287,14 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     }
 
     override fun getPackageSourceDir(packageName: String, userId: Int): List<String> = synchronized(lock) {
-        tryOn(
-            block = {
-                val sourceDirList = mutableListOf<String>()
-                val packageInfo = packageManagerHidden.getPackageInfoAsUser(packageName, 0, userId)
-                sourceDirList.add(packageInfo.applicationInfo.sourceDir)
-                val splitSourceDirs = packageInfo.applicationInfo.splitSourceDirs
-                if (!splitSourceDirs.isNullOrEmpty()) for (i in splitSourceDirs) sourceDirList.add(i)
-                sourceDirList
-            },
-            onException = { listOf() }
-        )
+        runCatching {
+            val sourceDirList = mutableListOf<String>()
+            val packageInfo = packageManagerHidden.getPackageInfoAsUser(packageName, 0, userId)
+            sourceDirList.add(packageInfo.applicationInfo!!.sourceDir)
+            val splitSourceDirs = packageInfo.applicationInfo!!.splitSourceDirs
+            if (!splitSourceDirs.isNullOrEmpty()) for (i in splitSourceDirs) sourceDirList.add(i)
+            sourceDirList
+        }.getOrElse { listOf() }
     }
 
     override fun queryInstalled(packageName: String, userId: Int): Boolean = synchronized(lock) {
@@ -307,14 +304,9 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     }
 
     override fun getPackageUid(packageName: String, userId: Int): Int = synchronized(lock) {
-        tryOn(
-            block = {
-                packageManagerHidden.getPackageInfoAsUser(packageName, 0, userId).applicationInfo.uid
-            },
-            onException = {
-                -1
-            }
-        )
+        runCatching {
+            packageManagerHidden.getPackageInfoAsUser(packageName, 0, userId).applicationInfo!!.uid
+        }.getOrElse { -1 }
     }
 
     override fun getUserHandle(userId: Int): UserHandle = synchronized(lock) {
@@ -340,13 +332,14 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         val mediaCacheDir = "$mediaDir/cache"
         val mediaCodeCacheDir = "$mediaDir/code_cache"
 
+        val appDirSize = runCatching { FileUtil.calculateSize(PathUtil.getParentPath(packageInfo.applicationInfo!!.sourceDir)) }.getOrElse { 0 }
         val cacheDirSize = FileUtil.calculateSize(userCacheDir) + FileUtil.calculateSize(userCodeCacheDir) +
                 FileUtil.calculateSize(dataCacheDir) + FileUtil.calculateSize(dataCodeCacheDir) +
                 FileUtil.calculateSize(obbCacheDir) + FileUtil.calculateSize(obbCodeCacheDir) +
                 FileUtil.calculateSize(mediaCacheDir) + FileUtil.calculateSize(mediaCodeCacheDir)
         val dataDirSize = FileUtil.calculateSize(userDir) + FileUtil.calculateSize(dataDir) + FileUtil.calculateSize(obbDir) + FileUtil.calculateSize(mediaDir) - cacheDirSize
         return StorageStatsParcelable(
-            FileUtil.calculateSize(PathUtil.getParentPath(packageInfo.applicationInfo.sourceDir)),
+            appDirSize,
             cacheDirSize,
             dataDirSize,
             0,
@@ -355,13 +348,13 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
     @TargetApi(Build.VERSION_CODES.O)
     fun queryStatsForPackageApi26(packageInfo: PackageInfo, user: UserHandle): StorageStatsParcelable {
-        val stats = getStorageStatsManager().queryStatsForPackage(packageInfo.applicationInfo.storageUuid, packageInfo.packageName, user)
+        val stats = runCatching { getStorageStatsManager().queryStatsForPackage(packageInfo.applicationInfo!!.storageUuid, packageInfo.packageName, user) }.getOrNull()
 
         return StorageStatsParcelable(
-            stats.appBytes,
-            stats.cacheBytes,
-            stats.dataBytes,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) stats.externalCacheBytes else 0,
+            stats?.appBytes ?: 0,
+            stats?.cacheBytes ?: 0,
+            stats?.dataBytes ?: 0,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) stats?.externalCacheBytes ?: 0 else 0,
         )
     }
 
@@ -517,7 +510,7 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
 
     override fun getPermissions(packageInfo: PackageInfo): List<PackagePermission> = synchronized(lock) {
         val permissions = mutableListOf<PackagePermission>()
-        val uid = packageInfo.applicationInfo.uid
+        val uid = packageInfo.applicationInfo?.uid ?: -1
         val packageName = packageInfo.packageName
         val requestedPermissions = packageInfo.requestedPermissions?.toList() ?: listOf()
         val requestedPermissionsFlags = packageInfo.requestedPermissionsFlags?.toList() ?: listOf()

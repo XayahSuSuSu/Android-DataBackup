@@ -20,7 +20,7 @@
     <string name="confirm">确定</string>
     <string name="cancel">取消</string>
     <string name="overlook">总览</string>
-    <string name="last_backup">上次备份</string>
+    <string name="last_backup">最近备份</string>
     <string name="none">无</string>
     <string name="utilities">工具</string>
     <string name="activities">活动</string>
@@ -394,4 +394,5 @@
     <string name="compression_level">压缩等级</string>
     <string name="compression_level_desc">数字越小，压缩速度越快，数字越大，压缩率越高</string>
     <string name="args_current_level">当前等级：%1$s</string>
+    <string name="last_update">最近更新</string>
 </resources>

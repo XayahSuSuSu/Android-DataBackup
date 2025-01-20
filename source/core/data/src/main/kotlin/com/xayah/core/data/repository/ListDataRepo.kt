@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -72,7 +73,7 @@ class ListDataRepo @Inject constructor(
                     Filters(
                         cloud = cloudName,
                         backupDir = backupDir,
-                        showSystemApps = false,
+                        showSystemApps = runBlocking { appsRepo.getLoadSystemApps() },
                         hasBackups = true,
                         hasNoBackups = true,
                         installedApps = true,

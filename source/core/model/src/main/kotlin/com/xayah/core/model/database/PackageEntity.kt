@@ -71,6 +71,7 @@ data class PackageInfo(
     var versionCode: Long,
     var flags: Int,
     var firstInstallTime: Long,
+    @ColumnInfo(defaultValue = "0") var lastUpdateTime: Long,
 )
 
 /**
@@ -82,6 +83,7 @@ data class PackageExtraInfo(
     var hasKeystore: Boolean,
     var permissions: List<PackagePermission>,
     var ssaid: String,
+    @ColumnInfo(defaultValue = "0") var lastBackupTime: Long,
     var blocked: Boolean,
     var activated: Boolean,
     @ColumnInfo(defaultValue = "1") var firstUpdated: Boolean,
@@ -282,6 +284,7 @@ data class PackageDataStatesEntity(
 // Part update entity
 data class PackageUpdateEntity(
     var id: Long,
+    @Embedded(prefix = "packageInfo_") var packageInfo: PackageInfo,
     @Embedded(prefix = "extraInfo_") var extraInfo: PackageExtraInfo,
     @Embedded(prefix = "storageStats_") var storageStats: PackageStorageStats,
 )

@@ -3,7 +3,6 @@ package com.xayah.core.data.repository
 import android.content.Context
 import com.xayah.core.data.R
 import com.xayah.core.database.dao.MediaDao
-import com.xayah.core.datastore.ConstantUtil
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataType
 import com.xayah.core.model.OpType
@@ -96,44 +95,6 @@ class MediaRepository @Inject constructor(
         else -> sortByAlphabetNew(sortType)
     }
 
-    suspend fun refresh() = run {
-        // Add default medium for first time
-        if (mediaDao.count() == 0L) {
-            ConstantUtil.DefaultMediaList.forEach { (name, path) ->
-                upsert(
-                    MediaEntity(
-                        id = 0,
-                        indexInfo = MediaIndexInfo(
-                            opType = OpType.BACKUP,
-                            name = name,
-                            compressionType = CompressionType.TAR,
-                            preserveId = 0,
-                            cloud = "",
-                            backupDir = ""
-                        ),
-                        mediaInfo = MediaInfo(
-                            path = path,
-                            dataBytes = 0,
-                            displayBytes = 0,
-                        ),
-                        extraInfo = MediaExtraInfo(
-                            blocked = false,
-                            activated = true,
-                            existed = true,
-                        ),
-                    )
-                )
-            }
-        }
-
-        val medium = mediaDao.query(opType = OpType.BACKUP, blocked = false)
-        medium.forEach { m ->
-            val size = rootService.calculateSize(m.path)
-            val existed = rootService.exists(m.path)
-            mediaDao.upsert(m.copy(mediaInfo = m.mediaInfo.copy(displayBytes = size), extraInfo = m.extraInfo.copy(existed = existed, activated = m.extraInfo.activated && existed)))
-        }
-    }
-
     private fun renameDuplicateMedia(name: String): String {
         val nameList = name.split("_").toMutableList()
         val index = nameList.first().toIntOrNull()
@@ -183,6 +144,7 @@ class MediaRepository @Inject constructor(
                             displayBytes = 0,
                         ),
                         extraInfo = MediaExtraInfo(
+                            lastBackupTime = 0,
                             activated = true,
                             blocked = false,
                             existed = true

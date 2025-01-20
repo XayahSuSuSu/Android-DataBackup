@@ -9,10 +9,10 @@
     <string name="start_subtitle">U skladu sa relevantnim politikama, potrebno je da pažljivo pročitate i da se složite sa sledećim korisničkim ugovorom i Politikom privatnosti pre nego što počnete da koristite ovu aplikaciju</string>
     <string name="network">Mreža</string>
     <string name="network_desc">Koristi se za dobijanje informacija o ažuriranju aplikacije i analitiku aplikacije</string>
-    <string name="application">App</string>
+    <string name="application">Aplikacija</string>
     <string name="storage_desc">Koristi se za konfiguraciju sigurnosnog kopiranja, čitanje i pisanje arhiva</string>
     <string name="grant_root_access">Odobri root pristup</string>
-    <string name="release_prebuilt_binaries">Objavi unaprijed izgrađene binarne datoteke</string>
+    <string name="release_prebuilt_binaries">Objavi unapred izgrađene binarne datoteke</string>
     <string name="confirm">Potvrdi</string>
     <string name="cancel">Obustavi</string>
     <string name="overlook">Pregled</string>
@@ -272,11 +272,11 @@
     <string name="grant_ntfy_perm_manually">Ručno dodeli dozvolu za obavesti</string>
     <string name="app_name">Sigurnosna kopija podataka</string>
     <string name="welcome_to_use">Dobro došli u Sigurnosnu kopiju podataka</string>
-    <string name="update_records">Aktualiziraj zapise</string>
+    <string name="update_records">Ažuriraj zapise</string>
     <string name="environment_detection">Prepoznavanje okruženja</string>
     <string name="start">Pokreni</string>
-    <string name="start_desc">Svi podaci koje generiše ova aplikacija koriste se samo za pravljenje rezervnih kopija/restauracija i čuvaju se samo lokalno.</string>
-    <string name="application_desc">Dobijte informacije o paketu aplikacije, koriste se za generiranje liste sigurnosnih kopija i dobijanje veličine app podataka</string>
+    <string name="start_desc">Svi podaci koje generiše ova aplikacija koriste se samo za pravljenje/vraćanje rezervnih kopija i čuvaju se samo lokalno.</string>
+    <string name="application_desc">Dobijte informacije o paketu aplikacije, koriste se za generisanje liste sigurnosnih kopija i dobijanje veličine podataka</string>
     <string name="storage">Skladište</string>
     <string name="loading">Učitavanje</string>
     <string name="save">Spremi</string>
@@ -387,4 +387,12 @@
     <string name="no_labels_here">Нема ознака овде.</string>
     <string name="backup_configs">Конфигурације резервних копија</string>
     <string name="backup_configs_desc">Извоз конфигурација у резервни директоријум</string>
+    <string name="compression_level">Ниво компресије</string>
+    <string name="args_current_level">Тренутни ниво: %1$s</string>
+    <string name="restore_ssaid">Врати Андроид ид</string>
+    <string name="restore_ssaid_desc">Вратите апликацијама Андроид ид, ово захтева поновно покретање система да би имало ефекта</string>
+    <string name="compression_level_desc">Мањи број омогућује брже компресовање, већи број даје бољи однос компресије</string>
+    <string name="restore_permissions_desc">Вратите дозволе апликацијама</string>
+    <string name="restore_permissions">Вратите дозволе</string>
+    <string name="last_update">Poslednje ažuriranje</string>
 </resources>

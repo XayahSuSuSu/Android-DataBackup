@@ -7,6 +7,8 @@ import org.gradle.kotlin.dsl.getByType
 class ApplicationComposeConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
+            pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
+
             extensions.getByType<ApplicationExtension>().apply {
                 defaultConfig {
                     vectorDrawables {
@@ -15,9 +17,6 @@ class ApplicationComposeConventionPlugin : Plugin<Project> {
                 }
                 buildFeatures {
                     compose = true
-                }
-                composeOptions {
-                    kotlinCompilerExtensionVersion = catalogLibs.findVersion("compose-compiler").get().toString()
                 }
 
                 dependencies {

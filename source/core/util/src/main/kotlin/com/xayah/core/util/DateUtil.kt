@@ -22,6 +22,7 @@ object DateUtil {
     private const val WEEK_IN_MILLIS = DAY_IN_MILLIS * 7
     private const val PATTERN_DEFAULT = "yyyy-MM-dd HH:mm:ss.SSS"
     const val PATTERN_YMD = "yyyy-MM-dd"
+    const val PATTERN_YMD_HMS = "yyyy-MM-dd HH:mm:ss"
     const val PATTERN_FINISH = "MMMM dd yyyy HH:mm a"
 
     fun getTimestamp(): Long = System.currentTimeMillis()

@@ -391,4 +391,7 @@
     <string name="restore_permissions_desc">Restaurar permisos de aplicaciones</string>
     <string name="restore_permissions">Restaurar permisos</string>
     <string name="restore_ssaid">Restaurar identificación de Android</string>
+    <string name="args_current_level">Nivel actual: %1$s</string>
+    <string name="compression_level">Nivel de compresión</string>
+    <string name="compression_level_desc">Los números más bajos dan como resultado una compresión más rápida, los números más altos dan como resultado mejores tasas de compresión</string>
 </resources>

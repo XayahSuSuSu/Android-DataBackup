@@ -70,6 +70,10 @@ fun ListItems(
         }
 
         listItems(uiState = uiState, viewModel = viewModel)
+
+        item(key = "-2") {
+            Spacer(modifier = Modifier.size(SizeTokens.Level128))
+        }
     }
 }
 

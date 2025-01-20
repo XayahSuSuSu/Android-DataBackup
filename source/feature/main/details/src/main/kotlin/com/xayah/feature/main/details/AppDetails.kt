@@ -27,6 +27,7 @@ import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.RemoveRedEye
 import androidx.compose.material.icons.rounded.RocketLaunch
+import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material.icons.rounded._123
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -476,11 +477,27 @@ private fun Info(app: PackageEntity) {
             title = stringResource(id = R.string.version),
             value = app.packageInfo.versionName
         )
-        Clickable(
-            icon = Icons.Rounded.Download,
-            title = stringResource(id = R.string.first_install),
-            value = DateUtil.formatTimestamp(app.packageInfo.firstInstallTime, DateUtil.PATTERN_YMD),
-        )
+        if (app.packageInfo.firstInstallTime != 0L) {
+            Clickable(
+                icon = Icons.Rounded.Download,
+                title = stringResource(id = R.string.first_install),
+                value = DateUtil.formatTimestamp(app.packageInfo.firstInstallTime, DateUtil.PATTERN_YMD),
+            )
+        }
+        if (app.packageInfo.lastUpdateTime != 0L) {
+            Clickable(
+                icon = Icons.Rounded.Update,
+                title = stringResource(id = R.string.last_update),
+                value = DateUtil.formatTimestamp(app.packageInfo.lastUpdateTime, DateUtil.PATTERN_YMD_HMS),
+            )
+        }
+        if (app.extraInfo.lastBackupTime != 0L) {
+            Clickable(
+                icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_acute),
+                title = stringResource(id = R.string.last_backup),
+                value = DateUtil.formatTimestamp(app.extraInfo.lastBackupTime, DateUtil.PATTERN_YMD_HMS),
+            )
+        }
         if (app.extraInfo.ssaid.isNotEmpty()) {
             Clickable(
                 icon = Icons.Rounded.RemoveRedEye,

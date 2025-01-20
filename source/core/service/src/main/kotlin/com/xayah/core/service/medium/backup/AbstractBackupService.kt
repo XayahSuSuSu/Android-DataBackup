@@ -130,6 +130,7 @@ internal abstract class AbstractBackupService : AbstractMediumService() {
 
                     if (media.isSuccess) {
                         // Save config
+                        m.extraInfo.lastBackupTime = DateUtil.getTimestamp()
                         val id = restoreEntity?.id ?: 0
                         restoreEntity = m.copy(
                             id = id,
@@ -202,7 +203,9 @@ internal abstract class AbstractBackupService : AbstractMediumService() {
                 }
                 entity.update(progress = 0.5f)
 
-                if (mContext.readResetBackupList().first()) mMediaDao.clearActivated(OpType.BACKUP)
+                if (mContext.readResetBackupList().first() && mTaskEntity.failureCount == 0) {
+                    mMediaDao.clearActivated(OpType.BACKUP)
+                }
                 if (runCatchingOnService { clear() }.not()) {
                     isSuccess = false
                 }

@@ -2,6 +2,7 @@ package com.xayah.core.data.repository
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.LauncherApps
 import android.content.pm.PackageManager
 import android.graphics.drawable.AdaptiveIconDrawable
@@ -17,6 +18,7 @@ import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.datastore.di.DbDispatchers.Default
 import com.xayah.core.datastore.di.Dispatcher
 import com.xayah.core.datastore.readCustomSUFile
+import com.xayah.core.datastore.readLoadSystemApps
 import com.xayah.core.datastore.readLoadedIconMD5
 import com.xayah.core.datastore.saveLoadedIconMD5
 import com.xayah.core.hiddenapi.castTo
@@ -125,6 +127,8 @@ class AppsRepo @Inject constructor(
     fun countApps(opType: OpType) = appsDao.countPackagesFlow(opType = opType, blocked = false)
     fun countSelectedApps(opType: OpType) = appsDao.countActivatedPackagesFlow(opType = opType, blocked = false)
 
+    suspend fun getLoadSystemApps() = context.readLoadSystemApps().first()
+
     suspend fun selectApp(id: Long, selected: Boolean) {
         appsDao.activateById(id, selected)
     }
@@ -192,6 +196,7 @@ class AppsRepo @Inject constructor(
      * Faster than [fastInitialize] if there are too many newly installed apps.
      */
     suspend fun fullInitialize(onInit: suspend (cur: Int, max: Int, content: String) -> Unit) {
+        val loadSystemApps = context.readLoadSystemApps().first()
         val settings = settingsDataRepo.settingsData.first()
         val pm = context.packageManager
         val userInfoList = rootService.getUsers()
@@ -208,7 +213,10 @@ class AppsRepo @Inject constructor(
             installedPackages.forEachIndexed { index, info ->
                 onInit(index, installedPackages.size, info.packageName)
                 if (storedSet.contains(info.packageName).not()) {
-                    apps.add(initializeApp(settings, pm, userId, info))
+                    val isSystemApp = ((info.applicationInfo?.flags ?: 0) and ApplicationInfo.FLAG_SYSTEM) != 0
+                    if (loadSystemApps || isSystemApp.not()) {
+                        apps.add(initializeApp(settings, pm, userId, info))
+                    }
                 }
             }
             appsDao.upsert(apps)
@@ -219,6 +227,7 @@ class AppsRepo @Inject constructor(
      * Initialize only newly installed apps or remove uninstalled apps.
      */
     suspend fun fastInitialize(onInit: suspend (cur: Int, max: Int, content: String) -> Unit) {
+        val loadSystemApps = context.readLoadSystemApps().first()
         val settings = settingsDataRepo.settingsData.first()
         val pm = context.packageManager
         val userInfoList = rootService.getUsers()
@@ -238,7 +247,10 @@ class AppsRepo @Inject constructor(
                 onInit(index, missingPackages.size, pkg)
                 val info = rootService.getPackageInfoAsUser(pkg, 0, userId)
                 if (info != null) {
-                    apps.add(initializeApp(settings, pm, userId, info))
+                    val isSystemApp = ((info.applicationInfo?.flags ?: 0) and ApplicationInfo.FLAG_SYSTEM) != 0
+                    if (loadSystemApps || isSystemApp.not()) {
+                        apps.add(initializeApp(settings, pm, userId, info))
+                    }
                 }
             }
             appsDao.upsert(apps)
@@ -258,21 +270,23 @@ class AppsRepo @Inject constructor(
                 backupDir = "",
             ),
             packageInfo = PackageInfo(
-                info.applicationInfo.loadLabel(pm).toString(),
+                info.applicationInfo?.loadLabel(pm).toString(),
                 versionName = info.versionName ?: "",
                 versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     info.longVersionCode
                 } else {
                     info.versionCode.toLong()
                 },
-                flags = info.applicationInfo.flags,
+                flags = info.applicationInfo?.flags ?: 0,
                 firstInstallTime = info.firstInstallTime,
+                lastUpdateTime = info.lastUpdateTime,
             ),
             extraInfo = PackageExtraInfo(
-                uid = info.applicationInfo.uid,
+                uid = info.applicationInfo?.uid ?: -1,
                 hasKeystore = false,
                 permissions = listOf(),
                 ssaid = "",
+                lastBackupTime = 0L,
                 blocked = false,
                 activated = false,
                 firstUpdated = false,
@@ -334,7 +348,7 @@ class AppsRepo @Inject constructor(
 
     private suspend fun updateApp(pm: PackageManager, pkg: PackageEntity, userId: Int, userHandle: UserHandle?): PackageUpdateEntity? {
         val info = rootService.getPackageInfoAsUser(pkg.packageName, PackageManager.GET_PERMISSIONS, userId)
-        val updateEntity = PackageUpdateEntity(pkg.id, pkg.extraInfo, pkg.storageStats)
+        val updateEntity = PackageUpdateEntity(pkg.id, pkg.packageInfo, pkg.extraInfo, pkg.storageStats)
         if (info != null) {
             runCatching {
                 val iconPath: String
@@ -352,13 +366,24 @@ class AppsRepo @Inject constructor(
                 }
             }.withLog()
 
+            updateEntity.packageInfo.label = info.applicationInfo?.loadLabel(pm).toString()
+            updateEntity.packageInfo.versionName = info.versionName ?: ""
+            updateEntity.packageInfo.versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                info.longVersionCode
+            } else {
+                info.versionCode.toLong()
+            }
+            updateEntity.packageInfo.flags = info.applicationInfo?.flags ?: 0
+            updateEntity.packageInfo.firstInstallTime = info.firstInstallTime
+            updateEntity.packageInfo.lastUpdateTime = info.lastUpdateTime
+
             updateEntity.extraInfo.firstUpdated = true
-            val uid = info.applicationInfo.uid
+            val uid = info.applicationInfo?.uid ?: -1
             updateEntity.extraInfo.uid = uid
             updateEntity.extraInfo.permissions = rootService.getPermissions(packageInfo = info)
             updateEntity.extraInfo.hasKeystore = PackageUtil.hasKeystore(context.readCustomSUFile().first(), uid)
             updateEntity.extraInfo.ssaid = rootService.getPackageSsaidAsUser(packageName = info.packageName, uid = uid, userId = userId)
-            updateEntity.extraInfo.enabled = info.applicationInfo.enabled
+            updateEntity.extraInfo.enabled = info.applicationInfo?.enabled ?: false
 
             if (userHandle != null) {
                 rootService.queryStatsForPackage(info, userHandle).also { stats ->

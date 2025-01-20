@@ -186,12 +186,13 @@ class IndexViewModel @Inject constructor(
                                                             cloud = "",
                                                             backupDir = ""
                                                         ),
-                                                        packageInfo = PackageInfo(label = "", versionName = "", versionCode = 0L, flags = 0, firstInstallTime = 0L),
+                                                        packageInfo = PackageInfo(label = "", versionName = "", versionCode = 0L, flags = 0, firstInstallTime = 0L, lastUpdateTime = 0L),
                                                         extraInfo = PackageExtraInfo(
                                                             uid = 0,
                                                             hasKeystore = false,
                                                             permissions = listOf(),
                                                             ssaid = "",
+                                                            lastBackupTime = 0L,
                                                             blocked = true,
                                                             activated = false,
                                                             firstUpdated = true,
@@ -227,6 +228,7 @@ class IndexViewModel @Inject constructor(
                                                             displayBytes = 0,
                                                         ),
                                                         extraInfo = MediaExtraInfo(
+                                                            lastBackupTime = 0,
                                                             blocked = true,
                                                             activated = false,
                                                             existed = false,

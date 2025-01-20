@@ -93,7 +93,7 @@ internal fun TaskDetailsScreen(uiState: TaskDetailsUiState) {
                                 it.AppDataItem(DataType.PACKAGE_USER_DE)
                                 it.AppDataItem(DataType.PACKAGE_DATA)
                                 it.AppDataItem(DataType.PACKAGE_OBB)
-                                it.AppDataItem(DataType.MEDIA_MEDIA)
+                                it.AppDataItem(DataType.PACKAGE_MEDIA)
                             }
                         }
 

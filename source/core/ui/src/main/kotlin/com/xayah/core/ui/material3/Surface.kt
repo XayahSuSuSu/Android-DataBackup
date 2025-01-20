@@ -27,11 +27,11 @@ import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.ripple
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -216,7 +216,7 @@ fun Surface(
     shadowElevation: Dp = 0.dp,
     border: BorderStroke? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    indication: Indication? = rememberRipple(),
+    indication: Indication? = ripple(),
     content: @Composable () -> Unit,
 ) {
     val absoluteElevation = LocalAbsoluteTonalElevation.current + tonalElevation
@@ -348,7 +348,7 @@ fun Surface(
                 .selectable(
                     selected = selected,
                     interactionSource = interactionSource,
-                    indication = rememberRipple(),
+                    indication = ripple(),
                     enabled = enabled,
                     onClick = onClick
                 ),
@@ -458,7 +458,7 @@ fun Surface(
                 .toggleable(
                     value = checked,
                     interactionSource = interactionSource,
-                    indication = rememberRipple(),
+                    indication = ripple(),
                     enabled = enabled,
                     onValueChange = onCheckedChange
                 ),

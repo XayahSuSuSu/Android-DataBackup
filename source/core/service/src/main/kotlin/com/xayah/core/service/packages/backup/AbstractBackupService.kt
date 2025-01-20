@@ -172,6 +172,7 @@ internal abstract class AbstractBackupService : AbstractPackagesService() {
 
                     if (pkg.isSuccess) {
                         // Save config
+                        p.extraInfo.lastBackupTime = DateUtil.getTimestamp()
                         val id = restoreEntity?.id ?: 0
                         restoreEntity = p.copy(
                             id = id,
@@ -278,7 +279,9 @@ internal abstract class AbstractBackupService : AbstractPackagesService() {
                 } else {
                     log { "AccessibilityServices is empty, skip restoring." }
                 }
-                if (mContext.readResetBackupList().first()) mPackageDao.clearActivated(OpType.BACKUP)
+                if (mContext.readResetBackupList().first() && mTaskEntity.failureCount == 0) {
+                    mPackageDao.clearActivated(OpType.BACKUP)
+                }
                 if (runCatchingOnService { clear() }.not()) {
                     isSuccess = false
                 }

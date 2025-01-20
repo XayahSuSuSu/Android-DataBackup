@@ -156,7 +156,7 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExt
         val paths = mutableListOf(src)
 
         while (paths.isNotEmpty()) {
-            val dir = paths.removeFirst()
+            val dir = paths.removeAt(0)
             val files = client.ls(dir)
             if (files.isEmpty()) {
                 emptyDirs.add(dir)
@@ -234,7 +234,7 @@ class SFTPClientImpl(private val entity: CloudEntity, private val extra: SFTPExt
     private fun handleOriginalPath(path: String): String = run {
         val pathSplit = path.toPathList().toMutableList()
         // Remove “$Cloud:”
-        pathSplit.removeFirst()
+        pathSplit.removeFirstOrNull()
         // Add "."
         pathSplit.add(0, ".")
         pathSplit.toPathString()

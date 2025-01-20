@@ -1,5 +1,6 @@
 package com.xayah.core.model.database
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -27,6 +28,7 @@ data class MediaInfo(
 
 @Serializable
 data class MediaExtraInfo(
+    @ColumnInfo(defaultValue = "0") var lastBackupTime: Long,
     var blocked: Boolean,
     var activated: Boolean,
     var existed: Boolean,

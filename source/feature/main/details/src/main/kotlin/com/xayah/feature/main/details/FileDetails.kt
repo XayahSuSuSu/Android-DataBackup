@@ -48,6 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import com.xayah.core.model.OpType
 import com.xayah.core.model.database.LabelEntity
 import com.xayah.core.model.database.LabelFileCrossRefEntity
@@ -396,13 +397,23 @@ private fun SingleChoiceSegmentedButtonRowScope.RestoreActions(protected: Boolea
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun Info(file: MediaEntity) {
-    if (file.preserveId != 0L) {
+    if (file.preserveId != 0L || file.extraInfo.lastBackupTime != 0L) {
         Title(title = stringResource(id = R.string.info)) {
-            Clickable(
-                icon = Icons.Outlined.Shield,
-                title = stringResource(id = R.string._protected),
-                value = DateUtil.formatTimestamp(file.preserveId, DateUtil.PATTERN_FINISH),
-            )
+            if (file.extraInfo.lastBackupTime != 0L) {
+                Clickable(
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_acute),
+                    title = stringResource(id = R.string.last_backup),
+                    value = DateUtil.formatTimestamp(file.extraInfo.lastBackupTime, DateUtil.PATTERN_YMD_HMS),
+                )
+            }
+
+            if (file.preserveId != 0L) {
+                Clickable(
+                    icon = Icons.Outlined.Shield,
+                    title = stringResource(id = R.string._protected),
+                    value = DateUtil.formatTimestamp(file.preserveId, DateUtil.PATTERN_FINISH),
+                )
+            }
         }
     }
 }

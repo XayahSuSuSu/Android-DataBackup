@@ -10,6 +10,7 @@ app_process /system/bin com.xayah.dex.CCUtil help
 app_process /system/bin com.xayah.dex.HiddenApiUtil help
 app_process /system/bin com.xayah.dex.HttpUtil help
 app_process /system/bin com.xayah.dex.SsaidUtil help
+app_process /system/bin com.xayah.dex.NotificationUtil help
 ```
 
 # Commands
@@ -62,4 +63,21 @@ Ssaid commands:
 
   set USER_ID PACKAGE SSAID
     Set ssaid.
+```
+
+```
+NotificationUtil commands:
+  help
+
+  notify [flags] <tag> <text>
+
+
+flags:
+  -t|--title <text>
+  -p|--progress <max> <progress> <indeterminate>
+
+examples:
+  notify -t 'This is title' 'This is tag' 'This is content.'
+  notify -p 100 50 false -t 'This is title' 'This is tag' 'This is content.'
+  notify -p 0 0 true -t 'This is title' 'This is tag' 'This is content.'
 ```

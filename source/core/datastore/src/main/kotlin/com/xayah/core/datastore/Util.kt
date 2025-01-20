@@ -18,7 +18,7 @@ private fun PackageManager.getPackageInfoCompat(packageName: String, flags: Int 
     }
 
 fun Context.getCurrentAppVersionName(): String {
-    return packageManager.getPackageInfoCompat(packageName).versionName
+    return packageManager.getPackageInfoCompat(packageName).versionName ?: ""
 }
 
 private const val PREFERENCE_NAME = "DataStore"

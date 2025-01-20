@@ -26,11 +26,11 @@ import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.rounded.Circle
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ripple
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -52,6 +52,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.readRestoreUser
 import com.xayah.core.model.OperationState
@@ -104,7 +105,7 @@ fun Card(
     elevation: CardElevation = CardDefaults.cardElevation(),
     border: BorderStroke? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    indication: Indication? = rememberRipple(),
+    indication: Indication? = ripple(),
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val haptic = LocalHapticFeedback.current
@@ -154,7 +155,7 @@ fun ProcessingCard(
         indication = null,
     ) {
         Column {
-            CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = enabled,
@@ -358,7 +359,7 @@ fun AppsReportCard(
         indication = null,
     ) {
         Column {
-            CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = enabled,
@@ -471,7 +472,7 @@ fun FilesReportCard(
         indication = null,
     ) {
         Column {
-            CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = enabled,

@@ -101,7 +101,7 @@
     <string name="system">Système</string>
     <string name="main_account">Compte principal</string>
     <string name="reset_backup_list">Réinitialiser la liste des sauvegardes</string>
-    <string name="backup_itself_desc">Ajouter l\'APK au dossier de sauvegarde à la fin de la sauvegarde</string>
+    <string name="backup_itself_desc">Copier l\'APK dans le dossier de sauvegarde à la fin de la sauvegarde</string>
     <string name="compression_test">Test de compression</string>
     <string name="account">Compte</string>
     <string name="not_exist_and_skip">Ignorer et passer</string>
@@ -111,7 +111,8 @@
     <string name="update_available">Mise à jour disponible</string>
     <string name="create_account">Créer un compte</string>
     <string name="port">Port</string>
-    <string name="backup_itself">La sauvegarde elle-même</string>
+    <string name="backup_itself">Sauvegarde elle-même</string>
     <string name="backup_user_desc">Cibler l\'utilisateur lors du chargement de la liste de sauvegarde ou de la sauvegarde.</string>
     <string name="apps_which_have_backups">Les applications possédant des sauvegardes</string>
+    <string name="compression_test_desc">Regarder si les archives compressées fonctionnent après avoir été créées</string>
 </resources>

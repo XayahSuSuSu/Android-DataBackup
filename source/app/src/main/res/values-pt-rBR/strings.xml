@@ -394,4 +394,5 @@
     <string name="args_current_level">Nível atual: %1$s</string>
     <string name="compression_level_desc">Números mais baixos proporcionam compactação mais rápida, números mais altos geram melhores taxas de compactação.</string>
     <string name="compression_level">Nível de compressão</string>
+    <string name="last_update">Última atualização</string>
 </resources>
