@@ -216,7 +216,7 @@ public class HiddenApiUtil {
                     StringBuilder out = new StringBuilder();
                     for (String format : formatList) {
                         switch (format) {
-                            case FORMAT_LABEL -> out.append(" ").append(pkg.applicationInfo.loadLabel(pm).toString().replaceAll(" ", ""));
+                            case FORMAT_LABEL -> out.append(" ").append(pkg.applicationInfo.loadLabel(pm).toString().replaceAll("\n", "").replaceAll(" ", ""));
                             case FORMAT_PKG_NAME -> out.append(" ").append(pkg.packageName);
                             case FORMAT_FLAG -> {
                                 if (filterFlags.size() == 2) {
