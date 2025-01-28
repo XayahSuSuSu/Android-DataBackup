@@ -376,4 +376,23 @@
     <string name="task_details">تفاصيل المهمة</string>
     <string name="visit_details">زيارة التفاصيل</string>
     <string name="history">السجل</string>
+    <string name="args_apps_restored_and_failed">تم استعادة %1$s تطبيق بنجاح، وفشل استعادة %2$s</string>
+    <string name="args_apps_backed_up_and_failed">تم عمل نسخ احتياطي %1$s تطبيق بنجاح، وفشل %2$s تطبيق</string>
+    <string name="compression_level">مستوى الضغط</string>
+    <string name="args_backed_up_at">تم النسخ الاحتياطي في %1$s</string>
+    <string name="args_current_level">المستوى الحالي: %1$s</string>
+    <string name="compression_level_desc">الأرقام الأقل توفر ضغطًا أسرع، بينما الأرقام الأعلى توفر نسب ضغط أفضل</string>
+    <string name="args_restored_at">تم الاستعادة في %1$s</string>
+    <string name="apps_which_have_backups">التطبيقات التي لديها نسخ احتياطية</string>
+    <string name="apps_which_have_no_backups">التطبيقات التي ليست لها نسخ احتياطية</string>
+    <string name="last_update">آخر تحديث</string>
+    <string name="no_labels_here">لا توجد تسميات هنا.</string>
+    <string name="backup_configs">إعدادات النسخ الاحتياطي</string>
+    <string name="backup_configs_desc">تصدير الإعدادات إلى دليل النسخ الاحتياطي</string>
+    <string name="restore_permissions">استعادة الأذونات</string>
+    <string name="restore_permissions_desc">استعادة أذونات التطبيقات</string>
+    <string name="restore_ssaid">استعادة معرف Android</string>
+    <string name="restore_ssaid_desc">استعادة معرف Android للتطبيقات، ويحتاج إلى إعادة تشغيل فوري بعد الاستعادة لتصبح التغييرات فعالة</string>
+    <string name="args_files_backed_up_and_failed">تم نسخ %1$s ملفات بنجاح، وفشل نسخ %2$s</string>
+    <string name="args_files_restored_and_failed">تم استعادة %1$s ملفات بنجاح، وفشل استعادة %2$s</string>
 </resources>
