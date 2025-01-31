@@ -135,7 +135,7 @@
     <string name="apps_which_have_backups">Aplikacje które posiadają kopię zapasową</string>
     <string name="apps_which_have_no_backups">Aplikacje które nie posiadają kopii zapasowej</string>
     <string name="batch">Wsad batch</string>
-    <string name="search_bar_hint_packages">Szukaj według nazwy lub paczki</string>
+    <string name="search_bar_hint_packages">Szukaj według nazwy lub paczki…</string>
     <string name="batch_select">Wybór wsadowy</string>
     <string name="no_root_directory">Proszę nie wybierać katalogu głównego</string>
     <string name="language">Język</string>
