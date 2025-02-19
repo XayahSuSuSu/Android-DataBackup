@@ -3,8 +3,11 @@ package com.xayah.core.network.client
 import android.content.Context
 import com.xayah.core.common.util.toPathString
 import com.xayah.core.model.database.CloudEntity
+import com.xayah.core.model.database.WebDAVExtra
 import com.xayah.core.network.R
+import com.xayah.core.network.util.getExtraEntity
 import com.xayah.core.rootservice.parcelables.PathParcelable
+import com.xayah.core.util.GsonUtil
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.toPathList
@@ -18,9 +21,13 @@ import com.xayah.libsardine.impl.OkHttpSardine
 import okhttp3.OkHttpClient
 import java.io.File
 import java.util.concurrent.TimeUnit
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
-
-class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
+class WebDAVClientImpl(private val entity: CloudEntity, private val extra: WebDAVExtra) : CloudClient {
     private var client: OkHttpSardine? = null
 
     private fun log(msg: () -> String): String = run {
@@ -36,13 +43,31 @@ class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
     }
 
     override fun connect() {
-        client = OkHttpSardine(
-            OkHttpClient.Builder()
-                .connectTimeout(0, TimeUnit.SECONDS)
-                .readTimeout(0, TimeUnit.SECONDS)
-                .writeTimeout(0, TimeUnit.SECONDS)
-                .build()
-        ).apply {
+        val builder = OkHttpClient.Builder()
+            .connectTimeout(0, TimeUnit.SECONDS)
+            .readTimeout(0, TimeUnit.SECONDS)
+            .writeTimeout(0, TimeUnit.SECONDS)
+        if (extra.insecure) {
+            try {
+                val trustAllCerts = arrayOf<TrustManager>(
+                    object : X509TrustManager {
+                        override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+                        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+                        override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+                    }
+                )
+
+                val sslContext = SSLContext.getInstance("SSL")
+                sslContext.init(null, trustAllCerts, SecureRandom())
+
+                builder.sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
+                builder.hostnameVerifier { _, _ -> true }
+            } catch (_: Exception) {
+                // do nothing
+            }
+        }
+
+        client = OkHttpSardine(builder.build()).apply {
             setCredentials(entity.user, entity.pass)
             list(entity.host)
         }
@@ -217,6 +242,7 @@ class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
     }
 
     override suspend fun setRemote(context: Context, onSet: suspend (remote: String, extra: String) -> Unit) {
+        val extra = entity.getExtraEntity<WebDAVExtra>()!!
         connect()
         val prefix = "${context.getString(R.string.cloud)}:"
         val pickYou = PickYouLauncher(
@@ -232,7 +258,7 @@ class WebDAVClientImpl(private val entity: CloudEntity) : CloudClient {
         )
         withMainContext {
             val pathString = pickYou.awaitLaunch(context)
-            onSet(handleOriginalPath(pathString), "")
+            onSet(handleOriginalPath(pathString), GsonUtil().toJson(extra))
         }
         disconnect()
     }

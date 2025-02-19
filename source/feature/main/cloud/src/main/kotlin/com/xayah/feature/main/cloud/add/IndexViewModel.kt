@@ -13,6 +13,7 @@ import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.FTPExtra
 import com.xayah.core.model.database.SFTPExtra
 import com.xayah.core.model.database.SMBExtra
+import com.xayah.core.model.database.WebDAVExtra
 import com.xayah.core.network.client.getCloud
 import com.xayah.core.ui.material3.SnackbarDuration
 import com.xayah.core.ui.material3.SnackbarType
@@ -102,7 +103,8 @@ class IndexViewModel @Inject constructor(
         )
     }
 
-    suspend fun updateWebDAVEntity(name: String, remote: String, url: String, username: String, password: String) {
+    suspend fun updateWebDAVEntity(name: String, remote: String, url: String, username: String, password: String, insecure: Boolean) {
+        val extra = GsonUtil().toJson(WebDAVExtra(insecure = insecure))
         emitIntent(
             IndexUiIntent.UpdateEntity(
                 name = name,
@@ -110,7 +112,7 @@ class IndexViewModel @Inject constructor(
                 url = url,
                 username = username,
                 password = password,
-                extra = "{}",
+                extra = extra,
                 remote = remote,
             )
         )

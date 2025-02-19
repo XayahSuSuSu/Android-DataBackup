@@ -286,8 +286,10 @@
     <string name="add_account">添加账户</string>
     <string name="provider">供应商</string>
     <string name="remote_path">远程路径</string>
+    <string name="insecure_server_connection">允许不安全的服务器连接</string>
     <string name="delete_account">删除账户</string>
     <string name="remote_path_desc">备份读取或保存的路径</string>
+    <string name="insecure_server_connection_desc">使用自签名证书时打开此选项</string>
     <string name="delete_account_desc">此账户将被删除</string>
     <string name="choose_an_account">选择一个账户</string>
     <string name="no_available_account">没有可用账户</string>
