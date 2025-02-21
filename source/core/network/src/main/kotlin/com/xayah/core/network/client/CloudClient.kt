@@ -6,6 +6,7 @@ import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.FTPExtra
 import com.xayah.core.model.database.SFTPExtra
 import com.xayah.core.model.database.SMBExtra
+import com.xayah.core.model.database.WebDAVExtra
 import com.xayah.core.network.util.getExtraEntity
 import com.xayah.core.rootservice.parcelables.PathParcelable
 import com.xayah.libpickyou.parcelables.DirChildrenParcelable
@@ -37,7 +38,8 @@ fun CloudEntity.getCloud() = when (this.type) {
     }
 
     CloudType.WEBDAV -> {
-        WebDAVClientImpl(this)
+        val extra = getExtraEntity<WebDAVExtra>()!!
+        WebDAVClientImpl(this, extra)
     }
 
     CloudType.SMB -> {

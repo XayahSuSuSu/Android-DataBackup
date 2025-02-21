@@ -12,6 +12,7 @@ import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -32,8 +33,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.xayah.core.model.database.WebDAVExtra
+import com.xayah.core.network.util.getExtraEntity
 import com.xayah.core.ui.component.Clickable
 import com.xayah.core.ui.component.LocalSlotScope
+import com.xayah.core.ui.component.Switchable
 import com.xayah.core.ui.component.Title
 import com.xayah.core.ui.component.confirm
 import com.xayah.core.ui.component.paddingHorizontal
@@ -65,11 +69,13 @@ fun PageWebDAVSetup() {
     var username by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.user ?: "") }
     var password by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.pass ?: "") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
+    var insecure by rememberSaveable(uiState.cloudEntity) { mutableStateOf(uiState.cloudEntity?.getExtraEntity<WebDAVExtra>()?.insecure ?: false) }
     val allFilled by rememberSaveable(
         name,
         url,
         username,
-        password
+        password,
+        insecure
     ) { mutableStateOf(name.isNotEmpty() && url.isNotEmpty() && username.isNotEmpty() && password.isNotEmpty()) }
 
     LaunchedEffect(null) {
@@ -85,7 +91,7 @@ fun PageWebDAVSetup() {
                 enabled = allFilled && uiState.isProcessing.not(),
                 onClick = {
                     viewModel.launchOnIO {
-                        viewModel.updateWebDAVEntity(name = name, remote = remote, url = url, username = username, password = password)
+                        viewModel.updateWebDAVEntity(name = name, remote = remote, url = url, username = username, password = password, insecure = insecure)
                         viewModel.emitIntent(IndexUiIntent.TestConnection)
                     }
                 }
@@ -95,7 +101,7 @@ fun PageWebDAVSetup() {
 
             Button(enabled = allFilled && remote.isNotEmpty() && uiState.isProcessing.not(), onClick = {
                 viewModel.launchOnIO {
-                    viewModel.updateWebDAVEntity(name = name, remote = remote, url = url, username = username, password = password)
+                    viewModel.updateWebDAVEntity(name = name, remote = remote, url = url, username = username, password = password, insecure = insecure)
                     viewModel.emitIntent(IndexUiIntent.CreateAccount(navController = navController))
                 }
             }) {
@@ -169,11 +175,19 @@ fun PageWebDAVSetup() {
                     desc = stringResource(id = R.string.remote_path_desc),
                 ) {
                     viewModel.launchOnIO {
-                        viewModel.updateWebDAVEntity(name = name, remote = remote, url = url, username = username, password = password)
+                        viewModel.updateWebDAVEntity(name = name, remote = remote, url = url, username = username, password = password, insecure = insecure)
                         viewModel.emitIntent(IndexUiIntent.SetRemotePath(context = context))
                         remote = uiState.cloudEntity!!.remote
                     }
                 }
+
+                Switchable(
+                    enabled = uiState.isProcessing.not(),
+                    checked = insecure,
+                    title = stringResource(id = R.string.insecure_server_connection),
+                    checkedText = stringResource(id = R.string.insecure_server_connection_desc),
+                    onCheckedChange = { insecure = insecure.not() }
+                )
 
                 if (uiState.currentName.isNotEmpty())
                     TextButton(

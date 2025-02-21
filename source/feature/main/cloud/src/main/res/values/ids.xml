@@ -26,10 +26,12 @@
     <item name="provider" type="string"/>
     <item name="advanced" type="string"/>
     <item name="remote_path" type="string"/>
+    <item name="insecure_server_connection" type="string"/>
     <item name="delete_account" type="string"/>
     <item name="delete_account_desc" type="string"/>
     <item name="not_selected" type="string"/>
     <item name="remote_path_desc" type="string"/>
+    <item name="insecure_server_connection_desc" type="string"/>
     <item name="no_root_directory" type="string"/>
     <item name="confirm" type="string"/>
 

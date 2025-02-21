@@ -25,6 +25,10 @@ data class SFTPExtra(
     val mode: SFTPAuthMode = SFTPAuthMode.PASSWORD,
 )
 
+data class WebDAVExtra(
+    val insecure: Boolean,
+)
+
 @Entity
 data class CloudEntity(
     @PrimaryKey var name: String,
