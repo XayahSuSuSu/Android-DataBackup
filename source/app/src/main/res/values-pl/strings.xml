@@ -395,4 +395,6 @@
     <string name="args_current_level">Aktualny poziom:%1$s</string>
     <string name="compression_level_desc">Niższe liczby zapewniają szybszą kompresację, a wyższe lepsze ratio kompresacji</string>
     <string name="last_update">Ostatnia aktualizacja</string>
+    <string name="insecure_server_connection_desc">Włącz tę opcję, jeśli używasz certyfikatu podpisanego samodzielnie</string>
+    <string name="insecure_server_connection">Zezwalaj na niezabezpieczone połączenie z serwerem</string>
 </resources>
