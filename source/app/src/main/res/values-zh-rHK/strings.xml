@@ -395,4 +395,6 @@
     <string name="compression_level_desc">數字越小，壓縮速度越快，數字越大，壓縮率越高</string>
     <string name="args_current_level">目前等級：%1$s</string>
     <string name="last_update">最近更新</string>
+    <string name="insecure_server_connection_desc">使用自簽署憑證時打開此選項</string>
+    <string name="insecure_server_connection">允許不安全服務器連接</string>
 </resources>
