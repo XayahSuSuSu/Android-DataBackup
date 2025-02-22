@@ -395,4 +395,6 @@
     <string name="compression_level_desc">Números mais baixos proporcionam compactação mais rápida, números mais altos geram melhores taxas de compactação.</string>
     <string name="compression_level">Nível de compressão</string>
     <string name="last_update">Última atualização</string>
+    <string name="insecure_server_connection">Permitir conexão de servidor insegura</string>
+    <string name="insecure_server_connection_desc">Ative esta opção quando estiver usando certificado autoassinado</string>
 </resources>
