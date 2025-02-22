@@ -395,4 +395,6 @@
     <string name="compression_level_desc">Менші числа забезпечують швидше стиснення, вищі числа дають кращі коефіцієнти стиснення</string>
     <string name="compression_level">Ступінь стиснення</string>
     <string name="last_update">Останнє оновлення</string>
+    <string name="insecure_server_connection">Дозволити небезпечне підключення до сервера</string>
+    <string name="insecure_server_connection_desc">Увімкніть цей параметр, якщо ви використовуєте самопідписаний сертифікат</string>
 </resources>
