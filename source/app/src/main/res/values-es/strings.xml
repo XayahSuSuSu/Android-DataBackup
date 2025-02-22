@@ -394,4 +394,7 @@
     <string name="args_current_level">Nivel actual: %1$s</string>
     <string name="compression_level">Nivel de compresión</string>
     <string name="compression_level_desc">Los números más bajos dan como resultado una compresión más rápida, los números más altos dan como resultado mejores tasas de compresión</string>
+    <string name="insecure_server_connection">Permitir la conexión a servidor inseguro</string>
+    <string name="insecure_server_connection_desc">Activar esta opción cuando se use certificado autofirmado</string>
+    <string name="last_update">Última actualización</string>
 </resources>
