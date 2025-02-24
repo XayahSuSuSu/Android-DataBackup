@@ -2,4 +2,6 @@
 <resources>
     <string name="welcome_to_use">Vítejte v aplikaci DataBackup</string>
     <string name="app_name">DataBackup</string>
+    <string name="update_records">Aktualizovat záznamy</string>
+    <string name="environment_detection">Detekce prostředí</string>
 </resources>
