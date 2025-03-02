@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">@android:color/system_accent1_100</color>
+    <color name="ic_launcher_foreground_main">@android:color/system_accent1_400</color>
+    <color name="ic_launcher_foreground_sub">@color/colorPrimary</color>
+    <color name="colorPrimary">@android:color/system_accent1_600</color>
+    <color name="colorOnPrimary">@android:color/system_accent1_0</color>
+</resources>
