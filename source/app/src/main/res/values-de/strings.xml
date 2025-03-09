@@ -384,9 +384,12 @@
     <string name="compression_level">Komprimierungsstufe</string>
     <string name="restore_permissions">Berechtigungen wiederherstellen</string>
     <string name="args_restored_at">zurückgesetzt um %1$s</string>
-    <string name="visit_details">Zeige Details</string>
+    <string name="visit_details">Details ansehen</string>
     <string name="args_backed_up_at">Gesichert um %1$s</string>
     <string name="restore_permissions_desc">App-Berechtigungen wiederherstellen</string>
     <string name="restore_ssaid">Android-ID wiederherstellen</string>
     <string name="restore_ssaid_desc">Android-ID der App wiederherstellen, wird erst nach Neustart übernommen</string>
+    <string name="last_update">Letzte Aktualisierung</string>
+    <string name="insecure_server_connection">Unsichere Serververbindung zulassen</string>
+    <string name="backup_configs_desc">Konfigurationen ins Sicherungsverzeichnis exportieren</string>
 </resources>
