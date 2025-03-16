@@ -1,5 +1,6 @@
-package com.xayah.databackup
+package com.xayah.databackup.feature
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,14 +32,43 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
+import com.topjohnwu.superuser.Shell
+import com.xayah.databackup.R
+import com.xayah.databackup.feature.setup.NoPermKey
+import com.xayah.databackup.feature.setup.SetupActivity
 import com.xayah.databackup.ui.component.ActionButton
 import com.xayah.databackup.ui.component.SmallActionButton
 import com.xayah.databackup.ui.component.StorageCard
 import com.xayah.databackup.ui.theme.DataBackupTheme
+import com.xayah.databackup.util.FirstLaunch
+import com.xayah.databackup.util.preloadingDataStore
+import com.xayah.databackup.util.readBoolean
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+
+        lifecycleScope.launch {
+            // Asynchronously preloading the data from DataStore
+            preloadingDataStore()
+        }
+
+        splashScreen.setKeepOnScreenCondition { true }
+        if (runBlocking { readBoolean(FirstLaunch).first() }) {
+            // First launch
+            startActivity(Intent(this, SetupActivity::class.java))
+        } else if (Shell.getShell().isRoot.not()) {
+            // Permissions are denied
+            startActivity(Intent(this, SetupActivity::class.java).putExtra(NoPermKey, true))
+        }
+        splashScreen.setKeepOnScreenCondition { false }
+
         enableEdgeToEdge()
         setContent {
             DataBackupTheme {

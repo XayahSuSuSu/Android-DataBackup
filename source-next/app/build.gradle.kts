@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -53,6 +54,24 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Splash screen
+    implementation(libs.androidx.core.splashscreen)
+
+    // Preferences DataStore
+    implementation(libs.androidx.datastore.preferences)
+
+    // The core module that provides APIs to a shell
+    implementation(libs.libsu.core)
+
+    // APIs for creating root services
+    implementation(libs.libsu.service)
+
+    // Compose navigation
+    implementation(libs.androidx.navigation.compose)
+
+    // JSON serialization
+    implementation(libs.kotlinx.serialization.json)
 }
 
 kotlin {
