@@ -395,4 +395,6 @@
     <string name="restore_permissions_desc">Вратите дозволе апликацијама</string>
     <string name="restore_permissions">Вратите дозволе</string>
     <string name="last_update">Poslednje ažuriranje</string>
+    <string name="insecure_server_connection_desc">Укључите ову опцију када користите самопотписани сертификат</string>
+    <string name="insecure_server_connection">Дозволи несигурну везу са сервером</string>
 </resources>
