@@ -397,4 +397,15 @@
     <string name="last_update">Останнє оновлення</string>
     <string name="insecure_server_connection">Дозволити небезпечне підключення до сервера</string>
     <string name="insecure_server_connection_desc">Увімкніть цей параметр, якщо ви використовуєте самопідписаний сертифікат</string>
+    <string name="file">Файл</string>
+    <string name="next">Далі</string>
+    <string name="back">Назад</string>
+    <string name="notification_desc">Це потрібно для розміщення необхідних повідомлень</string>
+    <string name="permission_is_denied">У дозволі відмовлено</string>
+    <string name="root_desc">Ця програма дозволяє вам виконувати повне резервне копіювання вашого пристрою, вимагаючи дозволів root (суперкористувача) для доступу до системних файлів і налаштувань, які стандартні програми не можуть отримати</string>
+    <string name="welcome_screen_app_desc">Насолоджуйтесь безпроблемним резервним копіюванням за допомогою DataBackup. Він простий у використанні та повністю FOSS. Зберігайте свої дані в безпеці без стресу</string>
+    <string name="get_started">Почніть роботу</string>
+    <string name="dismiss">Відхилити</string>
+    <string name="permissions_screen_desc">Для роботи DataBackup потрібні такі дозволи. Якщо заборонити, деякі функції не працюватимуть належним чином</string>
+    <string name="root_denied_msg">Перевірте кореневий менеджер і перезапустіть програму</string>
 </resources>
