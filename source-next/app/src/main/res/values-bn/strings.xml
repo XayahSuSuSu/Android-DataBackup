@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">তথ্য সংরক্ষণ</string>
+    <string name="welcome_to_use">ডাটাব্যাকআপ এ আপনাকে স্বাগতম</string>
+    <string name="update_records">রেকর্ড পরিবর্তন করুন</string>
+    <string name="start">শুরু করুন</string>
+    <string name="start_desc">এই অ্যাপ দ্বারা তৈরি সকল তথ্য শুধুমাত্র ব্যাকআপ এবং রিস্টোর এর জন্য ব্যবহৃত হয় এবং আপনার নিজস্ব ফোন এ সংরক্ষিত থাকে।</string>
+    <string name="network">নেটওয়ার্ক</string>
+    <string name="application">অ্যাপ</string>
+    <string name="storage">স্টোরেজ</string>
+    <string name="storage_desc">ব্যাকআপ এর কনফিগারেশন, আর্কাইভ রিড এবং রাইটের জন্য ব্যবহৃত হয়</string>
+    <string name="loading">লোড হচ্ছে</string>
+    <string name="grant_root_access">রুট এর অনুমতি দিন</string>
+    <string name="release_prebuilt_binaries">প্রি-বিল্ট বাইনারি রিলিজ করুন</string>
+    <string name="cancel">বাতিল করুন</string>
+    <string name="overlook">ওভারভিউ</string>
+    <string name="none">অনুপস্থিত</string>
+    <string name="utilities">খুঁটিনাটি জিনিস</string>
+    <string name="activities">কার্যক্রম</string>
+    <string name="directory">স্টোরেজ</string>
+    <string name="log">লগসমূহ</string>
+    <string name="app_and_data">অ্যাপসমূহ</string>
+    <string name="media">মিডিয়া</string>
+    <string name="telephony">কল এর হিস্টরি</string>
+    <string name="network_desc">অ্যাপ এর আপডেট এবং বিশ্লেষণ এর জন্য ব্যবহৃত</string>
+    <string name="application_desc">অ্যাপ এর প্যাকেজ সম্পর্কিত তথ্য গ্রহণ করবেন যা ব্যাকআপ তালিকা উৎপন্ন করতে ব্যবহৃত হয়</string>
+    <string name="loading_failed">লোডিং ব্যর্থ হয়েছে</string>
+    <string name="last_backup">সর্বশেষ ব্যাকআপ</string>
+    <string name="confirm">নিশ্চিত করুন</string>
+    <string name="start_subtitle">আমাদের নীতি অনুসারে, আপনি এই অ্যাপ্লিকেশনটি ব্যবহার শুরু করার আগে আপনাকে নিম্নলিখিত চুক্তি এবং গোপনীয়তা নীতিটি সাবধানে পড়তে হবে এবং সম্মত হতে হবে</string>
+    <string name="environment_detection">পরিবেশ সনাক্তকরণ</string>
+    <string name="structure">ফাইল ট্রী</string>
+    <string name="internal_storage">ইন্টারনাল স্টোরেজ</string>
+    <string name="fetch_failed">ফেচ ব্যর্থ</string>
+    <string name="unsupported_format">অসমর্থিত বিন্যাস</string>
+</resources>

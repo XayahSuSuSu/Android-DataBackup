@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AdatMentés</string>
+    <string name="welcome_to_use">Üdvözlünk a DataBackup-nál</string>
+    <string name="storage">Tárhely</string>
+    <string name="application_desc">Alkalmazási csomaginformációk megszerzéséhez, ami szükséges a biztonsági mentési lista létrehozásához és az alkalmazási adatok méretének meghatározásához</string>
+    <string name="update_records">Nyilvántartás frissítése</string>
+    <string name="start">Start</string>
+    <string name="start_subtitle">A vonatkozó irányelveknek megfelelően az alkalmazás használata előtt gondosan el kell olvasnod és el kell fogadnod az alábbi Felhasználói megállapodást és az Adatvédelmi szabályzatot</string>
+    <string name="start_desc">Az alkalmazás által létrehozott összes adat csak biztonsági mentéshez/helyreállításhoz lesz felhasználva, és csak helyben lesz tárolva.</string>
+    <string name="network">Hálózat</string>
+    <string name="network_desc">Alkalmazás frissítési információk és alkalmazás-analitikai adatok lekérdezésére szolgál</string>
+    <string name="application">Alkalmazás</string>
+    <string name="storage_desc">Biztonsági mentés konfigurációjához, archívum olvasásához és írásához</string>
+    <string name="loading">Töltés</string>
+    <string name="loading_failed">Betöltés sikertelen</string>
+    <string name="grant_root_access">Root hozzáférés engedélyezése</string>
+    <string name="confirm">Megerősítés</string>
+    <string name="cancel">Mégse</string>
+    <string name="overlook">Áttekintés</string>
+    <string name="last_backup">Utolsó biztonsági mentés</string>
+    <string name="none">Semmilyen</string>
+</resources>
