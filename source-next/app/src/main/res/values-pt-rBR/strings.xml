@@ -397,4 +397,15 @@
     <string name="last_update">Última atualização</string>
     <string name="insecure_server_connection">Permitir conexão de servidor insegura</string>
     <string name="insecure_server_connection_desc">Ative esta opção quando estiver usando certificado autoassinado</string>
+    <string name="welcome_screen_app_desc">Aproveite backups sem complicações com o DataBackup. É simples de usar e completamente FOSS. Mantenha seus dados seguros sem estresse.</string>
+    <string name="root_denied_msg">Verifique seu gerenciador de root e reinicie o app</string>
+    <string name="permission_is_denied">Permissão negada</string>
+    <string name="permissions_screen_desc">O DataBackup precisa das seguintes permissões para funcionar. Se negadas, algumas funções não funcionarão corretamente.</string>
+    <string name="back">Voltar</string>
+    <string name="root_desc">Este app permite que você faça um backup completo do seu dispositivo, exigindo permissões root (SuperUsuário) para acessar arquivos e configurações do sistema que os apps padrão não conseguem alcançar.</string>
+    <string name="get_started">Iniciar</string>
+    <string name="file">Arquivo</string>
+    <string name="next">Próximo</string>
+    <string name="dismiss">Recusar</string>
+    <string name="notification_desc">Isso é necessário para postar notificações necessárias</string>
 </resources>
