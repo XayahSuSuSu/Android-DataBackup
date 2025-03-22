@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -81,14 +82,14 @@ fun WelcomeScreen(navController: NavHostController) {
                     Image(
                         modifier = Modifier.size(300.dp),
                         imageVector = ImageVector.vectorResource(R.drawable.img_setup),
-                        contentDescription = "Localized description"
+                        contentDescription = null
                     )
                 }
 
                 Text(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    text = "DataBackup",
+                    text = stringResource(R.string.app_name),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.displaySmall,
                     color = MaterialTheme.colorScheme.onSurface
@@ -98,7 +99,7 @@ fun WelcomeScreen(navController: NavHostController) {
                     modifier = Modifier
                         .padding(horizontal = 48.dp)
                         .fillMaxWidth(),
-                    text = "Enjoy hassle-free backups with DataBackup. It’s simple to use and completely FOSS. Keep your data safe without the stress",
+                    text = stringResource(R.string.welcome_screen_app_desc),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -116,7 +117,7 @@ fun WelcomeScreen(navController: NavHostController) {
                             navController.navigateSafely(Permissions(true))
                         }
                     ) {
-                        Text("Get started")
+                        Text(text = stringResource(R.string.get_started))
                     }
                 }
             }
@@ -137,7 +138,7 @@ fun CustomSUFileDialog(
     }
     var isError by rememberSaveable { mutableStateOf(false) }
     AlertDialog(
-        title = { Text(text = "Custom SU file") },
+        title = { Text(text = stringResource(R.string.custom_su_file)) },
         text = {
             OutlinedTextField(
                 value = text,
@@ -146,8 +147,8 @@ fun CustomSUFileDialog(
                     text = it
                 },
                 isError = isError,
-                label = { Text("File") },
-                supportingText = { Text("Restart app to take effect") }
+                label = { Text(text = stringResource(R.string.file)) },
+                supportingText = { Text(text = stringResource(R.string.restart_to_take_effect)) }
             )
         },
         onDismissRequest = {
@@ -168,7 +169,7 @@ fun CustomSUFileDialog(
                     }
                 }
             ) {
-                Text("Confirm")
+                Text(text = stringResource(R.string.confirm))
             }
         },
         dismissButton = {
@@ -177,7 +178,7 @@ fun CustomSUFileDialog(
                     onDismissRequest()
                 }
             ) {
-                Text("Dismiss")
+                Text(text = stringResource(R.string.dismiss))
             }
         }
     )
@@ -222,7 +223,7 @@ fun PermissionsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 48.dp),
-                    text = "Permissions",
+                    text = stringResource(R.string.permissions),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.displaySmall,
                     color = MaterialTheme.colorScheme.onSurface
@@ -232,7 +233,7 @@ fun PermissionsScreen(
                     modifier = Modifier
                         .padding(horizontal = 48.dp, vertical = 24.dp)
                         .fillMaxWidth(),
-                    text = "DataBackup needs the following permissions to work. If denied, some functions will not work properly",
+                    text = stringResource(R.string.permissions_screen_desc),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -252,6 +253,7 @@ fun PermissionsScreen(
                         content = uiState.rootCardProp.content,
                         onClick = { viewModel.validateRoot(context) },
                         actionIcon = ImageVector.vectorResource(R.drawable.ic_settings),
+                        actionIconDescription = stringResource(R.string.custom_su_file),
                         onActionButtonClick = {
                             openCustomSUFileDialog = true
                         }
@@ -282,7 +284,7 @@ fun PermissionsScreen(
                         navController.popBackStackSafely()
                     }
                 ) {
-                    Text("Back")
+                    Text(text = stringResource(R.string.back))
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -295,8 +297,8 @@ fun PermissionsScreen(
                     onClick = { viewModel.onNextButtonClick(context) }
                 ) {
                     AnimatedContent(
-                        targetState = if (viewModel.allGranted) "Next" else "Grant all",
-                        label = "animated content"
+                        targetState = if (viewModel.allGranted) stringResource(R.string.next) else stringResource(R.string.grant_all),
+                        label = "Animated content"
                     ) { targetContent ->
                         Text(targetContent)
                     }

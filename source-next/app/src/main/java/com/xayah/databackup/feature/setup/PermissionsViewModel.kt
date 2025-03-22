@@ -7,6 +7,7 @@ import androidx.annotation.DrawableRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.topjohnwu.superuser.Shell
+import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.feature.MainActivity
 import com.xayah.databackup.ui.component.CardState
@@ -35,14 +36,14 @@ data class UiState(
     val rootCardProp: CardProp = CardProp(
         state = CardState.Idle,
         icon = R.drawable.ic_hash,
-        title = "Root",
-        content = "This app allows you to perform a full backup of your device, requiring root (superuser) permissions to access system files and settings that standard apps can’t reach"
+        title = App.application.getString(R.string.root),
+        content = App.application.getString(R.string.root_desc)
     ),
     val notificationProp: CardProp = CardProp(
         state = CardState.Idle,
         icon = R.drawable.ic_bell,
-        title = "Notification",
-        content = "This is needed to post necessary notifications"
+        title = App.application.getString(R.string.notification),
+        content = App.application.getString(R.string.notification_desc)
     ),
 )
 
@@ -79,7 +80,7 @@ class PermissionsViewModel : ViewModel() {
                         }
                         onWaiting()
                         var errMsg: String?
-                        val errDesc = "Please check your root manager and restart app"
+                        val errDesc = context.getString(R.string.root_denied_msg)
                         runCatching {
                             ShellHelper.initMainShell(context = context)
                         }.onFailure {
@@ -121,7 +122,7 @@ class PermissionsViewModel : ViewModel() {
                     if (result) {
                         onSuccess()
                     } else {
-                        onFailure("Permission is denied")
+                        onFailure(context.getString(R.string.permission_is_denied))
                     }
                 }
             }
@@ -179,7 +180,7 @@ class PermissionsViewModel : ViewModel() {
                 withContext(Dispatchers.Default) {
                     context.saveBoolean(KeyFirstLaunch, false)
                     context.startActivity(Intent(context, MainActivity::class.java))
-                    (context as Activity).finishAndRemoveTask()
+                    (context as Activity).finish()
                 }
             }
         } else {

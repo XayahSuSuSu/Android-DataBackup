@@ -46,7 +46,7 @@ fun PermissionCard(
     content: String,
     onClick: () -> Unit,
 ) {
-    PermissionCard(state, icon, title, content, onClick, null, null)
+    PermissionCard(state, icon, title, content, onClick, null, null, null)
 }
 
 @Composable
@@ -57,6 +57,7 @@ fun PermissionCard(
     content: String,
     onClick: () -> Unit,
     actionIcon: ImageVector?,
+    actionIconDescription: String?,
     onActionButtonClick: (() -> Unit)?
 ) {
     val animatedColor by animateColorAsState(
@@ -99,7 +100,7 @@ fun PermissionCard(
                     Icon(
                         modifier = Modifier.size(20.dp),
                         imageVector = icon,
-                        contentDescription = "Localized description"
+                        contentDescription = null
                     )
                     Text(
                         text = title,
@@ -112,7 +113,7 @@ fun PermissionCard(
 
                 AnimatedContent(
                     targetState = content,
-                    label = "animated content"
+                    label = "Animated content"
                 ) { targetContent ->
                     Text(
                         modifier = Modifier.padding(top = 16.dp),
@@ -127,7 +128,7 @@ fun PermissionCard(
                 IconButton(modifier = Modifier.align(Alignment.TopEnd), onClick = { onActionButtonClick?.invoke() }) {
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_settings),
-                        contentDescription = "Localized description"
+                        contentDescription = actionIconDescription
                     )
                 }
             }

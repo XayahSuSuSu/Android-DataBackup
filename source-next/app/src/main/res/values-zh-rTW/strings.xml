@@ -395,4 +395,15 @@
     <string name="compression_level_desc">數字越小，壓縮速度越快，數字越大，壓縮率越高</string>
     <string name="args_current_level">目前等級：%1$s</string>
     <string name="last_update">最近更新</string>
+    <string name="welcome_screen_app_desc">享受無憂備份，使用簡單，完全免費，輕鬆保護您的資料安全</string>
+    <string name="get_started">立刻開始</string>
+    <string name="file">文件</string>
+    <string name="dismiss">取消</string>
+    <string name="permissions_screen_desc">資料備份需要以下權限才能運作。如果拒絕，某些功能將無法正常運作</string>
+    <string name="next">下一步</string>
+    <string name="back">返回</string>
+    <string name="root_desc">此應用程式可讓您對裝置進行完整備份，需要Root（超級使用者）權限才能存取標準應用程式無法存取的系統檔案和設定</string>
+    <string name="notification_desc">這是發布必要通知所必需的</string>
+    <string name="permission_is_denied">權限被拒絕</string>
+    <string name="root_denied_msg">請檢查您的Root管理器並重新啟動應用程式</string>
 </resources>

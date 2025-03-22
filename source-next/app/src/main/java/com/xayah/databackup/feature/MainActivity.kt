@@ -63,9 +63,11 @@ class MainActivity : ComponentActivity() {
         if (runBlocking { readBoolean(FirstLaunch).first() }) {
             // First launch
             startActivity(Intent(this, SetupActivity::class.java))
+            finish()
         } else if (Shell.getShell().isRoot.not()) {
             // Permissions are denied
             startActivity(Intent(this, SetupActivity::class.java).putExtra(NoPermKey, true))
+            finish()
         }
         splashScreen.setKeepOnScreenCondition { false }
 
