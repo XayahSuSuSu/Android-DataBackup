@@ -397,4 +397,6 @@
     <string name="insecure_server_connection">Permitir la conexión a servidor inseguro</string>
     <string name="insecure_server_connection_desc">Activar esta opción cuando se use certificado autofirmado</string>
     <string name="last_update">Última actualización</string>
+    <string name="get_started">Empezar</string>
+    <string name="welcome_screen_app_desc">Disfruta de copias de seguridad sin complicaciones con DataBackup. Es fácil de usar y completamente gratuito. Mantén tus datos seguros sin estrés</string>
 </resources>
