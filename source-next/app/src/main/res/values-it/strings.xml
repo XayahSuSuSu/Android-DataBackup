@@ -352,4 +352,13 @@
     <string name="unblock">Sblocca</string>
     <string name="refresh">Ricarica</string>
     <string name="args_files_restored">%1$s file ripristinati</string>
+    <string name="history">Storia</string>
+    <string name="file">File</string>
+    <string name="permissions_screen_desc">DataBackup ha bisogno delle autorizzazioni seguenti per funzionare. Se negate, alcune funzioni potrebbero non funzionare correttamente</string>
+    <string name="back">Indietro</string>
+    <string name="root_denied_msg">Per favore controlla il tuo root manager e riavvia l\'app</string>
+    <string name="label">Etichetta</string>
+    <string name="add_label">Aggiungi etichetta</string>
+    <string name="last_update">Ultimo aggiornamento</string>
+    <string name="labels">Etichette</string>
 </resources>
