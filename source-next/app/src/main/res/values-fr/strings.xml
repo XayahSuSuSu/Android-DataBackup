@@ -121,4 +121,6 @@
     <string name="apps_which_have_no_backups">Les applications sans sauvegardes</string>
     <string name="translators">Traducteurs</string>
     <string name="task_details">Détails de la tâche</string>
+    <string name="sooner_or_later">Tôt ou tard</string>
+    <string name="compatible_mode">Compatible mode</string>
 </resources>
