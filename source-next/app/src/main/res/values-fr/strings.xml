@@ -123,4 +123,5 @@
     <string name="task_details">Détails de la tâche</string>
     <string name="sooner_or_later">Tôt ou tard</string>
     <string name="compatible_mode">Compatible mode</string>
+    <string name="reset_backup_list_desc">"Déselectionner les  sélections après une sauvegarde"</string>
 </resources>
