@@ -395,4 +395,17 @@
     <string name="restore_ssaid_desc">استعادة معرف Android للتطبيقات، ويحتاج إلى إعادة تشغيل فوري بعد الاستعادة لتصبح التغييرات فعالة</string>
     <string name="args_files_backed_up_and_failed">تم نسخ %1$s ملفات بنجاح، وفشل نسخ %2$s</string>
     <string name="args_files_restored_and_failed">تم استعادة %1$s ملفات بنجاح، وفشل استعادة %2$s</string>
+    <string name="welcome_screen_app_desc">استمتع بنسخ احتياطي خالٍ من التعقيدات مع DataBackup. إنه سهل الاستخدام ومفتوح المصدر بالكامل. احفظ بياناتك بأمان دون أي قلق.</string>
+    <string name="root_desc">يتيح لك هذا التطبيق إجراء نسخة احتياطية كاملة لجهازك، ويتطلب صلاحيات الروت (superuser) للوصول إلى ملفات النظام والإعدادات التي لا تستطيع التطبيقات العادية الوصول إليها</string>
+    <string name="get_started">البدء</string>
+    <string name="file">ملف</string>
+    <string name="dismiss">تجاهل</string>
+    <string name="permissions_screen_desc">يحتاج DataBackup إلى الأذونات التالية ليعمل. في حال الرفض، قد لا تعمل بعض الوظائف بشكل صحيح.</string>
+    <string name="back">رجوع</string>
+    <string name="notification_desc">هذا مطلوب لإرسال الإشعارات الضرورية</string>
+    <string name="permission_is_denied">تم رفض الإذن</string>
+    <string name="root_denied_msg">يرجى التحقق من مدير الروت وإعادة تشغيل التطبيق</string>
+    <string name="insecure_server_connection">السماح بالاتصال بخادم غير آمن</string>
+    <string name="insecure_server_connection_desc">قم بتفعيل هذا الخيار عند استخدام شهادة موقعة ذاتيًا</string>
+    <string name="next">التالي</string>
 </resources>
