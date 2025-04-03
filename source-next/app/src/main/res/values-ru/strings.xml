@@ -385,7 +385,7 @@
     <string name="apps_which_have_no_backups">Приложения без бекапов</string>
     <string name="args_backed_up_at">Бекап создан в %1$s</string>
     <string name="args_restored_at">Восстановлено в %1$s</string>
-    <string name="no_labels_here">Нет меток</string>
+    <string name="no_labels_here">Меток нет.</string>
     <string name="backup_configs_desc">Экспортировать конфигурации в папку бекапов</string>
     <string name="restore_permissions">Восстановить разрешения</string>
     <string name="restore_permissions_desc">Восстановить разрешения приложений</string>
