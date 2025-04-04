@@ -399,4 +399,12 @@
     <string name="last_update">Última actualización</string>
     <string name="get_started">Empezar</string>
     <string name="welcome_screen_app_desc">Disfruta de copias de seguridad sin complicaciones con DataBackup. Es fácil de usar y completamente gratuito. Mantén tus datos seguros sin estrés</string>
+    <string name="root_desc">Esta aplicación le permite realizar una copia de seguridad completa de su dispositivo, que requiere permisos de root (superusuario) para acceder a los archivos del sistema y la configuración que las aplicaciones estándar no pueden alcanzar</string>
+    <string name="file">Archivo</string>
+    <string name="permissions_screen_desc">DataBackup necesita los siguientes permisos para funcionar. Si se deniegan, algunas funciones no funcionarán correctamente</string>
+    <string name="next">Siguiente</string>
+    <string name="back">Volver</string>
+    <string name="notification_desc">Esto es necesario para publicar las notificaciones necesarias</string>
+    <string name="permission_is_denied">Permiso denegado</string>
+    <string name="root_denied_msg">Por favor, compruebe su root manager y reinicie la aplicación</string>
 </resources>
