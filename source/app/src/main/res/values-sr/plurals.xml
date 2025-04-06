@@ -16,7 +16,7 @@
         <item quantity="other"><xliff:g id="count">%d</xliff:g> секунди</item>
     </plurals>
     <plurals name="num_minutes_ago">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> мин</item>
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> минута</item>
         <item quantity="few"><xliff:g id="count">%d</xliff:g> минуте</item>
         <item quantity="other"><xliff:g id="count">%d</xliff:g> минута</item>
     </plurals>
