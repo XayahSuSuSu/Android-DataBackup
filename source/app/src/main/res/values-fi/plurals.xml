@@ -1,2 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <plurals name="num_seconds_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> sekunti</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> sekuntia</item>
+    </plurals>
+    <plurals name="num_minutes_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> minuutti</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> minuuttia</item>
+    </plurals>
+    <plurals name="num_hours_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> tunti</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> tuntia</item>
+    </plurals>
+    <plurals name="num_days_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> päivä</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> päivää</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> kohde</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> kohdetta</item>
+    </plurals>
+</resources>
