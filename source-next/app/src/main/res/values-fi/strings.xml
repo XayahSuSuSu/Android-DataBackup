@@ -395,4 +395,17 @@
     <string name="restore_permissions">Palauta käyttöoikeudet</string>
     <string name="restore_ssaid">Palauta Android-tunnus</string>
     <string name="restore_ssaid_desc">Palauta sovellusten Android-tunnus, se on käynnistettävä välittömästi uudelleen palauttamisen jälkeen, jotta se astuu voimaan</string>
+    <string name="welcome_screen_app_desc">Nauti vaivattomista varmuuskopioista DataBackupin avulla. Se on helppokäyttöinen ja täysin turvallinen. Pidä tietosi turvassa ilman stressiä</string>
+    <string name="get_started">Aloita</string>
+    <string name="file">Tiedosto</string>
+    <string name="dismiss">Hylkää</string>
+    <string name="permissions_screen_desc">DataBackup tarvitsee toimiakseen seuraavat luvat. Jos ne evätään, jotkin toiminnot eivät toimi oikein</string>
+    <string name="next">Seuraava</string>
+    <string name="back">Takaisin</string>
+    <string name="notification_desc">Tämä tarvitaan tarvittavien ilmoitusten lähettämiseen</string>
+    <string name="permission_is_denied">Lupa evätty</string>
+    <string name="root_denied_msg">Tarkista root-hallinta ja käynnistä sovellus uudelleen</string>
+    <string name="insecure_server_connection">Salli suojaamaton palvelinyhteys</string>
+    <string name="root_desc">Tämän sovelluksen avulla voit tehdä laitteesi täyden varmuuskopion, mikä edellyttää root-käyttöoikeudet (superkäyttäjä) päästääksesi järjestelmätiedostoihin ja -asetuksiin, joihin tavalliset sovellukset eivät pääse</string>
+    <string name="insecure_server_connection_desc">Ota tämä asetus käyttöön, kun käytät itse allekirjoitettua varmennetta</string>
 </resources>
