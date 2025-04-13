@@ -124,4 +124,7 @@
     <string name="sooner_or_later">Tôt ou tard</string>
     <string name="compatible_mode">Compatible mode</string>
     <string name="reset_backup_list_desc">"Déselectionner les  sélections après une sauvegarde"</string>
+    <string name="connection_established">La connection a été établie avec succès</string>
+    <string name="app_crashed">L\'application à cesser de fonctionner</string>
+    <string name="no_browser">Il se peut qu\'il n\'y ait pas de navigateur pour l\'ouvrir</string>
 </resources>
