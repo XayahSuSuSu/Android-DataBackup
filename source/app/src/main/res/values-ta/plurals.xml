@@ -9,8 +9,8 @@
         <item quantity="other">&lt;xliff: g ஐடி = \"count\"&gt;%d &lt;/xliff: g&gt; நிமிடங்கள்</item>
     </plurals>
     <plurals name="num_hours_ago">
-        <item quantity="one">&lt;xliff: g ஐடி = \"count\"&gt;%d &lt;/xliff: g&gt; மணிநேரம்</item>
-        <item quantity="other">&lt;xliff: g ஐடி = \"count\"&gt;%d &lt;/xliff: g&gt; மணிநேரம்</item>
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> மணிநேரம்</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> மணிநேரங்கள்</item>
     </plurals>
     <plurals name="num_days_ago">
         <item quantity="one">&lt;xliff: g ஐடி = \"count\"&gt;%d &lt;/xliff: g&gt; நாள்</item>
