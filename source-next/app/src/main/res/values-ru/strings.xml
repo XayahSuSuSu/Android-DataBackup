@@ -13,7 +13,7 @@
     <string name="not_exist">Не существует</string>
     <string name="last_backup">Последний бекап</string>
     <string name="confirm_reload">Перезагрузить\?</string>
-    <string name="start_desc">Все данные, созданные этим приложением, используются только для создания резервных копий (бекапов) и их восстановления, и хранятся только локально.</string>
+    <string name="start_desc">Все данные, созданные приложением, используются только для бэкапа и восстановления и хранятся локально.</string>
     <string name="internal_storage">Внутреннее хранилище</string>
     <string name="overlook">Обзор</string>
     <string name="backup_user_desc">Целевой пользователь при загрузке списка бекапов или при создании бекапа</string>
