@@ -403,7 +403,7 @@
     <string name="back">Назад</string>
     <string name="notification_desc">Это нужно для необходимых уведомлений</string>
     <string name="permission_is_denied">Разрешение отказано</string>
-    <string name="root_denied_msg">Пожалуйста, проверьте корневой менеджер (root) и перезапусти приложение</string>
+    <string name="root_denied_msg">Проверьте ваш root-менеджер и перезапустите приложение</string>
     <string name="insecure_server_connection_desc">Включите эту настройку если вы используете самоподписанный сертификат</string>
     <string name="last_update">Последнее обновление</string>
     <string name="insecure_server_connection">Позволить ненадёжное подключение к серверу</string>
