@@ -361,4 +361,5 @@
     <string name="add_label">Aggiungi etichetta</string>
     <string name="last_update">Ultimo aggiornamento</string>
     <string name="labels">Etichette</string>
+    <string name="insecure_server_connection">"Consentire  la connessione al server insicuro"</string>
 </resources>
