@@ -215,4 +215,5 @@
     <string name="this_version_only_supports_but_your_device_is_please_install_version">Cette version ne supporte que la version %1$s, mais votre appareil a la %2$s. Veuillez installer la %3$s ou plus.</string>
     <string name="name">Nom</string>
     <string name="mount">Monter</string>
+    <string name="share">Partager</string>
 </resources>
