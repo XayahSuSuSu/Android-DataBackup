@@ -406,4 +406,6 @@
     <string name="restore_settings">Restaurer les paramètres</string>
     <string name="restore_permissions">Restaurer les permissions</string>
     <string name="args_files_restored_and_failed">%1$s fichiers restaurés, %2$s échecs</string>
+    <string name="required">Requis</string>
+    <string name="optional">Optionnel</string>
 </resources>
