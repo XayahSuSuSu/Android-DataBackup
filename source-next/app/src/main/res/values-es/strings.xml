@@ -407,4 +407,5 @@
     <string name="notification_desc">Esto es necesario para publicar las notificaciones necesarias</string>
     <string name="permission_is_denied">Permiso denegado</string>
     <string name="root_denied_msg">Por favor, compruebe su root manager y reinicie la aplicación</string>
+    <string name="dismiss">Rechazar</string>
 </resources>
