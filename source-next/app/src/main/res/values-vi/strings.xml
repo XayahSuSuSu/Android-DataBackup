@@ -114,5 +114,4 @@
     <string name="app_crashed">Lỗi ứng dụng</string>
     <string name="no_browser">Không tìm thấy trình duyệt nào</string>
     <string name="clean_restoring">Đang dọn dẹp khôi phục</string>
-    <string name="compatible_mode_desc" tools:ignore="TypographyDashes"></string>
 </resources>
