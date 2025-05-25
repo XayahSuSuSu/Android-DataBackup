@@ -201,16 +201,13 @@ class RemoteRootService(private val context: Context) {
     suspend fun listFilePaths(path: String, listFiles: Boolean = true, listDirs: Boolean = true): List<String> =
         runCatching { getService().listFilePaths(path, listFiles, listDirs) }.onFailure(onFailure).getOrElse { listOf() }
 
-    private fun readFromParcel(pfd: ParcelFileDescriptor, onRead: (Parcel) -> Unit) = run {
+    private fun readFromParcel(pfd: ParcelFileDescriptor, block: (Parcel) -> Unit) = run {
         val stream = ParcelFileDescriptor.AutoCloseInputStream(pfd)
         val bytes = stream.readBytes()
         val parcel = Parcel.obtain()
-
         parcel.unmarshall(bytes, 0, bytes.size)
         parcel.setDataPosition(0)
-
-        onRead(parcel)
-
+        block(parcel)
         parcel.recycle()
     }
 

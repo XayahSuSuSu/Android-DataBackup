@@ -52,11 +52,6 @@ import java.nio.file.attribute.BasicFileAttributes
 import kotlin.io.path.pathString
 
 internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
-    companion object {
-        const val ParcelTmpFilePath = "/data/local/tmp"
-        const val ParcelTmpFileName = "data_backup_tmp"
-    }
-
     private val lock = Any()
     private var systemContext: Context
     private var packageManager: PackageManager
@@ -78,25 +73,6 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
     private fun getAppOpsManager(): AppOpsManagerHidden = systemContext.getSystemService(Context.APP_OPS_SERVICE).castTo()
 
     init {
-        /**
-         * If [ParcelTmpFilePath] has incorrect SELinux context, the transaction will get failed:
-         * Fatal Exception: android.os.DeadObjectException: Transaction failed on small parcel; remote process probably died, but this could also be caused by running out of binder buffe
-         * Correct SELinux context should be: u:object_r:shell_data_file:s0
-         *
-         * If [ParcelTmpFilePath] doesn't exist, the transaction will failed:
-         * pfd must not be null
-         */
-        ShellUtils.fastCmd(
-            """
-            mkdir "$ParcelTmpFilePath/"
-            """.trimIndent()
-        )
-        ShellUtils.fastCmd(
-            """
-            chcon -hR "u:object_r:shell_data_file:s0" "$ParcelTmpFilePath/"
-            """.trimIndent()
-        )
-
         systemContext = getSystemContext()
         packageManager = systemContext.packageManager
         packageManagerHidden = packageManager.castTo()
@@ -151,20 +127,18 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         FileUtil.listFilePaths(path = path, listFiles = listFiles, listDirs = listDirs)
     }
 
-    private fun writeToParcel(onWrite: (Parcel) -> Unit) = run {
+    private fun writeToParcel(block: (Parcel) -> Unit): ParcelFileDescriptor {
         val parcel = Parcel.obtain()
         parcel.setDataPosition(0)
-
-        onWrite(parcel)
-
-        val tmp = File(ParcelTmpFilePath, ParcelTmpFileName)
-        tmp.createNewFile()
-        tmp.writeBytes(parcel.marshall())
-        val pfd = ParcelFileDescriptor.open(tmp, ParcelFileDescriptor.MODE_READ_WRITE)
-        tmp.deleteRecursively()
-
+        block(parcel)
+        val tmpFile = File.createTempFile("databackup-parcel-", ".tmp")
+        tmpFile.delete()
+        tmpFile.createNewFile()
+        tmpFile.writeBytes(parcel.marshall())
+        val pfd = ParcelFileDescriptor.open(tmpFile, ParcelFileDescriptor.MODE_READ_WRITE)
+        tmpFile.delete()
         parcel.recycle()
-        pfd
+        return pfd
     }
 
     override fun readText(path: String): ParcelFileDescriptor = synchronized(lock) {
