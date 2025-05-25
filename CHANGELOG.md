@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.0.8](https://github.com/XayahSuSuSu/Android-DataBackup/compare/2.0.7...v2.0.8) (2025-05-25)
+
+
+### gradle
+
+* Version 2.0.8 ([e2c3729](https://github.com/XayahSuSuSu/Android-DataBackup/commit/e2c372903badad2e1904b8e0ff1939ba7c190454))
+
+
+### Features
+
+* allow insecure server connection ([a12873c](https://github.com/XayahSuSuSu/Android-DataBackup/commit/a12873cf0af4609054e2a033f0a10722ea0c59b6))
+* allow insecure server connection for webdav ([cfb4b05](https://github.com/XayahSuSuSu/Android-DataBackup/commit/cfb4b0574cf4af4e2d306254699217f7daf7492d))
+* Update screenshots ([ed0ec2e](https://github.com/XayahSuSuSu/Android-DataBackup/commit/ed0ec2e504a795590d2c6d5dcba177540692dff0))
+* Update translations and translators ([26f1cb7](https://github.com/XayahSuSuSu/Android-DataBackup/commit/26f1cb757db7735896b26b570b3e19044db5149b))
+* Update translators ([31af739](https://github.com/XayahSuSuSu/Android-DataBackup/commit/31af739e30a69e8ce21436128d31008637ef79eb))
+
+
+### Bug Fixes
+
+* [#344](https://github.com/XayahSuSuSu/Android-DataBackup/issues/344) ([5e74a13](https://github.com/XayahSuSuSu/Android-DataBackup/commit/5e74a1354b51f6cee5c629fece798a8b5612ae14))
+* **dex:** [HiddenApiUtil] Remove line breaks for labels ([f87be0c](https://github.com/XayahSuSuSu/Android-DataBackup/commit/f87be0c47b861316fa79220aca0c1de0ed0cc125))
+* **dex:** NotificationUtil crash on HyperOS 2 ([135cfc5](https://github.com/XayahSuSuSu/Android-DataBackup/commit/135cfc5be068dd9d75583cc1cbe8c62188e01b14))
+
 ## [2.0.7](https://github.com/XayahSuSuSu/Android-DataBackup/compare/2.0.6...v2.0.7) (2025-01-12)
 
 
