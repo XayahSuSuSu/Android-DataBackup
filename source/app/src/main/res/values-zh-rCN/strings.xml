@@ -397,4 +397,15 @@
     <string name="compression_level_desc">数字越小，压缩速度越快，数字越大，压缩率越高</string>
     <string name="args_current_level">当前等级：%1$s</string>
     <string name="last_update">最近更新</string>
+    <string name="welcome_screen_app_desc">享受无忧备份，使用简单，完全免费，轻松保护您的数据安全</string>
+    <string name="get_started">立刻开始</string>
+    <string name="file">文件</string>
+    <string name="dismiss">取消</string>
+    <string name="permissions_screen_desc">数据备份需要以下权限才能运行。如果拒绝，某些功能将无法正常运行</string>
+    <string name="next">下一步</string>
+    <string name="back">返回</string>
+    <string name="root_desc">此应用程序允许您对设备进行完整备份，需要Root（超级用户）权限才能访问标准应用程序无法访问的系统文件和设置</string>
+    <string name="notification_desc">这是发布必要通知所必需的</string>
+    <string name="permission_is_denied">权限被拒绝</string>
+    <string name="root_denied_msg">请检查您的Root管理器并重新启动应用程序</string>
 </resources>

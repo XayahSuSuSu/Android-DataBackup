@@ -395,4 +395,8 @@
     <string name="apps_which_have_no_backups">Apps ohne Datensicherungen</string>
     <string name="apps_which_have_backups">Apps mit Datensicherungen</string>
     <string name="backup_configs">Sicherungseinstellungen</string>
+    <string name="file">Datei</string>
+    <string name="next">Weiter</string>
+    <string name="back">Zurück</string>
+    <string name="dismiss">Ablehnen</string>
 </resources>

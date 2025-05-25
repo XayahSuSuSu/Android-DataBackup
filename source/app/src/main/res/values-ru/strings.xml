@@ -13,7 +13,7 @@
     <string name="not_exist">Не существует</string>
     <string name="last_backup">Последний бекап</string>
     <string name="confirm_reload">Перезагрузить\?</string>
-    <string name="start_desc">Все данные, созданные этим приложением, используются только для создания бекапов/восстановления и хранятся только локально.</string>
+    <string name="start_desc">Все данные, созданные приложением, используются только для бэкапа и восстановления и хранятся локально.</string>
     <string name="internal_storage">Внутреннее хранилище</string>
     <string name="overlook">Обзор</string>
     <string name="backup_user_desc">Целевой пользователь при загрузке списка бекапов или при создании бекапа</string>
@@ -65,7 +65,7 @@
     <string name="selected_apks">Выбранные APK</string>
     <string name="structure">Дерево файлов</string>
     <string name="apk">APK</string>
-    <string name="backup">Бекап</string>
+    <string name="backup">Резервная копия</string>
     <string name="network">Сеть</string>
     <string name="processing_exit_confirmation">Закрыть приложение и прервать текущую операцию\?</string>
     <string name="application">Приложение</string>
@@ -385,7 +385,7 @@
     <string name="apps_which_have_no_backups">Приложения без бекапов</string>
     <string name="args_backed_up_at">Бекап создан в %1$s</string>
     <string name="args_restored_at">Восстановлено в %1$s</string>
-    <string name="no_labels_here">Нет меток</string>
+    <string name="no_labels_here">Меток нет.</string>
     <string name="backup_configs_desc">Экспортировать конфигурации в папку бекапов</string>
     <string name="restore_permissions">Восстановить разрешения</string>
     <string name="restore_permissions_desc">Восстановить разрешения приложений</string>
@@ -394,4 +394,18 @@
     <string name="compression_level">Уровень сжатия</string>
     <string name="args_current_level">Текущий уровень: %1$s</string>
     <string name="compression_level_desc">Низкие значения дают быстрое сжатие, высокие значения повышают степень сжатия</string>
+    <string name="welcome_screen_app_desc">Беспроблемно используйте резервное копирование с DataBackup. Это приложение просто использовать и оно полностью свободное. Держите свои данные в безопасности и не волнуйтесь</string>
+    <string name="get_started">Приступим</string>
+    <string name="file">Файл</string>
+    <string name="dismiss">Отклонить</string>
+    <string name="permissions_screen_desc">DataBackup нуждается в следующих разрешениях на работу. В случае отказа некоторые функции не будут работать должным образом</string>
+    <string name="next">Далее</string>
+    <string name="back">Назад</string>
+    <string name="notification_desc">Это нужно для необходимых уведомлений</string>
+    <string name="permission_is_denied">Разрешение отказано</string>
+    <string name="root_denied_msg">Проверьте ваш root-менеджер и перезапустите приложение</string>
+    <string name="insecure_server_connection_desc">Включите эту настройку если вы используете самоподписанный сертификат</string>
+    <string name="last_update">Последнее обновление</string>
+    <string name="insecure_server_connection">Позволить ненадёжное подключение к серверу</string>
+    <string name="root_desc">Это приложение позволяет выполнять полную резервную копию вашего устройства, используя корневых разрешений (суперпользователя) на доступ к системным файлам и настройкам, которые стандартные приложения не могут достичь</string>
 </resources>

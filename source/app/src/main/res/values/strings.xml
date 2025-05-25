@@ -408,4 +408,16 @@
     <string name="compression_level_desc">Lower numbers provide faster compression, higher numbers yield better compression ratios</string>
     <string name="args_current_level">Current level: %1$s</string>
     <string name="last_update">Last update</string>
+    <string name="welcome_screen_app_desc">Enjoy hassle-free backups with DataBackup. It’s simple to use and completely FOSS. Keep your data safe without the stress</string>
+    <string name="get_started">Get started</string>
+    <string name="file">File</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="permissions_screen_desc">DataBackup needs the following permissions to work. If denied, some functions will not work properly</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+    <string name="root" translatable="false">Root</string>
+    <string name="root_desc">This app allows you to perform a full backup of your device, requiring root (superuser) permissions to access system files and settings that standard apps can’t reach</string>
+    <string name="notification_desc">This is needed to post necessary notifications</string>
+    <string name="permission_is_denied">Permission is denied</string>
+    <string name="root_denied_msg">Please check your root manager and restart app</string>
 </resources>

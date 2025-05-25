@@ -90,7 +90,7 @@
     <string name="backup_user">Kullanıcıyı yedekle</string>
     <string name="keep_screen_on_desc">İşlem sırasında cihazı açık tutar</string>
     <string name="app_name">DataBackup</string>
-    <string name="environment_detection">Medya algılama</string>
+    <string name="environment_detection">Ortam algılama</string>
     <string name="succeed">Tamamlandı</string>
     <string name="compression_test_desc">Oluşturulduktan sonra sıkıştırılmış arşivlerin çalışıp çalışmadığını kontrol edin</string>
     <string name="word_return">Geri dön</string>
@@ -394,4 +394,18 @@
     <string name="restore_permissions_desc">Uygulamaların izinlerini geri yükle</string>
     <string name="restore_ssaid">Android kimliğini geri yükle</string>
     <string name="restore_ssaid_desc">Uygulamaların Android kimliğini geri yükleyin, etkili olması için geri yükledikten sonra hemen yeniden başlatılması gerekir</string>
+    <string name="welcome_screen_app_desc">DataBackup ile zahmetsiz yedeklemelerin tadını çıkarın. Kullanımı basit ve tamamen FOSS\'tur. Verilerinizi stres olmadan güvende tutun</string>
+    <string name="get_started">Hadi başlayalım</string>
+    <string name="file">Dosya</string>
+    <string name="dismiss">Atla</string>
+    <string name="permissions_screen_desc">DataBackup\'ın çalışması için aşağıdaki izinlere ihtiyacı vardır. Reddedilirse, bazı işlevler düzgün çalışmayacaktır</string>
+    <string name="next">Sonraki</string>
+    <string name="back">Geri</string>
+    <string name="root_desc">Bu uygulama, standart uygulamaların erişemediği sistem dosyalarına ve ayarlarına erişmek için kök (süper kullanıcı) izinleri gerektiren cihazınızın tam bir yedeklemesini yapmanıza olanak tanır</string>
+    <string name="notification_desc">Gerekli bildirimleri göndermek için bu gereklidir</string>
+    <string name="permission_is_denied">İzin reddedildi</string>
+    <string name="root_denied_msg">Lütfen kök yöneticinizi kontrol edin ve uygulamayı yeniden başlatın</string>
+    <string name="insecure_server_connection">Güvensiz sunucu bağlantısına izin ver</string>
+    <string name="insecure_server_connection_desc">Kendiniz imzaladığınız sertifikayı kullanırken bu seçeneği açın</string>
+    <string name="last_update">Son güncelleme</string>
 </resources>
