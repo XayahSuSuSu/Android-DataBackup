@@ -51,7 +51,7 @@ import java.nio.file.SimpleFileVisitor
 import java.nio.file.attribute.BasicFileAttributes
 import kotlin.io.path.pathString
 
-internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
+internal class RemoteRootServiceImpl(private val context: Context) : IRemoteRootService.Stub() {
     private val lock = Any()
     private var systemContext: Context
     private var packageManager: PackageManager
@@ -131,7 +131,7 @@ internal class RemoteRootServiceImpl : IRemoteRootService.Stub() {
         val parcel = Parcel.obtain()
         parcel.setDataPosition(0)
         block(parcel)
-        val tmpFile = File.createTempFile("databackup-parcel-", ".tmp")
+        val tmpFile = File.createTempFile("databackup-parcel-", ".tmp", context.cacheDir)
         tmpFile.delete()
         tmpFile.createNewFile()
         tmpFile.writeBytes(parcel.marshall())

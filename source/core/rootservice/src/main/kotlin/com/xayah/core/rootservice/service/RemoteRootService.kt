@@ -64,7 +64,7 @@ class RemoteRootService(private val context: Context) {
                 System.loadLibrary("nativelib")
         }
 
-        override fun onBind(intent: Intent): IBinder = RemoteRootServiceImpl()
+        override fun onBind(intent: Intent): IBinder = RemoteRootServiceImpl(applicationContext)
     }
 
     private suspend fun bindService(): IRemoteRootService = run {
