@@ -19,7 +19,7 @@ XZ_VERSION=5.6.2                                                 # https://githu
 LZ4_VERSION=1.9.4                                                # https://github.com/lz4/lz4/releases
 ZSTD_VERSION=1.5.6                                               # https://github.com/facebook/zstd/releases
 BUSYBOX_VERSION=1_36_1                                           # https://www.busybox.net/downloads/?C=M;O=D
-SELINUX_COMMIT=48fcf8bba0635dc597bef75994294fd055d9f0ba          # https://github.com/topjohnwu/selinux/tree/48fcf8bba0635dc597bef75994294fd055d9f0ba
+SELINUX_COMMIT=81d604a9d5f34306d22121391d350e0027191cb5          # https://github.com/XayahSuSuSu/selinux/tree/81d604a9d5f34306d22121391d350e0027191cb5
 PCRE_BRANCH=android14-mainline-adbd-release                      # https://android.googlesource.com/platform/external/pcre
 ##################################################
 # Functions
@@ -236,7 +236,7 @@ build_busybox() {
     wget https://git.busybox.net/busybox/snapshot/busybox-$BUSYBOX_VERSION.tar.bz2
     tar xf busybox-$BUSYBOX_VERSION.tar.bz2
     mv busybox-$BUSYBOX_VERSION busybox
-    git clone https://github.com/topjohnwu/selinux jni/selinux
+    git clone https://github.com/XayahSuSuSu/selinux jni/selinux
     cd jni/selinux && git checkout $SELINUX_COMMIT && cd ../..
     git clone https://android.googlesource.com/platform/external/pcre -b $PCRE_BRANCH jni/pcre
     ./run.sh patch
