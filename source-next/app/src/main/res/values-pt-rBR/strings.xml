@@ -408,4 +408,14 @@
     <string name="next">Próximo</string>
     <string name="dismiss">Recusar</string>
     <string name="notification_desc">Isso é necessário para postar notificações necessárias</string>
+    <string name="update_time">Hora da atualização</string>
+    <string name="retry">Tentar novamente</string>
+    <string name="search">Pesquisar</string>
+    <string name="system_apps">Apps do sistema</string>
+    <string name="users">Usuários</string>
+    <string name="ascending">Ascendente</string>
+    <string name="user_apps">Apps do usuário</string>
+    <string name="error">Erro</string>
+    <string name="descending">Descendente</string>
+    <string name="error_service_desc">Falha ao conectar o serviço root; o app não pode ser executado corretamente sem ele. Você pode tentar novamente ou reiniciar o app.</string>
 </resources>
