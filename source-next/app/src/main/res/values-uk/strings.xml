@@ -408,4 +408,14 @@
     <string name="dismiss">Відхилити</string>
     <string name="permissions_screen_desc">Для роботи DataBackup потрібні такі дозволи. Якщо заборонити, деякі функції не працюватимуть належним чином</string>
     <string name="root_denied_msg">Перевірте кореневий менеджер і перезапустіть програму</string>
+    <string name="retry">Повторити спробу</string>
+    <string name="search">Пошук</string>
+    <string name="users">Користувачі</string>
+    <string name="descending">Спадання</string>
+    <string name="error_service_desc">Не вдалося підключитися до root-сервісу, програма не може працювати належним чином без нього. Ви можете повторити спробу або перезапустити програму</string>
+    <string name="ascending">Зростаючий</string>
+    <string name="error">Помилка</string>
+    <string name="user_apps">Користувацькі програми</string>
+    <string name="update_time">Час оновлення</string>
+    <string name="system_apps">Системні програми</string>
 </resources>
