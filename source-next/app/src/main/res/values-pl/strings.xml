@@ -408,4 +408,14 @@
     <string name="next">Dalej</string>
     <string name="permission_is_denied">Odmowa uprawnienia</string>
     <string name="root_denied_msg">Sprawdź menedżer roota i uruchom ponownie aplikację</string>
+    <string name="retry">Ponów</string>
+    <string name="search">Szukaj</string>
+    <string name="user_apps">Aplikacje użytkownika</string>
+    <string name="system_apps">Aplikacje systemowe</string>
+    <string name="users">Użytkownicy</string>
+    <string name="error_service_desc">Nie udało się połączyć z usługą główną, aplikacja nie może działać poprawnie bez niej. Możesz spróbować ponownie lub uruchomić ponownie aplikację</string>
+    <string name="descending">Malejąco</string>
+    <string name="ascending">Rosnąco</string>
+    <string name="update_time">Czas aktualizacji</string>
+    <string name="error">Błąd</string>
 </resources>
