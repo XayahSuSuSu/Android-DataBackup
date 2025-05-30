@@ -2,21 +2,27 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.refine)
 }
 
 android {
     namespace = "com.xayah.databackup"
-    compileSdk = 35
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.xayah.databackup"
-        minSdk = 24
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
+        versionCode = libs.versions.versionCode.get().toInt()
+        versionName = libs.versions.versionName.get()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -34,6 +40,7 @@ android {
     }
     buildFeatures {
         compose = true
+        aidl = true
     }
 }
 
@@ -55,6 +62,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // Hidden api
+    implementation(project(":hiddenapi"))
+
+    // Native
+    implementation(project(":native"))
+
     // Splash screen
     implementation(libs.androidx.core.splashscreen)
 
@@ -72,12 +85,27 @@ dependencies {
 
     // JSON serialization
     implementation(libs.kotlinx.serialization.json)
+
+    // Coil
+    implementation(libs.coil.compose)
+
+    // Animated vector
+    implementation(libs.androidx.animation.graphics)
+
+    // Work manager
+    implementation(libs.androidx.work.runtime.ktx)
+
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 }
 
 kotlin {
     compilerOptions {
         freeCompilerArgs = listOf(
             "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+            "-opt-in=androidx.compose.animation.graphics.ExperimentalAnimationGraphicsApi",
         )
     }
 }

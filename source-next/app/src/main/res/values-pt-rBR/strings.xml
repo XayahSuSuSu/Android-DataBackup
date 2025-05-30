@@ -48,7 +48,7 @@
     <string name="username">Nome de usuário</string>
     <string name="this_version_only_supports_but_your_device_is_please_install_version">Esta versão suporta apenas a versão %1$s, mas seu dispositivo tem %2$s. Por favor, instale %3$s ou superior.</string>
     <string name="password">Senha</string>
-    <string name="installation_time">Tempo de instalação</string>
+    <string name="install_time">Tempo de instalação</string>
     <string name="mount">Montar</string>
     <string name="port">Porta</string>
     <string name="set_remote">Definir remoto</string>
@@ -236,7 +236,7 @@
     <string name="quick_actions">Ações rápidas</string>
     <string name="backup_apps">Backup de apps</string>
     <string name="filters">Filtros</string>
-    <string name="sort">Ordenar</string>
+    <string name="sorts">Ordenar</string>
     <string name="never">Nunca</string>
     <string name="backup_contacts">Backup de contatos</string>
     <string name="backup_files">Backup de arquivos</string>

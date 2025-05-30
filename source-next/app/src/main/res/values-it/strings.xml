@@ -178,7 +178,7 @@
     <string name="modify">Modifica</string>
     <string name="cloud">Cloud</string>
     <string name="settings">Impostazioni</string>
-    <string name="installation_time">Tempo di installazione</string>
+    <string name="install_time">Tempo di installazione</string>
     <string name="selected">Selezionati</string>
     <string name="third_party">Terze parti</string>
     <string name="system">Sistema</string>
@@ -263,7 +263,7 @@
     <string name="dashboard">Pannello di controllo</string>
     <string name="select_all">Seleziona tutti</string>
     <string name="filters">Filtri</string>
-    <string name="sort">Ordina</string>
+    <string name="sorts">Ordina</string>
     <string name="args_loading_from_user">Caricamento dall\'utente %1$s</string>
     <string name="necessary_preparations">Preparativi necessari</string>
     <string name="necessary_remaining_data_processing">Processo dei dati rimanenti necessario</string>

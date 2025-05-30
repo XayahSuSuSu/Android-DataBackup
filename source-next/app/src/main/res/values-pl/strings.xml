@@ -161,7 +161,7 @@
     <string name="visit_details">Szczegóły odwiedzeń</string>
     <string name="files">Pliki</string>
     <string name="task_list">Lista zadań</string>
-    <string name="sort">Sortuj</string>
+    <string name="sorts">Sortuj</string>
     <string name="args_loading_from_user">Ładowanie od użytkownika %1$s</string>
     <string name="apk_only">Tylko APK</string>
     <string name="keystore">Magazyn kluczy</string>
@@ -212,7 +212,7 @@
     <string name="args_apps_backed_up_and_failed">Utworzono kopię zapasową dla %1$s aplikacji, %2$s aplikacjom nie udało się wykonać kopii zapasowej</string>
     <string name="specify_a_path">Proszę podać ścieżkę</string>
     <string name="finished">Zakończono</string>
-    <string name="installation_time">Czas instalacji</string>
+    <string name="install_time">Czas instalacji</string>
     <string name="logcat">Logcat</string>
     <string name="delete_desc">To zostanie usunięte</string>
     <string name="no_available_account">Brak dostępnego konta</string>

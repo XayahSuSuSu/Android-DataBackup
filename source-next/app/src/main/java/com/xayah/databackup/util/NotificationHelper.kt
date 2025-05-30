@@ -2,6 +2,8 @@ package com.xayah.databackup.util
 
 import android.Manifest
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,11 +12,17 @@ import android.provider.Settings
 import android.provider.Settings.EXTRA_APP_PACKAGE
 import android.provider.Settings.EXTRA_CHANNEL_ID
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import com.xayah.databackup.R
 
 object NotificationHelper {
+    private const val FOREGROUND_SERVICE_CHANNEL_ID = "ForegroundServiceChannel"
+    private const val FOREGROUND_SERVICE_CHANNEL_NAME = "ForegroundService"
+    private const val FOREGROUND_SERVICE_CHANNEL_DESC = "For foreground service"
+    private var mNotificationId = 0
     const val REQUEST_CODE = 1
 
     fun checkPermission(context: Context): Boolean =
@@ -53,4 +61,24 @@ object NotificationHelper {
         }
         return msg
     }
+
+    fun createChannelIfNecessary(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                FOREGROUND_SERVICE_CHANNEL_ID,
+                FOREGROUND_SERVICE_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = FOREGROUND_SERVICE_CHANNEL_DESC
+            }
+            val notificationManager: NotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    fun generateNotificationId() = mNotificationId++
+
+    fun getNotificationBuilder(context: Context) =
+        NotificationCompat.Builder(context, FOREGROUND_SERVICE_CHANNEL_ID).setSmallIcon(R.mipmap.ic_launcher)
 }

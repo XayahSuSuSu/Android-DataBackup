@@ -4,6 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.material3.Surface
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -36,11 +41,28 @@ class SetupActivity : ComponentActivity() {
                 mPermissionsViewModel = viewModel()
                 val noPerm = intent.getBooleanExtra(NoPermKey, false)
 
-                NavHost(navController = navController, startDestination = if (noPerm) Permissions(false) else Welcome) {
-                    composable<Welcome> { WelcomeScreen(navController) }
-                    composable<Permissions> { backStackEntry ->
-                        val permissions = backStackEntry.toRoute<Permissions>()
-                        PermissionsScreen(navController, mPermissionsViewModel, permissions)
+                Surface {
+                    NavHost(
+                        navController = navController,
+                        startDestination = if (noPerm) Permissions(false) else Welcome,
+                        enterTransition = {
+                            slideInHorizontally(initialOffsetX = { it }, animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessLow))
+                        },
+                        exitTransition = {
+                            fadeOut(animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessLow))
+                        },
+                        popEnterTransition = {
+                            slideInHorizontally(initialOffsetX = { -it }, animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessLow))
+                        },
+                        popExitTransition = {
+                            fadeOut(animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessLow))
+                        },
+                    ) {
+                        composable<Welcome> { WelcomeScreen(navController) }
+                        composable<Permissions> { backStackEntry ->
+                            val permissions = backStackEntry.toRoute<Permissions>()
+                            PermissionsScreen(navController, mPermissionsViewModel, permissions)
+                        }
                     }
                 }
             }

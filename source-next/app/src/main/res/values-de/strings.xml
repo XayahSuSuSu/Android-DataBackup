@@ -79,7 +79,7 @@
     <string name="create_account">Konto erstellen</string>
     <string name="mounted">Eingehängt</string>
     <string name="modify">Ändern</string>
-    <string name="installation_time">Installationszeit</string>
+    <string name="install_time">Installationszeit</string>
     <string name="data_size">Datengröße</string>
     <string name="selected">Ausgewählt</string>
     <string name="not_selected">Nicht ausgewählt</string>
@@ -203,7 +203,7 @@
     <string name="select_apps">Apps auswählen</string>
     <string name="select_all">Alle auswählen</string>
     <string name="filters">Filter</string>
-    <string name="sort">Sortieren</string>
+    <string name="sorts">Sortieren</string>
     <string name="necessary_preparations">Notwendige Vorbereitungen</string>
     <string name="save_icons">Symbole speichern</string>
     <string name="args_backup">%1$s sichern</string>

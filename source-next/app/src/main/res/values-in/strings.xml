@@ -193,7 +193,7 @@
     <string name="settings">Pengaturan</string>
     <string name="mounted">Terpasang</string>
     <string name="info_set_remote_or_local">Mohon atur jalur remot atau jalur lokal</string>
-    <string name="installation_time">Waktu penginstalan</string>
+    <string name="install_time">Waktu penginstalan</string>
     <string name="set_as_main_account">Atur sebagai akun utama</string>
     <string name="please_set_up_main_account">Mohon atur akun utama kamu</string>
     <string name="cloud_server_disconnected">Server cloud terputus</string>
@@ -291,7 +291,7 @@
     <string name="batch">Kelompok</string>
     <string name="logcat">Logcat</string>
     <string name="setup">Siapkan</string>
-    <string name="sort">Sortir</string>
+    <string name="sorts">Sortir</string>
     <string name="args_loading_from_user">Memuat dari pengguna %1$s</string>
     <string name="restore_settings">Pengaturan pemulihan</string>
     <string name="enter_the_setup_page_again">Masuk ke halaman pengaturan lagi</string>

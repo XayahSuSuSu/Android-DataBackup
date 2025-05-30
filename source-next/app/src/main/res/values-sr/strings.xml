@@ -5,7 +5,7 @@
     <string name="loading_failed">Učitavanje neuspešno</string>
     <string name="failed_and_terminated">Neuspelo i prekinuto</string>
     <string name="databases_reload_failed">Neuspešno ponovno učitavanje baze podataka</string>
-    <string name="installation_time">Vreme instalacije</string>
+    <string name="install_time">Vreme instalacije</string>
     <string name="start_subtitle">У складу са релевантним политикама, потребно је да пажљиво прочитате и да се сложите са следећим Корисничким уговором и Политиком приватности пре него што почнете са коришћењем ове апликације</string>
     <string name="network">Мрежа</string>
     <string name="network_desc">Користи се за добијање информација о ажурирању апликације и аналитику апликације</string>
@@ -201,7 +201,7 @@
     <string name="backup_messages">Sačuvajte poruke</string>
     <string name="sync_to_cloud">Sinhronizacija sa oblakom</string>
     <string name="filters">Filtri</string>
-    <string name="sort">Razvrstaj</string>
+    <string name="sorts">Razvrstaj</string>
     <string name="args_loading_from_user">Učitavanje od korisnika %1$s</string>
     <string name="necessary_preparations">Potrebne pripreme</string>
     <string name="necessary_remaining_data_processing">Potrebna obrada preostalih podataka</string>

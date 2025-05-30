@@ -122,7 +122,7 @@
     <string name="selected_both">Her ikisi de seçildi</string>
     <string name="follow_symlinks">Sembolik bağlantıları takip et</string>
     <string name="connection_established">Bağlantı başarıyla kuruldu</string>
-    <string name="installation_time">Kurulum süresi</string>
+    <string name="install_time">Kurulum süresi</string>
     <string name="apk_only">Sadece APK</string>
     <string name="existing_files">­Mevcut dosyalar</string>
     <string name="password">Parola</string>
@@ -258,7 +258,7 @@
     <string name="sync_to_cloud">Buluta senkronize et</string>
     <string name="pull_down_to_refresh">Yenilemek için aşağı çek</string>
     <string name="dashboard">Kontrol paneli</string>
-    <string name="sort">Sırala</string>
+    <string name="sorts">Sırala</string>
     <string name="enter_the_setup_page_again">Kurulum sayfasına geri git</string>
     <string name="dark_theme">Karanlık tema</string>
     <string name="choose_an_account">Bir hesap seç</string>

@@ -8,7 +8,7 @@
     <string name="settings">Sozlamalar</string>
     <string name="public_key">Public key</string>
     <string name="private_key">Public key</string>
-    <string name="installation_time">O\'rnatish vaqti</string>
+    <string name="install_time">O\'rnatish vaqti</string>
     <string name="data_size">Ma\'lumotlar hajmi</string>
     <string name="selected">Tanlangan</string>
     <string name="main_account">Asosiy hisob</string>
@@ -79,7 +79,7 @@
     <string name="select_apps">Ilovalarni tanlang</string>
     <string name="pull_down_to_refresh">Yangilash uchun pastga torting</string>
     <string name="select_all">Hammasini belgilash</string>
-    <string name="sort">Saralash</string>
+    <string name="sorts">Saralash</string>
     <string name="necessary_remaining_data_processing">Zarur qolgan ma\'lumotlarni qayta ishlash</string>
     <string name="save_icons">Belgilarni saqlang</string>
     <string name="args_backup">Zaxira: %1$s</string>

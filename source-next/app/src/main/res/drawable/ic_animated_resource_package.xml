@@ -1,0 +1,98 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:name="vector"
+            android:width="24dp"
+            android:height="24dp"
+            android:viewportWidth="24"
+            android:viewportHeight="24">
+            <path
+                android:name="path"
+                android:fillColor="#00000000"
+                android:pathData="M 11 21.7 C 11.6 22.1 12.4 22.1 13 21.7 L 20 17.7 C 20.6 17.3 21 16.7 21 16 L 21 8 C 21 7.3 20.6 6.6 20 6.3 L 13 2.3 C 12.4 1.9 11.6 1.9 11 2.3 L 4 6.3 C 3.4 6.7 3 7.3 3 8 L 3 16 C 3 16.7 3.4 17.4 4 17.7 L 11 21.7 Z"
+                android:strokeWidth="2"
+                android:strokeColor="#000"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round" />
+            <path
+                android:name="path_1"
+                android:fillColor="#00000000"
+                android:pathData="M 12 22 L 12 12"
+                android:strokeWidth="2"
+                android:strokeColor="#000"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round" />
+            <path
+                android:name="path_2"
+                android:fillColor="#00000000"
+                android:pathData="M 3.3 7 L 12 12 L 20.7 7"
+                android:strokeWidth="2"
+                android:strokeColor="#000"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round" />
+            <path
+                android:name="path_3"
+                android:fillColor="#00000000"
+                android:pathData="M 7.5 4.3 L 16.5 9.5"
+                android:strokeWidth="2"
+                android:strokeColor="#000"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round" />
+        </vector>
+    </aapt:attr>
+    <target android:name="path">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="400"
+                android:interpolator="@android:interpolator/fast_out_slow_in"
+                android:propertyName="trimPathStart"
+                android:valueFrom="1"
+                android:valueTo="0"
+                android:valueType="floatType" />
+        </aapt:attr>
+    </target>
+    <target android:name="path_1">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="400"
+                android:interpolator="@android:interpolator/fast_out_slow_in"
+                android:propertyName="trimPathStart"
+                android:valueFrom="1"
+                android:valueTo="0"
+                android:valueType="floatType" />
+        </aapt:attr>
+    </target>
+    <target android:name="path_2">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="400"
+                android:interpolator="@android:interpolator/fast_out_slow_in"
+                android:propertyName="trimPathStart"
+                android:valueFrom="1"
+                android:valueTo="0"
+                android:valueType="floatType" />
+        </aapt:attr>
+    </target>
+    <target android:name="path_3">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:duration="100"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"
+                    android:propertyName="trimPathStart"
+                    android:valueFrom="1"
+                    android:valueTo="1"
+                    android:valueType="floatType" />
+                <objectAnimator
+                    android:duration="300"
+                    android:interpolator="@android:interpolator/fast_out_slow_in"
+                    android:propertyName="trimPathStart"
+                    android:startOffset="100"
+                    android:valueFrom="1"
+                    android:valueTo="0"
+                    android:valueType="floatType" />
+            </set>
+        </aapt:attr>
+    </target>
+</animated-vector>

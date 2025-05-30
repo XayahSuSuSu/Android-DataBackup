@@ -152,7 +152,7 @@
     <string name="info_set_remote_or_local">Aseta etäpolku tai paikallinen polku</string>
     <string name="edit">Muokkaa</string>
     <string name="unmount_all">Irrota kaikki</string>
-    <string name="installation_time">Asennusaika</string>
+    <string name="install_time">Asennusaika</string>
     <string name="third_party">Kolmas osapuoli</string>
     <string name="uploading">Ladataan</string>
     <string name="main_account">Päätili</string>
@@ -253,7 +253,7 @@
     <string name="pull_down_to_refresh">Vedä alas virkistääksesi</string>
     <string name="select_all">Valitse kaikki</string>
     <string name="filters">Suodattimet</string>
-    <string name="sort">Lajittele</string>
+    <string name="sorts">Lajittele</string>
     <string name="args_loading_from_user">Ladataan käyttäjältä %1$s</string>
     <string name="backup_parts">Varmuuskopiointiosat</string>
     <string name="necessary_preparations">Tarvittavat valmistelut</string>

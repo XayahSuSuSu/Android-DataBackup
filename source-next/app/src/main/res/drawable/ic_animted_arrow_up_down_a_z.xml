@@ -1,0 +1,63 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:name="vector"
+            android:width="24dp"
+            android:height="24dp"
+            android:viewportWidth="24"
+            android:viewportHeight="24">
+            <path
+                android:name="path"
+                android:fillColor="#00000000"
+                android:pathData="M 3 8 L 7 4 L 11 8"
+                android:strokeWidth="2"
+                android:strokeColor="#000"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round" />
+            <path
+                android:name="path_1"
+                android:fillColor="#00000000"
+                android:pathData="M 7 4 L 7 20"
+                android:strokeWidth="2"
+                android:strokeColor="#000"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round" />
+            <path
+                android:name="path_2"
+                android:fillColor="#00000000"
+                android:pathData="M 20 8 L 15 8"
+                android:strokeWidth="2"
+                android:strokeColor="#000"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round" />
+            <path
+                android:name="path_3"
+                android:fillColor="#00000000"
+                android:pathData="M 15 10 L 15 6.5 C 15 5.12 16.12 4 17.5 4 C 18.88 4 20 5.12 20 6.5 L 20 10"
+                android:strokeWidth="2"
+                android:strokeColor="#000"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round" />
+            <path
+                android:name="path_4"
+                android:fillColor="#00000000"
+                android:pathData="M 15 14 L 20 14 L 15 20 L 20 20"
+                android:strokeWidth="2"
+                android:strokeColor="#000"
+                android:strokeLineCap="round"
+                android:strokeLineJoin="round" />
+        </vector>
+    </aapt:attr>
+    <target android:name="path">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="200"
+                android:interpolator="@android:interpolator/fast_out_slow_in"
+                android:propertyName="pathData"
+                android:valueFrom="M 3 8 L 7 4 L 11 8"
+                android:valueTo="M 3 16 L 7 20 L 11 16"
+                android:valueType="pathType" />
+        </aapt:attr>
+    </target>
+</animated-vector>

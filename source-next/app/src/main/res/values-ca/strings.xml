@@ -202,7 +202,7 @@
     <string name="remote_not_set">Directori local no establit</string>
     <string name="preprocessing">Preprocessant</string>
     <string name="settings">Ajustos</string>
-    <string name="installation_time">Temps d\'instal·lació</string>
+    <string name="install_time">Temps d\'instal·lació</string>
     <string name="data_size">Tamany de les dades</string>
     <string name="recursive_mode">Mode recursiu</string>
     <string name="follow_symlinks">Seguiu els enllaços simbòlics</string>

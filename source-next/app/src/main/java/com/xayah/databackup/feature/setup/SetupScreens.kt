@@ -1,16 +1,17 @@
 package com.xayah.databackup.feature.setup
 
 import android.app.Activity
-import android.os.Process
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -46,9 +47,11 @@ import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.OnResume
 import com.xayah.databackup.ui.component.PermissionCard
+import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.CustomSuFile
 import com.xayah.databackup.util.KeyCustomSuFile
+import com.xayah.databackup.util.ProcessHelper
 import com.xayah.databackup.util.navigateSafely
 import com.xayah.databackup.util.popBackStackSafely
 import com.xayah.databackup.util.readString
@@ -58,14 +61,18 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import kotlin.system.exitProcess
 
 @Composable
 fun WelcomeScreen(navController: NavHostController) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
     ) { innerPadding ->
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .height(IntrinsicSize.Max)
+        ) {
             Spacer(modifier = Modifier.size(innerPadding.calculateTopPadding()))
 
             Column(
@@ -122,6 +129,8 @@ fun WelcomeScreen(navController: NavHostController) {
                 }
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
             Spacer(modifier = Modifier.size(innerPadding.calculateBottomPadding()))
         }
     }
@@ -162,9 +171,7 @@ fun CustomSUFileDialog(
                         withContext(Dispatchers.Default) {
                             context.saveString(KeyCustomSuFile, text.text)
                             onDismissRequest()
-                            (context as Activity).finishAffinity()
-                            Process.killProcess(Process.myPid())
-                            exitProcess(0)
+                            ProcessHelper.killSelf(context as Activity)
                         }
                     }
                 }
@@ -195,9 +202,9 @@ fun PermissionsScreen(
     var openCustomSUFileDialog by remember { mutableStateOf(false) }
 
     OnResume {
-        if (viewModel.isGrantingNotificationPermission) {
+        if (viewModel.mIsGrantingNotificationPermission) {
             viewModel.checkNotification(context)
-            viewModel.isGrantingNotificationPermission = false
+            viewModel.mIsGrantingNotificationPermission = false
         }
     }
 
@@ -211,14 +218,16 @@ fun PermissionsScreen(
         modifier = Modifier.fillMaxSize(),
     ) { innerPadding ->
         Column(modifier = Modifier.fillMaxSize()) {
-            Spacer(modifier = Modifier.size(innerPadding.calculateTopPadding()))
-
+            val scrollState = rememberScrollState()
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
+                    .verticalFadingEdges(scrollState),
             ) {
+                Spacer(modifier = Modifier.size(innerPadding.calculateTopPadding()))
+
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -267,12 +276,15 @@ fun PermissionsScreen(
                         onClick = { viewModel.validateNotification(context) },
                     )
                 }
+
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextButton(
@@ -297,10 +309,10 @@ fun PermissionsScreen(
                     onClick = { viewModel.onNextButtonClick(context) }
                 ) {
                     AnimatedContent(
-                        targetState = if (viewModel.allGranted) stringResource(R.string.next) else stringResource(R.string.grant_all),
+                        targetState = if (viewModel.mAllGranted) stringResource(R.string.next) else stringResource(R.string.grant_all),
                         label = "Animated content"
                     ) { targetContent ->
-                        Text(targetContent)
+                        Text(text = targetContent)
                     }
                 }
             }

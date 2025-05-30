@@ -180,7 +180,7 @@
     <string name="modify">تعديل</string>
     <string name="cloud">سحابي</string>
     <string name="settings">الإعدادات</string>
-    <string name="installation_time">وقت التثبيت</string>
+    <string name="install_time">وقت التثبيت</string>
     <string name="data_size">حجم البيانات</string>
     <string name="selected">المحدد</string>
     <string name="not_selected">غير محدد</string>
@@ -223,7 +223,7 @@
     <string name="select_apps">اختيار التطبيقات</string>
     <string name="pull_down_to_refresh">اسحب لأسفل للتحديث</string>
     <string name="select_all">اختيار الكل</string>
-    <string name="sort">فرز</string>
+    <string name="sorts">فرز</string>
     <string name="advanced">متقدم</string>
     <string name="never">أبداً</string>
     <string name="backup_contacts">نسخ جهات الاتصال</string>

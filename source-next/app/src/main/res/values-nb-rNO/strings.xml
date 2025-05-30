@@ -129,7 +129,7 @@
     <string name="selected_both">Begge valgt</string>
     <string name="restore_dir">Gjenopprett mappe</string>
     <string name="follow_symlinks">Følg symbolske lenker</string>
-    <string name="installation_time">Installasjonstid</string>
+    <string name="install_time">Installasjonstid</string>
     <string name="set_remote">Sett som annensteds hen</string>
     <string name="please_set_up_main_account">Sett opp hovedkontoen</string>
     <string name="uploading">Opplasting</string>

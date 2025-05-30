@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="sooner_or_later">Prije ili kasnije</string>
     <string name="save">Spremi</string>
-    <string name="installation_time">Vrijeme instalacije</string>
+    <string name="install_time">Vrijeme instalacije</string>
     <string name="restoring">Obnavljanje</string>
     <string name="both">Oboje</string>
     <string name="password">Lozinka</string>
@@ -222,7 +222,7 @@
     <string name="skip_setup_alert">Nećete moći izvršiti operacije sigurnosnog kopiranja ili obnavljanja dok ne odaberete direktorij za sigurnosne kopije.</string>
     <string name="notification_permission_desc">Pristup informacijama obrade</string>
     <string name="select_all">Odaberi sve</string>
-    <string name="sort">Razvrstaj</string>
+    <string name="sorts">Razvrstaj</string>
     <string name="args_loading_from_user">Učitavanje od korisnika %1$s</string>
     <string name="storage">Memorija</string>
     <string name="root_permission">Dozvola za root pristup</string>

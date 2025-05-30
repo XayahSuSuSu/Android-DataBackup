@@ -5,51 +5,80 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
-import androidx.compose.ui.Modifier
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
+import androidx.navigation.compose.rememberNavController
 import com.topjohnwu.superuser.Shell
+import com.xayah.databackup.App
 import com.xayah.databackup.R
+import com.xayah.databackup.feature.backup.BackupPreviewScreen
+import com.xayah.databackup.feature.backup.apps.BackupAppsScreen
+import com.xayah.databackup.feature.dashboard.DashboardScreen
 import com.xayah.databackup.feature.setup.NoPermKey
 import com.xayah.databackup.feature.setup.SetupActivity
-import com.xayah.databackup.ui.component.ActionButton
-import com.xayah.databackup.ui.component.SmallActionButton
-import com.xayah.databackup.ui.component.StorageCard
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.FirstLaunch
+import com.xayah.databackup.util.LogHelper
+import com.xayah.databackup.util.NotificationHelper
+import com.xayah.databackup.util.ProcessHelper
+import com.xayah.databackup.util.ShellHelper
 import com.xayah.databackup.util.preloadingDataStore
 import com.xayah.databackup.util.readBoolean
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.Serializable
+
+@Serializable
+data object Dashboard
+
+@Serializable
+data object Backup
+
+@Serializable
+data object BackupPreview
+
+@Serializable
+data object BackupApps
+
+@Composable
+fun ErrorServiceDialog(onConfirm: () -> Unit, onRetry: () -> Unit) {
+    AlertDialog(
+        icon = { Icon(imageVector = ImageVector.vectorResource(R.drawable.ic_circle_x), contentDescription = stringResource(R.string.error)) },
+        title = { Text(text = stringResource(R.string.error)) },
+        text = { Text(text = stringResource(R.string.error_service_desc)) },
+        onDismissRequest = {},
+        confirmButton = { TextButton(onClick = onConfirm) { Text(text = stringResource(R.string.confirm)) } },
+        dismissButton = { TextButton(onClick = onRetry) { Text(text = stringResource(R.string.retry)) } }
+    )
+}
+
 
 class MainActivity : ComponentActivity() {
+    companion object {
+        private const val TAG = "MainActivity"
+    }
+    private lateinit var mMainViewModel: MainViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -64,126 +93,74 @@ class MainActivity : ComponentActivity() {
             // First launch
             startActivity(Intent(this, SetupActivity::class.java))
             finish()
-        } else if (Shell.getShell().isRoot.not()) {
-            // Permissions are denied
-            startActivity(Intent(this, SetupActivity::class.java).putExtra(NoPermKey, true))
-            finish()
+        } else {
+            runCatching {
+                runBlocking { ShellHelper.initMainShell(context = App.application) }
+            }.onFailure { LogHelper.e(TAG, "Failed to init main shell.", it) }
+            if (Shell.getShell().isRoot.not()) {
+                // Permissions are denied
+                startActivity(Intent(this, SetupActivity::class.java).putExtra(NoPermKey, true))
+                finish()
+            }
         }
+        NotificationHelper.createChannelIfNecessary(this)
         splashScreen.setKeepOnScreenCondition { false }
 
         enableEdgeToEdge()
         setContent {
+            mMainViewModel = viewModel()
+            mMainViewModel.initialize()
+
             DataBackupTheme {
-                val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+                val uiState by mMainViewModel.uiState.collectAsStateWithLifecycle()
+                val navController = rememberNavController()
 
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    topBar = {
-                        CenterAlignedTopAppBar(
-                            title = {
-                                Text(
-                                    "DataBackup",
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            },
-                            navigationIcon = {
-                                IconButton(onClick = { /* do something */ }) {
-                                    BadgedBox(
-                                        badge = {
-                                            Badge()
-                                        }
-                                    ) {
-                                        Icon(
-                                            imageVector = ImageVector.vectorResource(R.drawable.ic_badge_info),
-                                            contentDescription = "Localized description"
-                                        )
-                                    }
-                                }
-                            },
-                            actions = {
-                                IconButton(onClick = { /* do something */ }) {
-                                    Icon(
-                                        imageVector = ImageVector.vectorResource(R.drawable.ic_settings),
-                                        contentDescription = "Localized description"
-                                    )
-                                }
-                            },
-                            scrollBehavior = scrollBehavior,
-                        )
-                    },
-                ) { innerPadding ->
-                    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                        Spacer(modifier = Modifier.size(innerPadding.calculateTopPadding()))
+                if (uiState.showErrorServiceDialog) {
+                    ErrorServiceDialog(onConfirm = { ProcessHelper.killSelf(this) }, onRetry = { mMainViewModel.checkRootService() })
+                }
 
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                        ) {
-                            StorageCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight(),
-                                free = 0.25f,
-                                other = 0.5f,
-                                backups = 0.25f,
-                                title = "Internal storage",
-                                subtitle = "/data/media/0/DataBackup",
-                                progress = "28%",
-                                storage = "52 GB",
-                            ) {}
-
-                            Text("Actions", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
-
-                            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                                SmallActionButton(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .wrapContentSize(),
-                                    icon = ImageVector.vectorResource(R.drawable.ic_archive),
-                                    title = "Backup",
-                                    subtitle = "Backup your data"
-                                ) {}
-
-                                SmallActionButton(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .wrapContentSize(),
-                                    icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
-                                    title = "Restore",
-                                    subtitle = "Restore your data"
-                                ) {}
-                            }
-
-                            ActionButton(
-                                modifier = Modifier
-                                    .fillMaxWidth(1f)
-                                    .wrapContentSize(),
-                                icon = ImageVector.vectorResource(R.drawable.ic_clock),
-                                title = "History",
-                                subtitle = "See your previous backups"
-                            ) {}
-
-                            ActionButton(
-                                modifier = Modifier
-                                    .fillMaxWidth(1f)
-                                    .wrapContentSize(),
-                                icon = ImageVector.vectorResource(R.drawable.ic_cloud_upload),
-                                title = "Cloud",
-                                subtitle = "Set-up cloud storage"
-                            ) {}
-
-                            ActionButton(
-                                modifier = Modifier
-                                    .fillMaxWidth(1f)
-                                    .wrapContentSize(),
-                                icon = ImageVector.vectorResource(R.drawable.ic_calendar_check),
-                                title = "Schedule",
-                                subtitle = "Configure automatic backups"
-                            ) {}
+                Surface {
+                    NavHost(
+                        navController = navController,
+                        startDestination = Dashboard,
+                        enterTransition = {
+                            slideInHorizontally(
+                                initialOffsetX = { it },
+                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutHorizontally(
+                                targetOffsetX = { -it },
+                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
+                            )
+                        },
+                        popEnterTransition = {
+                            slideInHorizontally(
+                                initialOffsetX = { -it },
+                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
+                            )
+                        },
+                        popExitTransition = {
+                            slideOutHorizontally(
+                                targetOffsetX = { it },
+                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
+                            )
+                        },
+                    ) {
+                        composable<Dashboard> {
+                            DashboardScreen(navController)
                         }
 
-                        Spacer(modifier = Modifier.size(innerPadding.calculateBottomPadding()))
+                        navigation<Backup>(startDestination = BackupPreview) {
+                            composable<BackupPreview> {
+                                BackupPreviewScreen(navController)
+                            }
+
+                            composable<BackupApps> {
+                                BackupAppsScreen(navController)
+                            }
+                        }
                     }
                 }
             }

@@ -150,7 +150,7 @@
     <string name="unmount_all">Odmontiraj sve</string>
     <string name="edit">Uredi</string>
     <string name="modify">Promijeni</string>
-    <string name="installation_time">Vrijeme instalacije</string>
+    <string name="install_time">Vrijeme instalacije</string>
     <string name="system">Sistemsko</string>
     <string name="data_size">Količina podataka</string>
     <string name="settings">Podešavanja</string>
@@ -299,7 +299,7 @@
     <string name="backup_messages">Sačuvajte poruke</string>
     <string name="select_all">Odaberi sve</string>
     <string name="filters">Filtri</string>
-    <string name="sort">Razvrstaj</string>
+    <string name="sorts">Razvrstaj</string>
     <string name="backup_parts">Dijelovi sigurnosne kopije</string>
     <string name="args_backup">Sigurnosna kopija %1$s</string>
     <string name="advanced">Napredno</string>

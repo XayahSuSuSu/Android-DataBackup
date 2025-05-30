@@ -148,8 +148,9 @@
     <string name="modify">Modify</string>
     <string name="cloud">Cloud</string>
     <string name="settings">Settings</string>
-    <string name="alphabet" translatable="false">A-Z</string>
-    <string name="installation_time">Installation time</string>
+    <string name="a2z" translatable="false">A-Z</string>
+    <string name="install_time">Install time</string>
+    <string name="update_time">Update time</string>
     <string name="data_size">Data size</string>
     <string name="selected">Selected</string>
     <string name="not_selected">Not selected</string>
@@ -255,7 +256,7 @@
     <string name="pull_down_to_refresh">Pull down to refresh</string>
     <string name="select_all">Select all</string>
     <string name="filters">Filters</string>
-    <string name="sort">Sort</string>
+    <string name="sorts">Sorts</string>
     <string name="args_loading_from_user">Loading from user %1$s</string>
     <string name="backup_parts">Backup parts</string>
     <string name="necessary_preparations">Necessary preparations</string>
@@ -420,4 +421,13 @@
     <string name="notification_desc">This is needed to post necessary notifications</string>
     <string name="permission_is_denied">Permission is denied</string>
     <string name="root_denied_msg">Please check your root manager and restart app</string>
+    <string name="error">Error</string>
+    <string name="error_service_desc">Failed to connect root service, app cannot run properly without it. You can retry or restart the app</string>
+    <string name="retry">Retry</string>
+    <string name="search">Search</string>
+    <string name="user_apps">User apps</string>
+    <string name="system_apps">System apps</string>
+    <string name="users">Users</string>
+    <string name="ascending">Ascending</string>
+    <string name="descending">Descending</string>
 </resources>

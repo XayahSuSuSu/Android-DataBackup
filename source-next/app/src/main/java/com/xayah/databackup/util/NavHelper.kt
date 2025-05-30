@@ -1,24 +1,20 @@
 package com.xayah.databackup.util
 
-import androidx.lifecycle.Lifecycle
-import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 
 /**
- * If the lifecycle is not resumed it means this NavBackStackEntry already processed a nav event.
- *
- * This is used to de-duplicate navigation events.
+ * Navigate to target route with debounce handled.
  */
-private val NavBackStackEntry.isLifecycleResumed get() = this.lifecycle.currentState == Lifecycle.State.RESUMED
-
-fun <T : Any> NavHostController.navigateSafely(route: T) {
-    if (currentBackStackEntry?.isLifecycleResumed == true) {
+inline fun <reified T : Any> NavHostController.navigateSafely(route: T) {
+    if (currentDestination?.hasRoute<T>() != true) {
         navigate(route) { launchSingleTop = true }
     }
 }
 
+/**
+ * Pop back stack safely.
+ */
 fun NavHostController.popBackStackSafely() {
-    if (currentBackStackEntry?.isLifecycleResumed == true) {
-        popBackStack()
-    }
+    navigateUp()
 }

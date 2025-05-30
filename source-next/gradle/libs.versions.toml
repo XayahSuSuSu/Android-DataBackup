@@ -1,7 +1,9 @@
 [versions]
 activityCompose = "1.10.0"
 agp = "8.8.1"
+animationGraphics = "1.7.8"
 appcompat = "1.7.0"
+coilCompose = "3.1.0"
 composeBom = "2025.02.00"
 coreKtx = "1.15.0"
 coreSplashscreen = "1.0.1"
@@ -10,13 +12,27 @@ espressoCore = "3.6.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 kotlin = "2.0.21"
+kotlin-ksp = "2.0.21-1.0.28"
 kotlinxSerializationJson = "1.8.0"
 libsu = "6.0.0"
 lifecycleRuntimeKtx = "2.8.7"
 navigationCompose = "2.8.8"
+refine = "4.4.0"
+room = "2.6.1"
+workRuntimeKtx = "2.10.0"
+
+# Gradle
+compileSdk = "35"
+minSdk = "24"
+targetSdk = "35"
+versionCode = "3501150" # __(API)____(version)_(abi)
+versionName = "3.0.0"
+ndkVersion = "25.2.9519653"
+cmakeVersion = "3.22.1"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-animation-graphics = { module = "androidx.compose.animation:animation-graphics", version.ref = "animationGraphics" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -27,19 +43,30 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "j
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 libsu-core = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsu" }
 libsu-service = { module = "com.github.topjohnwu.libsu:service", version.ref = "libsu" }
+refine-annotation = { module = "dev.rikka.tools.refine:annotation", version.ref = "refine" }
+refine-annotation-processor = { module = "dev.rikka.tools.refine:annotation-processor", version.ref = "refine" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "kotlin-ksp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+refine = { id = "dev.rikka.tools.refine", version.ref = "refine" }

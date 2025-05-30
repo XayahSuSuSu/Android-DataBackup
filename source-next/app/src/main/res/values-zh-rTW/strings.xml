@@ -144,7 +144,8 @@
     <string name="modify">修改</string>
     <string name="cloud">雲端</string>
     <string name="settings">設定</string>
-    <string name="installation_time">安裝時間</string>
+    <string name="install_time">安裝時間</string>
+    <string name="update_time">更新時間</string>
     <string name="data_size">數據大小</string>
     <string name="selected">已選取</string>
     <string name="not_selected">未選取</string>
@@ -247,7 +248,7 @@
     <string name="pull_down_to_refresh">下拉刷新</string>
     <string name="select_all">選擇全部</string>
     <string name="filters">過濾</string>
-    <string name="sort">排序</string>
+    <string name="sorts">排序</string>
     <string name="args_loading_from_user">正在載入使用者 %1$s</string>
     <string name="backup_parts">備份內容</string>
     <string name="necessary_preparations">必要準備</string>
@@ -406,4 +407,13 @@
     <string name="notification_desc">這是發布必要通知所必需的</string>
     <string name="permission_is_denied">權限被拒絕</string>
     <string name="root_denied_msg">請檢查您的Root管理器並重新啟動應用程式</string>
+    <string name="error">錯誤</string>
+    <string name="error_service_desc">無法連接Root服務，應用程式將無法正常運作。您可以重試或重新啟動應用程式</string>
+    <string name="retry">重試</string>
+    <string name="search">搜尋</string>
+    <string name="user_apps">用戶應用</string>
+    <string name="system_apps">系統應用</string>
+    <string name="users">用戶</string>
+    <string name="ascending">升序</string>
+    <string name="descending">降序</string>
 </resources>

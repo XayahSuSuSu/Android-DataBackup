@@ -48,18 +48,17 @@ data class UiState(
 )
 
 class PermissionsViewModel : ViewModel() {
+    private val mMutex = Mutex()
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
-    var isGrantingNotificationPermission: Boolean = false
-    val allGranted: Boolean
+    var mIsGrantingNotificationPermission: Boolean = false
+    val mAllGranted: Boolean
         get() = uiState.value.rootCardProp.state == CardState.Success && uiState.value.notificationProp.state == CardState.Success
-
-    private val mutex = Mutex()
 
     fun validateRoot(context: Context) {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
-                mutex.withLock {
+                mMutex.withLock {
                     if (uiState.value.rootCardProp.state != CardState.Success) {
                         fun onWaiting() {
                             _uiState.update { currentState ->
@@ -105,7 +104,7 @@ class PermissionsViewModel : ViewModel() {
     fun checkNotification(context: Context) {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
-                mutex.withLock {
+                mMutex.withLock {
                     fun onSuccess() {
                         _uiState.update { currentState ->
                             currentState.copy(notificationProp = currentState.notificationProp.copy(state = CardState.Success))
@@ -132,7 +131,7 @@ class PermissionsViewModel : ViewModel() {
     fun validateNotification(context: Context) {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
-                mutex.withLock {
+                mMutex.withLock {
                     if (uiState.value.notificationProp.state != CardState.Success) {
                         fun onWaiting() {
                             _uiState.update { currentState ->
@@ -158,7 +157,7 @@ class PermissionsViewModel : ViewModel() {
                             val msg = withContext(Dispatchers.Main) {
                                 NotificationHelper.requestPermission(context)
                             }
-                            isGrantingNotificationPermission = true
+                            mIsGrantingNotificationPermission = true
                             if (msg != null) {
                                 onFailure(msg)
                             }
@@ -175,7 +174,7 @@ class PermissionsViewModel : ViewModel() {
     }
 
     fun onNextButtonClick(context: Context) {
-        if (allGranted) {
+        if (mAllGranted) {
             viewModelScope.launch {
                 withContext(Dispatchers.Default) {
                     context.saveBoolean(KeyFirstLaunch, false)

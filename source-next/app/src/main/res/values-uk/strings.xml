@@ -94,7 +94,7 @@
     <string name="restart_failed">Не вдалося перезапустити додаток. Будь ласка, перезапустіть його вручну.</string>
     <string name="sooner_or_later">Раніше чи пізніше</string>
     <string name="clean_restoring">Чисте відновлення</string>
-    <string name="installation_time">Час встановлення</string>
+    <string name="install_time">Час встановлення</string>
     <string name="select_target_directory">Вибір цільової папки</string>
     <string name="password">Пароль</string>
     <string name="user">Користувач</string>
@@ -258,7 +258,7 @@
     <string name="pull_down_to_refresh">Потягнути для оновлення</string>
     <string name="select_all">Вибрати всі</string>
     <string name="filters">Фільтр</string>
-    <string name="sort">Сортування</string>
+    <string name="sorts">Сортування</string>
     <string name="backup_parts">Бекап частин</string>
     <string name="necessary_preparations">Необхідні приготування</string>
     <string name="necessary_remaining_data_processing">Обробка залишкових даних</string>

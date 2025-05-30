@@ -132,7 +132,7 @@
     <string name="info_set_remote_or_local">Укажите локальный или путь в облаке</string>
     <string name="mounted">Смонтировано</string>
     <string name="unmount_all">Размонтировать все</string>
-    <string name="installation_time">Время установки</string>
+    <string name="install_time">Время установки</string>
     <string name="edit">Изменить</string>
     <string name="data_size">Размер данных</string>
     <string name="selected">Выбрано</string>
@@ -245,7 +245,7 @@
     <string name="dashboard">Информационная панель</string>
     <string name="select_all">Выбрать все</string>
     <string name="filters">Фильтры</string>
-    <string name="sort">Сортировка</string>
+    <string name="sorts">Сортировка</string>
     <string name="necessary_remaining_data_processing">Необходимая обработка оставшихся данных</string>
     <string name="apps">Приложения</string>
     <string name="post_processing">Пост-обработка</string>

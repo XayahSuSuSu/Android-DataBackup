@@ -143,7 +143,7 @@
     <string name="modify">수정하다</string>
     <string name="cloud">클라우드</string>
     <string name="settings">설정</string>
-    <string name="installation_time">설치 시간</string>
+    <string name="install_time">설치 시간</string>
     <string name="not_selected">선택되지 않음</string>
     <string name="please_set_up_backup_dir">백업 디렉토리를 설정하십시오.</string>
     <string name="original_data_size">데이터 크기(원본)</string>
@@ -180,7 +180,7 @@
     <string name="pull_down_to_refresh">새로고침하려면 아래로 당기십시오</string>
     <string name="select_all">모두 선택</string>
     <string name="filters">필터</string>
-    <string name="sort">정렬</string>
+    <string name="sorts">정렬</string>
     <string name="args_loading_from_user">사용자 %1$s에서 로드 중</string>
     <string name="backup_parts">부분 백업</string>
     <string name="necessary_preparations">필요한 준비사항</string>

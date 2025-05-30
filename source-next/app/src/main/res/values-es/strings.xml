@@ -156,7 +156,7 @@
     <string name="modify">Modificar</string>
     <string name="cloud">Nube</string>
     <string name="settings">Ajustes</string>
-    <string name="installation_time">Duración de la instalación</string>
+    <string name="install_time">Duración de la instalación</string>
     <string name="data_size">Tamaño de datos</string>
     <string name="selected">Seleccionado</string>
     <string name="details">Detalles</string>
@@ -238,7 +238,7 @@
     <string name="backup_files">Archivos de copia de seguridad</string>
     <string name="backup_messages">Mensajes de copia de seguridad</string>
     <string name="pull_down_to_refresh">Tire hacia abajo para refrescar</string>
-    <string name="sort">Clasificar</string>
+    <string name="sorts">Clasificar</string>
     <string name="select_apps">Seleccionar aplicaciones</string>
     <string name="select_all">Seleccionar todo</string>
     <string name="filters">Filtros</string>
