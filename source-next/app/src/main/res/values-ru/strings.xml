@@ -117,7 +117,7 @@
     <string name="backup_itself">Бекап DataBackup</string>
     <string name="time">Время</string>
     <string name="restart_failed">Не удалось перезапустить, перезапустите приложение вручную.</string>
-    <string name="welcome_to_use">Добро пожаловать</string>
+    <string name="welcome_to_use">Добро пожаловать в DataBackup</string>
     <string name="external_storage">Внешнее хранилище</string>
     <string name="save_directory_structure">Сохранить структуру папки</string>
     <string name="app_and_data">Приложения</string>
@@ -408,4 +408,14 @@
     <string name="last_update">Последнее обновление</string>
     <string name="insecure_server_connection">Позволить ненадёжное подключение к серверу</string>
     <string name="root_desc">Это приложение позволяет выполнять полную резервную копию вашего устройства, используя корневых разрешений (суперпользователя) на доступ к системным файлам и настройкам, которые стандартные приложения не могут достичь</string>
+    <string name="update_time">Время обновления</string>
+    <string name="search">Поиск</string>
+    <string name="ascending">Входящий</string>
+    <string name="users">Пользователи</string>
+    <string name="retry">Повторить</string>
+    <string name="system_apps">Системные приложения</string>
+    <string name="error">Ошибка</string>
+    <string name="error_service_desc">Не удалось подключить службу root, без нее приложение не может работать должным образом. Вы можете повторить попытку или перезапустить приложение</string>
+    <string name="user_apps">Приложения для пользователей</string>
+    <string name="descending">Исходящий</string>
 </resources>
