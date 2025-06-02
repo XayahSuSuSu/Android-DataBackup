@@ -408,4 +408,16 @@
     <string name="args_files_restored_and_failed">%1$s fichiers restaurés, %2$s échecs</string>
     <string name="required">Requis</string>
     <string name="optional">Optionnel</string>
+    <string name="error">Erreur</string>
+    <string name="retry">Ressayer</string>
+    <string name="users">Utilisateurs</string>
+    <string name="ascending">Croissant</string>
+    <string name="descending">Décroissant</string>
+    <string name="error_service_desc">Echec de connexion du service root, l\'application ne peut pas fonctionner correctement sans lui. Vous pouvez ressayer ou redémarrer l\'application</string>
+    <string name="user_apps">Applications utilisateur</string>
+    <string name="install_time">Heure d\'installation</string>
+    <string name="update_time">Heure de mise à jour</string>
+    <string name="sorts">Classés</string>
+    <string name="search">Rechercher</string>
+    <string name="system_apps">Application système</string>
 </resources>
