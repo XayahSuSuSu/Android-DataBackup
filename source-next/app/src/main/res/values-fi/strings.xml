@@ -408,4 +408,14 @@
     <string name="insecure_server_connection">Salli suojaamaton palvelinyhteys</string>
     <string name="root_desc">Tämän sovelluksen avulla voit tehdä laitteesi täyden varmuuskopion, mikä edellyttää root-käyttöoikeudet (superkäyttäjä) päästääksesi järjestelmätiedostoihin ja -asetuksiin, joihin tavalliset sovellukset eivät pääse</string>
     <string name="insecure_server_connection_desc">Ota tämä asetus käyttöön, kun käytät itse allekirjoitettua varmennetta</string>
+    <string name="update_time">Päivitysaika</string>
+    <string name="error">Virhe</string>
+    <string name="error_service_desc">Yhdistäminen root-palveluun epäonnistui, sovellus ei voi toimia oikein ilman sitä. Voit yrittää uudelleen tai käynnistää sovelluksen uudestaan</string>
+    <string name="retry">Yritä uudelleen</string>
+    <string name="search">Haku</string>
+    <string name="user_apps">Käyttäjäsovellukset</string>
+    <string name="system_apps">Järjestelmäsovellukset</string>
+    <string name="users">Käyttäjät</string>
+    <string name="ascending">Nouseva</string>
+    <string name="descending">Laskeva</string>
 </resources>
