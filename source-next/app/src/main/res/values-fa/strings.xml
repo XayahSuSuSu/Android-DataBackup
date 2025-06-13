@@ -409,4 +409,15 @@
     <string name="restore_permissions_desc">بازیابی مجوزهای برنامه‌ها</string>
     <string name="restore_ssaid">بازیابی شناسه اندروید</string>
     <string name="install_time">Madonna</string>
+    <string name="ascending">صعودی</string>
+    <string name="error_service_desc">اتصال سرویس ریشه انجام نشد، برنامه بدون آن نمی تواند به درستی اجرا شود. می‌توانید برنامه را دوباره امتحان کنید یا مجدداً راه‌اندازی کنید</string>
+    <string name="update_time">زمان به‌روزرسانی</string>
+    <string name="sorts">ترتیب</string>
+    <string name="error">خطا</string>
+    <string name="retry">امتحان دوباره</string>
+    <string name="search">جستجو</string>
+    <string name="user_apps">برنامه‌های کاربر</string>
+    <string name="system_apps">برنامه‌های سیستم</string>
+    <string name="users">کاربران</string>
+    <string name="descending">نزولی</string>
 </resources>
