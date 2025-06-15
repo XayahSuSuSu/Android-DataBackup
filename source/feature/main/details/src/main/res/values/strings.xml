@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="label_cannot_be_empty">Label cannot be empty.</string>
+    <string name="add_label_failed">Failed to add label. It might already exist or an error occurred.</string>
+</resources>

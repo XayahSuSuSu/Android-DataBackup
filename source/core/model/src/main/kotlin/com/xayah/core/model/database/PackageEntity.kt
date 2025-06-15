@@ -151,6 +151,13 @@ data class PackageDataStats(
     var dataBytes: Long = 0,
     var obbBytes: Long = 0,
     var mediaBytes: Long = 0,
+    // Timestamps for component-level incremental backup
+    var apkLastBackupTimestamp: Long = 0L,
+    var dataLastBackupTimestamp: Long = 0L,
+    var userLastBackupTimestamp: Long = 0L,
+    var userDeLastBackupTimestamp: Long = 0L,
+    var obbLastBackupTimestamp: Long = 0L,
+    var mediaLastBackupTimestamp: Long = 0L,
 )
 
 /**

@@ -50,7 +50,12 @@ import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.BaseUtil
 import com.xayah.core.util.command.PackageUtil
 import com.xayah.core.util.command.Tar
+import com.xayah.core.util.EncryptionHelper
+import com.xayah.core.util.LogUtil
 import com.xayah.core.util.filesDir
+import java.security.SecureRandom
+import com.google.gson.Gson
+import java.nio.charset.StandardCharsets // For UTF_8
 import com.xayah.core.util.iconDir
 import com.xayah.core.util.localBackupSaveDir
 import com.xayah.core.util.withLog
@@ -506,43 +511,126 @@ class AppsRepo @Inject constructor(
 
     private suspend fun loadCloudApps(cloudName: String, onLoad: suspend (cur: Int, max: Int, content: String) -> Unit) = runCatching {
         cloudRepo.withClient(cloudName) { client, entity ->
-            val remote = entity.remote
-            val path = pathUtil.getCloudRemoteAppsDir(remote)
-            if (client.exists(path)) {
-                val paths = client.walkFileTree(path)
-                val tmpDir = pathUtil.getCloudTmpDir()
-                paths.forEachIndexed { index, pathParcelable ->
-                    val fileName = PathUtil.getFileName(pathParcelable.pathString)
-                    onLoad(index, paths.size, fileName)
-                    if (fileName == ConfigsPackageRestoreName) {
-                        runCatching {
-                            cloudRepo.download(client = client, src = pathParcelable.pathString, dstDir = tmpDir) { path ->
-                                rootService.readJson<PackageEntity>(path).also { p ->
-                                    p?.id = 0
-                                    p?.extraInfo?.activated = false
-                                    p?.indexInfo?.cloud = entity.name
-                                    p?.indexInfo?.backupDir = remote
-                                    parsePreserveAndUserId(pathParcelable).also { result ->
-                                        result?.also { (pId, uId) ->
-                                            p?.indexInfo?.preserveId = pId
-                                            p?.indexInfo?.userId = uId
+            val remote = entity.remote // Base remote path for this cloud account
+            val remoteAppsPath = pathUtil.getCloudRemoteAppsDir(remote) // e.g., /<user-defined-path>/DataBackup/apps
+            if (client.exists(remoteAppsPath)) {
+                val paths = client.walkFileTree(remoteAppsPath) // List all files/dirs under .../apps/
+                val tmpDir = pathUtil.getCloudTmpDir() // Local temporary directory for downloads
+                val gson = Gson()
+                val settings = settingsDataRepo.settingsData.first() // For password placeholder
+
+                paths.forEachIndexed { index, pathParcelable -> // pathParcelable here refers to a remote path
+                    val remoteConfigFilePathString = pathParcelable.pathString
+                    val fileName = PathUtil.getFileName(remoteConfigFilePathString)
+                    onLoad(index, paths.size, fileName) // Progress update
+
+                    if (fileName == ConfigsPackageRestoreName) { // "package.json"
+                        var packageEntity: PackageEntity? = null
+                        val remoteSaltFilePathString = "$remoteConfigFilePathString.salt"
+
+                        // Determine local temporary paths for downloaded config and salt
+                        val localTmpConfigFilePath = File(tmpDir, "${PathUtil.getFileNameWithoutExtension(fileName)}_${DateUtil.getTimestamp()}.${PathUtil.getExtension(fileName)}").absolutePath
+                        val localTmpSaltFilePath = "$localTmpConfigFilePath.salt"
+
+                        try {
+                            // Attempt to download salt file first, if it exists remotely
+                            var salt: ByteArray? = null
+                            if (client.exists(remoteSaltFilePathString)) {
+                                LogUtil.log { "AppsRepo" to "Found remote salt file for $remoteConfigFilePathString, downloading." }
+                                val downloadSaltSuccess = cloudRepo.download(client = client, src = remoteSaltFilePathString, dst = localTmpSaltFilePath)
+                                if (downloadSaltSuccess) {
+                                    salt = rootService.readBytes(localTmpSaltFilePath) // Read the downloaded salt file
+                                    rootService.deleteRecursively(localTmpSaltFilePath) // Clean up tmp salt file
+                                } else {
+                                    LogUtil.log { "AppsRepo" to "Failed to download salt file $remoteSaltFilePathString" }
+                                }
+                            }
+
+                            // Download the main config file (package.json)
+                            val downloadConfigSuccess = cloudRepo.download(client = client, src = remoteConfigFilePathString, dst = localTmpConfigFilePath)
+                            if (downloadConfigSuccess) {
+                                val configFileBytes = rootService.readBytes(localTmpConfigFilePath) // Read downloaded config
+                                rootService.deleteRecursively(localTmpConfigFilePath) // Clean up tmp config file
+
+                                if (configFileBytes.isNotEmpty()) {
+                                    if (salt != null && salt.isNotEmpty()) {
+                                        // Encrypted
+                                        LogUtil.log { "AppsRepo" to "Attempting decryption for downloaded $remoteConfigFilePathString" }
+                                        if (settings.encryptionPasswordRaw.isNotEmpty()) {
+                                            try {
+                                                val decryptedConfigBytes = EncryptionHelper.decrypt(configFileBytes, settings.encryptionPasswordRaw.toCharArray(), salt)
+                                                packageEntity = gson.fromJson(String(decryptedConfigBytes, StandardCharsets.UTF_8), PackageEntity::class.java)
+                                                LogUtil.log { "AppsRepo" to "Decryption successful for downloaded $remoteConfigFilePathString" }
+                                            } catch (e: Exception) {
+                                                LogUtil.log { "AppsRepo" to "Decryption failed for downloaded $remoteConfigFilePathString: ${e.message}" }
+                                                e.printStackTrace()
+                                            }
+                                        } else {
+                                            LogUtil.log { "AppsRepo" to "Salt found but no password available for $remoteConfigFilePathString. Skipping." }
+                                        }
+                                    } else {
+                                        // Not encrypted
+                                        LogUtil.log { "AppsRepo" to "No salt file or empty salt for $remoteConfigFilePathString, reading as unencrypted." }
+                                        try {
+                                            packageEntity = gson.fromJson(String(configFileBytes, StandardCharsets.UTF_8), PackageEntity::class.java)
+                                        } catch (e: Exception) {
+                                            LogUtil.log { "AppsRepo" to "Failed to parse unencrypted downloaded $remoteConfigFilePathString: ${e.message}" }
                                         }
                                     }
-                                }?.apply {
-                                    if (appsDao.query(packageName, indexInfo.opType, userId, preserveId, indexInfo.compressionType, indexInfo.cloud, indexInfo.backupDir) == null) {
-                                        appsDao.upsert(this)
-                                    }
+                                } else {
+                                    LogUtil.log { "AppsRepo" to "Downloaded config file $remoteConfigFilePathString is empty."}
                                 }
+                            } else {
+                                LogUtil.log { "AppsRepo" to "Failed to download config file $remoteConfigFilePathString" }
+                            }
+                        } finally {
+                            // Ensure cleanup of temp files even if errors occur before reading them
+                            if (rootService.exists(localTmpConfigFilePath)) rootService.deleteRecursively(localTmpConfigFilePath)
+                            if (rootService.exists(localTmpSaltFilePath)) rootService.deleteRecursively(localTmpSaltFilePath)
+                        }
+
+                        // Process valid packageEntity
+                        packageEntity?.also { p ->
+                            p.id = 0
+                            p.extraInfo.activated = false
+                            p.indexInfo.cloud = entity.name // Set cloud name from the current cloud entity
+                            p.indexInfo.backupDir = remote // Set backupDir to the base remote path for this cloud
+
+                            parsePreserveAndUserId(pathParcelable).also { result -> // pathParcelable here is remote
+                                result?.also { (pId, uId) ->
+                                    p.indexInfo.preserveId = pId
+                                    p.indexInfo.userId = uId
+                                } ?: run {
+                                    LogUtil.log { "AppsRepo" to "Failed to parse preserveId/userId from remote path $remoteConfigFilePathString. Skipping DB upsert." }
+                                    return@forEachIndexed
+                                }
+                            }
+
+                            if (p.packageName.isNotBlank() && p.indexInfo.backupDir.isNotBlank()) {
+                                val existingEntry = appsDao.query(p.packageName, p.indexInfo.opType, p.userId, p.indexInfo.preserveId, p.indexInfo.compressionType, p.indexInfo.cloud, p.indexInfo.backupDir)
+                                if (existingEntry == null) {
+                                    appsDao.upsert(p)
+                                } else {
+                                    p.id = existingEntry.id
+                                    appsDao.updatePackage(p)
+                                }
+                            } else {
+                                LogUtil.log { "AppsRepo" to "Skipping DB upsert for $remoteConfigFilePathString due to missing critical info." }
                             }
                         }
                     }
                 }
-                appsDao.queryPackages(OpType.RESTORE, entity.name, entity.remote).forEach {
-                    val src = "${path}/${it.archivesRelativeDir}"
-                    if (client.exists(src).not()) {
+                // Validate database entries against remote file system (more complex, might need selective validation)
+                appsDao.queryPackages(OpType.RESTORE, entity.name, remote).forEach {
+                    val remotePackageDir = "${remoteAppsPath}/${it.archivesRelativeDir}" // e.g., /<user-path>/DataBackup/apps/com.example.app/0
+                    val remoteConfigFile = PathUtil.getPackageRestoreConfigDst(remotePackageDir)
+                    if (!client.exists(remoteConfigFile)) {
+                         LogUtil.log { "AppsRepo" to "Cloud DB entry for ${it.packageName}/${it.indexInfo.preserveId} points to non-existent remote config ($remoteConfigFile). Deleting from DB." }
                         appsDao.delete(it.id)
                     }
                 }
+            } else {
+                LogUtil.log { "AppsRepo" to "Remote apps path $remoteAppsPath does not exist for cloud ${entity.name}."}
             }
         }
     }.withLog()
@@ -633,12 +721,93 @@ class AppsRepo @Inject constructor(
 
     private suspend fun protectLocalApp(app: PackageEntity) {
         val protectedApp = app.copy(indexInfo = app.indexInfo.copy(preserveId = DateUtil.getTimestamp()))
-        val appsDir = pathUtil.getLocalBackupAppsDir()
-        val src = "${appsDir}/${app.archivesRelativeDir}"
-        val dst = "${appsDir}/${protectedApp.archivesRelativeDir}"
-        rootService.writeJson(data = protectedApp, dst = PathUtil.getPackageRestoreConfigDst(src))
-        rootService.renameTo(src, dst)
-        appsDao.update(protectedApp)
+        val localAppsDir = pathUtil.getLocalBackupAppsDir()
+        // Directory for the original backup (e.g., .../apps/com.example.app/0/)
+        // This is the source directory for the rename operation later.
+        val originalAppBackupDir = "${localAppsDir}/${app.archivesRelativeDir}"
+        // Directory for the new protected backup (e.g., .../apps/com.example.app/1678886400000/)
+        // This is the target directory for the rename operation.
+        val protectedAppBackupDir = "${localAppsDir}/${protectedApp.archivesRelativeDir}"
+        // Config file path within the *original* app backup directory.
+        // We modify/create the package.json here, then rename its parent directory.
+        val configFilePath = PathUtil.getPackageRestoreConfigDst(originalAppBackupDir)
+        val saltFilePath = "$configFilePath.salt"
+        val gson = Gson()
+
+        val settings = settingsDataRepo.settingsData.first()
+
+        // Ensure the directory where package.json will be written exists.
+        // For a "protect" operation, originalAppBackupDir (e.g., .../0/) should already exist.
+        if (!rootService.exists(originalAppBackupDir)) {
+            // This case should ideally not be hit if we are "protecting" an existing backup.
+            // If it's a brand new backup being saved directly as "protected", then mkdirs makes sense.
+            // However, "protectLocalApp" implies an existing 'app' entity.
+            LogUtil.log { "AppsRepo" to "Warning: Original backup directory $originalAppBackupDir not found during protect operation. Creating." }
+            rootService.mkdirs(originalAppBackupDir)
+        }
+
+        if (settings.encryptionEnabled && settings.encryptionPasswordRaw.isNotEmpty()) {
+            try {
+                LogUtil.log { "AppsRepo" to "Encryption enabled for ${protectedApp.packageName}. Encrypting metadata." }
+                val configJsonBytes = gson.toJson(protectedApp).toByteArray(Charsets.UTF_8)
+                val salt = ByteArray(16).apply { SecureRandom().nextBytes(this) } // Generate 16-byte salt
+
+                // EncryptionHelper.encrypt now expects salt and returns IV+ciphertext
+                val encryptedConfigDataWithIv = EncryptionHelper.encrypt(configJsonBytes, settings.encryptionPasswordRaw.toCharArray(), salt)
+
+                val writeConfigSuccess = rootService.writeBytes(bytes = encryptedConfigDataWithIv, dst = configFilePath)
+                if (!writeConfigSuccess) {
+                    LogUtil.log { "AppsRepo" to "Failed to write encrypted config for ${protectedApp.packageName}" }
+                    rootService.deleteRecursively(configFilePath) // Clean up partial file
+                    return // Stop if config write fails
+                }
+
+                val writeSaltSuccess = rootService.writeBytes(bytes = salt, dst = saltFilePath)
+                if (!writeSaltSuccess) {
+                    LogUtil.log { "AppsRepo" to "Failed to write salt for ${protectedApp.packageName}" }
+                    rootService.deleteRecursively(configFilePath) // Clean up config file
+                    rootService.deleteRecursively(saltFilePath) // Clean up partial salt file
+                    return // Stop if salt write fails
+                }
+                 LogUtil.log { "AppsRepo" to "Encrypted metadata and salt written for ${protectedApp.packageName}" }
+            } catch (e: Exception) {
+                LogUtil.log { "AppsRepo" to "Encryption failed for ${protectedApp.packageName}: ${e.message}" }
+                e.printStackTrace()
+                // Clean up any partially written files in case of an encryption error
+                rootService.deleteRecursively(configFilePath)
+                rootService.deleteRecursively(saltFilePath)
+                return // Stop if encryption process fails
+            }
+        } else {
+            LogUtil.log { "AppsRepo" to "Encryption not enabled for ${protectedApp.packageName}. Writing unencrypted metadata." }
+            // Write unencrypted config
+            rootService.writeJson(data = protectedApp, dst = configFilePath)
+            // Ensure no old salt file is lingering if encryption was previously enabled and now turned off
+            if(rootService.exists(saltFilePath)) {
+                LogUtil.log { "AppsRepo" to "Deleting orphaned salt file for ${protectedApp.packageName} at $saltFilePath" }
+                rootService.deleteRecursively(saltFilePath)
+            }
+        }
+
+        // Rename the whole directory from original preserveId (e.g., /0/) to new protected preserveId (e.g., /timestamp/)
+        // This moves package.json, package.json.salt (if any), and all TAR files.
+        if (rootService.exists(originalAppBackupDir)) {
+            if (rootService.renameTo(originalAppBackupDir, protectedAppBackupDir)) {
+                LogUtil.log { "AppsRepo" to "Successfully renamed $originalAppBackupDir to $protectedAppBackupDir" }
+                appsDao.update(protectedApp) // Update DB with new preserveId only if rename is successful
+            } else {
+                LogUtil.log { "AppsRepo" to "Failed to rename backup directory for ${protectedApp.packageName} from $originalAppBackupDir to $protectedAppBackupDir. Metadata may be in inconsistent state in $originalAppBackupDir." }
+                // If rename fails, the package.json in originalAppBackupDir is now for 'protectedApp'.
+                // This is an error state that needs careful handling, possibly by trying to revert package.json or flagging.
+            }
+        } else {
+            // This state implies that the config file was written (either encrypted or plain) to a directory that
+            // doesn't match app.archivesRelativeDir (the source for rename).
+            // This could happen if originalAppBackupDir didn't exist and was created, then written to,
+            // but app.archivesRelativeDir pointed to something else.
+            // This situation should be rare if path logic is consistent.
+            LogUtil.log { "AppsRepo" to "Critical error: Original backup directory $originalAppBackupDir was expected to exist for rename but was not found. The config for ${protectedApp.packageName} might be orphaned in $configFilePath."}
+        }
     }
 
     private suspend fun protectCloudApp(cloudName: String, app: PackageEntity) = runCatching {
