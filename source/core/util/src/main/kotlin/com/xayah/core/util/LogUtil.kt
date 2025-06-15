@@ -33,6 +33,7 @@ object LogUtil {
 
     fun initialize(context: Context, cacheDir: String) = runCatching {
         // Clear empty log files.
+        val currentLogFileName = getLogFileName()
         FileUtil.listFilePaths(cacheDir).forEach { path ->
             File(path).apply {
                 if (readLines().size <= 4) deleteRecursively()
@@ -43,7 +44,8 @@ object LogUtil {
             if (exists().not()) mkdirs()
         }
         this.cacheDir = cacheDir
-        this.logFile = RandomAccessFile("$cacheDir/${getLogFileName()}", "rw")
+        this.logFile = RandomAccessFile("$cacheDir/$currentLogFileName", "rw")
+        log("Log file created at: $cacheDir/$currentLogFileName") // Added this line
         log("Version:    ${BuildConfigUtil.VERSION_NAME}")
         log("Model:      ${Build.MODEL}")
         log("ABIs:       ${Build.SUPPORTED_ABIS.firstOrNull() ?: ""}")

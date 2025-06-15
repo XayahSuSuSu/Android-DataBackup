@@ -34,12 +34,20 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 data object UiState
 
 open class AppsViewModel : BaseViewModel() {
     private val _uiState = MutableStateFlow(UiState)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
+    private val _encryptionEnabled = MutableStateFlow(false)
+    val encryptionEnabled: StateFlow<Boolean> = _encryptionEnabled.asStateFlow()
+
+    private val _encryptionPassword = MutableStateFlow("")
+    val encryptionPassword: StateFlow<String> = _encryptionPassword.asStateFlow()
+
     val apps = combine(
         DatabaseHelper.appDao.loadFlowApps(),
         App.application.readInt(FilterBackupUser),
@@ -132,6 +140,18 @@ open class AppsViewModel : BaseViewModel() {
     fun changeFilter(key: Preferences.Key<Boolean>, value: Boolean) {
         withLock(Dispatchers.IO) {
             App.application.saveBoolean(key, value)
+        }
+    }
+
+    fun setEncryptionEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            _encryptionEnabled.value = enabled
+        }
+    }
+
+    fun setEncryptionPassword(password: String) {
+        viewModelScope.launch {
+            _encryptionPassword.value = password
         }
     }
 }

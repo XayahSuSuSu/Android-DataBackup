@@ -50,6 +50,7 @@ import java.nio.file.Paths
 import java.nio.file.SimpleFileVisitor
 import java.nio.file.attribute.BasicFileAttributes
 import kotlin.io.path.pathString
+import java.util.concurrent.TimeUnit // For potential shell command timeout
 
 internal class RemoteRootServiceImpl(private val context: Context) : IRemoteRootService.Stub() {
     private val lock = Any()
@@ -516,4 +517,86 @@ internal class RemoteRootServiceImpl(private val context: Context) : IRemoteRoot
     }
 
     override fun calculateMD5(src: String): String = synchronized(lock) { HashUtil.calculateMD5(src) }
+
+    override fun getLatestModificationTimestamp(path: String): Long = synchronized(lock) {
+        if (!File(path).exists()) {
+            return 0L
+        }
+
+        // Attempt 1: Using find command (more efficient if available and works)
+        // BusyBox find typically supports -print0 and xargs -0 for safety with special filenames.
+        // %T@ gives seconds since epoch. %TFT%TH:%TM:%.2S@%t gives a more complex but parsable format if %T@ is not available.
+        // The command aims to find all files (-type f), print their modification timestamps (seconds since epoch),
+        // sort numerically in reverse order, and take the first one (the latest).
+        // Added single quotes around path to handle spaces or special characters.
+        val command = "find '${path.replace("'", "'\\''")}' -type f -exec stat -c %Y {} \\; | sort -nr | head -n1"
+        try {
+            val result = ShellUtils.fastCmd(command)
+            if (result.isNotEmpty()) {
+                val timestamp = result.trim().toLongOrNull()
+                if (timestamp != null) {
+                    return timestamp * 1000 // Convert seconds to milliseconds
+                }
+            }
+        } catch (e: Exception) {
+            // Log the exception if shell command fails (e.g., find not as expected, permission issues though unlikely as root)
+            // System.err.println("Shell command for timestamp failed: " + e.getMessage());
+            // Fall through to manual recursive scan if shell command fails
+        }
+
+        // Attempt 2: Manual recursive scan (fallback if shell command fails or returns nothing)
+        var latestTimestamp = 0L
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Files.walkFileTree(Paths.get(path), object : SimpleFileVisitor<Path>() {
+                    override fun visitFile(file: Path?, attrs: BasicFileAttributes?): FileVisitResult {
+                        if (attrs != null) {
+                            val fileTime = attrs.lastModifiedTime().toMillis()
+                            if (fileTime > latestTimestamp) {
+                                latestTimestamp = fileTime
+                            }
+                        }
+                        return FileVisitResult.CONTINUE
+                    }
+
+                    override fun postVisitDirectory(dir: Path?, exc: IOException?): FileVisitResult {
+                        if (dir != null) {
+                             try {
+                                val dirTime = Files.getLastModifiedTime(dir).toMillis()
+                                if (dirTime > latestTimestamp) {
+                                    latestTimestamp = dirTime
+                                }
+                            } catch (e: IOException) {
+                                // Ignore if can't get dir time for some reason
+                            }
+                        }
+                        if (exc != null) {
+                            // Log or handle exception if needed
+                            return FileVisitResult.TERMINATE
+                        }
+                        return FileVisitResult.CONTINUE
+                    }
+                })
+            } else {
+                // Manual walk for older Android versions
+                val stack = ArrayDeque<File>()
+                stack.addFirst(File(path))
+                while (stack.isNotEmpty()) {
+                    val currentFile = stack.removeFirst()
+                    val fileTime = currentFile.lastModified() // Returns 0L if file not found, but we check existence first
+                    if (fileTime > latestTimestamp) {
+                        latestTimestamp = fileTime
+                    }
+                    if (currentFile.isDirectory) {
+                        currentFile.listFiles()?.forEach { stack.addFirst(it) }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            // Log the exception from manual scan
+            // System.err.println("Manual timestamp scan failed: " + e.getMessage());
+            return 0L // Or throw, depending on desired error handling
+        }
+        return latestTimestamp
+    }
 }

@@ -328,6 +328,9 @@ class RemoteRootService(private val context: Context) {
     suspend fun calculateMD5(src: String): String? =
         runCatching { getService().calculateMD5(src) }.onFailure(onFailure).getOrNull()
 
+    suspend fun getLatestModificationTimestamp(path: String): Long =
+        runCatching { getService().getLatestModificationTimestamp(path) }.onFailure(onFailure).getOrElse { 0L }
+
     suspend fun writeJson(data: Any, dst: String): ShellResult = runCatching {
         var isSuccess: Boolean
         val out = mutableListOf<String>()

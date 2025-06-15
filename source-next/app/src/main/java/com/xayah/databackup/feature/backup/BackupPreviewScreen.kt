@@ -21,24 +21,31 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.feature.BackupApps
+import com.xayah.databackup.feature.backup.apps.AppsViewModel
 import com.xayah.databackup.ui.component.SelectableActionButton
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.navigateSafely
 import com.xayah.databackup.util.popBackStackSafely
 
 @Composable
-fun BackupPreviewScreen(navController: NavHostController) {
+fun BackupPreviewScreen(navController: NavHostController, appsViewModel: AppsViewModel = viewModel()) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     Scaffold(
         modifier = Modifier
@@ -135,6 +142,30 @@ fun BackupPreviewScreen(navController: NavHostController) {
                     subtitle = "No items selected"
                 ) {}
 
+                Spacer(modifier = Modifier.height(16.dp)) // Added spacer for separation
+
+                // Encryption Checkbox and Password Field
+                val encryptBackupState = remember { mutableStateOf(false) }
+                val passwordState = remember { mutableStateOf("") }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = encryptBackupState.value,
+                        onCheckedChange = { encryptBackupState.value = it }
+                    )
+                    Text(text = stringResource(R.string.encrypt_backup))
+                }
+
+                if (encryptBackupState.value) {
+                    OutlinedTextField(
+                        value = passwordState.value,
+                        onValueChange = { passwordState.value = it },
+                        label = { Text(stringResource(R.string.password)) },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(0.dp))
             }
 
@@ -149,7 +180,13 @@ fun BackupPreviewScreen(navController: NavHostController) {
 
                 Button(
                     modifier = Modifier.wrapContentSize(),
-                    onClick = { }
+                    onClick = {
+                        appsViewModel.setEncryptionEnabled(encryptBackupState.value)
+                        if (encryptBackupState.value) {
+                            appsViewModel.setEncryptionPassword(passwordState.value)
+                        }
+                        navController.navigateSafely(BackupApps)
+                    }
                 ) {
                     Text(text = stringResource(R.string.next))
                 }

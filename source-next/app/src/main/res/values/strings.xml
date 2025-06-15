@@ -410,6 +410,8 @@
     <string name="args_current_level">Current level: %1$s</string>
     <string name="last_update">Last update</string>
     <string name="welcome_screen_app_desc">Enjoy hassle-free backups with DataBackup. It’s simple to use and completely FOSS. Keep your data safe without the stress</string>
+    <string name="encrypt_backup">Encrypt backup</string>
+    <string name="password">Password</string>
     <string name="get_started">Get started</string>
     <string name="file">File</string>
     <string name="dismiss">Dismiss</string>

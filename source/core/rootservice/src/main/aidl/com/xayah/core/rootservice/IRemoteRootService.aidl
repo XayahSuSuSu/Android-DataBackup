@@ -47,4 +47,5 @@ interface IRemoteRootService {
     void setOpsMode(int code, int uid, String packageName, int mode);
 
     String calculateMD5(String src);
+    long getLatestModificationTimestamp(String path);
 }

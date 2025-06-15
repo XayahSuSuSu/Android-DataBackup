@@ -130,11 +130,19 @@ class DetailsViewModel @Inject constructor(
 
     fun addLabel(label: String) {
         viewModelScope.launchOnDefault {
-            if (label.trim().isEmpty() || labelsRepo.addLabel(label.trim()) == -1L) {
+            val trimmedLabel = label.trim()
+            if (trimmedLabel.isEmpty()) {
                 withMainContext {
-                    Toast.makeText(context, context.getString(R.string.failed), Toast.LENGTH_SHORT).show()
+                    // TODO: Replace R.string.label_cannot_be_empty with actual resource ID after adding to strings.xml
+                    Toast.makeText(context, "Label cannot be empty.", Toast.LENGTH_SHORT).show()
+                }
+            } else if (labelsRepo.addLabel(trimmedLabel) == -1L) {
+                withMainContext {
+                    // TODO: Replace R.string.add_label_failed with actual resource ID after adding to strings.xml
+                    Toast.makeText(context, "Failed to add label. It might already exist or an error occurred.", Toast.LENGTH_SHORT).show()
                 }
             }
+            // Implicitly, if addLabel doesn't return -1L and label is not empty, it's a success (no message needed or handled elsewhere)
         }
     }
 
