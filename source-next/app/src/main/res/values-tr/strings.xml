@@ -408,4 +408,14 @@
     <string name="insecure_server_connection">Güvensiz sunucu bağlantısına izin ver</string>
     <string name="insecure_server_connection_desc">Kendiniz imzaladığınız sertifikayı kullanırken bu seçeneği açın</string>
     <string name="last_update">Son güncelleme</string>
+    <string name="update_time">Güncelleme zamanı</string>
+    <string name="error">Hata</string>
+    <string name="error_service_desc">Kök hizmete bağlanılamadı, uygulama bu hizmet olmadan düzgün çalışamaz. Uygulamayı yeniden deneyebilir veya yeniden başlatabilirsiniz</string>
+    <string name="retry">Tekrar Dene</string>
+    <string name="search">Ara</string>
+    <string name="user_apps">Kullanıcı uygulamaları</string>
+    <string name="system_apps">Sistem uygulamaları</string>
+    <string name="users">Kullanıcılar</string>
+    <string name="ascending">Artan</string>
+    <string name="descending">Azalan</string>
 </resources>
