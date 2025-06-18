@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connection_failed_unknown_host">Unknown host. Please check the server address.</string>
+    <string name="connection_failed_timeout">Connection timed out. Please check your network and server.</string>
+    <string name="connection_failed_generic">An unexpected error occurred.</string>
+    <string name="connection_test_failed">Connection test failed</string>
+</resources>

@@ -13,6 +13,9 @@ import com.xayah.core.ui.viewmodel.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 data class IndexUiState(
@@ -47,8 +50,13 @@ class IndexViewModel @Inject constructor(
                     emitEffectOnIO(IndexUiEffect.ShowSnackbar(type = SnackbarType.Success, message = cloudRepo.getString(R.string.connection_established)))
                 }.onFailure {
                     emitEffect(IndexUiEffect.DismissSnackbar)
-                    if (it.localizedMessage != null)
-                        emitEffectOnIO(IndexUiEffect.ShowSnackbar(type = SnackbarType.Error, message = it.localizedMessage!!, duration = SnackbarDuration.Long))
+                    val errorMsg = when (it) {
+                        is UnknownHostException -> cloudRepo.getString(R.string.connection_failed_unknown_host)
+                        is SocketTimeoutException, is ConnectException -> cloudRepo.getString(R.string.connection_failed_timeout)
+                        else -> it.localizedMessage ?: cloudRepo.getString(R.string.connection_failed_generic)
+                    }
+                    val displayMessage = "${cloudRepo.getString(R.string.connection_test_failed)}: $errorMsg"
+                    emitEffectOnIO(IndexUiEffect.ShowSnackbar(type = SnackbarType.Error, message = displayMessage, duration = SnackbarDuration.Long))
                 }
                 emitState(state.copy(isProcessing = false))
             }
