@@ -18,12 +18,14 @@ import androidx.core.content.pm.PermissionInfoCompat;
 
 import com.android.server.display.DisplayControlHidden;
 
+import java.io.IOException;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.zip.ZipFile;
 
 import dev.rikka.tools.refine.Refine;
 
@@ -206,12 +208,8 @@ public class HiddenApiUtil {
             for (PackageInfo pkg : packages) {
                 boolean isSystemApp = (pkg.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
                 boolean isUserApp = !isSystemApp;
-                boolean isXposedApp;
-                try {
-                    isXposedApp = pkg.applicationInfo.metaData.containsKey(XPOSED_METADATA);
-                } catch (Exception ignored) {
-                    isXposedApp = false;
-                }
+                boolean isXposedApp = ((pkg.applicationInfo.metaData != null && pkg.applicationInfo.metaData.containsKey(XPOSED_METADATA))
+                        || isModernModules(pkg.applicationInfo));
                 if ((userFlag && isUserApp) || (systemFlag && isSystemApp) || (xposedFlag && isXposedApp)) {
                     StringBuilder out = new StringBuilder();
                     for (String format : formatList) {
@@ -416,5 +414,25 @@ public class HiddenApiUtil {
 
     private static String removeSpaces(String string) {
         return string.replaceAll("\\s", "");
+    }
+
+    /**
+     * @see <a href="https://github.com/LSPosed/LSPosed/blob/df74d83eb03a44cc6ad268841ac2ada28d077c77/daemon/src/main/java/org/lsposed/lspd/service/LSPosedService.java#L69">LSPosedService.java#L69</a>
+     */
+    private static boolean isModernModules(ApplicationInfo info) {
+        String[] apks;
+        if (info.splitSourceDirs != null) {
+            apks = Arrays.copyOf(info.splitSourceDirs, info.splitSourceDirs.length + 1);
+            apks[info.splitSourceDirs.length] = info.sourceDir;
+        } else apks = new String[]{info.sourceDir};
+        for (var apk : apks) {
+            try (var zip = new ZipFile(apk)) {
+                if (zip.getEntry("META-INF/xposed/java_init.list") != null) {
+                    return true;
+                }
+            } catch (IOException ignored) {
+            }
+        }
+        return false;
     }
 }
