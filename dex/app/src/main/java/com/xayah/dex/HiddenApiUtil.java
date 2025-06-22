@@ -133,7 +133,7 @@ public class HiddenApiUtil {
                 for (String packageName : packageNames) {
                     try {
                         PackageInfo packageInfo = pmHidden.getPackageInfoAsUser(packageName, 0, userId);
-                        System.out.println(packageInfo.applicationInfo.loadLabel(pm).toString().replaceAll(" ", ""));
+                        System.out.println(removeSpaces(packageInfo.applicationInfo.loadLabel(pm).toString()));
                     } catch (Exception e) {
                         System.out.println("Failed, skip: " + packageName);
                     }
@@ -155,7 +155,7 @@ public class HiddenApiUtil {
             if (packageInfo != null && packageInfo.applicationInfo != null) {
                 packageInfo.applicationInfo.sourceDir = file;
                 packageInfo.applicationInfo.publicSourceDir = file;
-                System.out.println(packageInfo.applicationInfo.loadLabel(pm).toString().replaceAll(" ", "") + " " + packageInfo.packageName);
+                System.out.println(removeSpaces(packageInfo.applicationInfo.loadLabel(pm).toString()) + " " + packageInfo.packageName);
             } else {
                 throw new PackageManager.NameNotFoundException("Failed to parse package info!");
             }
@@ -216,7 +216,8 @@ public class HiddenApiUtil {
                     StringBuilder out = new StringBuilder();
                     for (String format : formatList) {
                         switch (format) {
-                            case FORMAT_LABEL -> out.append(" ").append(pkg.applicationInfo.loadLabel(pm).toString().replaceAll("\n", "").replaceAll(" ", ""));
+                            case FORMAT_LABEL ->
+                                    out.append(" ").append(removeSpaces(pkg.applicationInfo.loadLabel(pm).toString().replaceAll("\n", "")));
                             case FORMAT_PKG_NAME -> out.append(" ").append(pkg.packageName);
                             case FORMAT_FLAG -> {
                                 if (filterFlags.size() == 2) {
@@ -411,5 +412,9 @@ public class HiddenApiUtil {
             e.printStackTrace(System.out);
             System.exit(1);
         }
+    }
+
+    private static String removeSpaces(String string) {
+        return string.replaceAll("\\s", "");
     }
 }
