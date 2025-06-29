@@ -8,6 +8,7 @@ import androidx.compose.animation.graphics.vector.AnimatedImageVector
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -30,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -41,9 +43,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -58,8 +61,11 @@ import com.xayah.databackup.R
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.ui.component.AppListItem
 import com.xayah.databackup.ui.component.FilterButton
+import com.xayah.databackup.ui.component.SearchTextField
 import com.xayah.databackup.ui.component.filterButtonSecondaryColors
 import com.xayah.databackup.ui.component.horizontalFadingEdges
+import com.xayah.databackup.ui.material3.ModalDropdownMenu
+import com.xayah.databackup.ui.material3.ModalDropdownMenuItem
 import com.xayah.databackup.util.FilterBackupUser
 import com.xayah.databackup.util.FiltersSystemAppsBackup
 import com.xayah.databackup.util.FiltersUserAppsBackup
@@ -85,58 +91,106 @@ fun BackupAppsScreen(
 ) {
     val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val scrollBehaviorOnSearch = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    var nestedScrollConnection by remember { mutableStateOf(scrollBehavior.nestedScrollConnection) }
     val apps by viewModel.apps.collectAsStateWithLifecycle()
+    val selected by viewModel.selected.collectAsStateWithLifecycle()
+    val selectedBytes by viewModel.selectedBytes.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val filterSheetState = rememberModalBottomSheetState()
     var showFilterSheet by remember { mutableStateOf(false) }
+    val searchText by viewModel.searchText.collectAsStateWithLifecycle()
+    var onSearch by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
     val lazyListState = rememberLazyListState()
+    LaunchedEffect(onSearch) {
+        if (onSearch) {
+            focusRequester.requestFocus()
+            nestedScrollConnection = scrollBehaviorOnSearch.nestedScrollConnection
+            scrollBehaviorOnSearch.state.contentOffset = scrollBehavior.state.contentOffset
+        } else {
+            nestedScrollConnection = scrollBehavior.nestedScrollConnection
+            scrollBehavior.state.contentOffset = scrollBehaviorOnSearch.state.contentOffset
+        }
+    }
+
     Scaffold(
         modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .nestedScroll(nestedScrollConnection)
             .fillMaxSize(),
         topBar = {
-            LargeTopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.select_apps),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = "13/79 items selected • 1.6 GB",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStackSafely() }) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_left),
-                            contentDescription = stringResource(R.string.back)
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showFilterSheet = true }) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_funnel),
-                            contentDescription = stringResource(R.string.filters)
-                        )
-                    }
-                    IconButton(onClick = { /* do something */ }) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_search),
-                            contentDescription = stringResource(R.string.search)
-                        )
-                    }
-                },
-                scrollBehavior = scrollBehavior,
-            )
+            AnimatedContent(onSearch) { target ->
+                if (target) {
+                    TopAppBar(
+                        title = {
+                            SearchTextField(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(end = 8.dp)
+                                    .focusRequester(focusRequester),
+                                value = searchText,
+                                onClose = {
+                                    onSearch = false
+                                    viewModel.changeSearchText("")
+                                }
+                            ) { viewModel.changeSearchText(it) }
+                        },
+                        actions = {
+                            IconButton(onClick = { showFilterSheet = true }) {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_funnel),
+                                    contentDescription = stringResource(R.string.filters)
+                                )
+                            }
+                            SelectIconButton(viewModel = viewModel)
+                        },
+                        scrollBehavior = scrollBehaviorOnSearch,
+                    )
+                } else {
+                    LargeTopAppBar(
+                        title = {
+                            Column {
+                                Text(
+                                    text = stringResource(R.string.select_apps),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text = stringResource(R.string.items_selected_and_size, selected, apps.size, selectedBytes),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = { navController.popBackStackSafely() }) {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_left),
+                                    contentDescription = stringResource(R.string.back)
+                                )
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = { onSearch = true }) {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_search),
+                                    contentDescription = stringResource(R.string.search)
+                                )
+                            }
+                            IconButton(onClick = { showFilterSheet = true }) {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_funnel),
+                                    contentDescription = stringResource(R.string.filters)
+                                )
+                            }
+                            SelectIconButton(viewModel = viewModel)
+                        },
+                        scrollBehavior = scrollBehavior,
+                    )
+                }
+            }
         },
     ) { innerPadding ->
         Column(modifier = Modifier) {
@@ -148,10 +202,10 @@ fun BackupAppsScreen(
                         Image(
                             modifier = Modifier.size(300.dp),
                             imageVector = ImageVector.vectorResource(R.drawable.img_empty),
-                            contentDescription = null
+                            contentDescription = stringResource(R.string.it_is_empty)
                         )
                         Text(
-                            text = "List is empty",
+                            text = stringResource(R.string.it_is_empty),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             style = MaterialTheme.typography.labelLarge,
@@ -160,13 +214,6 @@ fun BackupAppsScreen(
                     }
                 } else {
                     LazyColumn(state = lazyListState) {
-                        Snapshot.withoutReadObservation {
-                            lazyListState.requestScrollToItem(
-                                index = lazyListState.firstVisibleItemIndex,
-                                scrollOffset = lazyListState.firstVisibleItemScrollOffset
-                            )
-                        }
-
                         items(items = apps, key = { it.pkgUserKey }) { app ->
                             AppListItem(
                                 modifier = Modifier.animateItem(),
@@ -356,6 +403,162 @@ fun BackupAppsScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun SelectIconButton(viewModel: AppsViewModel) {
+    var selectAllApk by remember { mutableStateOf(true) }
+    var selectAllData by remember { mutableStateOf(true) }
+    var selectAllIntData by remember { mutableStateOf(true) }
+    var selectAllExtData by remember { mutableStateOf(true) }
+    var selectAllObbAndMedia by remember { mutableStateOf(true) }
+
+    val reset = remember {
+        {
+            selectAllApk = true
+            selectAllData = true
+            selectAllIntData = true
+            selectAllExtData = true
+            selectAllObbAndMedia = true
+        }
+    }
+
+    var mainExpanded by remember { mutableStateOf(false) }
+    var customExpanded by remember { mutableStateOf(false) }
+    Box {
+        IconButton(onClick = {
+            mainExpanded = !mainExpanded
+            reset.invoke()
+        }) {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_list_checks),
+                contentDescription = stringResource(R.string.select_all)
+            )
+        }
+        ModalDropdownMenu(
+            expanded = mainExpanded,
+            onDismissRequest = { mainExpanded = false }
+        ) {
+            ModalDropdownMenuItem(
+                text = { Text(if (selectAllApk) stringResource(R.string.select_all_apk) else stringResource(R.string.unselect_all_apk)) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = if (selectAllApk) ImageVector.vectorResource(R.drawable.ic_square_check_big) else ImageVector.vectorResource(R.drawable.ic_square),
+                        contentDescription = if (selectAllApk) stringResource(R.string.select_all_apk) else stringResource(R.string.unselect_all_apk)
+                    )
+                },
+                onClick = {
+                    viewModel.selectAllApk(selectAllApk)
+                    selectAllApk = selectAllApk.not()
+                }
+            )
+            ModalDropdownMenuItem(
+                text = { Text(if (selectAllData) stringResource(R.string.select_all_data) else stringResource(R.string.unselect_all_data)) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = if (selectAllData) ImageVector.vectorResource(R.drawable.ic_square_check_big) else ImageVector.vectorResource(R.drawable.ic_square),
+                        contentDescription = if (selectAllData) stringResource(R.string.select_all_data) else stringResource(R.string.unselect_all_data)
+                    )
+                },
+                onClick = {
+                    viewModel.selectAllData(selectAllData)
+                    selectAllData = selectAllData.not()
+                }
+            )
+            HorizontalDivider()
+            ModalDropdownMenuItem(
+                text = { Text(stringResource(R.string.custom_selection)) },
+                trailingIcon = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_right),
+                        contentDescription = stringResource(R.string.custom_selection)
+                    )
+                },
+                onClick = {
+                    mainExpanded = false
+                    customExpanded = true
+                }
+            )
+        }
+
+        ModalDropdownMenu(
+            expanded = customExpanded,
+            onDismissRequest = { customExpanded = false }
+        ) {
+            ModalDropdownMenuItem(
+                text = { Text(stringResource(R.string.word_return)) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_left),
+                        contentDescription = stringResource(R.string.word_return)
+                    )
+                },
+                onClick = {
+                    mainExpanded = true
+                    customExpanded = false
+                }
+            )
+            HorizontalDivider()
+            ModalDropdownMenuItem(
+                text = { Text(if (selectAllApk) stringResource(R.string.select_all_apk) else stringResource(R.string.unselect_all_apk)) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = if (selectAllApk) ImageVector.vectorResource(R.drawable.ic_square_check_big) else ImageVector.vectorResource(R.drawable.ic_square),
+                        contentDescription = if (selectAllApk) stringResource(R.string.select_all_apk) else stringResource(R.string.unselect_all_apk)
+                    )
+                },
+                onClick = {
+                    viewModel.selectAllApk(selectAllApk)
+                    selectAllApk = selectAllApk.not()
+                }
+            )
+            ModalDropdownMenuItem(
+                text = { Text(if (selectAllIntData) stringResource(R.string.select_all_int_data) else stringResource(R.string.unselect_all_int_data)) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = if (selectAllIntData) ImageVector.vectorResource(R.drawable.ic_square_check_big) else ImageVector.vectorResource(
+                            R.drawable.ic_square
+                        ),
+                        contentDescription = if (selectAllIntData) stringResource(R.string.select_all_int_data) else stringResource(R.string.unselect_all_int_data)
+                    )
+                },
+                onClick = {
+                    viewModel.selectAllIntData(selectAllIntData)
+                    selectAllIntData = selectAllIntData.not()
+                }
+            )
+            ModalDropdownMenuItem(
+                text = { Text(if (selectAllExtData) stringResource(R.string.select_all_ext_data) else stringResource(R.string.unselect_all_ext_data)) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = if (selectAllExtData) ImageVector.vectorResource(R.drawable.ic_square_check_big) else ImageVector.vectorResource(
+                            R.drawable.ic_square
+                        ),
+                        contentDescription = if (selectAllExtData) stringResource(R.string.select_all_ext_data) else stringResource(R.string.unselect_all_ext_data)
+                    )
+                },
+                onClick = {
+                    viewModel.selectAllExtData(selectAllExtData)
+                    selectAllExtData = selectAllExtData.not()
+                }
+            )
+            ModalDropdownMenuItem(
+                text = { Text(if (selectAllObbAndMedia) stringResource(R.string.select_all_obb_and_media) else stringResource(R.string.unselect_all_obb_and_media)) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = if (selectAllObbAndMedia) ImageVector.vectorResource(R.drawable.ic_square_check_big) else ImageVector.vectorResource(
+                            R.drawable.ic_square
+                        ),
+                        contentDescription = if (selectAllObbAndMedia) stringResource(R.string.select_all_obb_and_media) else stringResource(R.string.unselect_all_obb_and_media)
+                    )
+                },
+                onClick = {
+                    viewModel.selectAllObbAndMedia(selectAllObbAndMedia)
+                    selectAllObbAndMedia = selectAllObbAndMedia.not()
+                }
+            )
         }
     }
 }

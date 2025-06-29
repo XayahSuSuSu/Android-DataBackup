@@ -141,7 +141,6 @@
     <string name="permissions">Permissions</string>
     <string name="_default">Défaut</string>
     <string name="task_list">Liste des tâches</string>
-    <string name="installation_time">Temps d\'installation</string>
     <string name="select_target_directory">Sélectionner le dossier ciblé</string>
     <string name="username">Nom d\'utilisateur</string>
     <string name="cloud">Le cloud</string>
@@ -242,7 +241,6 @@
     <string name="pull_down_to_refresh">Tirez vers le bas pour rafraîchir</string>
     <string name="select_all">Tout sélectionner</string>
     <string name="filters">Filtres</string>
-    <string name="sort">Trier</string>
     <string name="args_loading_from_user">Chargement depuis l\'utilisateur %1$s</string>
     <string name="backup_parts">Sauvegarder des parties</string>
     <string name="necessary_preparations">Préparatifs nécessaires</string>

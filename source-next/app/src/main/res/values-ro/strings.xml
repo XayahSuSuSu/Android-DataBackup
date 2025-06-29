@@ -138,7 +138,6 @@
     <string name="edit">Editare</string>
     <string name="cloud">Cloud</string>
     <string name="settings">Setări</string>
-    <string name="installation_time">Timp de instalare</string>
     <string name="data_size">Mărime date</string>
     <string name="not_selected">Neselectat</string>
     <string name="third_party">Terț</string>
@@ -251,7 +250,6 @@
     <string name="pull_down_to_refresh">Trageți în jos pentru a actualiza</string>
     <string name="select_all">Selectați tot</string>
     <string name="filters">Filtre</string>
-    <string name="sort">Sortare</string>
     <string name="args_loading_from_user">Incărcare de la utilizatorul %1$s</string>
     <string name="backup_parts">Părți copie de rezervă</string>
     <string name="necessary_preparations">Pregătiri necesare</string>

@@ -36,4 +36,19 @@ interface AppDao {
 
     @Query("UPDATE apps SET option_apk = :selected, option_internalData = :selected, option_externalData = :selected, option_obbAndMedia = :selected WHERE packageName = :packageName AND userId = :userId")
     suspend fun selectAll(packageName: String, userId: Int, selected: Boolean)
+
+    @Query("UPDATE apps SET option_apk = :selected WHERE (packageName || '-' || userId) in (:keys)")
+    suspend fun selectAllApk(keys: List<String>, selected: Boolean)
+
+    @Query("UPDATE apps SET option_internalData = :selected, option_externalData = :selected, option_obbAndMedia = :selected WHERE (packageName || '-' || userId) in (:keys)")
+    suspend fun selectAllData(keys: List<String>, selected: Boolean)
+
+    @Query("UPDATE apps SET option_internalData = :selected WHERE (packageName || '-' || userId) in (:keys)")
+    suspend fun selectAllIntData(keys: List<String>, selected: Boolean)
+
+    @Query("UPDATE apps SET option_externalData = :selected WHERE (packageName || '-' || userId) in (:keys)")
+    suspend fun selectAllExtData(keys: List<String>, selected: Boolean)
+
+    @Query("UPDATE apps SET option_obbAndMedia = :selected WHERE (packageName || '-' || userId) in (:keys)")
+    suspend fun selectAllObbAndMedia(keys: List<String>, selected: Boolean)
 }

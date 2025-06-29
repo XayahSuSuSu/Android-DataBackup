@@ -2,10 +2,21 @@ package com.xayah.databackup.util
 
 import com.xayah.databackup.database.entity.App
 
-fun Iterable<App>.filter(userId: Int, filterUserApps: Boolean, filterSystemApps: Boolean): List<App> = filter {
-    it.userId == userId
-            && ((filterUserApps && it.isSystemApp.not()) || (filterSystemApps && it.isSystemApp))
+fun Iterable<App>.filter(searchText: String, userId: Int, filterUserApps: Boolean, filterSystemApps: Boolean): List<App> = filter {
+    filterUserId(it, userId)
+            && filterApps(it, filterUserApps, filterSystemApps)
+            && filterSearchText(it, searchText)
 }
+
+private fun filterUserId(app: App, userId: Int) = app.userId == userId
+
+private fun filterApps(app: App, filterUserApps: Boolean, filterSystemApps: Boolean) =
+    ((filterUserApps && app.isSystemApp.not()) || (filterSystemApps && app.isSystemApp))
+
+private fun filterSearchText(app: App, searchText: String) =
+    searchText.isEmpty()
+            || app.info.label.lowercase().contains(searchText.lowercase())
+            || app.packageName.lowercase().contains(searchText.lowercase())
 
 fun Iterable<App>.sortByA2Z(sortSequence: SortsSequence): List<App> =
     when (sortSequence) {
