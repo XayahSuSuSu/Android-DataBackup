@@ -138,7 +138,7 @@
     <string name="set_as_main_account">Встановити як основний обліковий запис</string>
     <string name="please_set_up_backup_dir">Встановіть директорію бекапів</string>
     <string name="compression_type_desc">Впливає на створення та відновлення бекапів. Слід змінювати лише досвідченим користувачам.</string>
-    <string name="settings">Налаштуваннях</string>
+    <string name="settings">Налаштуванні</string>
     <string name="reset_restore_list_desc">Зняти виділення після відновлення</string>
     <string name="app_crashed">Додаток впав</string>
     <string name="backup_dir_as_media_error">Не вдається додати каталог бекапів як носій</string>
