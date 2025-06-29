@@ -15,7 +15,19 @@
     <plurals name="num_hours_ago">
         <item quantity="one"><xliff:g id="count">%d</xliff:g> година</item>
         <item quantity="few"><xliff:g id="count">%d</xliff:g> години</item>
-        <item quantity="many"><xliff:g id="count">%d</xliff:g> годин</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> годин</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> години</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> години</item>
+    </plurals>
+    <plurals name="num_days_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> день</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> дня</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> днів</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> днів</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> елемент</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> елементи</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> елементів</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> елементів</item>
     </plurals>
 </resources>
