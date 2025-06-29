@@ -424,12 +424,12 @@
     <string name="custom_selection">Zaznaczenie niestandardowe</string>
     <string name="select_all_int_data">Zaznacz wszystko: dane wewnętrzne</string>
     <string name="select_all_ext_data">Zaznacz wszystko: dane zewnętrzne</string>
-    <string name="select_all_obb_and_media"><![CDATA[Zaznacz wszystko: OBB i media]]></string>
+    <string name="select_all_obb_and_media">Zaznacz wszystko: OBB i media</string>
     <string name="unselect_all_apk">Odznacz wszystko: APK</string>
     <string name="unselect_all_data">Odznacz wszystko: dane</string>
     <string name="unselect_all_int_data">Odznacz wszystko: dane wewnętrzne</string>
     <string name="unselect_all_ext_data">Odznacz wszystko: dane zewnętrzne</string>
-    <string name="unselect_all_obb_and_media"><![CDATA[Odznacz wszystko: OBB i media]]></string>
+    <string name="unselect_all_obb_and_media">Odznacz wszystko: OBB i media</string>
     <string name="expand">Rozwiń</string>
     <string name="collapsed">Zwinięte</string>
     <string name="internal_data">Dane wewnętrzne</string>
