@@ -20,7 +20,7 @@
     </plurals>
     <plurals name="num_days_ago">
         <item quantity="one"><xliff:g id="count">%d</xliff:g> день</item>
-        <item quantity="few"><xliff:g id="count">%d</xliff:g> дня</item>
+        <item quantity="few"><xliff:g id="count">%d</xliff:g> дні</item>
         <item quantity="many"><xliff:g id="count">%d</xliff:g> днів</item>
         <item quantity="other"><xliff:g id="count">%d</xliff:g> днів</item>
     </plurals>
