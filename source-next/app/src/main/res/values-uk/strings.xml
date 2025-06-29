@@ -138,7 +138,7 @@
     <string name="set_as_main_account">Встановити як основний обліковий запис</string>
     <string name="please_set_up_backup_dir">Встановіть директорію бекапів</string>
     <string name="compression_type_desc">Впливає на створення та відновлення бекапів. Слід змінювати лише досвідченим користувачам.</string>
-    <string name="settings">Налаштування</string>
+    <string name="settings">Налаштуваннях</string>
     <string name="reset_restore_list_desc">Зняти виділення після відновлення</string>
     <string name="app_crashed">Додаток впав</string>
     <string name="backup_dir_as_media_error">Не вдається додати каталог бекапів як носій</string>
@@ -335,7 +335,7 @@
     <string name="changelog">Перелік змін</string>
     <string name="args_update_from">Ви можете оновити версію %1$s до версії %2$s</string>
     <string name="args_files_backed_up">Створено бекап %1$s файлів</string>
-    <string name="backed_up_files">Бекап файлів</string>
+    <string name="backed_up_files">Бекап на файлів</string>
     <string name="confirm_delete">Будуть видалені всі вибрані файли</string>
     <string name="third_party">Користувацькі</string>
     <string name="monet_desc">Створити кольори на основі шпалер</string>
@@ -418,4 +418,21 @@
     <string name="user_apps">Користувацькі програми</string>
     <string name="update_time">Час оновлення</string>
     <string name="system_apps">Системні програми</string>
+    <string name="items_selected_and_size">%1$s/%2$s вибрані елементи • %3$s</string>
+    <string name="select_all_apk">Вибрати все: APK</string>
+    <string name="select_all_data">Вибрати все: Дані</string>
+    <string name="custom_selection">Вибір на замовлення</string>
+    <string name="select_all_int_data">Вибрати все: Міжнародні дані</string>
+    <string name="select_all_ext_data">Вибрати все: Зовнішні дані</string>
+    <string name="select_all_obb_and_media"><![CDATA[Select all: OBB & Media]]></string>
+    <string name="unselect_all_apk">Зняти вибір усіх: APK</string>
+    <string name="unselect_all_data">Зняти вибір: Дані</string>
+    <string name="unselect_all_int_data">Зняти вибір: Міжнародні дані</string>
+    <string name="unselect_all_ext_data">Зняти вибір: Зовнішні дані</string>
+    <string name="unselect_all_obb_and_media"><![CDATA[Unselect all: OBB & Media]]></string>
+    <string name="expand">Розгорнути</string>
+    <string name="collapsed">Згорнуто</string>
+    <string name="internal_data">Міжнародні дані</string>
+    <string name="external_data">Зовнішні дані</string>
+    <string name="close">Закрити</string>
 </resources>
