@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="storage">Сховище</string>
+    <string name="storage">Пам\'ять</string>
     <string name="save">Зберегти</string>
     <string name="restoring">Відновлення</string>
     <string name="both">Обидва</string>
@@ -138,7 +138,7 @@
     <string name="set_as_main_account">Встановити як основний обліковий запис</string>
     <string name="please_set_up_backup_dir">Встановіть директорію бекапів</string>
     <string name="compression_type_desc">Впливає на створення та відновлення бекапів. Слід змінювати лише досвідченим користувачам.</string>
-    <string name="settings">Налаштуванні</string>
+    <string name="settings">Налаштування</string>
     <string name="reset_restore_list_desc">Зняти виділення після відновлення</string>
     <string name="app_crashed">Додаток впав</string>
     <string name="backup_dir_as_media_error">Не вдається додати каталог бекапів як носій</string>
@@ -324,10 +324,10 @@
     <string name="kill_app_options">Варіанти зупинки додатку</string>
     <string name="kill_app_options_desc">Дії перед створенням бекапів</string>
     <string name="no_root_directory">Будь ласка, не обирайте корінь директорії</string>
-    <string name="restore_user_desc">Якого користувача ви хочете відновити?</string>
+    <string name="restore_user_desc">Для якого користувача ви хочете відновити дані?</string>
     <string name="check_keystore">Відмітити keystore</string>
     <string name="args_backup">Бекап %1$s</string>
-    <string name="setup">Налаштування</string>
+    <string name="setup">Встановлення</string>
     <string name="finish">Готово</string>
     <string name="setup_backup_dir_desc">Якщо у вас є існуючий каталог, вам потрібно буде вибрати його, щоб відобразилися бекапи всередині.</string>
     <string name="language">Мова</string>
