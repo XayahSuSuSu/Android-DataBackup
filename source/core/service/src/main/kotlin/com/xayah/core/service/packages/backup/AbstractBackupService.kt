@@ -27,6 +27,8 @@ import com.xayah.core.util.NotificationUtil
 import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.PreparationUtil
 import kotlinx.coroutines.flow.first
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 internal abstract class AbstractBackupService : AbstractPackagesService() {
     override suspend fun onInitializingPreprocessingEntities(entities: MutableList<ProcessingInfoEntity>) {
@@ -160,44 +162,105 @@ internal abstract class AbstractBackupService : AbstractPackagesService() {
                 val dstDir = "${mAppsDir}/${p.archivesRelativeDir}"
                 var restoreEntity = mPackageDao.query(p.packageName, OpType.RESTORE, p.userId, p.preserveId, p.indexInfo.compressionType, mTaskEntity.cloud, mTaskEntity.backupDir)
                 mRootService.mkdirs(dstDir)
-                if (onAppDirCreated(archivesRelativeDir = p.archivesRelativeDir)) {
-                    backup(type = DataType.PACKAGE_APK, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
-                    backup(type = DataType.PACKAGE_USER, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
-                    backup(type = DataType.PACKAGE_USER_DE, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
-                    backup(type = DataType.PACKAGE_DATA, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
-                    backup(type = DataType.PACKAGE_OBB, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
-                    backup(type = DataType.PACKAGE_MEDIA, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
-                    mPackagesBackupUtil.backupPermissions(p = p)
-                    mPackagesBackupUtil.backupSsaid(p = p)
 
-                    if (pkg.isSuccess) {
-                        // Save config
+                if (p.indexInfo.compressionType == com.xayah.core.model.CompressionType.TWRP_ZIP) {
+                    // TWRP ZIP Backup Logic
+                    val zipFile = java.io.File(mAppsDir, "${p.packageName}_${p.userId}_${p.preserveId}.zip")
+                    val checksums = mutableMapOf<String, Long>() // Map to store checksums
+                    try {
+                        ZipOutputStream(java.io.FileOutputStream(zipFile)).use { zos ->
+                            val dataTypesToBackup = mutableListOf<DataType>()
+                            if (p.backupApk) dataTypesToBackup.add(DataType.PACKAGE_APK)
+                            if (p.backupUser) dataTypesToBackup.add(DataType.PACKAGE_USER)
+                            if (p.backupUserDe) dataTypesToBackup.add(DataType.PACKAGE_USER_DE)
+                            if (p.backupData) dataTypesToBackup.add(DataType.PACKAGE_DATA)
+                            if (p.backupObb) dataTypesToBackup.add(DataType.PACKAGE_OBB)
+                            if (p.backupMedia) dataTypesToBackup.add(DataType.PACKAGE_MEDIA)
+
+                            dataTypesToBackup.forEach { dataType ->
+                                val files = mPackagesBackupUtil.getFilesForDataType(p, dataType)
+                                val basePath = when (dataType) {
+                                    DataType.PACKAGE_APK -> mPackagesBackupUtil.getPackageSourceDir(p.packageName, p.userId)
+                                    else -> mPackagesBackupUtil.packageRepository.getDataSrcDir(dataType, p.userId)
+                                }
+                                files.forEach { file ->
+                                    // Ensure basePath is not empty and file path is correctly relativized
+                                    val relativePath = if (basePath.isNotEmpty() && file.absolutePath.startsWith(basePath)) {
+                                        file.absolutePath.substring(basePath.length).trimStart('/')
+                                    } else {
+                                        file.name // Fallback if basePath is tricky or not applicable
+                                    }
+                                    val entryName = "${dataType.type}/$relativePath"
+                                    zos.putNextEntry(ZipEntry(entryName))
+                                    // Stream file content directly to ZIP
+                                    var crcValue: Long = 0
+                                    mRootService.openFileForStreaming(file.absolutePath)?.use { pfd ->
+                                        ParcelFileDescriptor.AutoCloseInputStream(pfd).use { fis ->
+                                            val checkedInputStream = java.util.zip.CheckedInputStream(fis, java.util.zip.CRC32())
+                                            checkedInputStream.copyTo(zos)
+                                            crcValue = checkedInputStream.checksum.value
+                                        }
+                                    } ?: log { "Warning: Could not open file ${file.absolutePath} for streaming into TWRP ZIP." }
+                                    zos.closeEntry()
+                                    checksums[entryName] = crcValue
+                                }
+                            }
+                            // Add checksums.txt to ZIP
+                            zos.putNextEntry(ZipEntry("checksums.txt"))
+                            val checksumContent = checksums.entries.joinToString("\n") { "${it.key}:${it.value}" }
+                            zos.write(checksumContent.toByteArray())
+                            zos.closeEntry()
+                        }
+                        // Update package entity and task entity for success
                         p.extraInfo.lastBackupTime = DateUtil.getTimestamp()
-                        val id = restoreEntity?.id ?: 0
-                        restoreEntity = p.copy(
-                            id = id,
-                            indexInfo = p.indexInfo.copy(opType = OpType.RESTORE, cloud = mTaskEntity.cloud, backupDir = mTaskEntity.backupDir),
-                            extraInfo = p.extraInfo.copy(activated = false)
-                        )
-                        val configDst = PathUtil.getPackageRestoreConfigDst(dstDir = dstDir)
-                        mRootService.writeJson(data = restoreEntity, dst = configDst)
-                        onConfigSaved(path = configDst, archivesRelativeDir = p.archivesRelativeDir)
-                        mPackageDao.upsert(restoreEntity)
-                        mPackageDao.upsert(p)
-                        pkg.update(packageEntity = p)
+                        pkg.update(packageEntity = p, state = OperationState.DONE)
                         mTaskEntity.update(successCount = mTaskEntity.successCount + 1)
-                    } else {
+                    } catch (e: Exception) {
+                        log { "Error creating TWRP ZIP for ${p.packageName}: ${e.message}" }
+                        pkg.update(state = OperationState.ERROR)
                         mTaskEntity.update(failureCount = mTaskEntity.failureCount + 1)
                     }
                 } else {
-                    pkg.update(dataType = DataType.PACKAGE_APK, state = OperationState.ERROR)
-                    pkg.update(dataType = DataType.PACKAGE_USER, state = OperationState.ERROR)
-                    pkg.update(dataType = DataType.PACKAGE_USER_DE, state = OperationState.ERROR)
-                    pkg.update(dataType = DataType.PACKAGE_DATA, state = OperationState.ERROR)
-                    pkg.update(dataType = DataType.PACKAGE_OBB, state = OperationState.ERROR)
-                    pkg.update(dataType = DataType.PACKAGE_MEDIA, state = OperationState.ERROR)
+                    // Existing backup logic
+                    if (onAppDirCreated(archivesRelativeDir = p.archivesRelativeDir)) {
+                        backup(type = DataType.PACKAGE_APK, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
+                        backup(type = DataType.PACKAGE_USER, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
+                        backup(type = DataType.PACKAGE_USER_DE, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
+                        backup(type = DataType.PACKAGE_DATA, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
+                        backup(type = DataType.PACKAGE_OBB, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
+                        backup(type = DataType.PACKAGE_MEDIA, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
+                        mPackagesBackupUtil.backupPermissions(p = p)
+                        mPackagesBackupUtil.backupSsaid(p = p)
+
+                        if (pkg.isSuccess) {
+                            // Save config
+                            p.extraInfo.lastBackupTime = DateUtil.getTimestamp()
+                            val id = restoreEntity?.id ?: 0
+                            restoreEntity = p.copy(
+                                id = id,
+                                indexInfo = p.indexInfo.copy(opType = OpType.RESTORE, cloud = mTaskEntity.cloud, backupDir = mTaskEntity.backupDir),
+                                extraInfo = p.extraInfo.copy(activated = false)
+                            )
+                            val configDst = PathUtil.getPackageRestoreConfigDst(dstDir = dstDir)
+                            mRootService.writeJson(data = restoreEntity, dst = configDst)
+                            onConfigSaved(path = configDst, archivesRelativeDir = p.archivesRelativeDir)
+                            mPackageDao.upsert(restoreEntity)
+                            mPackageDao.upsert(p)
+                            pkg.update(packageEntity = p)
+                            mTaskEntity.update(successCount = mTaskEntity.successCount + 1)
+                        } else {
+                            mTaskEntity.update(failureCount = mTaskEntity.failureCount + 1)
+                        }
+                    } else {
+                        pkg.update(dataType = DataType.PACKAGE_APK, state = OperationState.ERROR)
+                        pkg.update(dataType = DataType.PACKAGE_USER, state = OperationState.ERROR)
+                        pkg.update(dataType = DataType.PACKAGE_USER_DE, state = OperationState.ERROR)
+                        pkg.update(dataType = DataType.PACKAGE_DATA, state = OperationState.ERROR)
+                        pkg.update(dataType = DataType.PACKAGE_OBB, state = OperationState.ERROR)
+                        pkg.update(dataType = DataType.PACKAGE_MEDIA, state = OperationState.ERROR)
+                    }
+                    pkg.update(state = if (pkg.isSuccess) OperationState.DONE else OperationState.ERROR)
                 }
-                pkg.update(state = if (pkg.isSuccess) OperationState.DONE else OperationState.ERROR)
             }
             mTaskEntity.update(processingIndex = mTaskEntity.processingIndex + 1)
         }

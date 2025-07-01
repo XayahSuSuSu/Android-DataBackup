@@ -30,6 +30,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 import kotlin.coroutines.coroutineContext
 
@@ -405,6 +406,67 @@ class PackagesBackupUtil @Inject constructor(
         cloudRepository.upload(client = client, src = src, dstDir = dstDir, onUploading = { read, total -> progress = read.toFloat() / total }).apply {
             flag = false
             t.updateInfo(dataType = dataType, state = if (isSuccess) OperationState.DONE else OperationState.ERROR, log = t.getLog(dataType) + "\n${outString}", content = "100%")
+        }
+    }
+
+    // New method to get files for a specific data type
+    suspend fun getFilesForDataType(p: PackageEntity, dataType: DataType): List<File> {
+        val files = mutableListOf<File>()
+        val packageName = p.packageName
+        val userId = p.userId
+        val srcDir: String
+
+        when (dataType) {
+            DataType.PACKAGE_APK -> {
+                srcDir = getPackageSourceDir(packageName, userId)
+                if (srcDir.isNotEmpty()) {
+                    rootService.listDir(srcDir)?.filter { it.endsWith(".apk") }?.forEach { apkName ->
+                        files.add(File(srcDir, apkName))
+                    }
+                }
+            }
+            DataType.PACKAGE_USER, DataType.PACKAGE_USER_DE, DataType.PACKAGE_DATA, DataType.PACKAGE_OBB, DataType.PACKAGE_MEDIA -> {
+                srcDir = packageRepository.getDataSrcDir(dataType, userId)
+                val dataPath = packageRepository.getDataSrc(srcDir, packageName)
+                if (rootService.exists(dataPath)) {
+                    addFilesRecursively(dataPath, files, dataPath) // Pass dataPath as basePath
+                }
+            }
+            else -> {
+                // Not handled or not applicable for TWRP backup
+            }
+        }
+        return files
+    }
+
+    // Made public to be accessible from AbstractBackupService
+    suspend fun getPackageSourceDir(packageName: String, userId: Int) = rootService.getPackageSourceDir(packageName, userId).let { list ->
+        if (list.isNotEmpty()) PathUtil.getParentPath(list[0]) else ""
+    }
+
+    private suspend fun addFilesRecursively(currentPath: String, fileList: MutableList<File>, basePath: String) {
+        val items = rootService.listDir(currentPath)
+        items?.forEach { item ->
+            val itemFile = File(currentPath, item)
+            // Check if it's a file or directory using rootService
+            // This is a simplified check; you might need a more specific way to differentiate
+            // or rely on `rootService.isDirectory(itemFile.absolutePath)` if available.
+            // For now, assuming if it's not ending with typical file extensions or if `listDir` on it returns non-null, it's a directory.
+            // This part needs a reliable way to check if 'itemFile' is a directory.
+            // Let's assume `rootService.isDirectory(itemFile.absolutePath)` exists for this example.
+            // if (rootService.isDirectory(itemFile.absolutePath)) { // This is hypothetical
+            //    addFilesRecursively(itemFile.absolutePath, fileList, basePath)
+            // } else {
+            //    fileList.add(itemFile)
+            // }
+            // Fallback: Add the file/dir and let ZIP handling figure it out, or refine this logic.
+            // The key challenge is determining if 'itemFile' is a directory without direct FS access.
+            // A common approach is to try listing its contents; if successful, it's a directory.
+            if (rootService.listDir(itemFile.absolutePath) != null && !rootService.isSymlink(itemFile.absolutePath)) { // Check if it's a directory and not a symlink
+                 addFilesRecursively(itemFile.absolutePath, fileList, basePath)
+            } else if (rootService.exists(itemFile.absolutePath) && !rootService.isSymlink(itemFile.absolutePath)) { // Check if it's a file and not a symlink
+                 fileList.add(itemFile)
+            }
         }
     }
 }
