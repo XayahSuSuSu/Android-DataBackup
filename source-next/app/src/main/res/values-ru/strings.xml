@@ -6,7 +6,7 @@
     <string name="restoring">Восстановление</string>
     <string name="select_target_directory">Выбор целевой папки</string>
     <string name="prompt">Уведомление</string>
-    <string name="both">Все</string>
+    <string name="both">Оба</string>
     <string name="password">Пароль</string>
     <string name="user">Пользователь</string>
     <string name="activities">Действия</string>
@@ -89,7 +89,7 @@
     <string name="architecture">Архитектура</string>
     <string name="restore_list">Список восстановления</string>
     <string name="grant_root_access">Предоставление root</string>
-    <string name="update_records">Список изменений</string>
+    <string name="update_records">Обновление записей</string>
     <string name="backup_completed">Бекап завершен</string>
     <string name="backup_dir">Папка бекапов</string>
     <string name="backing_up">Создание бекапа…</string>
@@ -418,4 +418,21 @@
     <string name="error_service_desc">Не удалось подключить службу root, без нее приложение не может работать должным образом. Вы можете повторить попытку или перезапустить приложение</string>
     <string name="user_apps">Приложения для пользователей</string>
     <string name="descending">Исходящий</string>
+    <string name="items_selected_and_size">%1$s/%2$s выбранных элементов - %3$s</string>
+    <string name="select_all_apk">Выбрать все: APK</string>
+    <string name="select_all_data">Выбрать все: Данные</string>
+    <string name="custom_selection">Пользовательский выбор</string>
+    <string name="select_all_int_data">Выбрать все: Int. Данные</string>
+    <string name="select_all_ext_data">Выбрать все: Расш. данные</string>
+    <string name="select_all_obb_and_media"><![CDATA[Select all: OBB & Media]]></string>
+    <string name="unselect_all_apk">Снять выделение со всех: APK</string>
+    <string name="unselect_all_data">Снять выделение со всех: Данных</string>
+    <string name="unselect_all_int_data">Снять выделение со всех: Int. Данных</string>
+    <string name="unselect_all_ext_data">Снять выделение со всех: Доп. данные</string>
+    <string name="unselect_all_obb_and_media"><![CDATA[Unselect all: OBB & Media]]></string>
+    <string name="expand">Развернуть</string>
+    <string name="collapsed">Разрушенный</string>
+    <string name="internal_data">Инт. Данные</string>
+    <string name="external_data">Доп. данные</string>
+    <string name="close">Закрыть</string>
 </resources>
