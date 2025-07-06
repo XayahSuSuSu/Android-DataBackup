@@ -277,24 +277,26 @@ public class HiddenApiUtil {
             if (ops != null) {
                 opsMap = ops.getOps().stream().collect(Collectors.toMap(AppOpsManagerHidden.OpEntry::getOp, AppOpsManagerHidden.OpEntry::getMode));
             }
-            for (int i = 0; i < requestedPermissions.length; i++) {
-                try {
-                    PermissionInfo permissionInfo = packageManager.getPermissionInfo(requestedPermissions[i], 0);
-                    int protection = PermissionInfoCompat.getProtection(permissionInfo);
-                    int protectionFlags = PermissionInfoCompat.getProtectionFlags(permissionInfo);
-                    boolean isGranted = (requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0;
-                    int op = AppOpsManagerHidden.permissionToOpCode(requestedPermissions[i]);
-                    int mode = AppOpsManagerHidden.MODE_IGNORED;
-                    if (opsMap != null) {
-                        mode = opsMap.getOrDefault(op, AppOpsManagerHidden.MODE_IGNORED);
+            if (requestedPermissions != null && requestedPermissionsFlags != null) {
+                for (int i = 0; i < requestedPermissions.length; i++) {
+                    try {
+                        PermissionInfo permissionInfo = packageManager.getPermissionInfo(requestedPermissions[i], 0);
+                        int protection = PermissionInfoCompat.getProtection(permissionInfo);
+                        int protectionFlags = PermissionInfoCompat.getProtectionFlags(permissionInfo);
+                        boolean isGranted = (requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0;
+                        int op = AppOpsManagerHidden.permissionToOpCode(requestedPermissions[i]);
+                        int mode = AppOpsManagerHidden.MODE_IGNORED;
+                        if (opsMap != null) {
+                            mode = opsMap.getOrDefault(op, AppOpsManagerHidden.MODE_IGNORED);
+                        }
+                        if ((op != AppOpsManagerHidden.OP_NONE)
+                                || (protection == PermissionInfo.PROTECTION_DANGEROUS || (protectionFlags & PermissionInfo.PROTECTION_FLAG_DEVELOPMENT) != 0)) {
+                            System.out.println(requestedPermissions[i] + " " + isGranted + " " + op + " " + mode);
+                        }
+                    } catch (PackageManager.NameNotFoundException ignored) {
+                    } catch (Exception e) {
+                        e.printStackTrace(System.out);
                     }
-                    if ((op != AppOpsManagerHidden.OP_NONE)
-                            || (protection == PermissionInfo.PROTECTION_DANGEROUS || (protectionFlags & PermissionInfo.PROTECTION_FLAG_DEVELOPMENT) != 0)) {
-                        System.out.println(requestedPermissions[i] + " " + isGranted + " " + op + " " + mode);
-                    }
-                } catch (PackageManager.NameNotFoundException ignored) {
-                } catch (Exception e) {
-                    e.printStackTrace(System.out);
                 }
             }
             System.exit(0);
