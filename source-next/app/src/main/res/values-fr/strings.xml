@@ -418,4 +418,21 @@
     <string name="sorts">Classés</string>
     <string name="search">Rechercher</string>
     <string name="system_apps">Application système</string>
+    <string name="items_selected_and_size">%1$s/%2$s éléments sélectionnés • %3$s</string>
+    <string name="select_all_apk">Tout sélectionner : APK</string>
+    <string name="select_all_data">Tout sélectionner : Données</string>
+    <string name="custom_selection">Sélection personnalisée</string>
+    <string name="select_all_int_data">Tout sélectionner : Données internes</string>
+    <string name="select_all_ext_data">Tout sélectionner : Données externes</string>
+    <string name="select_all_obb_and_media"><![CDATA[Select all: OBB & Media]]></string>
+    <string name="unselect_all_apk">Tout déselectionner : APK</string>
+    <string name="unselect_all_data">Tout déselectionner : Données</string>
+    <string name="unselect_all_int_data">Tout déselectionner : Données internes</string>
+    <string name="unselect_all_ext_data">Tout déselectionner : Données externes</string>
+    <string name="unselect_all_obb_and_media"><![CDATA[Unselect all: OBB & Media]]></string>
+    <string name="expand">Déplier</string>
+    <string name="collapsed">Plié</string>
+    <string name="internal_data">Données internes</string>
+    <string name="external_data">Données externes</string>
+    <string name="close">Fermer</string>
 </resources>
