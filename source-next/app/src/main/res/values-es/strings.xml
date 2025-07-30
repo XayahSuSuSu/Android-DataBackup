@@ -409,4 +409,5 @@
     <string name="root_denied_msg">Por favor, compruebe su root manager y reinicie la aplicación</string>
     <string name="dismiss">Rechazar</string>
     <string name="update_time">Duración de la actualización</string>
+    <string name="error_service_desc">Fallo al conectar a la raíz del servicio, la aplicación no puede ejecutarse correctamente sin él. Puedes volver a intentarlo o reiniciar la aplicación</string>
 </resources>
