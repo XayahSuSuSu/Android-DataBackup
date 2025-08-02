@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.map
 
 // -----------------------------------------Keys-----------------------------------------
 val KeyBackupSavePath = stringPreferencesKey("backup_save_path")
+val KeyCompressionType = stringPreferencesKey("compression_type") // Added key
 val KeyAppVersionName = stringPreferencesKey("app_version_name")
 val KeyCloudActivatedAccountName = stringPreferencesKey("cloud_activated_account_name")
 val KeyLoadedIconMD5 = stringPreferencesKey("loaded_icon_md5")

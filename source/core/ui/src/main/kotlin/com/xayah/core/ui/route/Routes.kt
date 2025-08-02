@@ -15,6 +15,7 @@ sealed class MainRoutes(val route: String) {
         const val ARG_TARGET = "target"
         const val ARG_OP_TYPE = "opType"
         const val ARG_ID = "id"
+        const val ARG_STORAGE_MODE = "storageMode" // For VerifyBackup
     }
 
     data object Dashboard : MainRoutes(route = "main_dashboard")
@@ -82,5 +83,9 @@ sealed class MainRoutes(val route: String) {
     data object MediumRestoreProcessingSetup : MainRoutes(route = "main_medium_restore_processing_setup")
     data object MediumRestoreProcessingGraph : MainRoutes(route = "main_medium_restore_processing_graph/{$ARG_ACCOUNT_NAME}/{$ARG_ACCOUNT_REMOTE}") {
         fun getRoute(cloudName: String = encodedURLWithSpace, backupDir: String = encodedURLWithSpace) = "main_medium_restore_processing_graph/${cloudName}/${backupDir}"
+    }
+
+    data object VerifyBackup : MainRoutes(route = "main_verify_backup/{$ARG_STORAGE_MODE}/{$ARG_ACCOUNT_NAME}/{$ARG_ACCOUNT_REMOTE}") { // New Route
+        fun getRoute(storageMode: String, cloudName: String, backupDir: String) = "main_verify_backup/${storageMode}/${cloudName}/${backupDir}"
     }
 }
