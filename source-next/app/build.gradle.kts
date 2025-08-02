@@ -106,6 +106,7 @@ kotlin {
         freeCompilerArgs = listOf(
             "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
             "-opt-in=androidx.compose.animation.graphics.ExperimentalAnimationGraphicsApi",
+            "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi",
         )
     }
 }

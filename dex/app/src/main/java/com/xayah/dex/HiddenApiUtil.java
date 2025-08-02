@@ -18,12 +18,14 @@ import androidx.core.content.pm.PermissionInfoCompat;
 
 import com.android.server.display.DisplayControlHidden;
 
+import java.io.IOException;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.zip.ZipFile;
 
 import dev.rikka.tools.refine.Refine;
 
@@ -133,7 +135,7 @@ public class HiddenApiUtil {
                 for (String packageName : packageNames) {
                     try {
                         PackageInfo packageInfo = pmHidden.getPackageInfoAsUser(packageName, 0, userId);
-                        System.out.println(packageInfo.applicationInfo.loadLabel(pm).toString().replaceAll(" ", ""));
+                        System.out.println(removeSpaces(packageInfo.applicationInfo.loadLabel(pm).toString()));
                     } catch (Exception e) {
                         System.out.println("Failed, skip: " + packageName);
                     }
@@ -155,7 +157,7 @@ public class HiddenApiUtil {
             if (packageInfo != null && packageInfo.applicationInfo != null) {
                 packageInfo.applicationInfo.sourceDir = file;
                 packageInfo.applicationInfo.publicSourceDir = file;
-                System.out.println(packageInfo.applicationInfo.loadLabel(pm).toString().replaceAll(" ", "") + " " + packageInfo.packageName);
+                System.out.println(removeSpaces(packageInfo.applicationInfo.loadLabel(pm).toString()) + " " + packageInfo.packageName);
             } else {
                 throw new PackageManager.NameNotFoundException("Failed to parse package info!");
             }
@@ -206,17 +208,14 @@ public class HiddenApiUtil {
             for (PackageInfo pkg : packages) {
                 boolean isSystemApp = (pkg.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
                 boolean isUserApp = !isSystemApp;
-                boolean isXposedApp;
-                try {
-                    isXposedApp = pkg.applicationInfo.metaData.containsKey(XPOSED_METADATA);
-                } catch (Exception ignored) {
-                    isXposedApp = false;
-                }
+                boolean isXposedApp = ((pkg.applicationInfo.metaData != null && pkg.applicationInfo.metaData.containsKey(XPOSED_METADATA))
+                        || isModernModules(pkg.applicationInfo));
                 if ((userFlag && isUserApp) || (systemFlag && isSystemApp) || (xposedFlag && isXposedApp)) {
                     StringBuilder out = new StringBuilder();
                     for (String format : formatList) {
                         switch (format) {
-                            case FORMAT_LABEL -> out.append(" ").append(pkg.applicationInfo.loadLabel(pm).toString().replaceAll("\n", "").replaceAll(" ", ""));
+                            case FORMAT_LABEL ->
+                                    out.append(" ").append(removeSpaces(pkg.applicationInfo.loadLabel(pm).toString().replaceAll("\n", "")));
                             case FORMAT_PKG_NAME -> out.append(" ").append(pkg.packageName);
                             case FORMAT_FLAG -> {
                                 if (filterFlags.size() == 2) {
@@ -278,24 +277,26 @@ public class HiddenApiUtil {
             if (ops != null) {
                 opsMap = ops.getOps().stream().collect(Collectors.toMap(AppOpsManagerHidden.OpEntry::getOp, AppOpsManagerHidden.OpEntry::getMode));
             }
-            for (int i = 0; i < requestedPermissions.length; i++) {
-                try {
-                    PermissionInfo permissionInfo = packageManager.getPermissionInfo(requestedPermissions[i], 0);
-                    int protection = PermissionInfoCompat.getProtection(permissionInfo);
-                    int protectionFlags = PermissionInfoCompat.getProtectionFlags(permissionInfo);
-                    boolean isGranted = (requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0;
-                    int op = AppOpsManagerHidden.permissionToOpCode(requestedPermissions[i]);
-                    int mode = AppOpsManagerHidden.MODE_IGNORED;
-                    if (opsMap != null) {
-                        mode = opsMap.getOrDefault(op, AppOpsManagerHidden.MODE_IGNORED);
+            if (requestedPermissions != null && requestedPermissionsFlags != null) {
+                for (int i = 0; i < requestedPermissions.length; i++) {
+                    try {
+                        PermissionInfo permissionInfo = packageManager.getPermissionInfo(requestedPermissions[i], 0);
+                        int protection = PermissionInfoCompat.getProtection(permissionInfo);
+                        int protectionFlags = PermissionInfoCompat.getProtectionFlags(permissionInfo);
+                        boolean isGranted = (requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0;
+                        int op = AppOpsManagerHidden.permissionToOpCode(requestedPermissions[i]);
+                        int mode = AppOpsManagerHidden.MODE_IGNORED;
+                        if (opsMap != null) {
+                            mode = opsMap.getOrDefault(op, AppOpsManagerHidden.MODE_IGNORED);
+                        }
+                        if ((op != AppOpsManagerHidden.OP_NONE)
+                                || (protection == PermissionInfo.PROTECTION_DANGEROUS || (protectionFlags & PermissionInfo.PROTECTION_FLAG_DEVELOPMENT) != 0)) {
+                            System.out.println(requestedPermissions[i] + " " + isGranted + " " + op + " " + mode);
+                        }
+                    } catch (PackageManager.NameNotFoundException ignored) {
+                    } catch (Exception e) {
+                        e.printStackTrace(System.out);
                     }
-                    if ((op != AppOpsManagerHidden.OP_NONE)
-                            || (protection == PermissionInfo.PROTECTION_DANGEROUS || (protectionFlags & PermissionInfo.PROTECTION_FLAG_DEVELOPMENT) != 0)) {
-                        System.out.println(requestedPermissions[i] + " " + isGranted + " " + op + " " + mode);
-                    }
-                } catch (PackageManager.NameNotFoundException ignored) {
-                } catch (Exception e) {
-                    e.printStackTrace(System.out);
                 }
             }
             System.exit(0);
@@ -411,5 +412,29 @@ public class HiddenApiUtil {
             e.printStackTrace(System.out);
             System.exit(1);
         }
+    }
+
+    private static String removeSpaces(String string) {
+        return string.replaceAll("\\s", "");
+    }
+
+    /**
+     * @see <a href="https://github.com/LSPosed/LSPosed/blob/df74d83eb03a44cc6ad268841ac2ada28d077c77/daemon/src/main/java/org/lsposed/lspd/service/LSPosedService.java#L69">LSPosedService.java#L69</a>
+     */
+    private static boolean isModernModules(ApplicationInfo info) {
+        String[] apks;
+        if (info.splitSourceDirs != null) {
+            apks = Arrays.copyOf(info.splitSourceDirs, info.splitSourceDirs.length + 1);
+            apks[info.splitSourceDirs.length] = info.sourceDir;
+        } else apks = new String[]{info.sourceDir};
+        for (var apk : apks) {
+            try (var zip = new ZipFile(apk)) {
+                if (zip.getEntry("META-INF/xposed/java_init.list") != null) {
+                    return true;
+                }
+            } catch (IOException ignored) {
+            }
+        }
+        return false;
     }
 }

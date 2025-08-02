@@ -161,7 +161,6 @@
     <string name="modify">تغییر</string>
     <string name="cloud">ابر</string>
     <string name="settings">تنظیمات</string>
-    <string name="installation_time">زمان نصب</string>
     <string name="data_size">اندازه داده</string>
     <string name="selected">انتخاب‌شده</string>
     <string name="not_selected">انتخاب‌نشده</string>
@@ -245,7 +244,6 @@
     <string name="pull_down_to_refresh">برای تازه‌سازی به پایین بکشید</string>
     <string name="select_all">انتخاب همه</string>
     <string name="filters">پالایش‌ها</string>
-    <string name="sort">مرتب‌سازی</string>
     <string name="args_loading_from_user">بارگذاری از کاربر %1$s</string>
     <string name="necessary_preparations">آماده‌سازی‌های لازم</string>
     <string name="necessary_remaining_data_processing">پردازش داده‌های باقی‌مانده لازم</string>
@@ -409,4 +407,15 @@
     <string name="restore_permissions_desc">بازیابی مجوزهای برنامه‌ها</string>
     <string name="restore_ssaid">بازیابی شناسه اندروید</string>
     <string name="install_time">Madonna</string>
+    <string name="ascending">صعودی</string>
+    <string name="error_service_desc">اتصال سرویس ریشه انجام نشد، برنامه بدون آن نمی تواند به درستی اجرا شود. می‌توانید برنامه را دوباره امتحان کنید یا مجدداً راه‌اندازی کنید</string>
+    <string name="update_time">زمان به‌روزرسانی</string>
+    <string name="sorts">ترتیب</string>
+    <string name="error">خطا</string>
+    <string name="retry">امتحان دوباره</string>
+    <string name="search">جستجو</string>
+    <string name="user_apps">برنامه‌های کاربر</string>
+    <string name="system_apps">برنامه‌های سیستم</string>
+    <string name="users">کاربران</string>
+    <string name="descending">نزولی</string>
 </resources>

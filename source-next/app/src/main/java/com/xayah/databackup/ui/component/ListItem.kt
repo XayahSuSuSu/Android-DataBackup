@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -132,7 +133,7 @@ fun AppListItem(
                 IconButton(onClick = { expanded = expanded.not() }) {
                     Icon(
                         painter = animatedCheckIcon,
-                        contentDescription = "Expand"
+                        contentDescription = if (expanded) stringResource(R.string.collapsed) else stringResource(R.string.expand)
                     )
                 }
 
@@ -153,28 +154,28 @@ fun AppListItem(
                     SelectableChip(
                         selected = app.option.apk,
                         icon = AnimatedImageVector.animatedVectorResource(R.drawable.ic_animated_resource_package),
-                        text = "APK",
+                        text = stringResource(R.string.apk),
                         onCheckedChange = { viewModel.selectApk(app.packageName, app.userId, it.not()) },
                     )
 
                     SelectableChip(
                         selected = app.option.internalData,
                         icon = AnimatedImageVector.animatedVectorResource(R.drawable.ic_animated_user),
-                        text = "Int. Data",
+                        text = stringResource(R.string.internal_data),
                         onCheckedChange = { viewModel.selectInternalData(app.packageName, app.userId, it.not()) },
                     )
 
                     SelectableChip(
                         selected = app.option.externalData,
                         icon = AnimatedImageVector.animatedVectorResource(R.drawable.ic_animated_database),
-                        text = "Ext. Data",
+                        text = stringResource(R.string.external_data),
                         onCheckedChange = { viewModel.selectExternalData(app.packageName, app.userId, it.not()) },
                     )
 
                     SelectableChip(
                         selected = app.option.obbAndMedia,
                         icon = AnimatedImageVector.animatedVectorResource(R.drawable.ic_animated_gamepad_2),
-                        text = "OBB & Media",
+                        text = stringResource(R.string.obb_and_media),
                         onCheckedChange = { viewModel.selectObbAndMedia(app.packageName, app.userId, it.not()) },
                     )
 

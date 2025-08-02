@@ -408,4 +408,5 @@
     <string name="welcome_screen_app_desc">DataBackup으로 간편한 백업을 즐기세요. 사용하기 쉽고 완전한 FOSS입니다. 스트레스없이 데이터 안전을 유지하세요.</string>
     <string name="permissions_screen_desc">DataBackup이 작동하려면 다음과 같은 권한이 필요합니다. 거부되는 경우에, 몇몇 기능은 제대로 작동하지 않을 것입니다.</string>
     <string name="root_desc">이 앱을 통해 장치의 전체 백업을 수행 할 수 있으며, 일반적인 앱이 접근할 수 있는 시스템 파일과 설정에 접근하기 위해 루트(superuser) 권한이 필요합니다.</string>
+    <string name="update_time">시간 업데이트</string>
 </resources>

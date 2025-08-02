@@ -418,4 +418,21 @@
     <string name="ascending">Rosnąco</string>
     <string name="update_time">Czas aktualizacji</string>
     <string name="error">Błąd</string>
+    <string name="select_all_apk">Zaznacz wszystko: APK</string>
+    <string name="items_selected_and_size">Zaznaczone elementy: %1$s/%2$s • %3$s</string>
+    <string name="select_all_data">Zaznacz wszystko: dane</string>
+    <string name="custom_selection">Zaznaczenie niestandardowe</string>
+    <string name="select_all_int_data">Zaznacz wszystko: dane wewnętrzne</string>
+    <string name="select_all_ext_data">Zaznacz wszystko: dane zewnętrzne</string>
+    <string name="select_all_obb_and_media">Zaznacz wszystko: OBB i media</string>
+    <string name="unselect_all_apk">Odznacz wszystko: APK</string>
+    <string name="unselect_all_data">Odznacz wszystko: dane</string>
+    <string name="unselect_all_int_data">Odznacz wszystko: dane wewnętrzne</string>
+    <string name="unselect_all_ext_data">Odznacz wszystko: dane zewnętrzne</string>
+    <string name="unselect_all_obb_and_media">Odznacz wszystko: OBB i media</string>
+    <string name="expand">Rozwiń</string>
+    <string name="collapsed">Zwinięte</string>
+    <string name="internal_data">Dane wewnętrzne</string>
+    <string name="external_data">Dane zewnętrzne</string>
+    <string name="close">Zamknij</string>
 </resources>

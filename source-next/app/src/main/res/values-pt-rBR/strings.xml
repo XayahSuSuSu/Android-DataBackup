@@ -418,4 +418,21 @@
     <string name="error">Erro</string>
     <string name="descending">Descendente</string>
     <string name="error_service_desc">Falha ao conectar o serviço root; o app não pode ser executado corretamente sem ele. Você pode tentar novamente ou reiniciar o app.</string>
+    <string name="items_selected_and_size">%1$s/%2$s itens selecionados • %3$s</string>
+    <string name="select_all_apk">Selecionar tudo: APK</string>
+    <string name="select_all_data">Selecionar tudo: Dados</string>
+    <string name="custom_selection">Seleção personalizada</string>
+    <string name="select_all_int_data">Selecionar tudo: Dados internos</string>
+    <string name="select_all_ext_data">Selecionar tudo: Dados externos</string>
+    <string name="select_all_obb_and_media"><![CDATA[Selecionar tudo: OBB e Media]]></string>
+    <string name="unselect_all_apk">Desmarcar tudo: APK</string>
+    <string name="unselect_all_data">Desmarcar tudo: Dados</string>
+    <string name="unselect_all_int_data">Desmarcar tudo: Dados internos</string>
+    <string name="unselect_all_ext_data">Desmarcar tudo: Dados externos</string>
+    <string name="unselect_all_obb_and_media"><![CDATA[Desmarcar tudo: OBB e Media]]></string>
+    <string name="expand">Expandir</string>
+    <string name="collapsed">Recolhido</string>
+    <string name="internal_data">Dados internos</string>
+    <string name="external_data">Dados externos</string>
+    <string name="close">Fechar</string>
 </resources>

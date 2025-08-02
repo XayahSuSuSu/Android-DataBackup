@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="storage">Сховище</string>
+    <string name="storage">Пам\'ять</string>
     <string name="save">Зберегти</string>
     <string name="restoring">Відновлення</string>
     <string name="both">Обидва</string>
@@ -324,10 +324,10 @@
     <string name="kill_app_options">Варіанти зупинки додатку</string>
     <string name="kill_app_options_desc">Дії перед створенням бекапів</string>
     <string name="no_root_directory">Будь ласка, не обирайте корінь директорії</string>
-    <string name="restore_user_desc">Якого користувача ви хочете відновити?</string>
+    <string name="restore_user_desc">Для якого користувача ви хочете відновити дані?</string>
     <string name="check_keystore">Відмітити keystore</string>
     <string name="args_backup">Бекап %1$s</string>
-    <string name="setup">Налаштування</string>
+    <string name="setup">Встановлення</string>
     <string name="finish">Готово</string>
     <string name="setup_backup_dir_desc">Якщо у вас є існуючий каталог, вам потрібно буде вибрати його, щоб відобразилися бекапи всередині.</string>
     <string name="language">Мова</string>
@@ -335,7 +335,7 @@
     <string name="changelog">Перелік змін</string>
     <string name="args_update_from">Ви можете оновити версію %1$s до версії %2$s</string>
     <string name="args_files_backed_up">Створено бекап %1$s файлів</string>
-    <string name="backed_up_files">Бекап файлів</string>
+    <string name="backed_up_files">Бекап на файлів</string>
     <string name="confirm_delete">Будуть видалені всі вибрані файли</string>
     <string name="third_party">Користувацькі</string>
     <string name="monet_desc">Створити кольори на основі шпалер</string>
@@ -418,4 +418,21 @@
     <string name="user_apps">Користувацькі програми</string>
     <string name="update_time">Час оновлення</string>
     <string name="system_apps">Системні програми</string>
+    <string name="items_selected_and_size">%1$s/%2$s вибрані елементи • %3$s</string>
+    <string name="select_all_apk">Вибрати все: APK</string>
+    <string name="select_all_data">Вибрати все: Дані</string>
+    <string name="custom_selection">Вибір на замовлення</string>
+    <string name="select_all_int_data">Вибрати все: Міжнародні дані</string>
+    <string name="select_all_ext_data">Вибрати все: Зовнішні дані</string>
+    <string name="select_all_obb_and_media"><![CDATA[Select all: OBB & Media]]></string>
+    <string name="unselect_all_apk">Зняти вибір усіх: APK</string>
+    <string name="unselect_all_data">Зняти вибір: Дані</string>
+    <string name="unselect_all_int_data">Зняти вибір: Міжнародні дані</string>
+    <string name="unselect_all_ext_data">Зняти вибір: Зовнішні дані</string>
+    <string name="unselect_all_obb_and_media"><![CDATA[Unselect all: OBB & Media]]></string>
+    <string name="expand">Розгорнути</string>
+    <string name="collapsed">Згорнуто</string>
+    <string name="internal_data">Міжнародні дані</string>
+    <string name="external_data">Зовнішні дані</string>
+    <string name="close">Закрити</string>
 </resources>
