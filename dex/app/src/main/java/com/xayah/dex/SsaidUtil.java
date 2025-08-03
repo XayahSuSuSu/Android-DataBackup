@@ -52,10 +52,10 @@ public class SsaidUtil {
         System.out.println("  help");
         System.out.println("    Print this help text.");
         System.out.println();
-        System.out.println("  get USER_ID PACKAGE");
+        System.out.println("  get USER_ID PACKAGE PACKAGE PACKAGE ...");
         System.out.println("    Get ssaid.");
         System.out.println();
-        System.out.println("  set USER_ID PACKAGE SSAID");
+        System.out.println("  set USER_ID PACKAGE SSAID PACKAGE SSAID PACKAGE SSAID ...");
         System.out.println("    Set ssaid.");
     }
 
@@ -65,11 +65,18 @@ public class SsaidUtil {
             PackageManager pm = ctx.getPackageManager();
             PackageManagerHidden pmHidden = Refine.unsafeCast(pm);
             int userId = Integer.parseInt(args[1]);
-            String packageName = args[2];
-            PackageInfo packageInfo = pmHidden.getPackageInfoAsUser(packageName, 0, userId);
-            int uid = packageInfo.applicationInfo.uid;
-            SettingsState settingsState = getSettingsState(userId);
-            System.out.println(settingsState.getSettingLocked(getName(packageName, uid)).getValue());
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 2; i < args.length; i++) {
+                stringBuilder.append(args[i].trim());
+                stringBuilder.append(" ");
+            }
+            String[] pkgSet = stringBuilder.toString().trim().split(" ");
+            for (String packageName : pkgSet) {
+                PackageInfo packageInfo = pmHidden.getPackageInfoAsUser(packageName, 0, userId);
+                int uid = packageInfo.applicationInfo.uid;
+                SettingsState settingsState = getSettingsState(userId);
+                System.out.println(packageName + " " + settingsState.getSettingLocked(getName(packageName, uid)).getValue());
+            }
             System.exit(0);
         } catch (Exception e) {
             System.out.printf("Failed: %s, %s\n", e.getCause(), e.getMessage());
@@ -84,12 +91,24 @@ public class SsaidUtil {
             PackageManager pm = ctx.getPackageManager();
             PackageManagerHidden pmHidden = Refine.unsafeCast(pm);
             int userId = Integer.parseInt(args[1]);
-            String packageName = args[2];
-            PackageInfo packageInfo = pmHidden.getPackageInfoAsUser(packageName, 0, userId);
-            int uid = packageInfo.applicationInfo.uid;
-            String ssaid = args[3];
-            SettingsState settingsState = getSettingsState(userId);
-            settingsState.insertSettingLocked(getName(packageName, uid), ssaid, null, true, packageName);
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 2; i < args.length; i++) {
+                stringBuilder.append(args[i].trim());
+                stringBuilder.append(" ");
+            }
+            String[] ssaidSet = stringBuilder.toString().trim().split(" ");
+            for (int i = 0; i < ssaidSet.length; i += 2) {
+                try {
+                    String packageName = ssaidSet[i];
+                    String ssaid = ssaidSet[i + 1];
+                    PackageInfo packageInfo = pmHidden.getPackageInfoAsUser(packageName, 0, userId);
+                    int uid = packageInfo.applicationInfo.uid;
+                    SettingsState settingsState = getSettingsState(userId);
+                    settingsState.insertSettingLocked(getName(packageName, uid), ssaid, null, true, packageName);
+                } catch (Exception e) {
+                    System.out.println("Failed, skip: " + e.getMessage());
+                }
+            }
             System.exit(0);
         } catch (Exception e) {
             System.out.printf("Failed: %s, %s\n", e.getCause(), e.getMessage());
