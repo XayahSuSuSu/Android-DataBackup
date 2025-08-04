@@ -435,4 +435,10 @@
     <string name="internal_data">Dane wewnętrzne</string>
     <string name="external_data">Dane zewnętrzne</string>
     <string name="close">Zamknij</string>
+    <string name="select_networks">Wybierz sieci</string>
+    <string name="items_selected">Wybrane elementy: %1$s/%2$s</string>
+    <string name="show_password">Pokaż hasło</string>
+    <string name="hide_password">Ukryj hasło</string>
+    <string name="public_network">Sieć publiczna</string>
+    <string name="hidden_password">Ukryte hasło</string>
 </resources>
