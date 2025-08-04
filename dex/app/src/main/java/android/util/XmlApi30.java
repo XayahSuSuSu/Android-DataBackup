@@ -28,7 +28,7 @@ import androidx.annotation.RequiresApi;
 import com.android.internal.util.BinaryXmlPullParser;
 import com.android.internal.util.BinaryXmlSerializer;
 import com.android.internal.util.FastXmlSerializer;
-import com.android.internal.util.XmlUtils;
+import com.android.internal.util.XmlUtilsApi30;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -93,7 +93,7 @@ public class XmlApi30 {
      */
     @SuppressWarnings("AndroidFrameworkEfficientXml")
     public static @NonNull TypedXmlPullParser newFastPullParser() {
-        return XmlUtils.makeTyped(newPullParser());
+        return XmlUtilsApi30.makeTyped(newPullParser());
     }
 
     /**
@@ -173,7 +173,7 @@ public class XmlApi30 {
      */
     @SuppressWarnings("AndroidFrameworkEfficientXml")
     public static @NonNull TypedXmlSerializer newFastSerializer() {
-        return XmlUtils.makeTyped(new FastXmlSerializer());
+        return XmlUtilsApi30.makeTyped(new FastXmlSerializer());
     }
 
     /**

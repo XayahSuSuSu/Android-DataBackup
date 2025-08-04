@@ -52,7 +52,7 @@ import libcore.util.HexEncoding;
 /**
  * {@hide}
  */
-public class XmlUtils {
+public class XmlUtilsApi30 {
     private static final String STRING_ARRAY_SEPARATOR = ":";
 
     @SuppressWarnings("AndroidFrameworkEfficientXml")
@@ -673,7 +673,7 @@ public class XmlUtils {
     @Deprecated
     public static final void writeValueXml(Object v, String name, XmlSerializer out)
             throws XmlPullParserException, java.io.IOException {
-        writeValueXml(v, name, XmlUtils.makeTyped(out));
+        writeValueXml(v, name, XmlUtilsApi30.makeTyped(out));
     }
 
     /**
