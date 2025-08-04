@@ -448,4 +448,10 @@
     <string name="external_data">Ext. Data</string>
     <string name="obb_and_media" translatable="false"><![CDATA[OBB & Media]]></string>
     <string name="close">Close</string>
+    <string name="select_networks">Select networks</string>
+    <string name="items_selected">%1$s/%2$s items selected</string>
+    <string name="show_password">Show password</string>
+    <string name="hide_password">Hide password</string>
+    <string name="public_network">Public network</string>
+    <string name="hidden_password">Hidden password</string>
 </resources>

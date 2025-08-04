@@ -1,11 +1,16 @@
 package com.xayah.databackup.feature.backup.apps
 
+import android.content.Context
 import android.content.pm.UserInfo
+import android.graphics.drawable.Drawable
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.graphics.res.animatedVectorResource
 import androidx.compose.animation.graphics.res.rememberAnimatedVectorPainter
 import androidx.compose.animation.graphics.vector.AnimatedImageVector
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +28,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,9 +36,11 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
@@ -45,11 +53,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -57,11 +67,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.xayah.databackup.R
+import com.xayah.databackup.database.entity.App
 import com.xayah.databackup.rootservice.RemoteRootService
-import com.xayah.databackup.ui.component.AppListItem
 import com.xayah.databackup.ui.component.FilterButton
 import com.xayah.databackup.ui.component.SearchTextField
+import com.xayah.databackup.ui.component.SelectableChip
 import com.xayah.databackup.ui.component.filterButtonSecondaryColors
 import com.xayah.databackup.ui.component.horizontalFadingEdges
 import com.xayah.databackup.ui.material3.ModalDropdownMenu
@@ -76,10 +90,12 @@ import com.xayah.databackup.util.SortsSequence
 import com.xayah.databackup.util.SortsSequenceBackup
 import com.xayah.databackup.util.SortsType
 import com.xayah.databackup.util.SortsTypeBackup
+import com.xayah.databackup.util.formatToStorageSize
 import com.xayah.databackup.util.popBackStackSafely
 import com.xayah.databackup.util.readBoolean
 import com.xayah.databackup.util.readEnum
 import com.xayah.databackup.util.readInt
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -401,6 +417,141 @@ fun BackupAppsScreen(
                         }
                         Spacer(modifier = Modifier.size(0.dp))
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AppListItem(
+    modifier: Modifier,
+    context: Context,
+    scope: CoroutineScope,
+    app: App,
+    viewModel: AppsViewModel,
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        onClick = { viewModel.selectAll(app.packageName, app.userId, app.toggleableState) },
+    ) {
+        var expanded by remember { mutableStateOf(false) }
+
+        Column(modifier = Modifier.padding(vertical = 16.dp)) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .background(colorResource(id = R.color.ic_launcher_background)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    var icon: Drawable? by remember { mutableStateOf(null) }
+                    LaunchedEffect(app.pkgUserKey) {
+                        scope.launch {
+                            withContext(Dispatchers.IO) {
+                                icon = runCatching { context.packageManager.getApplicationIcon(app.packageName) }.getOrNull()
+                                if (icon == null) {
+                                    icon = AppCompatResources.getDrawable(context, android.R.drawable.sym_def_app_icon)
+                                }
+                            }
+                        }
+                    }
+                    AsyncImage(
+                        modifier = Modifier.size(32.dp),
+                        model = ImageRequest.Builder(context)
+                            .data(icon)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = null
+                    )
+                }
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = app.info.label,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = app.packageName,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    val storage by remember(app.selectedBytes, app.totalBytes) {
+                        mutableStateOf("${app.selectedBytes.formatToStorageSize} / ${app.totalBytes.formatToStorageSize}")
+                    }
+                    Text(
+                        text = storage,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                val animatedCheckIcon = rememberAnimatedVectorPainter(
+                    animatedImageVector = AnimatedImageVector.animatedVectorResource(R.drawable.ic_animated_chevron_right_to_down),
+                    atEnd = expanded
+                )
+                IconButton(onClick = { expanded = expanded.not() }) {
+                    Icon(
+                        painter = animatedCheckIcon,
+                        contentDescription = if (expanded) stringResource(R.string.collapsed) else stringResource(R.string.expand)
+                    )
+                }
+
+                TriStateCheckbox(
+                    state = app.toggleableState,
+                    onClick = { viewModel.selectAll(app.packageName, app.userId, app.toggleableState) }
+                )
+            }
+            AnimatedVisibility(expanded) {
+                Row(
+                    modifier = Modifier
+                        .horizontalScroll(rememberScrollState())
+                        .padding(top = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Spacer(modifier = Modifier.width(6.dp))
+
+                    SelectableChip(
+                        selected = app.option.apk,
+                        icon = AnimatedImageVector.animatedVectorResource(R.drawable.ic_animated_resource_package),
+                        text = stringResource(R.string.apk),
+                        onCheckedChange = { viewModel.selectApk(app.packageName, app.userId, it.not()) },
+                    )
+
+                    SelectableChip(
+                        selected = app.option.internalData,
+                        icon = AnimatedImageVector.animatedVectorResource(R.drawable.ic_animated_user),
+                        text = stringResource(R.string.internal_data),
+                        onCheckedChange = { viewModel.selectInternalData(app.packageName, app.userId, it.not()) },
+                    )
+
+                    SelectableChip(
+                        selected = app.option.externalData,
+                        icon = AnimatedImageVector.animatedVectorResource(R.drawable.ic_animated_database),
+                        text = stringResource(R.string.external_data),
+                        onCheckedChange = { viewModel.selectExternalData(app.packageName, app.userId, it.not()) },
+                    )
+
+                    SelectableChip(
+                        selected = app.option.obbAndMedia,
+                        icon = AnimatedImageVector.animatedVectorResource(R.drawable.ic_animated_gamepad_2),
+                        text = stringResource(R.string.obb_and_media),
+                        onCheckedChange = { viewModel.selectObbAndMedia(app.packageName, app.userId, it.not()) },
+                    )
+
+                    Spacer(modifier = Modifier.width(6.dp))
                 }
             }
         }

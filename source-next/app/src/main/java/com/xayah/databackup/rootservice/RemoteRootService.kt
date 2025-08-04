@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.xayah.databackup.rootservice
 
 import android.app.ActivityThread
@@ -8,6 +10,9 @@ import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.content.pm.PackageManagerHidden
 import android.content.pm.UserInfo
+import android.net.wifi.WifiConfiguration
+import android.net.wifi.WifiConfigurationHidden
+import android.net.wifi.WifiManagerHidden
 import android.os.Build
 import android.os.IBinder
 import android.os.Parcel
@@ -20,7 +25,10 @@ import com.xayah.databackup.database.entity.AppInfo
 import com.xayah.databackup.database.entity.AppStorage
 import com.xayah.databackup.database.entity.Info
 import com.xayah.databackup.database.entity.Storage
+import com.xayah.databackup.parcelables.BytesParcelable
 import com.xayah.databackup.util.LogHelper
+import com.xayah.databackup.util.ParcelableHelper.marshall
+import com.xayah.databackup.util.ParcelableHelper.unmarshall
 import com.xayah.databackup.util.PathHelper
 import com.xayah.hiddenapi.castTo
 import com.xayah.libnative.NativeLib
@@ -84,12 +92,14 @@ object RemoteRootService {
         private lateinit var mPackageManager: PackageManager
         private lateinit var mPackageManagerHidden: PackageManagerHidden
         private lateinit var mUserManager: UserManagerHidden
+        private lateinit var mWifiManager: WifiManagerHidden
 
         fun onBind() {
             mSystemContext = ActivityThread.systemMain().systemContext
             mPackageManager = mSystemContext.packageManager
             mPackageManagerHidden = mPackageManager.castTo()
             mUserManager = UserManagerHidden.get(mSystemContext).castTo()
+            mWifiManager = mSystemContext.getSystemService(Context.WIFI_SERVICE).castTo()
         }
 
         override fun getInstalledAppInfos(): ParcelFileDescriptor {
@@ -153,6 +163,27 @@ object RemoteRootService {
 
         override fun getUsers(): List<UserInfo> {
             return mUserManager.users
+        }
+
+        override fun getPrivilegedConfiguredNetworks(): List<BytesParcelable> {
+            val networks = mutableListOf<BytesParcelable>()
+            mWifiManager.privilegedConfiguredNetworks.forEach {
+                val bytes = it.marshall()
+                networks.add(BytesParcelable(bytes.size, bytes))
+            }
+            return networks
+        }
+
+        override fun addNetworks(configs: List<BytesParcelable>): IntArray {
+            val networkIds = mutableListOf<Int>()
+            configs.forEach {
+                it.bytes.unmarshall { parcel ->
+                    val config = WifiConfigurationHidden.CREATOR.createFromParcel(parcel)
+                    val id = mWifiManager.addNetwork(config)
+                    networkIds.add(id)
+                }
+            }
+            return networkIds.toIntArray()
         }
     }
 
@@ -260,5 +291,24 @@ object RemoteRootService {
 
     suspend fun getUsers(): List<UserInfo> {
         return getService()?.users ?: listOf()
+    }
+
+    suspend fun getPrivilegedConfiguredNetworks(): List<WifiConfiguration> {
+        val networks = mutableListOf<WifiConfiguration>()
+        getService()?.getPrivilegedConfiguredNetworks()?.forEach {
+            it.bytes.unmarshall { parcel ->
+                networks.add(WifiConfigurationHidden.CREATOR.createFromParcel(parcel))
+            }
+        }
+        return networks
+    }
+
+    suspend fun addNetworks(configs: List<WifiConfiguration>): IntArray {
+        val networks = mutableListOf<BytesParcelable>()
+        configs.forEach {
+            val bytes = it.marshall()
+            networks.add(BytesParcelable(bytes.size, bytes))
+        }
+        return getService()?.addNetworks(networks) ?: intArrayOf()
     }
 }

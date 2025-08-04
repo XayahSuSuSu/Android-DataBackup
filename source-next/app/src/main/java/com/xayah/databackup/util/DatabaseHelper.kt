@@ -12,4 +12,5 @@ object DatabaseHelper {
     ).build()
 
     val appDao = database.appDao()
+    val networkDao = database.networkDao()
 }

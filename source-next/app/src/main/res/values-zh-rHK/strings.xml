@@ -435,4 +435,10 @@
     <string name="internal_data">內部資料</string>
     <string name="external_data">外部資料</string>
     <string name="close">關閉</string>
+    <string name="select_networks">選擇網絡</string>
+    <string name="items_selected">%1$s/%2$s 已選擇</string>
+    <string name="show_password">顯示密碼</string>
+    <string name="hide_password">隱藏密碼</string>
+    <string name="public_network">公共網絡</string>
+    <string name="hidden_password">密碼已隱藏</string>
 </resources>

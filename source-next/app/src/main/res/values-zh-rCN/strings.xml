@@ -435,4 +435,10 @@
     <string name="internal_data">内部数据</string>
     <string name="external_data">外部数据</string>
     <string name="close">关闭</string>
+    <string name="select_networks">选择网络</string>
+    <string name="items_selected">%1$s/%2$s 已选择</string>
+    <string name="show_password">显示密码</string>
+    <string name="hide_password">隐藏密码</string>
+    <string name="public_network">公共网络</string>
+    <string name="hidden_password">密码已隐藏</string>
 </resources>

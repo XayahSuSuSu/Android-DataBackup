@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.feature.BackupApps
+import com.xayah.databackup.feature.BackupNetworks
 import com.xayah.databackup.ui.component.SelectableActionButton
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.navigateSafely
@@ -106,7 +107,9 @@ fun BackupPreviewScreen(navController: NavHostController) {
                     icon = ImageVector.vectorResource(R.drawable.ic_wifi),
                     title = "Networks",
                     subtitle = "No items selected"
-                ) {}
+                ) {
+                    navController.navigateSafely(BackupNetworks)
+                }
 
                 SelectableActionButton(
                     modifier = Modifier

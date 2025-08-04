@@ -1,6 +1,7 @@
 package com.xayah.databackup.util
 
 import com.xayah.databackup.database.entity.App
+import com.xayah.databackup.database.entity.NetworkUnmarshalled
 
 fun Iterable<App>.filter(searchText: String, userId: Int, filterUserApps: Boolean, filterSystemApps: Boolean): List<App> = filter {
     filterUserId(it, userId)
@@ -41,3 +42,11 @@ fun Iterable<App>.sortByUpdateTime(sortSequence: SortsSequence): List<App> =
         SortsSequence.ASCENDING -> sortedBy { app -> app.info.lastUpdateTime }
         SortsSequence.DESCENDING -> sortedByDescending { app -> app.info.lastUpdateTime }
     }
+
+fun Iterable<NetworkUnmarshalled>.filter(searchText: String): List<NetworkUnmarshalled> = filter {
+    filterSearchText(it, searchText)
+}
+
+private fun filterSearchText(network: NetworkUnmarshalled, searchText: String) =
+    searchText.isEmpty()
+            || network.ssid.lowercase().contains(searchText.lowercase())
