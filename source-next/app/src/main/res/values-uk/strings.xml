@@ -435,4 +435,10 @@
     <string name="internal_data">Міжнародні дані</string>
     <string name="external_data">Зовнішні дані</string>
     <string name="close">Закрити</string>
+    <string name="select_networks">Вибрати мережі</string>
+    <string name="items_selected">%1$s/%2$s вибрані елементи</string>
+    <string name="show_password">Показати пароль</string>
+    <string name="hide_password">Приховати пароль</string>
+    <string name="public_network">Публічна мережа</string>
+    <string name="hidden_password">Прихований пароль</string>
 </resources>
