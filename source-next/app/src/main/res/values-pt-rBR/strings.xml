@@ -435,4 +435,10 @@
     <string name="internal_data">Dados internos</string>
     <string name="external_data">Dados externos</string>
     <string name="close">Fechar</string>
+    <string name="select_networks">Selecionar redes Wi-Fi</string>
+    <string name="items_selected">%1$s/%2$s itens selecionados</string>
+    <string name="show_password">Mostrar senha</string>
+    <string name="hide_password">Ocultar senha</string>
+    <string name="public_network">Rede Wi-Fi pública</string>
+    <string name="hidden_password">Senha oculta</string>
 </resources>
