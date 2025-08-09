@@ -395,4 +395,5 @@
     <string name="restore_ssaid_desc">Obnovi Android ID aplikacija, zahtijeva ponovno pokretanje nakon obnavljanja</string>
     <string name="restore_ssaid">Obnovi Android ID</string>
     <string name="compression_level">Razina komprimiranja</string>
+    <string name="insecure_server_connection">Dopusti nesigurnu vezu sa serverom</string>
 </resources>
