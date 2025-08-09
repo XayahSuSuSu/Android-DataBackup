@@ -210,6 +210,7 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
         val name = PathUtil.getFileName(src)
         val dstPath = "$dst/$name"
         log { "upload: $src to $dstPath" }
+        deleteFile(dstPath)
         val dstFile = openFileOnWrite(dstPath)
         val dstStream = dstFile.outputStream
         val srcFile = File(src)
