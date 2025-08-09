@@ -18,10 +18,13 @@ public class CCUtil {
         switch (cmd) {
             case "s2t":
                 s2t(args);
+                break;
             case "t2s":
                 t2s(args);
+                break;
             case "help":
                 onHelp();
+                break;
             default:
                 System.out.println("Unknown command: " + cmd);
                 System.exit(1);

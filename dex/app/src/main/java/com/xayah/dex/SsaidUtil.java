@@ -121,10 +121,13 @@ public class SsaidUtil {
         switch (cmd) {
             case "get":
                 onGet(args);
+                break;
             case "set":
                 onSet(args);
+                break;
             default:
                 onHelp();
+                break;
         }
     }
 

@@ -16,8 +16,10 @@ public class HttpUtil {
         switch (cmd) {
             case "get":
                 get(args);
+                break;
             case "help":
                 onHelp();
+                break;
             default:
                 System.out.println("Unknown command: " + cmd);
                 System.exit(1);

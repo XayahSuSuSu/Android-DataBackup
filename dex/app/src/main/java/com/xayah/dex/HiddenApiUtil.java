@@ -65,24 +65,34 @@ public class HiddenApiUtil {
         switch (cmd) {
             case "getPackageUid":
                 getPackageUid(args);
+                break;
             case "getPackageLabel":
                 getPackageLabel(args);
+                break;
             case "getPackageArchiveInfo":
                 getPackageArchiveInfo(args);
+                break;
             case "getInstalledPackagesAsUser":
                 getInstalledPackagesAsUser(args);
+                break;
             case "getRuntimePermissions":
                 getRuntimePermissions(args);
+                break;
             case "grantRuntimePermission":
                 grantRuntimePermission(args);
+                break;
             case "revokeRuntimePermission":
                 revokeRuntimePermission(args);
+                break;
             case "setOpsMode":
                 setOpsMode(args);
+                break;
             case "setDisplayPowerMode":
                 setDisplayPowerMode(args);
+                break;
             case "help":
                 onHelp();
+                break;
             default:
                 System.out.println("Unknown command: " + cmd);
                 System.exit(1);
