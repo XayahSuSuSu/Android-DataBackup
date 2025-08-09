@@ -18,10 +18,7 @@ import com.xayah.core.util.command.PreparationUtil
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import java.nio.file.Paths
 import javax.inject.Inject
-import kotlin.io.path.name
-import kotlin.io.path.pathString
 
 class DirectoryRepository @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -81,7 +78,7 @@ class DirectoryRepository @Inject constructor(
             directoryDao.updateActive(active = false)
 
             // Internal storage
-            val internalList = rootService.listFilePaths(PathUtil.getDataMediaDir(), listFiles = false)
+            val internalList = rootService.listFilePaths(ConstantUtil.STORAGE_EMULATED_PATH, listFiles = false)
                 .filter { it.substring(it.lastIndexOf("/") + 1).toIntOrNull() != null } // Just select 0 10 999 etc.
             val internalDirs = mutableListOf<DirectoryUpsertEntity>()
             for (storageItem in internalList) {

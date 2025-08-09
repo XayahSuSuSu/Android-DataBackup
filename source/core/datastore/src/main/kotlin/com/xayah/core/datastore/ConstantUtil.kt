@@ -1,9 +1,9 @@
 package com.xayah.core.datastore
 
 object ConstantUtil {
-    private const val DATA_MEDIA_PATH = "/data/media"
+    const val STORAGE_EMULATED_PATH = "/storage/emulated"
     private const val DEFAULT_USER_ID = 0
-    const val DEFAULT_PATH_PARENT = "${DATA_MEDIA_PATH}/${DEFAULT_USER_ID}"
+    const val DEFAULT_PATH_PARENT = "${STORAGE_EMULATED_PATH}/${DEFAULT_USER_ID}"
     const val DEFAULT_PATH_CHILD = "DataBackup"
     const val DEFAULT_PATH = "${DEFAULT_PATH_PARENT}/${DEFAULT_PATH_CHILD}"
     const val DEFAULT_IDLE_TIMEOUT = -1
