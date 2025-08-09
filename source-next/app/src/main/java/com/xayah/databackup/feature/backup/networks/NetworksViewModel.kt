@@ -42,6 +42,18 @@ open class NetworksViewModel : BaseViewModel() {
             started = SharingStarted.WhileSubscribed(5_000),
         )
 
+    fun selectNetwork(id: Int, selected: Boolean) {
+        withLock(Dispatchers.IO) {
+            DatabaseHelper.networkDao.selectNetwork(id, selected)
+        }
+    }
+
+    fun selectAllNetworks(selected: Boolean) {
+        withLock(Dispatchers.IO) {
+            DatabaseHelper.networkDao.selectAllNetworks(networks.value.map { it.id }, selected)
+        }
+    }
+
     fun changeSearchText(text: String) {
         withLock(Dispatchers.Default) {
             _searchText.emit(text)

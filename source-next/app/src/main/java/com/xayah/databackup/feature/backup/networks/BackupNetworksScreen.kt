@@ -34,7 +34,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,7 +53,6 @@ import com.xayah.databackup.R
 import com.xayah.databackup.database.entity.NetworkUnmarshalled
 import com.xayah.databackup.ui.component.SearchTextField
 import com.xayah.databackup.util.popBackStackSafely
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun BackupNetworksScreen(
@@ -68,7 +66,6 @@ fun BackupNetworksScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val networks by viewModel.networks.collectAsStateWithLifecycle()
     val selected by viewModel.selected.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
     val searchText by viewModel.searchText.collectAsStateWithLifecycle()
     var onSearch by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
@@ -89,6 +86,8 @@ fun BackupNetworksScreen(
             .nestedScroll(nestedScrollConnection)
             .fillMaxSize(),
         topBar = {
+            var selectAll by remember { mutableStateOf(true) }
+
             AnimatedContent(onSearch) { target ->
                 if (target) {
                     TopAppBar(
@@ -116,6 +115,15 @@ fun BackupNetworksScreen(
                                         stringResource(R.string.show_password)
                                     else
                                         stringResource(R.string.hide_password)
+                                )
+                            }
+                            IconButton(onClick = {
+                                viewModel.selectAllNetworks(selectAll)
+                                selectAll = selectAll.not()
+                            }) {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_list_checks),
+                                    contentDescription = stringResource(R.string.select_all)
                                 )
                             }
                         },
@@ -166,6 +174,15 @@ fun BackupNetworksScreen(
                                         stringResource(R.string.hide_password)
                                 )
                             }
+                            IconButton(onClick = {
+                                viewModel.selectAllNetworks(selectAll)
+                                selectAll = selectAll.not()
+                            }) {
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_list_checks),
+                                    contentDescription = stringResource(R.string.select_all)
+                                )
+                            }
                         },
                         scrollBehavior = scrollBehavior,
                     )
@@ -204,7 +221,6 @@ fun BackupNetworksScreen(
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp),
                                 context = context,
-                                scope = scope,
                                 network = network,
                                 viewModel = viewModel,
                                 showPassword = uiState.showPassword
@@ -225,7 +241,6 @@ fun BackupNetworksScreen(
 fun NetworkListItem(
     modifier: Modifier,
     context: Context,
-    scope: CoroutineScope,
     network: NetworkUnmarshalled,
     viewModel: NetworksViewModel,
     showPassword: Boolean,
@@ -281,8 +296,8 @@ fun NetworkListItem(
                 )
             }
             Checkbox(
-                checked = true,
-                onCheckedChange = { }
+                checked = network.selected,
+                onCheckedChange = { viewModel.selectNetwork(network.id, it) }
             )
         }
     }
