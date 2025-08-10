@@ -51,7 +51,7 @@ bountycastle = "1.79"
 animation-graphics = "1.7.6"
 
 # plugins
-android-gradle-plugin = "8.7.3"
+android-gradle-plugin = "8.12.0"
 kotlin = "2.0.21"
 hilt = "2.48"
 hilt-work-compiler = "1.2.0"
