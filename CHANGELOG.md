@@ -1,5 +1,30 @@
 # Changelog
 
+## [2.0.10](https://github.com/XayahSuSuSu/Android-DataBackup/compare/2.0.9...v2.0.10) (2025-08-10)
+
+
+### gradle
+
+* Version 2.0.10 ([c9cf1b9](https://github.com/XayahSuSuSu/Android-DataBackup/commit/c9cf1b99c4b72fe9adbc6ae61719713ea683aa44))
+
+
+### Features
+
+* Change default storage path ([6392d0e](https://github.com/XayahSuSuSu/Android-DataBackup/commit/6392d0ec9af5c7871ed9c7c553f9e1fc97b34568))
+* **dex:** [SsaidUtil] Support multi-target for set and get ([149809d](https://github.com/XayahSuSuSu/Android-DataBackup/commit/149809d922e4df6583492dcb5e26c1954234bfe7))
+* **dex:** Implement NetworkUtil ([1bffa3d](https://github.com/XayahSuSuSu/Android-DataBackup/commit/1bffa3d22bbc49a911d1e92c6541678e14b68c59))
+* Update translators ([89c9e4d](https://github.com/XayahSuSuSu/Android-DataBackup/commit/89c9e4df96e608bf5732c78777aa87e51b80a277))
+
+
+### Bug Fixes
+
+* [SMB] Upload broken config files when reloading ([0305f70](https://github.com/XayahSuSuSu/Android-DataBackup/commit/0305f70221a48fdfdb3b125687a78c9ea2f2b703))
+* **dex:** [HiddenApiUtil] Modern XPosed modules detection ([46789a4](https://github.com/XayahSuSuSu/Android-DataBackup/commit/46789a43f446ab0e9f60427db7ec1c96d95c820b))
+* **dex:** [HiddenApiUtil] Null pointer check ([419017f](https://github.com/XayahSuSuSu/Android-DataBackup/commit/419017f592fe6d8cce16e80d2ed1c9f57d02d9a3))
+* **dex:** [HiddenApiUtil] Remove spaces of all types ([34b36b6](https://github.com/XayahSuSuSu/Android-DataBackup/commit/34b36b60430d09e4c7a395cd35186a60cec92242))
+* **dex:** [SsaidUtil] Crash on A16 ([14be61a](https://github.com/XayahSuSuSu/Android-DataBackup/commit/14be61a111b6fe68d30f06ea73b1a2397172f94b))
+* Lint error ([fd0c855](https://github.com/XayahSuSuSu/Android-DataBackup/commit/fd0c85559c0d19565553a34ddb553536e54437c7))
+
 ## [2.0.9](https://github.com/XayahSuSuSu/Android-DataBackup/compare/2.0.8...v2.0.9) (2025-05-27)
 
 
