@@ -25,7 +25,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.core.datastore.KeyAutoScreenOff
 import com.xayah.core.datastore.KeyMonet
-import com.xayah.core.datastore.readLanguage
 import com.xayah.core.ui.component.Clickable
 import com.xayah.core.ui.component.InnerBottomSpacer
 import com.xayah.core.ui.component.Switchable
@@ -34,10 +33,9 @@ import com.xayah.core.ui.route.MainRoutes
 import com.xayah.core.ui.token.SizeTokens
 import com.xayah.core.ui.util.LocalNavController
 import com.xayah.core.util.LanguageUtil
-import com.xayah.core.util.LanguageUtil.toLocale
 import com.xayah.core.util.getActivity
 import com.xayah.core.util.navigateSingle
-import kotlinx.coroutines.flow.map
+import com.xayah.core.util.readMappedLanguage
 import com.xayah.feature.setup.MainActivity as SetupActivity
 
 @ExperimentalLayoutApi
@@ -93,7 +91,7 @@ fun PageSettings() {
                 }
                 DarkThemeSelectable()
 
-                val locale by context.readLanguage().map { it.toLocale(context) }.collectAsStateWithLifecycle(initialValue = LanguageUtil.getSystemLocale(context))
+                val locale by context.readMappedLanguage().collectAsStateWithLifecycle(initialValue = LanguageUtil.getSystemLocale(context))
                 Clickable(
                     title = stringResource(id = R.string.language),
                     value = locale.getDisplayName(locale)
