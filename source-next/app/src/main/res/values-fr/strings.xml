@@ -435,4 +435,9 @@
     <string name="internal_data">Données internes</string>
     <string name="external_data">Données externes</string>
     <string name="close">Fermer</string>
+    <string name="select_networks">Selectionnez le réseau</string>
+    <string name="show_password">Montrer le mot-de-passe</string>
+    <string name="hide_password">Cacher le mot-de-passe</string>
+    <string name="public_network">Réseau publique</string>
+    <string name="hidden_password">Mot-de-passe caché</string>
 </resources>
