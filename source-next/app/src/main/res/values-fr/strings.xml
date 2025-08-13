@@ -440,4 +440,5 @@
     <string name="hide_password">Cacher le mot-de-passe</string>
     <string name="public_network">Réseau publique</string>
     <string name="hidden_password">Mot-de-passe caché</string>
+    <string name="items_selected">%1$s/%2$s objets sélectionnés</string>
 </resources>
