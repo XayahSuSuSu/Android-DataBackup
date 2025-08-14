@@ -435,4 +435,10 @@
     <string name="internal_data">Инт. Данные</string>
     <string name="external_data">Доп. данные</string>
     <string name="close">Закрыть</string>
+    <string name="select_networks">Выберите сети</string>
+    <string name="items_selected">%1$s/%2$s выбранных элементов</string>
+    <string name="show_password">Показать пароль</string>
+    <string name="hide_password">Скрыть пароль</string>
+    <string name="public_network">Общественная сеть</string>
+    <string name="hidden_password">Скрытый пароль</string>
 </resources>
