@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.refine.runtime)
     implementation(libs.httpclient5.fluent)
     implementation(libs.slf4j.simple)
+    implementation(libs.gson)
 
     compileOnly(project(":hiddenapi"))
 }
