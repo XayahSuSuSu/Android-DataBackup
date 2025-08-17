@@ -1,13 +1,8 @@
 package com.xayah.databackup.util
 
 import com.xayah.databackup.database.entity.App
+import com.xayah.databackup.database.entity.ContactDeserialized
 import com.xayah.databackup.database.entity.NetworkUnmarshalled
-
-fun Iterable<App>.filter(searchText: String, userId: Int, filterUserApps: Boolean, filterSystemApps: Boolean): List<App> = filter {
-    filterUserId(it, userId)
-            && filterApps(it, filterUserApps, filterSystemApps)
-            && filterSearchText(it, searchText)
-}
 
 private fun filterUserId(app: App, userId: Int) = app.userId == userId
 
@@ -18,6 +13,21 @@ private fun filterSearchText(app: App, searchText: String) =
     searchText.isEmpty()
             || app.info.label.lowercase().contains(searchText.lowercase())
             || app.packageName.lowercase().contains(searchText.lowercase())
+
+private fun filterSearchText(network: NetworkUnmarshalled, searchText: String) =
+    searchText.isEmpty()
+            || network.ssid.lowercase().contains(searchText.lowercase())
+
+private fun filterSearchText(contact: ContactDeserialized, searchText: String) =
+    searchText.isEmpty()
+            || contact.displayName.lowercase().contains(searchText.lowercase())
+
+
+fun Iterable<App>.filterApp(searchText: String, userId: Int, filterUserApps: Boolean, filterSystemApps: Boolean): List<App> = filter {
+    filterUserId(it, userId)
+            && filterApps(it, filterUserApps, filterSystemApps)
+            && filterSearchText(it, searchText)
+}
 
 fun Iterable<App>.sortByA2Z(sortSequence: SortsSequence): List<App> =
     when (sortSequence) {
@@ -43,10 +53,10 @@ fun Iterable<App>.sortByUpdateTime(sortSequence: SortsSequence): List<App> =
         SortsSequence.DESCENDING -> sortedByDescending { app -> app.info.lastUpdateTime }
     }
 
-fun Iterable<NetworkUnmarshalled>.filter(searchText: String): List<NetworkUnmarshalled> = filter {
+fun Iterable<NetworkUnmarshalled>.filterNetwork(searchText: String): List<NetworkUnmarshalled> = filter {
     filterSearchText(it, searchText)
 }
 
-private fun filterSearchText(network: NetworkUnmarshalled, searchText: String) =
-    searchText.isEmpty()
-            || network.ssid.lowercase().contains(searchText.lowercase())
+fun Iterable<ContactDeserialized>.filterContact(searchText: String): List<ContactDeserialized> = filter {
+    filterSearchText(it, searchText)
+}

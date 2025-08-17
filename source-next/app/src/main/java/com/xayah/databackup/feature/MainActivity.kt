@@ -32,6 +32,7 @@ import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.feature.backup.BackupPreviewScreen
 import com.xayah.databackup.feature.backup.apps.BackupAppsScreen
+import com.xayah.databackup.feature.backup.contacts.BackupContactsScreen
 import com.xayah.databackup.feature.backup.networks.BackupNetworksScreen
 import com.xayah.databackup.feature.dashboard.DashboardScreen
 import com.xayah.databackup.feature.setup.NoPermKey
@@ -63,6 +64,9 @@ data object BackupApps
 
 @Serializable
 data object BackupNetworks
+
+@Serializable
+data object BackupContacts
 
 @Composable
 fun ErrorServiceDialog(onConfirm: () -> Unit, onRetry: () -> Unit) {
@@ -167,6 +171,10 @@ class MainActivity : ComponentActivity() {
 
                             composable<BackupNetworks> {
                                 BackupNetworksScreen(navController)
+                            }
+
+                            composable<BackupContacts> {
+                                BackupContactsScreen(navController)
                             }
                         }
                     }

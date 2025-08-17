@@ -1,10 +1,10 @@
-package com.xayah.databackup.feature.backup.networks
+package com.xayah.databackup.feature.backup.contacts
 
 import androidx.lifecycle.viewModelScope
-import com.xayah.databackup.database.entity.unmarshall
+import com.xayah.databackup.database.entity.deserialize
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.DatabaseHelper
-import com.xayah.databackup.util.filterNetwork
+import com.xayah.databackup.util.filterContact
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -14,21 +14,19 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-data class UiState(
-    val showPassword: Boolean = false,
-)
+data object UiState
 
-open class NetworksViewModel : BaseViewModel() {
-    private val _uiState = MutableStateFlow(UiState())
+open class ContactsViewModel : BaseViewModel() {
+    private val _uiState = MutableStateFlow(UiState)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     private val _searchText = MutableStateFlow("")
     val searchText: StateFlow<String> = _searchText.asStateFlow()
-    val networks = combine(
-        DatabaseHelper.networkDao.loadFlowNetworks().unmarshall(),
+    val contacts = combine(
+        DatabaseHelper.contactDao.loadFlowContacts().deserialize(),
         _searchText,
-    ) { networks, searchText ->
-        networks.filterNetwork(searchText)
+    ) { contacts, searchText ->
+        contacts.filterContact(searchText)
     }.stateIn(
         scope = viewModelScope,
         initialValue = listOf(),
@@ -36,33 +34,27 @@ open class NetworksViewModel : BaseViewModel() {
     )
 
     val selected =
-        networks.map { list -> list.count { it.selected } }.stateIn(
+        contacts.map { list -> list.count { it.selected } }.stateIn(
             scope = viewModelScope,
             initialValue = 0,
             started = SharingStarted.WhileSubscribed(5_000),
         )
 
-    fun selectNetwork(id: Int, selected: Boolean) {
+    fun selectContact(id: Long, selected: Boolean) {
         withLock(Dispatchers.IO) {
-            DatabaseHelper.networkDao.selectNetwork(id, selected)
+            DatabaseHelper.contactDao.selectContact(id, selected)
         }
     }
 
-    fun selectAllNetworks(selected: Boolean) {
+    fun selectAllContacts(selected: Boolean) {
         withLock(Dispatchers.IO) {
-            DatabaseHelper.networkDao.selectAllNetworks(networks.value.map { it.id }, selected)
+            DatabaseHelper.contactDao.selectAllContacts(contacts.value.map { it.id }, selected)
         }
     }
 
     fun changeSearchText(text: String) {
         withLock(Dispatchers.Default) {
             _searchText.emit(text)
-        }
-    }
-
-    fun showOrHidePassword() {
-        withLock(Dispatchers.Default) {
-            _uiState.emit(uiState.value.copy(showPassword = uiState.value.showPassword.not()))
         }
     }
 }

@@ -441,4 +441,5 @@
     <string name="hide_password">隐藏密码</string>
     <string name="public_network">公共网络</string>
     <string name="hidden_password">密码已隐藏</string>
+    <string name="select_contacts">选择联系人</string>
 </resources>

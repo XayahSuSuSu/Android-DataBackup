@@ -454,4 +454,5 @@
     <string name="hide_password">Hide password</string>
     <string name="public_network">Public network</string>
     <string name="hidden_password">Hidden password</string>
+    <string name="select_contacts">Select contacts</string>
 </resources>

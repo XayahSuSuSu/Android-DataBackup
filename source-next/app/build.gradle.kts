@@ -99,6 +99,9 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+
+    // Moshi
+    implementation(libs.moshi)
 }
 
 kotlin {
@@ -107,6 +110,7 @@ kotlin {
             "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
             "-opt-in=androidx.compose.animation.graphics.ExperimentalAnimationGraphicsApi",
             "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi",
+            "-opt-in=kotlin.ExperimentalStdlibApi",
         )
     }
 }

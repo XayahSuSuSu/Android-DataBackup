@@ -17,7 +17,7 @@ import com.xayah.databackup.util.SortsSequenceBackup
 import com.xayah.databackup.util.SortsType
 import com.xayah.databackup.util.SortsTypeBackup
 import com.xayah.databackup.util.combine
-import com.xayah.databackup.util.filter
+import com.xayah.databackup.util.filterApp
 import com.xayah.databackup.util.formatToStorageSize
 import com.xayah.databackup.util.readBoolean
 import com.xayah.databackup.util.readEnum
@@ -58,7 +58,7 @@ open class AppsViewModel : BaseViewModel() {
             SortsType.DATA_SIZE -> apps.sortByDataSize(sortSequence)
             SortsType.INSTALL_TIME -> apps.sortByInstallTime(sortSequence)
             SortsType.UPDATE_TIME -> apps.sortByUpdateTime(sortSequence)
-        }.filter(searchText, userId, filterUserApps, filterSystemApps)
+        }.filterApp(searchText, userId, filterUserApps, filterSystemApps)
     }.stateIn(
         scope = viewModelScope,
         initialValue = listOf(),

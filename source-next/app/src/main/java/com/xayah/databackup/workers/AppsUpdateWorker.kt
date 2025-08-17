@@ -2,12 +2,20 @@ package com.xayah.databackup.workers
 
 import android.content.Context
 import android.content.pm.ServiceInfo
+import android.database.Cursor
 import android.os.Build
+import android.provider.ContactsContract
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkerParameters
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapter
+import com.xayah.databackup.App
+import com.xayah.databackup.database.entity.Contact
+import com.xayah.databackup.database.entity.FiledMap
+import com.xayah.databackup.database.entity.FiledMutableMap
 import com.xayah.databackup.database.entity.Network
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.util.DatabaseHelper
@@ -53,8 +61,71 @@ class AppsUpdateWorker(appContext: Context, workerParams: WorkerParameters) : Co
                 LogHelper.e(TAG, "Failed to update networks.", it)
             }
 
+            // TMP
+            fun getAllFields(cursor: Cursor): FiledMap {
+                val map: FiledMutableMap = mutableMapOf()
+                cursor.columnNames.forEach { column ->
+                    runCatching {
+                        val index = cursor.getColumnIndex(column)
+                        if (index != -1) {
+                            val type = cursor.getType(index)
+                            when (type) {
+                                Cursor.FIELD_TYPE_INTEGER -> {
+                                    map.put(column, cursor.getLong(index))
+                                }
 
+                                Cursor.FIELD_TYPE_STRING -> {
+                                    map.put(column, cursor.getString(index))
+                                }
 
+                                Cursor.FIELD_TYPE_NULL -> {
+                                    // Do nothing
+                                }
+
+                                else -> {
+                                    throw IllegalStateException("Unexpected type of the field: $column: $type")
+                                }
+                            }
+                        }
+                    }.onFailure { e -> e.printStackTrace() }
+                }
+                return map
+            }
+
+            val moshi: Moshi = Moshi.Builder().build()
+            val contacts = mutableListOf<Contact>()
+            App.application.contentResolver.query(ContactsContract.RawContacts.CONTENT_URI, null, null, null, null)?.also { rawContactCursor ->
+                while (rawContactCursor.moveToNext()) {
+                    runCatching {
+                        val contact = Contact(0, "", "", true)
+                        val rawContact = getAllFields(cursor = rawContactCursor)
+                        contact.rawContact = moshi.adapter<FiledMap>().toJson(rawContact)
+                        contact.id = rawContact.getOrDefault(ContactsContract.RawContacts._ID, -1L) as Long
+                        if (contact.id == -1L) {
+                            throw IllegalStateException("Unexpected id: ${contact.id}")
+                        }
+                        App.application.contentResolver.query(
+                            ContactsContract.Data.CONTENT_URI,
+                            null,
+                            "${ContactsContract.Data.RAW_CONTACT_ID} = ?",
+                            arrayOf(contact.id.toString()),
+                            null
+                        )?.also { dataCursor ->
+                            val data = mutableListOf<FiledMap>()
+                            while (dataCursor.moveToNext()) {
+                                data.add(getAllFields(cursor = dataCursor))
+                            }
+                            contact.data = moshi.adapter<List<FiledMap>>().toJson(data)
+                        }
+                        contacts.add(contact)
+                    }.onFailure { e -> e.printStackTrace() }
+                }
+            }
+            runCatching {
+                DatabaseHelper.contactDao.upsert(contacts)
+            }.onFailure {
+                LogHelper.e(TAG, "Failed to update contacts.", it)
+            }
 
             val appInfos = RemoteRootService.getInstalledAppInfos()
             runCatching {
