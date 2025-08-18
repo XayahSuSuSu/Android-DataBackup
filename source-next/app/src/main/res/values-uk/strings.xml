@@ -441,4 +441,5 @@
     <string name="hide_password">Приховати пароль</string>
     <string name="public_network">Публічна мережа</string>
     <string name="hidden_password">Прихований пароль</string>
+    <string name="select_contacts">Вибрати контакти</string>
 </resources>
