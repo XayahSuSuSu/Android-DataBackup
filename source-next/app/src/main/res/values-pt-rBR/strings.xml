@@ -441,4 +441,5 @@
     <string name="hide_password">Ocultar senha</string>
     <string name="public_network">Rede Wi-Fi pública</string>
     <string name="hidden_password">Senha oculta</string>
+    <string name="select_contacts">Selecionar contatos</string>
 </resources>
