@@ -441,4 +441,5 @@
     <string name="hidden_password">Contraseña oculta</string>
     <string name="error">Error</string>
     <string name="retry">Reintentar</string>
+    <string name="select_contacts">Elige contactos</string>
 </resources>
