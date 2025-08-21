@@ -50,7 +50,7 @@ class CommonBackupUtil @Inject constructor(
         log { "Backing up itself..." }
 
         val packageName = context.packageName
-        val isSuccess: Boolean
+        var isSuccess = true
         val out = mutableListOf<String>()
         val sourceDirList = rootService.getPackageSourceDir(packageName, android.os.Process.myUid() / 100000)
         if (sourceDirList.isNotEmpty()) {
@@ -67,7 +67,6 @@ class CommonBackupUtil @Inject constructor(
                         }
                     } == true)
             ) {
-                isSuccess = true
                 out.add(log { "$targetPath exists, skip." })
             } else {
                 isSuccess = rootService.copyTo(path = path, targetPath = targetPath, overwrite = true)

@@ -72,7 +72,7 @@ class MediumBackupUtil @Inject constructor(
         val name = m.name
         val ct = m.indexInfo.compressionType
         val dst = mediaRepository.getArchiveDst(dstDir = dstDir, ct = ct)
-        var isSuccess: Boolean
+        var isSuccess = true
         val out = mutableListOf<String>()
         val src = m.path
         val srcDir = PathUtil.getParentPath(src)
@@ -90,7 +90,6 @@ class MediumBackupUtil @Inject constructor(
         val sizeBytes = rootService.calculateSize(src)
         t.updateInfo(state = OperationState.PROCESSING, bytes = sizeBytes)
         if (rootService.exists(dst) && sizeBytes == r?.getDataBytes()) {
-            isSuccess = true
             t.updateInfo(state = OperationState.SKIP)
             out.add(log { "Data has not changed." })
         } else {
@@ -107,7 +106,7 @@ class MediumBackupUtil @Inject constructor(
                 out.addAll(result.out)
             }
             commonBackupUtil.testArchive(src = dst, ct = ct).also { result ->
-                isSuccess = isSuccess and result.isSuccess
+                isSuccess = isSuccess && result.isSuccess
                 out.addAll(result.out)
                 if (result.isSuccess) {
                     m.setDataBytes(sizeBytes)

@@ -207,7 +207,7 @@ class PackagesBackupUtil @Inject constructor(
             out.addAll(result.out)
         }
         commonBackupUtil.testArchive(src = dst, ct = tarCt).also { result ->
-            isSuccess = isSuccess and result.isSuccess
+            isSuccess = isSuccess && result.isSuccess
             out.addAll(result.out)
         }
 
@@ -248,7 +248,7 @@ class PackagesBackupUtil @Inject constructor(
                             out.addAll(result.out)
                         }
                     commonBackupUtil.testArchive(src = dst, ct = ct).also { result ->
-                        isSuccess = isSuccess and result.isSuccess
+                        isSuccess = isSuccess && result.isSuccess
                         out.addAll(result.out)
                         if (result.isSuccess) {
                             p.setDataBytes(dataType, sizeBytes)
@@ -342,7 +342,7 @@ class PackagesBackupUtil @Inject constructor(
                     out.addAll(result.out)
                 }
                 commonBackupUtil.testArchive(src = dst, ct = ct).also { result ->
-                    isSuccess = isSuccess and result.isSuccess
+                    isSuccess = isSuccess && result.isSuccess
                     out.addAll(result.out)
                     if (result.isSuccess) {
                         p.setDataBytes(dataType, sizeBytes)

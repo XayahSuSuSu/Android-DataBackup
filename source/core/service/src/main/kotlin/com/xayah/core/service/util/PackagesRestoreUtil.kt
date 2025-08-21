@@ -163,11 +163,10 @@ class PackagesRestoreUtil @Inject constructor(
         val packageName = p.packageName
         val ct = p.indexInfo.compressionType
         val src = packageRepository.getArchiveDst(dstDir = srcDir, dataType = dataType, ct = ct)
-        var isSuccess: Boolean
+        var isSuccess = true
         val out = mutableListOf<String>()
 
         if (p.getDataSelected(dataType).not()) {
-            isSuccess = true
             t.updateInfo(dataType = dataType, state = OperationState.SKIP)
         } else {
             // Return if the archive doesn't exist.
@@ -193,7 +192,7 @@ class PackagesRestoreUtil @Inject constructor(
 
                         1 -> {
                             Pm.install(userId = userId, src = apksPath.first()).also { result ->
-                                isSuccess = isSuccess and result.isSuccess
+                                isSuccess = isSuccess && result.isSuccess
                                 out.addAll(result.out)
                             }
                         }
@@ -213,13 +212,13 @@ class PackagesRestoreUtil @Inject constructor(
 
                             apksPath.forEach { apkPath ->
                                 Pm.Install.write(session = pmSession, srcName = PathUtil.getFileName(apkPath), src = apkPath).also { result ->
-                                    isSuccess = isSuccess and result.isSuccess
+                                    isSuccess = isSuccess && result.isSuccess
                                     out.addAll(result.out)
                                 }
                             }
 
                             Pm.Install.commit(pmSession).also { result ->
-                                isSuccess = isSuccess and result.isSuccess
+                                isSuccess = isSuccess && result.isSuccess
                                 out.addAll(result.out)
                             }
                         }
@@ -256,11 +255,10 @@ class PackagesRestoreUtil @Inject constructor(
         val dstDir = packageRepository.getDataSrcDir(dataType, userId)
         val dst = packageRepository.getDataSrc(dstDir, packageName)
         val uid = rootService.getPackageUid(packageName = packageName, userId = userId)
-        var isSuccess: Boolean
+        var isSuccess = true
         val out = mutableListOf<String>()
 
         if (p.getDataSelected(dataType).not()) {
-            isSuccess = true
             t.updateInfo(dataType = dataType, state = OperationState.SKIP)
         } else {
             if (uid == -1) {
@@ -317,12 +315,12 @@ class PackagesRestoreUtil @Inject constructor(
                         gid = pathGid
                     }
                     SELinux.chown(uid = uid.toUInt(), gid = gid, path = dst).also { result ->
-                        isSuccess = result.isSuccess
+                        isSuccess = isSuccess && result.isSuccess
                         out.addAll(result.out)
                     }
                     if (pathContext.isNotEmpty()) {
                         SELinux.chcon(context = pathContext, path = dst).also { result ->
-                            isSuccess = result.isSuccess
+                            isSuccess = isSuccess && result.isSuccess
                             out.addAll(result.out)
                         }
                     } else {
@@ -332,7 +330,7 @@ class PackagesRestoreUtil @Inject constructor(
                         }
                         if (parentContext.isNotEmpty()) {
                             SELinux.chcon(context = parentContext, path = dst).also { result ->
-                                isSuccess = result.isSuccess
+                                isSuccess = isSuccess && result.isSuccess
                                 out.addAll(result.out)
                             }
                         } else {
