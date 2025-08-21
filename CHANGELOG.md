@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.0.11](https://github.com/XayahSuSuSu/Android-DataBackup/compare/2.0.10...v2.0.11) (2025-08-21)
+
+
+### gradle
+
+* Version 2.0.11 ([3dbc48f](https://github.com/XayahSuSuSu/Android-DataBackup/commit/3dbc48f958c743b3831ae86a435d666dd5084e4b))
+
+
+### Bug Fixes
+
+* [#410](https://github.com/XayahSuSuSu/Android-DataBackup/issues/410) ([eb8007e](https://github.com/XayahSuSuSu/Android-DataBackup/commit/eb8007ecb903c06c9dbdda40ea968d390660cee0))
+* **dex:** [NetworkUtil] Restore networks across different APIs ([bee531b](https://github.com/XayahSuSuSu/Android-DataBackup/commit/bee531b7d47e4a9b5fdceec1c442c9df12084407))
+* Incorrect restore state on finish page ([a378dbf](https://github.com/XayahSuSuSu/Android-DataBackup/commit/a378dbfbca1789fdc786875c575d498623852340))
+
 ## [2.0.10](https://github.com/XayahSuSuSu/Android-DataBackup/compare/2.0.9...v2.0.10) (2025-08-10)
 
 
