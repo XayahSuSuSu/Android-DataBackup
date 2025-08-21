@@ -153,8 +153,8 @@ class AppsRepo @Inject constructor(
         appsDao.blockByIds(ids)
     }
 
-    suspend fun setBlocked(id: Long, blocked: Boolean) {
-        appsDao.setBlocked(id, blocked)
+    suspend fun blockByIds(ids: List<Long>) {
+        appsDao.blockByIds(ids)
     }
 
     suspend fun setEnabled(id: Long, enabled: Boolean) {

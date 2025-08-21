@@ -293,8 +293,8 @@ class FilesRepo @Inject constructor(
         filesDao.upsert(file)
     }
 
-    suspend fun setBlocked(id: Long, blocked: Boolean) {
-        filesDao.setBlocked(id, blocked)
+    suspend fun blockByIds(ids: List<Long>) {
+        filesDao.blockByIds(ids)
     }
 
     suspend fun delete(id: Long) {

@@ -173,17 +173,16 @@ class DetailsViewModel @Inject constructor(
             when (uiState.value) {
                 is Success.App -> {
                     val state = uiState.value.castTo<Success.App>()
-                    appsRepo.setBlocked(state.app.id, blocked.not())
+                    appsRepo.blockByIds(listOf(state.app.id))
                 }
 
                 is Success.File -> {
                     val state = uiState.value.castTo<Success.File>()
-                    filesRepo.setBlocked(state.file.id, blocked.not())
+                    filesRepo.blockByIds(listOf(state.file.id))
                 }
 
                 else -> {}
             }
-
         }
     }
 
