@@ -442,4 +442,5 @@
     <string name="public_network">公共网络</string>
     <string name="hidden_password">密码已隐藏</string>
     <string name="select_contacts">选择联系人</string>
+    <string name="select_call_logs">选择通话记录</string>
 </resources>

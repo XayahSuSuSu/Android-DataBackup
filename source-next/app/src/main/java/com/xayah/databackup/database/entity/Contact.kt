@@ -9,9 +9,6 @@ import com.xayah.databackup.R
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-typealias FiledMap = Map<String, Any>
-typealias FiledMutableMap = MutableMap<String, Any>
-
 @Entity(tableName = "contacts", primaryKeys = ["id"])
 data class Contact(
     var id: Long,
@@ -26,8 +23,9 @@ data class ContactDeserialized(
     var data: List<FiledMap>,
     var selected: Boolean,
 ) {
-    val displayName: String =
+    val displayName: String by lazy {
         rawContact.getOrDefault(ContactsContract.RawContacts.DISPLAY_NAME_PRIMARY, App.application.getString(R.string.unknown)).toString()
+    }
 }
 
 fun Flow<List<Contact>>.deserialize(): Flow<List<ContactDeserialized>> = map { flow ->

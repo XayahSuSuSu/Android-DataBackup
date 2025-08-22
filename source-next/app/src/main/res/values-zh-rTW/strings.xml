@@ -440,4 +440,5 @@
     <string name="public_network">公共網絡</string>
     <string name="hidden_password">密碼已隱藏</string>
     <string name="select_contacts">選擇聯係人</string>
+    <string name="select_call_logs">選擇通話記錄</string>
 </resources>

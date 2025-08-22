@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.feature.BackupApps
+import com.xayah.databackup.feature.BackupCallLogs
 import com.xayah.databackup.feature.BackupContacts
 import com.xayah.databackup.feature.BackupNetworks
 import com.xayah.databackup.ui.component.SelectableActionButton
@@ -127,17 +128,19 @@ fun BackupPreviewScreen(navController: NavHostController) {
                     modifier = Modifier
                         .fillMaxWidth(1f)
                         .wrapContentSize(),
-                    icon = ImageVector.vectorResource(R.drawable.ic_message_circle),
-                    title = "Messages",
+                    icon = ImageVector.vectorResource(R.drawable.ic_phone),
+                    title = "Call logs",
                     subtitle = "No items selected"
-                ) {}
+                ) {
+                    navController.navigateSafely(BackupCallLogs)
+                }
 
                 SelectableActionButton(
                     modifier = Modifier
                         .fillMaxWidth(1f)
                         .wrapContentSize(),
-                    icon = ImageVector.vectorResource(R.drawable.ic_phone),
-                    title = "Call logs",
+                    icon = ImageVector.vectorResource(R.drawable.ic_message_circle),
+                    title = "Messages",
                     subtitle = "No items selected"
                 ) {}
 

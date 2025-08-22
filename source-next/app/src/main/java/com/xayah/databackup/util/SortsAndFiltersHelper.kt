@@ -1,6 +1,7 @@
 package com.xayah.databackup.util
 
 import com.xayah.databackup.database.entity.App
+import com.xayah.databackup.database.entity.CallLogDeserialized
 import com.xayah.databackup.database.entity.ContactDeserialized
 import com.xayah.databackup.database.entity.NetworkUnmarshalled
 
@@ -22,6 +23,9 @@ private fun filterSearchText(contact: ContactDeserialized, searchText: String) =
     searchText.isEmpty()
             || contact.displayName.lowercase().contains(searchText.lowercase())
 
+private fun filterSearchText(callLog: CallLogDeserialized, searchText: String) =
+    searchText.isEmpty()
+            || callLog.number.lowercase().contains(searchText.lowercase())
 
 fun Iterable<App>.filterApp(searchText: String, userId: Int, filterUserApps: Boolean, filterSystemApps: Boolean): List<App> = filter {
     filterUserId(it, userId)
@@ -58,5 +62,9 @@ fun Iterable<NetworkUnmarshalled>.filterNetwork(searchText: String): List<Networ
 }
 
 fun Iterable<ContactDeserialized>.filterContact(searchText: String): List<ContactDeserialized> = filter {
+    filterSearchText(it, searchText)
+}
+
+fun Iterable<CallLogDeserialized>.filterCallLog(searchText: String): List<CallLogDeserialized> = filter {
     filterSearchText(it, searchText)
 }

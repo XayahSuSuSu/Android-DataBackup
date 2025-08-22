@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.ServiceInfo
 import android.database.Cursor
 import android.os.Build
+import android.provider.CallLog.Calls
 import android.provider.ContactsContract
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
@@ -13,6 +14,7 @@ import androidx.work.WorkerParameters
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
 import com.xayah.databackup.App
+import com.xayah.databackup.database.entity.CallLog
 import com.xayah.databackup.database.entity.Contact
 import com.xayah.databackup.database.entity.FiledMap
 import com.xayah.databackup.database.entity.FiledMutableMap
@@ -123,6 +125,28 @@ class AppsUpdateWorker(appContext: Context, workerParams: WorkerParameters) : Co
             }
             runCatching {
                 DatabaseHelper.contactDao.upsert(contacts)
+            }.onFailure {
+                LogHelper.e(TAG, "Failed to update contacts.", it)
+            }
+
+            // TMP
+            val callLogs = mutableListOf<CallLog>()
+            App.application.contentResolver.query(Calls.CONTENT_URI, null, null, null, Calls.DEFAULT_SORT_ORDER)?.also { callLogCursor ->
+                while (callLogCursor.moveToNext()) {
+                    runCatching {
+                        val callLog = CallLog(0, "", true)
+                        val call = getAllFields(cursor = callLogCursor)
+                        callLog.call = moshi.adapter<FiledMap>().toJson(call)
+                        callLog.id = call.getOrDefault(Calls._ID, -1L) as Long
+                        if (callLog.id == -1L) {
+                            throw IllegalStateException("Unexpected id: ${callLog.id}")
+                        }
+                        callLogs.add(callLog)
+                    }.onFailure { e -> e.printStackTrace() }
+                }
+            }
+            runCatching {
+                DatabaseHelper.callLogDao.upsert(callLogs)
             }.onFailure {
                 LogHelper.e(TAG, "Failed to update contacts.", it)
             }
