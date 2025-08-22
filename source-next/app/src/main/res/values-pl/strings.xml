@@ -442,4 +442,5 @@
     <string name="public_network">Sieć publiczna</string>
     <string name="hidden_password">Ukryte hasło</string>
     <string name="select_contacts">Wybierz kontakty</string>
+    <string name="select_call_logs">Wybierz dziennik połączeń</string>
 </resources>
