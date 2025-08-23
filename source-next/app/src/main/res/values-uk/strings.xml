@@ -442,4 +442,5 @@
     <string name="public_network">Публічна мережа</string>
     <string name="hidden_password">Прихований пароль</string>
     <string name="select_contacts">Вибрати контакти</string>
+    <string name="select_call_logs">Вибрати журнали викликів</string>
 </resources>
