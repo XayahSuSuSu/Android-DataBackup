@@ -442,4 +442,5 @@
     <string name="error">Error</string>
     <string name="retry">Reintentar</string>
     <string name="select_contacts">Elige contactos</string>
+    <string name="select_call_logs">Elige registro de llamadas</string>
 </resources>
