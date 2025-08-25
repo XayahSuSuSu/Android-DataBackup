@@ -442,4 +442,5 @@
     <string name="public_network">Rede Wi-Fi pública</string>
     <string name="hidden_password">Senha oculta</string>
     <string name="select_contacts">Selecionar contatos</string>
+    <string name="select_call_logs">Selecionar registros de chamadas</string>
 </resources>
