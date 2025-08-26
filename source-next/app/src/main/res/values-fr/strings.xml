@@ -81,7 +81,7 @@
     <string name="user">Utilisateur</string>
     <string name="restore_completed">Restauration complète</string>
     <string name="backup">Sauvegarde</string>
-    <string name="restore_user_desc">Quel utilisateur voulez-vous restaurer ?</string>
+    <string name="restore_user_desc">Quel utilisateur souhaitez-vous restaurer ?</string>
     <string name="update_records">Mettre à jour les enregistrements</string>
     <string name="start">Commencer</string>
     <string name="start_desc">Toute donnée générée par cette application est uniquement utilisée à des fins de sauvegarde/restauration, et uniquement stockée localement.</string>
@@ -112,7 +112,7 @@
     <string name="create_account">Créer un compte</string>
     <string name="port">Port</string>
     <string name="backup_itself">Sauvegarde elle-même</string>
-    <string name="backup_user_desc">Cibler l\'utilisateur lors du chargement de la liste de sauvegarde ou de la sauvegarde.</string>
+    <string name="backup_user_desc">Cibler l\'utilisateur pendant le chargement de la liste de sauvegarde ou la sauvegarde</string>
     <string name="apps_which_have_backups">Les applications possédant des sauvegardes</string>
     <string name="compression_test_desc">Regarder si les archives compressées fonctionnent après avoir été créées</string>
     <string name="task">Tâche</string>
@@ -204,7 +204,7 @@
     <string name="confirm_delete">Ceci supprimera tous les fichiers connexes que vous avez sélectionnés</string>
     <string name="reset_restore_list">Réinitialiser la liste des restaurations</string>
     <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Utiliser un pipe plutôt qu\'un paramètre d\'entrée pour le tar. Intervertissez-le quand il dit \"tar : zstd -r -T0 --ultra -1 -q --priority=rt : Cannot exec : No such file or directory\"</string>
-    <string name="clean_restoring">Restauration Propre</string>
+    <string name="clean_restoring">Restauration propre</string>
     <string name="confirm_delete_selected_restoring_items">Supprimer les éléments sélectionnés de la base de données and des fichiers locaux ?</string>
     <string name="custom_storage">Stockage Personnalisé</string>
     <string name="backup_dir_as_media_error">Impossible d\'ajouter le dossier de sauvegarde comme média</string>
@@ -441,4 +441,6 @@
     <string name="public_network">Réseau publique</string>
     <string name="hidden_password">Mot-de-passe caché</string>
     <string name="items_selected">%1$s/%2$s objets sélectionnés</string>
+    <string name="select_contacts">Sélectionner les contacts</string>
+    <string name="select_call_logs">Sélectionner les journaux d\'appels</string>
 </resources>
