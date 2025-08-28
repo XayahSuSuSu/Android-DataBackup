@@ -14,7 +14,7 @@
     <string name="processing">U obradi</string>
     <string name="date">Datum</string>
     <string name="unsupported_format">Nepodržan format</string>
-    <string name="telephony">Historija poziva</string>
+    <string name="telephony">Povijest poziva</string>
     <string name="create_account">Napravi račun</string>
     <string name="simplify">Pojednostavi</string>
     <string name="not_installed">Nije instaliran</string>
@@ -69,7 +69,7 @@
     <string name="architecture">Arhitektura</string>
     <string name="restore_list">Obnovi popis</string>
     <string name="modify">Promijeni</string>
-    <string name="grant_root_access">Odobri root pristup</string>
+    <string name="grant_root_access">Odobri administratorski pristup</string>
     <string name="update_records">Aktualiziraj zapise</string>
     <string name="backup_dir">Mapa sigurnosne kopije</string>
     <string name="backing_up">Sigurnosno kopiranje …</string>
@@ -225,7 +225,7 @@
     <string name="sorts">Razvrstaj</string>
     <string name="args_loading_from_user">Učitavanje od korisnika %1$s</string>
     <string name="storage">Memorija</string>
-    <string name="root_permission">Dozvola za root pristup</string>
+    <string name="root_permission">Administratorska dozvola</string>
     <string name="notification_permission">Dozvola za obavijesti</string>
     <string name="unknown">Nepoznato</string>
     <string name="anonymous">Anonimno</string>
@@ -319,7 +319,7 @@
     <string name="dump_apk">Izvoz APK-a</string>
     <string name="dump_apk_desc">Izvršite izvoz APK-a kako biste dobili detaljnije informacije</string>
     <string name="third_party">Treća strana</string>
-    <string name="no_root_directory">Nemoj odabrati glavni direktorij</string>
+    <string name="no_root_directory">Nemojte odabrati glavni direktorij</string>
     <string name="about">O</string>
     <string name="about_app">O aplikaciji</string>
     <string name="donate">Doniraj</string>
@@ -406,7 +406,7 @@
     <string name="root_desc">Ova aplikacija omogućuje izradu potpune sigurnosne kopije uređaja, pri čemu su potrebne root (superkorisničke) dozvole za pristup sustavskim datotekama i postavkama koje standardne aplikacije ne mogu dohvatiti</string>
     <string name="notification_desc">Ovo je potrebno za slanje potrebnih obavijesti</string>
     <string name="permission_is_denied">Dozvola je odbijena</string>
-    <string name="root_denied_msg">Provjeri svoj root upravljač i ponovo pokreni aplikaciju</string>
+    <string name="root_denied_msg">Provjerite svoj root upravljač i ponovo pokrenite aplikaciju</string>
     <string name="error">Greška</string>
     <string name="retry">Pokušaj ponovo</string>
     <string name="search">Traži</string>
@@ -429,4 +429,18 @@
     <string name="unselect_all_int_data">Odznači sve: Interni podaci</string>
     <string name="unselect_all_ext_data">Odznači sve: Eksterni podaci</string>
     <string name="unselect_all_obb_and_media"><![CDATA[Odznači sve: OBB i mediji]]></string>
+    <string name="error_service_desc">Neuspjelo spajanje na root uslugu, aplikacija ne može ispravno raditi bez nje. Pokušajte ponovo ili ponovo pokrenite aplikaciju</string>
+    <string name="expand">Rasklopi</string>
+    <string name="collapsed">Sklopljeno</string>
+    <string name="internal_data">Int. podaci</string>
+    <string name="external_data">Ekst. podaci</string>
+    <string name="close">Zatvori</string>
+    <string name="select_networks">Odaberi mreže</string>
+    <string name="items_selected">%1$s/%2$s stavki odabrano</string>
+    <string name="show_password">Prikaži lozinku</string>
+    <string name="hide_password">Sakrij lozinku</string>
+    <string name="public_network">Javna mreža</string>
+    <string name="hidden_password">Skrivena lozinka</string>
+    <string name="select_contacts">Odaberi kontakte</string>
+    <string name="select_call_logs">Odaberi zapise poziva</string>
 </resources>
