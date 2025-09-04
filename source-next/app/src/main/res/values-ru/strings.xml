@@ -442,4 +442,5 @@
     <string name="public_network">Общественная сеть</string>
     <string name="hidden_password">Скрытый пароль</string>
     <string name="select_contacts">Выберите контакты</string>
+    <string name="select_call_logs">Выберите журнал вызовов</string>
 </resources>
