@@ -15,9 +15,11 @@ import com.xayah.core.model.ThemeType
 import com.xayah.core.model.ZSTD_SUFFIX
 import com.xayah.core.model.database.Info
 import com.xayah.core.model.database.MediaEntity
+import com.xayah.core.model.database.MessageEntity
 import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.ProcessingInfoEntity
 import com.xayah.core.model.database.TaskDetailMediaEntity
+import com.xayah.core.model.database.TaskDetailMessageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.database.TaskEntity
 import java.text.DecimalFormat
@@ -106,6 +108,16 @@ fun TaskDetailPackageEntity.set(
     if (state != null) this.state = state
     if (processingIndex != null) this.processingIndex = processingIndex
     if (packageEntity != null) this.packageEntity = packageEntity
+}
+
+fun TaskDetailMessageEntity.set(
+    state: OperationState? = null,
+    processingIndex: Int? = null,
+    messageEntity: MessageEntity? = null,
+) = run {
+    if (state != null) this.state = state
+    if (processingIndex != null) this.processingIndex = processingIndex
+    if (messageEntity != null) this.messageEntity = messageEntity
 }
 
 fun TaskDetailPackageEntity.set(
