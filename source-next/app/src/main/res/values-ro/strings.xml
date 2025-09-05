@@ -4,9 +4,9 @@
     <string name="welcome_to_use">Bine ați venit la DataBackup</string>
     <string name="update_records">Actualizați datele înregistrate</string>
     <string name="environment_detection">Detectarea mediului</string>
-    <string name="start">Incepe</string>
+    <string name="start">Pornire</string>
     <string name="start_desc">Toate datele generate de această aplicație sunt folosite numai pentru backup/restaurare și sunt stocate doar local.</string>
-    <string name="network">Retea</string>
+    <string name="network">Rețea</string>
     <string name="storage">Stocare</string>
     <string name="directory">Stocare</string>
     <string name="log">Jurnale</string>
@@ -54,7 +54,7 @@
     <string name="loading">Se încarcă</string>
     <string name="release_prebuilt_binaries">Lansați fișierele binare preconstruite</string>
     <string name="activities">Activități</string>
-    <string name="loading_failed">Încărcare nereușită.</string>
+    <string name="loading_failed">Încărcare nereușită</string>
     <string name="confirm">Confirmă</string>
     <string name="fetch_failed">Obținere esuată</string>
     <string name="unsupported_format">Format nesuportat</string>
