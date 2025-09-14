@@ -342,4 +342,15 @@
     <string name="download">Preuzmi</string>
     <string name="changelog">Zapisnik promjena</string>
     <string name="args_update_from">Možete ažurirati sa verzije %1$s na verziju %2$s</string>
+    <string name="update_time">Ažuriranje vremena</string>
+    <string name="args_apps_restored">%1$s povraćene aplikacije</string>
+    <string name="insecure_server_connection">Dozvoli konekciju na nesigurni server</string>
+    <string name="insecure_server_connection_desc">Uključite ovu opciju kada koristite samopotpisan certifikat</string>
+    <string name="args_files_restored">%1$s Dokumenti povraćeni</string>
+    <string name="no_item_selected">Nijedna stavka nije odabrana</string>
+    <string name="apk_selected">APK odabran</string>
+    <string name="data_selected">Podaci odabrani</string>
+    <string name="all_selected">Sve stavke odabrane</string>
+    <string name="custom_selected">Specifične stavke odabrane</string>
+    <string name="data_items">Stavke s podacima</string>
 </resources>
