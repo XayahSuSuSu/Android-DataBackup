@@ -15,4 +15,5 @@ object DatabaseHelper {
     val networkDao = database.networkDao()
     val contactDao = database.contactDao()
     val callLogDao = database.callLogDao()
+    val messageDao = database.messageDao()
 }

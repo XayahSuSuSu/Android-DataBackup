@@ -443,4 +443,7 @@
     <string name="hidden_password">密碼已隱藏</string>
     <string name="select_contacts">選擇聯係人</string>
     <string name="select_call_logs">選擇通話記錄</string>
+    <string name="sms">簡訊</string>
+    <string name="mms">彩信</string>
+    <string name="select_messages">選擇訊息</string>
 </resources>

@@ -456,4 +456,7 @@
     <string name="hidden_password">Hidden password</string>
     <string name="select_contacts">Select contacts</string>
     <string name="select_call_logs">Select call logs</string>
+    <string name="sms">SMS</string>
+    <string name="mms">MMS</string>
+    <string name="select_messages">Select messages</string>
 </resources>

@@ -2,6 +2,7 @@ package com.xayah.databackup.feature.backup.call_logs
 
 import android.provider.CallLog
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
@@ -41,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,6 +52,7 @@ import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.database.entity.CallLogDeserialized
 import com.xayah.databackup.ui.component.SearchTextField
+import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.popBackStackSafely
 
 @Composable
@@ -60,29 +61,32 @@ fun BackupCallLogsScreen(
     viewModel: CallLogsViewModel = viewModel(),
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-    val scrollBehaviorOnSearch = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    var nestedScrollConnection by remember { mutableStateOf(scrollBehavior.nestedScrollConnection) }
     val callLogs by viewModel.callLogs.collectAsStateWithLifecycle()
     val selected by viewModel.selected.collectAsStateWithLifecycle()
     val searchText by viewModel.searchText.collectAsStateWithLifecycle()
     var onSearch by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val lazyListState = rememberLazyListState()
+
+    var showStartEdge by remember { mutableStateOf(false) }
+    var showEndEdge by remember { mutableStateOf(false) }
+    val startEdgeRange: Float by animateFloatAsState(if (showStartEdge) 1f else 0f, label = "alpha")
+    val endEdgeRange: Float by animateFloatAsState(if (showEndEdge) 1f else 0f, label = "alpha")
+    LaunchedEffect(lazyListState.canScrollBackward) {
+        showStartEdge = lazyListState.canScrollBackward
+    }
+    LaunchedEffect(lazyListState.canScrollForward) {
+        showEndEdge = lazyListState.canScrollForward
+    }
+
     LaunchedEffect(onSearch) {
         if (onSearch) {
             focusRequester.requestFocus()
-            nestedScrollConnection = scrollBehaviorOnSearch.nestedScrollConnection
-            scrollBehaviorOnSearch.state.contentOffset = scrollBehavior.state.contentOffset
-        } else {
-            nestedScrollConnection = scrollBehavior.nestedScrollConnection
-            scrollBehavior.state.contentOffset = scrollBehaviorOnSearch.state.contentOffset
         }
     }
 
     Scaffold(
-        modifier = Modifier
-            .nestedScroll(nestedScrollConnection)
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             var selectAll by remember { mutableStateOf(true) }
 
@@ -113,7 +117,7 @@ fun BackupCallLogsScreen(
                                 )
                             }
                         },
-                        scrollBehavior = scrollBehaviorOnSearch,
+                        scrollBehavior = scrollBehavior,
                     )
                 } else {
                     LargeTopAppBar(
@@ -184,7 +188,11 @@ fun BackupCallLogsScreen(
                         )
                     }
                 } else {
-                    LazyColumn(state = lazyListState, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    LazyColumn(
+                        modifier = Modifier.verticalFadingEdges(startEdgeRange, endEdgeRange),
+                        state = lazyListState,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
                         item(key = -1) {
                             Spacer(modifier = Modifier.height(0.dp))
                         }

@@ -3,7 +3,9 @@ package com.xayah.databackup.util
 import com.xayah.databackup.database.entity.App
 import com.xayah.databackup.database.entity.CallLogDeserialized
 import com.xayah.databackup.database.entity.ContactDeserialized
+import com.xayah.databackup.database.entity.MmsDeserialized
 import com.xayah.databackup.database.entity.NetworkUnmarshalled
+import com.xayah.databackup.database.entity.SmsDeserialized
 
 private fun filterUserId(app: App, userId: Int) = app.userId == userId
 
@@ -26,6 +28,14 @@ private fun filterSearchText(contact: ContactDeserialized, searchText: String) =
 private fun filterSearchText(callLog: CallLogDeserialized, searchText: String) =
     searchText.isEmpty()
             || callLog.number.lowercase().contains(searchText.lowercase())
+
+private fun filterSearchText(sms: SmsDeserialized, searchText: String) =
+    searchText.isEmpty()
+            || sms.body.lowercase().contains(searchText.lowercase())
+
+private fun filterSearchText(mms: MmsDeserialized, searchText: String) =
+    searchText.isEmpty()
+            || mms.body.toString().contains(searchText.lowercase())
 
 fun Iterable<App>.filterApp(searchText: String, userId: Int, filterUserApps: Boolean, filterSystemApps: Boolean): List<App> = filter {
     filterUserId(it, userId)
@@ -66,5 +76,13 @@ fun Iterable<ContactDeserialized>.filterContact(searchText: String): List<Contac
 }
 
 fun Iterable<CallLogDeserialized>.filterCallLog(searchText: String): List<CallLogDeserialized> = filter {
+    filterSearchText(it, searchText)
+}
+
+fun Iterable<SmsDeserialized>.filterSms(searchText: String): List<SmsDeserialized> = filter {
+    filterSearchText(it, searchText)
+}
+
+fun Iterable<MmsDeserialized>.filterMms(searchText: String): List<MmsDeserialized> = filter {
     filterSearchText(it, searchText)
 }

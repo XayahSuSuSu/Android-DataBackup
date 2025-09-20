@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.graphics.res.animatedVectorResource
 import androidx.compose.animation.graphics.res.rememberAnimatedVectorPainter
 import androidx.compose.animation.graphics.vector.AnimatedImageVector
@@ -57,7 +58,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -78,6 +78,7 @@ import com.xayah.databackup.ui.component.SearchTextField
 import com.xayah.databackup.ui.component.SelectableChip
 import com.xayah.databackup.ui.component.filterButtonSecondaryColors
 import com.xayah.databackup.ui.component.horizontalFadingEdges
+import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.ui.material3.ModalDropdownMenu
 import com.xayah.databackup.ui.material3.ModalDropdownMenuItem
 import com.xayah.databackup.util.FilterBackupUser
@@ -106,9 +107,7 @@ fun BackupAppsScreen(
     viewModel: AppsViewModel = viewModel(),
 ) {
     val context = LocalContext.current
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-    val scrollBehaviorOnSearch = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    var nestedScrollConnection by remember { mutableStateOf(scrollBehavior.nestedScrollConnection) }
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val apps by viewModel.apps.collectAsStateWithLifecycle()
     val selected by viewModel.selected.collectAsStateWithLifecycle()
     val selectedBytes by viewModel.selectedBytes.collectAsStateWithLifecycle()
@@ -119,21 +118,26 @@ fun BackupAppsScreen(
     var onSearch by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val lazyListState = rememberLazyListState()
+
+    var showStartEdge by remember { mutableStateOf(false) }
+    var showEndEdge by remember { mutableStateOf(false) }
+    val startEdgeRange: Float by animateFloatAsState(if (showStartEdge) 1f else 0f, label = "alpha")
+    val endEdgeRange: Float by animateFloatAsState(if (showEndEdge) 1f else 0f, label = "alpha")
+    LaunchedEffect(lazyListState.canScrollBackward) {
+        showStartEdge = lazyListState.canScrollBackward
+    }
+    LaunchedEffect(lazyListState.canScrollForward) {
+        showEndEdge = lazyListState.canScrollForward
+    }
+
     LaunchedEffect(onSearch) {
         if (onSearch) {
             focusRequester.requestFocus()
-            nestedScrollConnection = scrollBehaviorOnSearch.nestedScrollConnection
-            scrollBehaviorOnSearch.state.contentOffset = scrollBehavior.state.contentOffset
-        } else {
-            nestedScrollConnection = scrollBehavior.nestedScrollConnection
-            scrollBehavior.state.contentOffset = scrollBehaviorOnSearch.state.contentOffset
         }
     }
 
     Scaffold(
-        modifier = Modifier
-            .nestedScroll(nestedScrollConnection)
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             AnimatedContent(onSearch) { target ->
                 if (target) {
@@ -160,7 +164,7 @@ fun BackupAppsScreen(
                             }
                             SelectIconButton(viewModel = viewModel)
                         },
-                        scrollBehavior = scrollBehaviorOnSearch,
+                        scrollBehavior = scrollBehavior,
                     )
                 } else {
                     LargeTopAppBar(
@@ -229,7 +233,10 @@ fun BackupAppsScreen(
                         )
                     }
                 } else {
-                    LazyColumn(state = lazyListState) {
+                    LazyColumn(
+                        modifier = Modifier.verticalFadingEdges(startEdgeRange, endEdgeRange),
+                        state = lazyListState
+                    ) {
                         items(items = apps, key = { it.pkgUserKey }) { app ->
                             AppListItem(
                                 modifier = Modifier.animateItem(),

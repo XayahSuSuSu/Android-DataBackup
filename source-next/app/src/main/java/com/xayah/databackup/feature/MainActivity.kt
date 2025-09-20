@@ -34,6 +34,7 @@ import com.xayah.databackup.feature.backup.BackupPreviewScreen
 import com.xayah.databackup.feature.backup.apps.BackupAppsScreen
 import com.xayah.databackup.feature.backup.call_logs.BackupCallLogsScreen
 import com.xayah.databackup.feature.backup.contacts.BackupContactsScreen
+import com.xayah.databackup.feature.backup.messages.BackupMessagesScreen
 import com.xayah.databackup.feature.backup.networks.BackupNetworksScreen
 import com.xayah.databackup.feature.dashboard.DashboardScreen
 import com.xayah.databackup.feature.setup.NoPermKey
@@ -71,6 +72,9 @@ data object BackupContacts
 
 @Serializable
 data object BackupCallLogs
+
+@Serializable
+data object BackupMessages
 
 @Composable
 fun ErrorServiceDialog(onConfirm: () -> Unit, onRetry: () -> Unit) {
@@ -183,6 +187,10 @@ class MainActivity : ComponentActivity() {
 
                             composable<BackupCallLogs> {
                                 BackupCallLogsScreen(navController)
+                            }
+
+                            composable<BackupMessages> {
+                                BackupMessagesScreen(navController)
                             }
                         }
                     }

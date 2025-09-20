@@ -34,6 +34,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.feature.BackupApps
 import com.xayah.databackup.feature.BackupCallLogs
 import com.xayah.databackup.feature.BackupContacts
+import com.xayah.databackup.feature.BackupMessages
 import com.xayah.databackup.feature.BackupNetworks
 import com.xayah.databackup.ui.component.SelectableActionButton
 import com.xayah.databackup.ui.component.verticalFadingEdges
@@ -142,7 +143,9 @@ fun BackupPreviewScreen(navController: NavHostController) {
                     icon = ImageVector.vectorResource(R.drawable.ic_message_circle),
                     title = "Messages",
                     subtitle = "No items selected"
-                ) {}
+                ) {
+                    navController.navigateSafely(BackupMessages)
+                }
 
                 Spacer(modifier = Modifier.height(0.dp))
             }

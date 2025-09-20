@@ -3,9 +3,11 @@ package com.xayah.databackup.workers
 import android.content.Context
 import android.content.pm.ServiceInfo
 import android.database.Cursor
+import android.net.Uri
 import android.os.Build
 import android.provider.CallLog.Calls
 import android.provider.ContactsContract
+import android.provider.Telephony
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.OneTimeWorkRequestBuilder
@@ -18,7 +20,9 @@ import com.xayah.databackup.database.entity.CallLog
 import com.xayah.databackup.database.entity.Contact
 import com.xayah.databackup.database.entity.FiledMap
 import com.xayah.databackup.database.entity.FiledMutableMap
+import com.xayah.databackup.database.entity.Mms
 import com.xayah.databackup.database.entity.Network
+import com.xayah.databackup.database.entity.Sms
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.util.DatabaseHelper
 import com.xayah.databackup.util.LogHelper
@@ -148,8 +152,85 @@ class AppsUpdateWorker(appContext: Context, workerParams: WorkerParameters) : Co
             runCatching {
                 DatabaseHelper.callLogDao.upsert(callLogs)
             }.onFailure {
-                LogHelper.e(TAG, "Failed to update contacts.", it)
+                LogHelper.e(TAG, "Failed to update call logs.", it)
             }
+
+            // TMP
+            val smsList = mutableListOf<Sms>()
+            App.application.contentResolver.query(Telephony.Sms.CONTENT_URI, null, null, null, Telephony.Sms.DEFAULT_SORT_ORDER)?.also { smsCursor ->
+                while (smsCursor.moveToNext()) {
+                    runCatching {
+                        val sms = Sms(0, "", true)
+                        val config = getAllFields(cursor = smsCursor)
+                        sms.config = moshi.adapter<FiledMap>().toJson(config)
+                        sms.id = config.getOrDefault(Telephony.Sms._ID, -1L) as Long
+                        if (sms.id == -1L) {
+                            throw IllegalStateException("Unexpected id: ${sms.id}")
+                        }
+                        smsList.add(sms)
+                    }.onFailure { e -> e.printStackTrace() }
+                }
+            }
+            runCatching {
+                DatabaseHelper.messageDao.upsertSms(smsList)
+            }.onFailure {
+                LogHelper.e(TAG, "Failed to update sms.", it)
+            }
+
+            val mmsList = mutableListOf<Mms>()
+            App.application.contentResolver.query(Telephony.Mms.CONTENT_URI, null, null, null, Telephony.Mms.DEFAULT_SORT_ORDER)?.also { pduCursor ->
+                // (part)mid -> (pdu)_id <- (addr)msg_id
+                while (pduCursor.moveToNext()) {
+                    runCatching {
+                        val mms = Mms(0, "", "", "", true)
+                        val pdu = getAllFields(cursor = pduCursor)
+                        mms.pdu = moshi.adapter<FiledMap>().toJson(pdu)
+                        mms.id = pdu.getOrDefault(Telephony.Mms._ID, -1L) as Long
+                        if (mms.id == -1L) {
+                            throw IllegalStateException("Unexpected id: ${mms.id}")
+                        }
+
+                        val ADDR_CONTENT_URI = Telephony.Mms.CONTENT_URI.buildUpon().appendPath(mms.id.toString()).appendPath("addr").build()
+                        App.application.contentResolver.query(
+                            ADDR_CONTENT_URI,
+                            null,
+                            null,
+                            null,
+                            null
+                        )?.also { addrCursor ->
+                            val addr = mutableListOf<FiledMap>()
+                            while (addrCursor.moveToNext()) {
+                                addr.add(getAllFields(cursor = addrCursor))
+                            }
+                            mms.addr = moshi.adapter<List<FiledMap>>().toJson(addr)
+                        }
+
+                        val TABLE_PART = "part"
+                        val CONTENT_URI = Uri.withAppendedPath(Telephony.Mms.CONTENT_URI, TABLE_PART)
+                        App.application.contentResolver.query(
+                            CONTENT_URI,
+                            null,
+                            "${Telephony.Mms.Part.MSG_ID} = ?",
+                            arrayOf(mms.id.toString()),
+                            null
+                        )?.also { partCursor ->
+                            val part = mutableListOf<FiledMap>()
+                            while (partCursor.moveToNext()) {
+                                part.add(getAllFields(cursor = partCursor))
+                            }
+                            mms.part = moshi.adapter<List<FiledMap>>().toJson(part)
+                        }
+
+                        mmsList.add(mms)
+                    }.onFailure { e -> e.printStackTrace() }
+                }
+            }
+            runCatching {
+                DatabaseHelper.messageDao.upsertMms(mmsList)
+            }.onFailure {
+                LogHelper.e(TAG, "Failed to update mms.", it)
+            }
+
 
             val appInfos = RemoteRootService.getInstalledAppInfos()
             runCatching {

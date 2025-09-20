@@ -22,6 +22,18 @@ fun Modifier.verticalFadingEdges(
     fadingEdge: Dp = 72.dp,
 ): Modifier = fadingEdges(Direction.VERTICAL, scrollState, fadingEdge)
 
+fun Modifier.horizontalFadingEdges(
+    startRange: Float,
+    endRange: Float,
+    fadingEdge: Dp = 48.dp,
+): Modifier = fadingEdges(Direction.HORIZONTAL, startRange, endRange, fadingEdge)
+
+fun Modifier.verticalFadingEdges(
+    startRange: Float,
+    endRange: Float,
+    fadingEdge: Dp = 48.dp,
+): Modifier = fadingEdges(Direction.VERTICAL, startRange, endRange, fadingEdge)
+
 private enum class Direction {
     HORIZONTAL,
     VERTICAL,
@@ -77,6 +89,65 @@ private fun Modifier.fadingEdges(
 
                         Direction.VERTICAL -> Brush.verticalGradient(
                             colors = endColors,
+                            startY = start,
+                            endY = end
+                        )
+                    },
+                    blendMode = BlendMode.DstIn
+                )
+            }
+        }
+)
+
+private fun Modifier.fadingEdges(
+    direction: Direction,
+    startRange: Float,
+    endRange: Float,
+    fadingEdge: Dp,
+): Modifier = this.then(
+    Modifier
+        .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+        .drawWithContent {
+            drawContent()
+            var colors = listOf(Color.Transparent, Color.Black)
+            val fadingEdgePx = fadingEdge.toPx()
+            var start = 0f
+            var range = fadingEdgePx * startRange
+            var end = range
+            if (range != 0f) {
+                drawRect(
+                    brush = when (direction) {
+                        Direction.HORIZONTAL -> Brush.horizontalGradient(
+                            colors = colors,
+                            startX = start,
+                            endX = end
+                        )
+
+                        Direction.VERTICAL -> Brush.verticalGradient(
+                            colors = colors,
+                            startY = start,
+                            endY = end
+                        )
+                    },
+                    blendMode = BlendMode.DstIn
+                )
+            }
+
+            colors = listOf(Color.Black, Color.Transparent)
+            range = fadingEdgePx * endRange
+            start = size.height - range
+            end = size.height
+            if (range != 0f) {
+                drawRect(
+                    brush = when (direction) {
+                        Direction.HORIZONTAL -> Brush.horizontalGradient(
+                            colors = colors,
+                            startX = start,
+                            endX = end
+                        )
+
+                        Direction.VERTICAL -> Brush.verticalGradient(
+                            colors = colors,
                             startY = start,
                             endY = end
                         )
