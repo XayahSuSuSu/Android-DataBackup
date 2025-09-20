@@ -446,4 +446,18 @@
     <string name="mms">MMS</string>
     <string name="select_messages">Wybierz wiadomości</string>
     <string name="sms">SMS</string>
+    <string name="actions">Działania</string>
+    <string name="backup_your_data">Utwórz kopię zapasową swoich danych</string>
+    <string name="restore_your_data">Przywróć swoje dane</string>
+    <string name="see_your_previous_backups">Zobacz swoje poprzednie kopie zapasowe</string>
+    <string name="set_up_cloud_storage">Skonfiguruj pamięć masową w chmurze</string>
+    <string name="schedule">Harmonogram</string>
+    <string name="configure_automatic_backups">Skonfiguruj automatyczne kopie zapasowe</string>
+    <string name="backups">Kopie zapasowe</string>
+    <string name="networks">Sieci</string>
+    <string name="contacts">Kontakty</string>
+    <string name="messages">Wiadomości</string>
+    <string name="call_logs">Rejestry połączeń</string>
+    <string name="free">Wolne</string>
+    <string name="other">Inne</string>
 </resources>
