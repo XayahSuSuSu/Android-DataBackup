@@ -6,6 +6,7 @@ import com.xayah.core.data.R
 import com.xayah.core.database.dao.DirectoryDao
 import com.xayah.core.database.dao.PackageDao
 import com.xayah.core.datastore.ConstantUtil
+import com.xayah.core.datastore.ConstantUtil.DEFAULT_PATH_PARENT
 import com.xayah.core.datastore.readBackupSavePath
 import com.xayah.core.datastore.saveBackupSavePath
 import com.xayah.core.model.StorageType
@@ -79,7 +80,10 @@ class DirectoryRepository @Inject constructor(
 
             // Internal storage
             val internalList = rootService.listFilePaths(ConstantUtil.STORAGE_EMULATED_PATH, listFiles = false)
-                .filter { it.substring(it.lastIndexOf("/") + 1).toIntOrNull() != null } // Just select 0 10 999 etc.
+                .filter { it.substring(it.lastIndexOf("/") + 1).toIntOrNull() != null }.toMutableList() // Just select 0 10 999 etc.
+            if (internalList.contains(DEFAULT_PATH_PARENT).not()) {
+                internalList.add(DEFAULT_PATH_PARENT)
+            }
             val internalDirs = mutableListOf<DirectoryUpsertEntity>()
             for (storageItem in internalList) {
                 // e.g. /data/media/0
