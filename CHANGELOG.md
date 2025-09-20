@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.0.12](https://github.com/XayahSuSuSu/Android-DataBackup/compare/2.0.11...v2.0.12) (2025-09-20)
+
+
+### gradle
+
+* Version 2.0.12 ([081a48e](https://github.com/XayahSuSuSu/Android-DataBackup/commit/081a48ee790e64899bebd7fc0b20ef328cc0a59b))
+
+
+### Bug Fixes
+
+* [#419](https://github.com/XayahSuSuSu/Android-DataBackup/issues/419) ([230ff1d](https://github.com/XayahSuSuSu/Android-DataBackup/commit/230ff1d855df01b25187db573a65481e85728659))
+* [#423](https://github.com/XayahSuSuSu/Android-DataBackup/issues/423) ([5685845](https://github.com/XayahSuSuSu/Android-DataBackup/commit/568584565d5ad321128e8347d43d64efc0912c47))
+
 ## [2.0.11](https://github.com/XayahSuSuSu/Android-DataBackup/compare/2.0.10...v2.0.11) (2025-08-21)
 
 
