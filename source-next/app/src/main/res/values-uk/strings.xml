@@ -4,7 +4,7 @@
     <string name="save">Зберегти</string>
     <string name="restoring">Відновлення</string>
     <string name="both">Обидва</string>
-    <string name="activities">Дії</string>
+    <string name="activities">Заходи</string>
     <string name="not_exist">Не існує</string>
     <string name="last_backup">Останнє створення бекапу</string>
     <string name="start_desc">Всі дані, що створюються цим додатком, використовуються лише для резервного копіювання/відновлення і зберігаються лише локально.</string>
@@ -310,7 +310,7 @@
     <string name="about">Про додаток</string>
     <string name="about_app">Про нас</string>
     <string name="donate">Пожертвування</string>
-    <string name="contact">Контакти</string>
+    <string name="contact">Контакт</string>
     <string name="docs">Документація</string>
     <string name="translators">Перекладачі</string>
     <string name="never">Ніколи</string>
@@ -443,4 +443,21 @@
     <string name="hidden_password">Прихований пароль</string>
     <string name="select_contacts">Вибрати контакти</string>
     <string name="select_call_logs">Вибрати журнали викликів</string>
+    <string name="sms">SMS</string>
+    <string name="mms">MMS</string>
+    <string name="select_messages">Вибрати повідомлення</string>
+    <string name="actions">Дії</string>
+    <string name="backup_your_data">Резервне копіювання даних</string>
+    <string name="restore_your_data">Відновіть свої дані</string>
+    <string name="see_your_previous_backups">Перегляньте свої попередні резервні копії</string>
+    <string name="set_up_cloud_storage">Налаштування хмарного сховища</string>
+    <string name="schedule">Розклад</string>
+    <string name="configure_automatic_backups">Налаштування автоматичного резервного копіювання</string>
+    <string name="backups">Резервні копії</string>
+    <string name="other">Інше</string>
+    <string name="free">Вільний</string>
+    <string name="networks">Мережі</string>
+    <string name="contacts">Контакти</string>
+    <string name="call_logs">Журнали викликів</string>
+    <string name="messages">Повідомленням</string>
 </resources>
