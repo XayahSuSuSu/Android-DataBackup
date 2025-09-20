@@ -443,4 +443,7 @@
     <string name="hidden_password">Ukryte hasło</string>
     <string name="select_contacts">Wybierz kontakty</string>
     <string name="select_call_logs">Wybierz dziennik połączeń</string>
+    <string name="mms">MMS</string>
+    <string name="select_messages">Wybierz wiadomości</string>
+    <string name="sms">SMS</string>
 </resources>
