@@ -88,8 +88,6 @@ fun BackupCallLogsScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            var selectAll by remember { mutableStateOf(true) }
-
             AnimatedContent(onSearch) { target ->
                 if (target) {
                     TopAppBar(
@@ -108,8 +106,7 @@ fun BackupCallLogsScreen(
                         },
                         actions = {
                             IconButton(onClick = {
-                                viewModel.selectAllCallLogs(selectAll)
-                                selectAll = selectAll.not()
+                                viewModel.selectAllCallLogs()
                             }) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.ic_list_checks),
@@ -153,8 +150,7 @@ fun BackupCallLogsScreen(
                                 )
                             }
                             IconButton(onClick = {
-                                viewModel.selectAllCallLogs(selectAll)
-                                selectAll = selectAll.not()
+                                viewModel.selectAllCallLogs()
                             }) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.ic_list_checks),
@@ -227,7 +223,9 @@ fun CallLogListItem(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         shape = RoundedCornerShape(16.dp),
-        onClick = {}
+        onClick = {
+            viewModel.selectCallLog(callLog.id, callLog.selected.not())
+        }
     ) {
         Row(
             modifier = Modifier

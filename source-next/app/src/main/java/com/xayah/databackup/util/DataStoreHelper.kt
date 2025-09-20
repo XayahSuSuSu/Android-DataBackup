@@ -68,3 +68,23 @@ val FiltersUserAppsBackup = Pair(KeyFiltersUserAppsBackup, DefFiltersUserAppsBac
 val KeyFiltersSystemAppsBackup = booleanPreferencesKey("filters_system_apps_backup")
 const val DefFiltersSystemAppsBackup = false
 val FiltersSystemAppsBackup = Pair(KeyFiltersSystemAppsBackup, DefFiltersSystemAppsBackup)
+
+val KeyAppsOptionSelectedBackup = booleanPreferencesKey("apps_option_selected_backup")
+const val DefAppsOptionSelectedBackup = true
+val AppsOptionSelectedBackup = Pair(KeyAppsOptionSelectedBackup, DefAppsOptionSelectedBackup)
+
+val KeyNetworksOptionSelectedBackup = booleanPreferencesKey("networks_option_selected_backup")
+const val DefNetworksOptionSelectedBackup = true
+val NetworksOptionSelectedBackup = Pair(KeyNetworksOptionSelectedBackup, DefNetworksOptionSelectedBackup)
+
+val KeyContactsOptionSelectedBackup = booleanPreferencesKey("contacts_option_selected_backup")
+const val DefContactsOptionSelectedBackup = true
+val ContactsOptionSelectedBackup = Pair(KeyContactsOptionSelectedBackup, DefContactsOptionSelectedBackup)
+
+val KeyCallLogsOptionSelectedBackup = booleanPreferencesKey("call_logs_option_selected_backup")
+const val DefCallLogsOptionSelectedBackup = true
+val CallLogsOptionSelectedBackup = Pair(KeyCallLogsOptionSelectedBackup, DefCallLogsOptionSelectedBackup)
+
+val KeyMessagesOptionSelectedBackup = booleanPreferencesKey("messages_option_selected_backup")
+const val DefMessagesOptionSelectedBackup = true
+val MessagesOptionSelectedBackup = Pair(KeyMessagesOptionSelectedBackup, DefMessagesOptionSelectedBackup)

@@ -14,12 +14,12 @@ import kotlin.math.min
 
 fun Modifier.horizontalFadingEdges(
     scrollState: ScrollState,
-    fadingEdge: Dp = 72.dp,
+    fadingEdge: Dp = 48.dp,
 ): Modifier = fadingEdges(Direction.HORIZONTAL, scrollState, fadingEdge)
 
 fun Modifier.verticalFadingEdges(
     scrollState: ScrollState,
-    fadingEdge: Dp = 72.dp,
+    fadingEdge: Dp = 48.dp,
 ): Modifier = fadingEdges(Direction.VERTICAL, scrollState, fadingEdge)
 
 fun Modifier.horizontalFadingEdges(

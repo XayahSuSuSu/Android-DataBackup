@@ -46,9 +46,9 @@ open class CallLogsViewModel : BaseViewModel() {
         }
     }
 
-    fun selectAllCallLogs(selected: Boolean) {
+    fun selectAllCallLogs() {
         withLock(Dispatchers.IO) {
-            DatabaseHelper.callLogDao.selectAllCallLogs(callLogs.value.map { it.id }, selected)
+            DatabaseHelper.callLogDao.selectAllCallLogs(callLogs.value.map { it.id }, callLogs.value.count { it.selected } != callLogs.value.size)
         }
     }
 

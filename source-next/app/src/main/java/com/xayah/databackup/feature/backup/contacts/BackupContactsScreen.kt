@@ -90,8 +90,6 @@ fun BackupContactsScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            var selectAll by remember { mutableStateOf(true) }
-
             AnimatedContent(onSearch) { target ->
                 if (target) {
                     TopAppBar(
@@ -110,8 +108,7 @@ fun BackupContactsScreen(
                         },
                         actions = {
                             IconButton(onClick = {
-                                viewModel.selectAllContacts(selectAll)
-                                selectAll = selectAll.not()
+                                viewModel.selectAllContacts()
                             }) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.ic_list_checks),
@@ -155,8 +152,7 @@ fun BackupContactsScreen(
                                 )
                             }
                             IconButton(onClick = {
-                                viewModel.selectAllContacts(selectAll)
-                                selectAll = selectAll.not()
+                                viewModel.selectAllContacts()
                             }) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.ic_list_checks),
@@ -229,7 +225,9 @@ fun ContactListItem(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         shape = RoundedCornerShape(16.dp),
-        onClick = {}
+        onClick = {
+            viewModel.selectContact(contact.id, contact.selected.not())
+        }
     ) {
         Row(
             modifier = Modifier

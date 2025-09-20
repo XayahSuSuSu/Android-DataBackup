@@ -48,9 +48,9 @@ open class NetworksViewModel : BaseViewModel() {
         }
     }
 
-    fun selectAllNetworks(selected: Boolean) {
+    fun selectAllNetworks() {
         withLock(Dispatchers.IO) {
-            DatabaseHelper.networkDao.selectAllNetworks(networks.value.map { it.id }, selected)
+            DatabaseHelper.networkDao.selectAllNetworks(networks.value.map { it.id }, networks.value.count { it.selected } != networks.value.size)
         }
     }
 

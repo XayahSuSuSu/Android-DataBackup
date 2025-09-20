@@ -109,7 +109,7 @@ fun BackupAppsScreen(
     val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val apps by viewModel.apps.collectAsStateWithLifecycle()
-    val selected by viewModel.selected.collectAsStateWithLifecycle()
+    val allSelected by viewModel.allSelected.collectAsStateWithLifecycle()
     val selectedBytes by viewModel.selectedBytes.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val filterSheetState = rememberModalBottomSheetState()
@@ -176,7 +176,7 @@ fun BackupAppsScreen(
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
-                                    text = stringResource(R.string.items_selected_and_size, selected, apps.size, selectedBytes),
+                                    text = stringResource(R.string.items_selected_and_size, allSelected, apps.size, selectedBytes),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     style = MaterialTheme.typography.labelMedium,
@@ -567,28 +567,18 @@ fun AppListItem(
 
 @Composable
 private fun SelectIconButton(viewModel: AppsViewModel) {
-    var selectAllApk by remember { mutableStateOf(true) }
-    var selectAllData by remember { mutableStateOf(true) }
-    var selectAllIntData by remember { mutableStateOf(true) }
-    var selectAllExtData by remember { mutableStateOf(true) }
-    var selectAllObbAndMedia by remember { mutableStateOf(true) }
-
-    val reset = remember {
-        {
-            selectAllApk = true
-            selectAllData = true
-            selectAllIntData = true
-            selectAllExtData = true
-            selectAllObbAndMedia = true
-        }
-    }
-
     var mainExpanded by remember { mutableStateOf(false) }
     var customExpanded by remember { mutableStateOf(false) }
+
+    val apkAllSelected by viewModel.apkAllSelected.collectAsStateWithLifecycle()
+    val dataAllSelected by viewModel.dataAllSelected.collectAsStateWithLifecycle()
+    val intDataAllSelected by viewModel.intDataAllSelected.collectAsStateWithLifecycle()
+    val extDataAllSelected by viewModel.extDataAllSelected.collectAsStateWithLifecycle()
+    val obbAndMediaAllSelected by viewModel.obbAndMediaAllSelected.collectAsStateWithLifecycle()
+
     Box {
         IconButton(onClick = {
             mainExpanded = !mainExpanded
-            reset.invoke()
         }) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_list_checks),
@@ -600,29 +590,33 @@ private fun SelectIconButton(viewModel: AppsViewModel) {
             onDismissRequest = { mainExpanded = false }
         ) {
             ModalDropdownMenuItem(
-                text = { Text(if (selectAllApk) stringResource(R.string.select_all_apk) else stringResource(R.string.unselect_all_apk)) },
+                text = { Text(if (apkAllSelected.not()) stringResource(R.string.select_all_apk) else stringResource(R.string.unselect_all_apk)) },
                 leadingIcon = {
                     Icon(
-                        imageVector = if (selectAllApk) ImageVector.vectorResource(R.drawable.ic_square_check_big) else ImageVector.vectorResource(R.drawable.ic_square),
-                        contentDescription = if (selectAllApk) stringResource(R.string.select_all_apk) else stringResource(R.string.unselect_all_apk)
+                        imageVector = if (apkAllSelected.not())
+                            ImageVector.vectorResource(R.drawable.ic_square_check_big)
+                        else
+                            ImageVector.vectorResource(R.drawable.ic_square),
+                        contentDescription = if (apkAllSelected.not()) stringResource(R.string.select_all_apk) else stringResource(R.string.unselect_all_apk)
                     )
                 },
                 onClick = {
-                    viewModel.selectAllApk(selectAllApk)
-                    selectAllApk = selectAllApk.not()
+                    viewModel.selectAllApk()
                 }
             )
             ModalDropdownMenuItem(
-                text = { Text(if (selectAllData) stringResource(R.string.select_all_data) else stringResource(R.string.unselect_all_data)) },
+                text = { Text(if (dataAllSelected.not()) stringResource(R.string.select_all_data) else stringResource(R.string.unselect_all_data)) },
                 leadingIcon = {
                     Icon(
-                        imageVector = if (selectAllData) ImageVector.vectorResource(R.drawable.ic_square_check_big) else ImageVector.vectorResource(R.drawable.ic_square),
-                        contentDescription = if (selectAllData) stringResource(R.string.select_all_data) else stringResource(R.string.unselect_all_data)
+                        imageVector = if (dataAllSelected.not())
+                            ImageVector.vectorResource(R.drawable.ic_square_check_big)
+                        else
+                            ImageVector.vectorResource(R.drawable.ic_square),
+                        contentDescription = if (dataAllSelected.not()) stringResource(R.string.select_all_data) else stringResource(R.string.unselect_all_data)
                     )
                 },
                 onClick = {
-                    viewModel.selectAllData(selectAllData)
-                    selectAllData = selectAllData.not()
+                    viewModel.selectAllData()
                 }
             )
             HorizontalDivider()
@@ -660,61 +654,63 @@ private fun SelectIconButton(viewModel: AppsViewModel) {
             )
             HorizontalDivider()
             ModalDropdownMenuItem(
-                text = { Text(if (selectAllApk) stringResource(R.string.select_all_apk) else stringResource(R.string.unselect_all_apk)) },
+                text = { Text(if (apkAllSelected.not()) stringResource(R.string.select_all_apk) else stringResource(R.string.unselect_all_apk)) },
                 leadingIcon = {
                     Icon(
-                        imageVector = if (selectAllApk) ImageVector.vectorResource(R.drawable.ic_square_check_big) else ImageVector.vectorResource(R.drawable.ic_square),
-                        contentDescription = if (selectAllApk) stringResource(R.string.select_all_apk) else stringResource(R.string.unselect_all_apk)
+                        imageVector = if (apkAllSelected.not())
+                            ImageVector.vectorResource(R.drawable.ic_square_check_big)
+                        else
+                            ImageVector.vectorResource(R.drawable.ic_square),
+                        contentDescription = if (apkAllSelected.not()) stringResource(R.string.select_all_apk) else stringResource(R.string.unselect_all_apk)
                     )
                 },
                 onClick = {
-                    viewModel.selectAllApk(selectAllApk)
-                    selectAllApk = selectAllApk.not()
+                    viewModel.selectAllApk()
                 }
             )
             ModalDropdownMenuItem(
-                text = { Text(if (selectAllIntData) stringResource(R.string.select_all_int_data) else stringResource(R.string.unselect_all_int_data)) },
+                text = { Text(if (intDataAllSelected.not()) stringResource(R.string.select_all_int_data) else stringResource(R.string.unselect_all_int_data)) },
                 leadingIcon = {
                     Icon(
-                        imageVector = if (selectAllIntData) ImageVector.vectorResource(R.drawable.ic_square_check_big) else ImageVector.vectorResource(
-                            R.drawable.ic_square
-                        ),
-                        contentDescription = if (selectAllIntData) stringResource(R.string.select_all_int_data) else stringResource(R.string.unselect_all_int_data)
+                        imageVector = if (intDataAllSelected.not())
+                            ImageVector.vectorResource(R.drawable.ic_square_check_big)
+                        else
+                            ImageVector.vectorResource(R.drawable.ic_square),
+                        contentDescription = if (intDataAllSelected.not()) stringResource(R.string.select_all_int_data) else stringResource(R.string.unselect_all_int_data)
                     )
                 },
                 onClick = {
-                    viewModel.selectAllIntData(selectAllIntData)
-                    selectAllIntData = selectAllIntData.not()
+                    viewModel.selectAllIntData()
                 }
             )
             ModalDropdownMenuItem(
-                text = { Text(if (selectAllExtData) stringResource(R.string.select_all_ext_data) else stringResource(R.string.unselect_all_ext_data)) },
+                text = { Text(if (extDataAllSelected.not()) stringResource(R.string.select_all_ext_data) else stringResource(R.string.unselect_all_ext_data)) },
                 leadingIcon = {
                     Icon(
-                        imageVector = if (selectAllExtData) ImageVector.vectorResource(R.drawable.ic_square_check_big) else ImageVector.vectorResource(
-                            R.drawable.ic_square
-                        ),
-                        contentDescription = if (selectAllExtData) stringResource(R.string.select_all_ext_data) else stringResource(R.string.unselect_all_ext_data)
+                        imageVector = if (extDataAllSelected.not())
+                            ImageVector.vectorResource(R.drawable.ic_square_check_big)
+                        else
+                            ImageVector.vectorResource(R.drawable.ic_square),
+                        contentDescription = if (extDataAllSelected.not()) stringResource(R.string.select_all_ext_data) else stringResource(R.string.unselect_all_ext_data)
                     )
                 },
                 onClick = {
-                    viewModel.selectAllExtData(selectAllExtData)
-                    selectAllExtData = selectAllExtData.not()
+                    viewModel.selectAllExtData()
                 }
             )
             ModalDropdownMenuItem(
-                text = { Text(if (selectAllObbAndMedia) stringResource(R.string.select_all_obb_and_media) else stringResource(R.string.unselect_all_obb_and_media)) },
+                text = { Text(if (obbAndMediaAllSelected.not()) stringResource(R.string.select_all_obb_and_media) else stringResource(R.string.unselect_all_obb_and_media)) },
                 leadingIcon = {
                     Icon(
-                        imageVector = if (selectAllObbAndMedia) ImageVector.vectorResource(R.drawable.ic_square_check_big) else ImageVector.vectorResource(
-                            R.drawable.ic_square
-                        ),
-                        contentDescription = if (selectAllObbAndMedia) stringResource(R.string.select_all_obb_and_media) else stringResource(R.string.unselect_all_obb_and_media)
+                        imageVector = if (obbAndMediaAllSelected.not())
+                            ImageVector.vectorResource(R.drawable.ic_square_check_big)
+                        else
+                            ImageVector.vectorResource(R.drawable.ic_square),
+                        contentDescription = if (obbAndMediaAllSelected.not()) stringResource(R.string.select_all_obb_and_media) else stringResource(R.string.unselect_all_obb_and_media)
                     )
                 },
                 onClick = {
-                    viewModel.selectAllObbAndMedia(selectAllObbAndMedia)
-                    selectAllObbAndMedia = selectAllObbAndMedia.not()
+                    viewModel.selectAllObbAndMedia()
                 }
             )
         }

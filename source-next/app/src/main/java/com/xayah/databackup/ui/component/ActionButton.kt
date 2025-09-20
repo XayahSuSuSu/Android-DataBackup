@@ -77,7 +77,15 @@ fun ActionButton(modifier: Modifier, icon: ImageVector, title: String, subtitle:
 }
 
 @Composable
-fun SelectableActionButton(modifier: Modifier, icon: ImageVector, title: String, subtitle: String, onClick: () -> Unit) {
+fun SelectableActionButton(
+    modifier: Modifier,
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    checked: Boolean,
+    onCheckedChange: ((Boolean) -> Unit)?,
+    onClick: () -> Unit
+) {
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
@@ -97,13 +105,17 @@ fun SelectableActionButton(modifier: Modifier, icon: ImageVector, title: String,
                 imageVector = icon,
                 contentDescription = "Localized description"
             )
-            Column(modifier = Modifier.padding(start = 16.dp).weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Column(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 Text(text = title, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurface)
                 Text(text = subtitle, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Checkbox(
-                checked = true,
-                onCheckedChange = {  }
+                checked = checked,
+                onCheckedChange = onCheckedChange
             )
         }
     }

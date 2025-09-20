@@ -65,7 +65,7 @@ open class AppsViewModel : BaseViewModel() {
         started = SharingStarted.WhileSubscribed(5_000),
     )
 
-    val selected =
+    val allSelected =
         apps.map { list -> list.count { it.option.apk || it.option.internalData || it.option.externalData || it.option.obbAndMedia } }.stateIn(
             scope = viewModelScope,
             initialValue = 0,
@@ -76,6 +76,41 @@ open class AppsViewModel : BaseViewModel() {
         apps.map { list -> list.sumOf { it.selectedBytes }.formatToStorageSize }.stateIn(
             scope = viewModelScope,
             initialValue = "0.00 Bytes",
+            started = SharingStarted.WhileSubscribed(5_000),
+        )
+
+    val apkAllSelected =
+        apps.map { list -> list.count { it.option.apk } == list.size }.stateIn(
+            scope = viewModelScope,
+            initialValue = true,
+            started = SharingStarted.WhileSubscribed(5_000),
+        )
+
+    val dataAllSelected =
+        apps.map { list -> list.count { it.option.internalData && it.option.externalData && it.option.obbAndMedia } == list.size }.stateIn(
+            scope = viewModelScope,
+            initialValue = true,
+            started = SharingStarted.WhileSubscribed(5_000),
+        )
+
+    val intDataAllSelected =
+        apps.map { list -> list.count { it.option.internalData } == list.size }.stateIn(
+            scope = viewModelScope,
+            initialValue = true,
+            started = SharingStarted.WhileSubscribed(5_000),
+        )
+
+    val extDataAllSelected =
+        apps.map { list -> list.count { it.option.externalData } == list.size }.stateIn(
+            scope = viewModelScope,
+            initialValue = true,
+            started = SharingStarted.WhileSubscribed(5_000),
+        )
+
+    val obbAndMediaAllSelected =
+        apps.map { list -> list.count { it.option.obbAndMedia } == list.size }.stateIn(
+            scope = viewModelScope,
+            initialValue = true,
             started = SharingStarted.WhileSubscribed(5_000),
         )
 
@@ -122,33 +157,33 @@ open class AppsViewModel : BaseViewModel() {
         }
     }
 
-    fun selectAllApk(selected: Boolean) {
+    fun selectAllApk() {
         withLock(Dispatchers.IO) {
-            DatabaseHelper.appDao.selectAllApk(apps.value.map { it.pkgUserKey }, selected)
+            DatabaseHelper.appDao.selectAllApk(apps.value.map { it.pkgUserKey }, apkAllSelected.value.not())
         }
     }
 
-    fun selectAllData(selected: Boolean) {
+    fun selectAllData() {
         withLock(Dispatchers.IO) {
-            DatabaseHelper.appDao.selectAllData(apps.value.map { it.pkgUserKey }, selected)
+            DatabaseHelper.appDao.selectAllData(apps.value.map { it.pkgUserKey }, dataAllSelected.value.not())
         }
     }
 
-    fun selectAllIntData(selected: Boolean) {
+    fun selectAllIntData() {
         withLock(Dispatchers.IO) {
-            DatabaseHelper.appDao.selectAllIntData(apps.value.map { it.pkgUserKey }, selected)
+            DatabaseHelper.appDao.selectAllIntData(apps.value.map { it.pkgUserKey }, intDataAllSelected.value.not())
         }
     }
 
-    fun selectAllExtData(selected: Boolean) {
+    fun selectAllExtData() {
         withLock(Dispatchers.IO) {
-            DatabaseHelper.appDao.selectAllExtData(apps.value.map { it.pkgUserKey }, selected)
+            DatabaseHelper.appDao.selectAllExtData(apps.value.map { it.pkgUserKey }, extDataAllSelected.value.not())
         }
     }
 
-    fun selectAllObbAndMedia(selected: Boolean) {
+    fun selectAllObbAndMedia() {
         withLock(Dispatchers.IO) {
-            DatabaseHelper.appDao.selectAllObbAndMedia(apps.value.map { it.pkgUserKey }, selected)
+            DatabaseHelper.appDao.selectAllObbAndMedia(apps.value.map { it.pkgUserKey }, obbAndMediaAllSelected.value.not())
         }
     }
 

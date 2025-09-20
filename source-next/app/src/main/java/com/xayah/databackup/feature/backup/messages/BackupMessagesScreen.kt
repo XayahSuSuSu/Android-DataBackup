@@ -98,8 +98,6 @@ fun BackupMessagesScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            var selectAll by remember { mutableStateOf(true) }
-
             AnimatedContent(onSearch) { target ->
                 if (target) {
                     TopAppBar(
@@ -119,10 +117,9 @@ fun BackupMessagesScreen(
                         actions = {
                             IconButton(onClick = {
                                 when (uiState.selectedIndex) {
-                                    0 -> viewModel.selectAllSms(selectAll)
-                                    1 -> viewModel.selectAllMms(selectAll)
+                                    0 -> viewModel.selectAllSms()
+                                    1 -> viewModel.selectAllMms()
                                 }
-                                selectAll = selectAll.not()
                             }) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.ic_list_checks),
@@ -167,10 +164,9 @@ fun BackupMessagesScreen(
                             }
                             IconButton(onClick = {
                                 when (uiState.selectedIndex) {
-                                    0 -> viewModel.selectAllSms(selectAll)
-                                    1 -> viewModel.selectAllMms(selectAll)
+                                    0 -> viewModel.selectAllSms()
+                                    1 -> viewModel.selectAllMms()
                                 }
-                                selectAll = selectAll.not()
                             }) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.ic_list_checks),
@@ -300,7 +296,9 @@ fun SmsListItem(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         shape = RoundedCornerShape(16.dp),
-        onClick = {}
+        onClick = {
+            viewModel.selectSms(sms.id, sms.selected.not())
+        }
     ) {
         Row(
             modifier = Modifier
@@ -362,7 +360,9 @@ fun MmsListItem(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         shape = RoundedCornerShape(16.dp),
-        onClick = {}
+        onClick = {
+            viewModel.selectMms(mms.id, mms.selected.not())
+        }
     ) {
         Row(
             modifier = Modifier

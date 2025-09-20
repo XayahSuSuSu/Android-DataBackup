@@ -43,6 +43,11 @@ fun Iterable<App>.filterApp(searchText: String, userId: Int, filterUserApps: Boo
             && filterSearchText(it, searchText)
 }
 
+fun Iterable<App>.filterApp(userId: Int, filterUserApps: Boolean, filterSystemApps: Boolean): List<App> = filter {
+    filterUserId(it, userId)
+            && filterApps(it, filterUserApps, filterSystemApps)
+}
+
 fun Iterable<App>.sortByA2Z(sortSequence: SortsSequence): List<App> =
     when (sortSequence) {
         SortsSequence.ASCENDING -> sortedBy { app -> app.info.label }

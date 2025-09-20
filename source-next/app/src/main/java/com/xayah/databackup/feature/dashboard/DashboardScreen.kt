@@ -111,7 +111,7 @@ fun DashboardScreen(navController: NavHostController) {
                     storage = "52 GB",
                 ) {}
 
-                Text("Actions", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+                Text(stringResource(R.string.actions), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
 
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     SmallActionButton(
@@ -119,8 +119,8 @@ fun DashboardScreen(navController: NavHostController) {
                             .weight(1f)
                             .wrapContentSize(),
                         icon = ImageVector.vectorResource(R.drawable.ic_archive),
-                        title = "Backup",
-                        subtitle = "Backup your data"
+                        title = stringResource(R.string.backup),
+                        subtitle = stringResource(R.string.backup_your_data)
                     ) {
                         navController.navigateSafely(Backup)
                     }
@@ -130,8 +130,8 @@ fun DashboardScreen(navController: NavHostController) {
                             .weight(1f)
                             .wrapContentSize(),
                         icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
-                        title = "Restore",
-                        subtitle = "Restore your data"
+                        title = stringResource(R.string.restore),
+                        subtitle = stringResource(R.string.restore_your_data)
                     ) {}
                 }
 
@@ -140,8 +140,8 @@ fun DashboardScreen(navController: NavHostController) {
                         .fillMaxWidth(1f)
                         .wrapContentSize(),
                     icon = ImageVector.vectorResource(R.drawable.ic_clock),
-                    title = "History",
-                    subtitle = "See your previous backups"
+                    title = stringResource(R.string.history),
+                    subtitle = stringResource(R.string.see_your_previous_backups)
                 ) {}
 
                 ActionButton(
@@ -149,8 +149,8 @@ fun DashboardScreen(navController: NavHostController) {
                         .fillMaxWidth(1f)
                         .wrapContentSize(),
                     icon = ImageVector.vectorResource(R.drawable.ic_cloud_upload),
-                    title = "Cloud",
-                    subtitle = "Set-up cloud storage"
+                    title = stringResource(R.string.cloud),
+                    subtitle = stringResource(R.string.set_up_cloud_storage)
                 ) {}
 
                 ActionButton(
@@ -158,8 +158,8 @@ fun DashboardScreen(navController: NavHostController) {
                         .fillMaxWidth(1f)
                         .wrapContentSize(),
                     icon = ImageVector.vectorResource(R.drawable.ic_calendar_check),
-                    title = "Schedule",
-                    subtitle = "Configure automatic backups"
+                    title = stringResource(R.string.schedule),
+                    subtitle = stringResource(R.string.configure_automatic_backups)
                 ) {}
             }
 

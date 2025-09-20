@@ -459,4 +459,18 @@
     <string name="sms">SMS</string>
     <string name="mms">MMS</string>
     <string name="select_messages">Select messages</string>
+    <string name="actions">Actions</string>
+    <string name="backup_your_data">Backup your data</string>
+    <string name="restore_your_data">Restore your data</string>
+    <string name="see_your_previous_backups">See your previous backups</string>
+    <string name="set_up_cloud_storage">Set-up cloud storage</string>
+    <string name="schedule">Schedule</string>
+    <string name="configure_automatic_backups">Configure automatic backups</string>
+    <string name="backups">Backups</string>
+    <string name="other">Other</string>
+    <string name="free">Free</string>
+    <string name="networks">Networks</string>
+    <string name="contacts">Contacts</string>
+    <string name="call_logs">Call logs</string>
+    <string name="messages">Messages</string>
 </resources>

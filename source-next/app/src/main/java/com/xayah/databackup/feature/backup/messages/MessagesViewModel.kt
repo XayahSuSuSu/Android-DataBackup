@@ -66,9 +66,9 @@ open class MessagesViewModel : BaseViewModel() {
         }
     }
 
-    fun selectAllSms(selected: Boolean) {
+    fun selectAllSms() {
         withLock(Dispatchers.IO) {
-            DatabaseHelper.messageDao.selectAllSms(smsList.value.map { it.id }, selected)
+            DatabaseHelper.messageDao.selectAllSms(smsList.value.map { it.id }, smsList.value.count { it.selected } != smsList.value.size)
         }
     }
 
@@ -78,9 +78,9 @@ open class MessagesViewModel : BaseViewModel() {
         }
     }
 
-    fun selectAllMms(selected: Boolean) {
+    fun selectAllMms() {
         withLock(Dispatchers.IO) {
-            DatabaseHelper.messageDao.selectAllMms(mmsList.value.map { it.id }, selected)
+            DatabaseHelper.messageDao.selectAllMms(mmsList.value.map { it.id }, mmsList.value.count { it.selected } != mmsList.value.size)
         }
     }
 

@@ -22,7 +22,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.xayah.databackup.R
 
 @Composable
 fun StorageCard(modifier: Modifier, free: Float, other: Float, backups: Float, title: String, subtitle: String, progress: String, storage: String, onClick: () -> Unit) {
@@ -66,11 +68,11 @@ fun StorageCard(modifier: Modifier, free: Float, other: Float, backups: Float, t
                 Spacer(modifier = Modifier.weight(1f))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Surface(modifier = Modifier.size(12.dp), shape = CircleShape, color = MaterialTheme.colorScheme.primary) { }
-                    Text(text = "Backups", modifier = Modifier.padding(start = 4.dp, end = 8.dp), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(text = stringResource(R.string.backups), modifier = Modifier.padding(start = 4.dp, end = 8.dp), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Surface(modifier = Modifier.size(12.dp), shape = CircleShape, color = MaterialTheme.colorScheme.secondary) { }
-                    Text(text = "Other", modifier = Modifier.padding(start = 4.dp, end = 8.dp), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(text = stringResource(R.string.other), modifier = Modifier.padding(start = 4.dp, end = 8.dp), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Surface(modifier = Modifier.size(12.dp), shape = CircleShape, color = MaterialTheme.colorScheme.outlineVariant) { }
-                    Text(text = "Free", modifier = Modifier.padding(start = 4.dp, end = 8.dp), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(text = stringResource(R.string.free), modifier = Modifier.padding(start = 4.dp, end = 8.dp), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }

@@ -446,4 +446,18 @@
     <string name="sms">短信</string>
     <string name="mms">彩信</string>
     <string name="select_messages">选择信息</string>
+    <string name="actions">操作</string>
+    <string name="backup_your_data">备份你的数据</string>
+    <string name="restore_your_data">恢复你的数据</string>
+    <string name="see_your_previous_backups">回顾你的备份记录</string>
+    <string name="set_up_cloud_storage">设置云备份存储</string>
+    <string name="schedule">计划</string>
+    <string name="configure_automatic_backups">配置自动备份</string>
+    <string name="backups">备份</string>
+    <string name="other">其它</string>
+    <string name="free">空闲</string>
+    <string name="networks">网络</string>
+    <string name="contacts">联系人</string>
+    <string name="call_logs">通话记录</string>
+    <string name="messages">信息</string>
 </resources>

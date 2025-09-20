@@ -46,9 +46,9 @@ open class ContactsViewModel : BaseViewModel() {
         }
     }
 
-    fun selectAllContacts(selected: Boolean) {
+    fun selectAllContacts() {
         withLock(Dispatchers.IO) {
-            DatabaseHelper.contactDao.selectAllContacts(contacts.value.map { it.id }, selected)
+            DatabaseHelper.contactDao.selectAllContacts(contacts.value.map { it.id }, contacts.value.count { it.selected } != contacts.value.size)
         }
     }
 

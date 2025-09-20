@@ -90,8 +90,6 @@ fun BackupNetworksScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            var selectAll by remember { mutableStateOf(true) }
-
             AnimatedContent(onSearch) { target ->
                 if (target) {
                     TopAppBar(
@@ -122,8 +120,7 @@ fun BackupNetworksScreen(
                                 )
                             }
                             IconButton(onClick = {
-                                viewModel.selectAllNetworks(selectAll)
-                                selectAll = selectAll.not()
+                                viewModel.selectAllNetworks()
                             }) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.ic_list_checks),
@@ -179,8 +176,7 @@ fun BackupNetworksScreen(
                                 )
                             }
                             IconButton(onClick = {
-                                viewModel.selectAllNetworks(selectAll)
-                                selectAll = selectAll.not()
+                                viewModel.selectAllNetworks()
                             }) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.ic_list_checks),
@@ -268,7 +264,9 @@ fun NetworkListItem(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         shape = RoundedCornerShape(16.dp),
-        onClick = {}
+        onClick = {
+            viewModel.selectNetwork(network.id, network.selected.not())
+        }
     ) {
         Row(
             modifier = Modifier
