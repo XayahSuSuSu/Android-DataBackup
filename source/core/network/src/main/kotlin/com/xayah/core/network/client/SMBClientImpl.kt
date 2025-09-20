@@ -241,7 +241,9 @@ class SMBClientImpl(private val entity: CloudEntity, private val extra: SMBExtra
 
     override fun deleteFile(src: String) = withDiskShare { diskShare ->
         log { "deleteFile: $src" }
-        diskShare.rm(src)
+        if (exists(src)) {
+            diskShare.rm(src)
+        }
     }
 
     override fun removeDirectory(src: String) = withDiskShare { diskShare ->
