@@ -443,4 +443,21 @@
     <string name="hidden_password">Senha oculta</string>
     <string name="select_contacts">Selecionar contatos</string>
     <string name="select_call_logs">Selecionar registros de chamadas</string>
+    <string name="mms">MMS</string>
+    <string name="sms">SMS</string>
+    <string name="select_messages">Selecionar mensagens</string>
+    <string name="actions">Ações</string>
+    <string name="backup_your_data">Fazer backup dos seus dados</string>
+    <string name="restore_your_data">Restaurar seus dados</string>
+    <string name="see_your_previous_backups">Ver seus backups anteriores</string>
+    <string name="set_up_cloud_storage">Configurar armazenamento em nuvem</string>
+    <string name="schedule">Agendar</string>
+    <string name="configure_automatic_backups">Configurar backups automáticos</string>
+    <string name="backups">Backups</string>
+    <string name="other">Outro</string>
+    <string name="free">Livre</string>
+    <string name="networks">Redes Wi-Fi</string>
+    <string name="contacts">Contatos</string>
+    <string name="call_logs">Registros de chamadas</string>
+    <string name="messages">Mensagens</string>
 </resources>
