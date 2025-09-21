@@ -6,10 +6,10 @@
     <string name="restoring">Восстановление</string>
     <string name="select_target_directory">Выбор целевой папки</string>
     <string name="prompt">Уведомление</string>
-    <string name="both">Оба</string>
+    <string name="both">Обa</string>
     <string name="password">Пароль</string>
-    <string name="user">Пользователь</string>
-    <string name="activities">Действия</string>
+    <string name="user">Пользовaтель</string>
+    <string name="activities">Дeйствия</string>
     <string name="not_exist">Не существует</string>
     <string name="last_backup">Последняя резервная копия</string>
     <string name="confirm_reload">Перезагрузить\?</string>
@@ -56,7 +56,7 @@
     <string name="version">Версия</string>
     <string name="databases_reload_failed">Не удалось перезагрузить базы данных</string>
     <string name="backup_itself_desc">Копировать apk DataBackup в папку бекапов при создании бекапа</string>
-    <string name="monet">Monet</string>
+    <string name="monet">Монет</string>
     <string name="account">Аккаунт</string>
     <string name="clean_restoring_desc">Очистка целевой папки перед восстановлением</string>
     <string name="network_desc">Используется только для получения информации об обновлении приложения и сбора аналитики использования приложения</string>
@@ -234,7 +234,7 @@
     <string name="backup_apps">Бекап приложений</string>
     <string name="backup_contacts">Бекап контактов</string>
     <string name="confirm_delete">Это удалит все выбранные вами файлы</string>
-    <string name="storage">Хранилище</string>
+    <string name="storage">Хрaнилище</string>
     <string name="restore_user_desc">Какого пользователя вы хотите восстановить?</string>
     <string name="quick_actions">Быстрые действия</string>
     <string name="backup_files">Бекап файлов</string>
@@ -341,7 +341,7 @@
     <string name="language">Язык</string>
     <string name="args_update_from">Вы можете обновить приложение с версии %1$s до %2$s</string>
     <string name="download">Загрузить</string>
-    <string name="changelog">Список изменений</string>
+    <string name="changelog">Списoк изменений</string>
     <string name="args_apps_restored">%1$s приложений восстановлено</string>
     <string name="args_files_restored">%1$s файлов восстановлено</string>
     <string name="apk_selected">APK-файл выбран</string>
@@ -443,4 +443,21 @@
     <string name="hidden_password">Скрытый пароль</string>
     <string name="select_contacts">Выберите контакты</string>
     <string name="select_call_logs">Выберите журнал вызовов</string>
+    <string name="sms">СМС</string>
+    <string name="mms">ММС</string>
+    <string name="select_messages">Выберите сообщения</string>
+    <string name="actions">Действия</string>
+    <string name="backup_your_data">Резервное копирование данных</string>
+    <string name="restore_your_data">Восстановление данных</string>
+    <string name="see_your_previous_backups">Просмотр предыдущих резервных копий</string>
+    <string name="set_up_cloud_storage">Настройка облачного хранилища</string>
+    <string name="schedule">Расписание</string>
+    <string name="configure_automatic_backups">Настройка автоматического резервного копирования</string>
+    <string name="backups">Резервные копии</string>
+    <string name="other">Другое</string>
+    <string name="free">Бесплатно</string>
+    <string name="networks">Сети</string>
+    <string name="contacts">Контакты</string>
+    <string name="call_logs">Журналы вызовов</string>
+    <string name="messages">Сообщения</string>
 </resources>
