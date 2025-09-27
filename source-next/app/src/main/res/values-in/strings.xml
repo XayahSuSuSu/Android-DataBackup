@@ -387,4 +387,5 @@
     <string name="args_apps_restored_and_failed">%1$s aplikasi dipulihkan, %2$s gagal</string>
     <string name="args_files_backed_up_and_failed">%1$s aplikasi dipulihkan, %2$s gagal</string>
     <string name="args_files_restored_and_failed">%1$s file dipulihkan, %2$s gagal</string>
+    <string name="backup_itself">Cadangkan diri sendiri</string>
 </resources>
