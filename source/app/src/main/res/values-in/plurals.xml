@@ -1,2 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <plurals name="num_seconds_ago">
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> detik</item>
+    </plurals>
+    <plurals name="num_minutes_ago">
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> menit</item>
+    </plurals>
+    <plurals name="num_hours_ago">
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> jam</item>
+    </plurals>
+    <plurals name="num_days_ago">
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> hari</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> item</item>
+    </plurals>
+</resources>
