@@ -291,7 +291,6 @@
     <string name="setup_required">Potrebno je postavljanje, dodirni za postavljanje mape</string>
     <string name="backup_contacts">Sačuvajte kontakate</string>
     <string name="auto_screen_off">Automatski isključi ekran</string>
-    <string name="auto_screen_off_desc">Automatsko isključivanje ekrana tokom sigurnosnog kopiranja ili obnavljanja aplikacija/datoteka, a zatim automatsko uključivanje nakon završetka</string>
     <string name="args_screen_off_in_seconds">Ekran će se isključiti za %1$s s</string>
     <string name="restore_user_desc">Kojeg korisnika želiš obnoviti?</string>
     <string name="setup_backup_dir_desc">Ako imate postojeću mapu, morate je odabrati kako bi se sigurnosne kopije u njoj prikazale.</string>

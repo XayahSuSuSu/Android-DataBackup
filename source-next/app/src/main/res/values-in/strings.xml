@@ -306,7 +306,6 @@
     <string name="dump_apk">Dump aplikasi</string>
     <string name="dump_apk_desc">Coba dump aplikasi untuk mendapatkan informasi terperinci</string>
     <string name="args_screen_off_in_seconds">Layar akan mati dalam %1$s detik</string>
-    <string name="auto_screen_off_desc">Secara otomatis mematikan layar selama mencadangkan atau memulihkan aplikasi/file, lalu menyalakannya setelah selesai</string>
     <string name="configurations">Konfigurasi</string>
     <string name="args_apps_restored">%1$s aplikasi terpulihkan</string>
     <string name="add_account">Tambahkan akun</string>

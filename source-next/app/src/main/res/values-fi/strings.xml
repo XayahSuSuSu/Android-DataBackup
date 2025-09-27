@@ -311,7 +311,6 @@
     <string name="it_is_empty">Se on tyhjä</string>
     <string name="report">Ilmoita</string>
     <string name="auto_screen_off">Automaattinen näyttö pois päältä</string>
-    <string name="auto_screen_off_desc">Sammuta näyttö automaattisesti sovellusten/tiedostojen varmuuskopioinnin tai palauttamisen aikana ja käynnistä se sitten, kun se on valmis</string>
     <string name="args_screen_off_in_seconds">Näyttö sammuu %1$s sekunnin kuluttua</string>
     <string name="configurations">Kokoonpanot</string>
     <string name="configurations_desc">Asetukset, musta lista, pilvitilin kokoonpanot</string>

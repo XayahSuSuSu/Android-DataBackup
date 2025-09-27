@@ -30,7 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.R
-import com.xayah.databackup.feature.backup.BackupPreviewScreen
+import com.xayah.databackup.feature.backup.BackupSetupScreen
 import com.xayah.databackup.feature.backup.apps.BackupAppsScreen
 import com.xayah.databackup.feature.backup.call_logs.BackupCallLogsScreen
 import com.xayah.databackup.feature.backup.contacts.BackupContactsScreen
@@ -59,7 +59,7 @@ data object Dashboard
 data object Backup
 
 @Serializable
-data object BackupPreview
+data object BackupSetup
 
 @Serializable
 data object BackupApps
@@ -168,9 +168,9 @@ class MainActivity : ComponentActivity() {
                             DashboardScreen(navController)
                         }
 
-                        navigation<Backup>(startDestination = BackupPreview) {
-                            composable<BackupPreview> {
-                                BackupPreviewScreen(navController)
+                        navigation<Backup>(startDestination = BackupSetup) {
+                            composable<BackupSetup> {
+                                BackupSetupScreen(navController)
                             }
 
                             composable<BackupApps> {

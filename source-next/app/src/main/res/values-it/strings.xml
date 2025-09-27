@@ -307,7 +307,6 @@
     <string name="blacklist">Lista nera</string>
     <string name="report">Segnala</string>
     <string name="auto_screen_off">Spegnimento automatico dello schermo</string>
-    <string name="auto_screen_off_desc">Spegni automaticamente lo schermo durante il backup o il ripristino di app/file, quindi riaccendilo al termine</string>
     <string name="args_screen_off_in_seconds">Lo schermo si spegnerà tra %1$s secondi</string>
     <string name="configurations">Configurazioni</string>
     <string name="configurations_desc">Impostazioni, lista nera, configurazioni dell\'account cloud</string>

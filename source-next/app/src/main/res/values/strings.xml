@@ -317,7 +317,7 @@
     <string name="it_is_empty">It\'s empty</string>
     <string name="report">Report</string>
     <string name="auto_screen_off">Auto screen off</string>
-    <string name="auto_screen_off_desc">Automatically turn off the screen during backing up or restoring apps/files, then turn it on after completion</string>
+    <string name="auto_screen_off_desc">Automatically turn off the screen during backing up or restoring, then turn it on after completion</string>
     <string name="args_screen_off_in_seconds">The screen will turn off in %1$s seconds</string>
     <string name="configurations">Configurations</string>
     <string name="configurations_desc">Settings, blacklist, cloud account configurations</string>
@@ -473,4 +473,12 @@
     <string name="contacts">Contacts</string>
     <string name="call_logs">Call logs</string>
     <string name="messages">Messages</string>
+    <string name="not_set_up">Not set up</string>
+    <string name="new_backup">New backup</string>
+    <string name="time_format_pattern">MMM dd, HH:mm</string>
+    <string name="incremental_backup">Incremental backup</string>
+    <string name="incremental_backup_desc">Operate on an incremental archive with additional metadata stored in a standalone file</string>
+    <string name="clean_backup">Clean backup</string>
+    <string name="clean_backup_desc">Clear all previous backups of the selected backup item before backing up</string>
+    <string name="target">Target</string>
 </resources>

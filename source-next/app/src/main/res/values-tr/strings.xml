@@ -266,7 +266,6 @@
     <string name="reload_version_desc">Hangi sürümü yedekledin?</string>
     <string name="dump_apk">apk dosyasını ayıkla</string>
     <string name="auto_screen_off">Otomatik ekran kapatma</string>
-    <string name="auto_screen_off_desc">Uygulama/dosyaları yedeklerken veya geri yüklerken ekranı otomatik olarak kapatın, ardından tamamlandıktan sonra tekrar açın</string>
     <string name="args_screen_off_in_seconds">Ekran %1$s saniye içinde kapanacak</string>
     <string name="restore_user_desc">Hangi kullanıcıyı geri yüklemek istiyorsun?</string>
     <string name="backed_up_files">Yedeklenen dosyalar</string>

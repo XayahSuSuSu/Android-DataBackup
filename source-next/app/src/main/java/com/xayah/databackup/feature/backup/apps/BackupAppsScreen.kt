@@ -87,6 +87,7 @@ import com.xayah.databackup.util.FiltersUserAppsBackup
 import com.xayah.databackup.util.KeyFiltersSystemAppsBackup
 import com.xayah.databackup.util.KeyFiltersUserAppsBackup
 import com.xayah.databackup.util.KeySortsTypeBackup
+import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.SortsSequence
 import com.xayah.databackup.util.SortsSequenceBackup
 import com.xayah.databackup.util.SortsType
@@ -98,8 +99,6 @@ import com.xayah.databackup.util.readEnum
 import com.xayah.databackup.util.readInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
 fun BackupAppsScreen(
@@ -123,10 +122,10 @@ fun BackupAppsScreen(
     var showEndEdge by remember { mutableStateOf(false) }
     val startEdgeRange: Float by animateFloatAsState(if (showStartEdge) 1f else 0f, label = "alpha")
     val endEdgeRange: Float by animateFloatAsState(if (showEndEdge) 1f else 0f, label = "alpha")
-    LaunchedEffect(lazyListState.canScrollBackward) {
+    LaunchedEffect(context = Dispatchers.Default, lazyListState.canScrollBackward) {
         showStartEdge = lazyListState.canScrollBackward
     }
-    LaunchedEffect(lazyListState.canScrollForward) {
+    LaunchedEffect(context = Dispatchers.Default, lazyListState.canScrollForward) {
         showEndEdge = lazyListState.canScrollForward
     }
 
@@ -270,12 +269,8 @@ fun BackupAppsScreen(
                 val filtersSystemApps by context.readBoolean(FiltersSystemAppsBackup)
                     .collectAsStateWithLifecycle(initialValue = FiltersSystemAppsBackup.second)
                 var users by remember { mutableStateOf(listOf<UserInfo>()) }
-                LaunchedEffect(null) {
-                    scope.launch {
-                        withContext(Dispatchers.Default) {
-                            users = RemoteRootService.getUsers()
-                        }
-                    }
+                LaunchedEffect(context = Dispatchers.Default, null) {
+                    users = RemoteRootService.getUsers()
                 }
 
                 Column {
@@ -458,14 +453,10 @@ fun AppListItem(
                     contentAlignment = Alignment.Center
                 ) {
                     var icon: Drawable? by remember { mutableStateOf(null) }
-                    LaunchedEffect(app.pkgUserKey) {
-                        scope.launch {
-                            withContext(Dispatchers.IO) {
-                                icon = runCatching { context.packageManager.getApplicationIcon(app.packageName) }.getOrNull()
-                                if (icon == null) {
-                                    icon = AppCompatResources.getDrawable(context, android.R.drawable.sym_def_app_icon)
-                                }
-                            }
+                    LaunchedEffect(context = Dispatchers.IO, app.pkgUserKey) {
+                        icon = runCatching { context.packageManager.getApplicationIcon(app.packageName) }.getOrNull()
+                        if (icon == null) {
+                            icon = AppCompatResources.getDrawable(context, android.R.drawable.sym_def_app_icon)
                         }
                     }
                     AsyncImage(

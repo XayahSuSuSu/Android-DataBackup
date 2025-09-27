@@ -280,7 +280,6 @@
     <string name="it_is_empty">خالی است</string>
     <string name="report">گزارش</string>
     <string name="auto_screen_off">خاموشی خودکار صفحه</string>
-    <string name="auto_screen_off_desc">خاموش کردن خودکار صفحه هنگام پشتیبان‌گیری یا بازیابی برنامه‌ها/پرونده‌ها، سپس روشن کردن آن پس از اتمام</string>
     <string name="args_screen_off_in_seconds">صفحه در %1$s ثانیه خاموش خواهد شد</string>
     <string name="configurations_desc">تنظیمات، فهرست سیاه، پیکربندی‌های حساب ابری</string>
     <string name="exported">برون‌ریزی‌شده</string>

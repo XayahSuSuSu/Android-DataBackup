@@ -125,7 +125,6 @@
     <string name="confirm_remove_from_blacklist">Qora roʻyxatdan olib tashlansinmi?</string>
     <string name="it_is_empty">Bu bo;sh</string>
     <string name="report">Hisobot</string>
-    <string name="auto_screen_off_desc">Ilovalarni/fayllarni zaxiralash yoki tiklash vaqtida ekranni avtomatik ravishda o‘chirish, so‘ngra uni ishga tushirgandan so‘ng yoqish</string>
     <string name="backed_up_files">Zaxiralangan fayllar</string>
     <string name="args_screen_off_in_seconds">Ekran %1$s soniyadan so‘ng o‘chadi</string>
     <string name="configurations_desc">Sozlamalar, qora ro\'yxat, bulut hisobi konfiguratsiyasi</string>

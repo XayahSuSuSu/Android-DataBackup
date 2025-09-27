@@ -309,7 +309,6 @@
     <string name="it_is_empty">Está vazio</string>
     <string name="report">Denunciar</string>
     <string name="auto_screen_off">Desligar ecrã automaticamente</string>
-    <string name="auto_screen_off_desc">Desligar automaticamente o ecrã durante o backup ou restauração de apps/ficheiros e ligue-a após a conclusão</string>
     <string name="args_screen_off_in_seconds">O ecrã será desligado em %1$s segundos</string>
     <string name="configurations">Configurações</string>
     <string name="configurations_desc">Configurações, lista negra, configurações de conta na nuvem.</string>

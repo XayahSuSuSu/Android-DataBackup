@@ -289,7 +289,6 @@
     <string name="it_is_empty">Пусто</string>
     <string name="report">Отчет</string>
     <string name="auto_screen_off">Автоматическое отключение экрана</string>
-    <string name="auto_screen_off_desc">Автовыключение экрана при создании или восстановления бекапов приложений/файлов, и включение после завершения операций</string>
     <string name="args_screen_off_in_seconds">Экран выключится через %1$s сек</string>
     <string name="dump_apk_desc">Попробуйте сделать дамп apk, чтобы получить подробную информацию</string>
     <string name="choose_a_custom_path">Указать пользовательский путь</string>

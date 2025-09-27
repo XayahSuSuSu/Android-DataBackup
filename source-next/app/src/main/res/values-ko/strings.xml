@@ -249,7 +249,6 @@
     <string name="confirm_add_to_blacklist">블랙리스트에 추가할까요?</string>
     <string name="it_is_empty">비어있습니다</string>
     <string name="auto_screen_off">자동 화면 꺼짐</string>
-    <string name="auto_screen_off_desc">화면이 앱/파일 백업 또는 복원 중 자동으로 꺼졌다가 완료 후 켜집니다</string>
     <string name="args_screen_off_in_seconds">%1$s초 후에 화면이 꺼집니다</string>
     <string name="configurations">구성</string>
     <string name="configurations_desc">설정, 블랙리스트, 클라우드 계정 구성</string>

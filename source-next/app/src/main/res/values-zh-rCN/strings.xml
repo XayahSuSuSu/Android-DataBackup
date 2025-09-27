@@ -309,7 +309,7 @@
     <string name="it_is_empty">空空如也</string>
     <string name="report">报告</string>
     <string name="auto_screen_off">自动息屏</string>
-    <string name="auto_screen_off_desc">备份或恢复应用/文件时自动关闭屏幕，完成后自动开启屏幕</string>
+    <string name="auto_screen_off_desc">备份或恢复时自动关闭屏幕，完成后自动开启屏幕</string>
     <string name="args_screen_off_in_seconds">屏幕将在%1$s秒后关闭</string>
     <string name="configurations">配置</string>
     <string name="configurations_desc">设置、黑名单、云端账户配置</string>
@@ -460,4 +460,12 @@
     <string name="contacts">联系人</string>
     <string name="call_logs">通话记录</string>
     <string name="messages">信息</string>
+    <string name="not_set_up">未设置</string>
+    <string name="new_backup">新建备份</string>
+    <string name="time_format_pattern">M月d日 HH:mm</string>
+    <string name="incremental_backup">增量备份</string>
+    <string name="incremental_backup_desc">对增量存档进行操作，并将附加元数据存储在独立文件中</string>
+    <string name="clean_backup">干净备份</string>
+    <string name="clean_backup_desc">备份前清除所有所选备份项以前的备份</string>
+    <string name="target">目标</string>
 </resources>

@@ -319,7 +319,6 @@
     <string name="confirm_add_to_blacklist">தடுப்புப்பட்டியலில் சேர்க்கவா?</string>
     <string name="report">அறிக்கை</string>
     <string name="auto_screen_off">ஆட்டோ திரை ஆஃப்</string>
-    <string name="auto_screen_off_desc">பயன்பாடுகள்/கோப்புகளை காப்புப் பிரதி எடுக்கும்போது அல்லது மீட்டெடுக்கும் போது தானாகவே திரையை அணைக்கவும், பின்னர் முடிந்த பிறகு அதை இயக்கவும்</string>
     <string name="confirm_remove_from_blacklist">தடுப்புப்பட்டியலில் இருந்து நீக்கவா?</string>
     <string name="args_screen_off_in_seconds">திரை %1$s வினாடிகளில் அணைக்கப்படும்</string>
     <string name="_import">இறக்குமதி</string>

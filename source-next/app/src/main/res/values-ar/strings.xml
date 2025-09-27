@@ -312,7 +312,6 @@
     <string name="kill_app_options_desc">سلوك ما قبل النسخ الاحتياطي</string>
     <string name="no_root_directory">الرجاء عدم اختيار المسار الجذري \"/\"</string>
     <string name="auto_screen_off">ايقاف تشغيل الشاشة تلقائياً</string>
-    <string name="auto_screen_off_desc">قم بإيقاف تشغيل الشاشة تلقائياً أثناء نسخ/استعادة التطبيقات/الملفات، و من ثم قم بتشغيلها بعد إنهاء العملية</string>
     <string name="args_screen_off_in_seconds">الشاشة ستغلق في غضون %1$s ثانية</string>
     <string name="language">اللغة</string>
     <string name="download">تنزيل</string>

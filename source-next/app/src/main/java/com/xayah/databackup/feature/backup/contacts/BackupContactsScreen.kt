@@ -55,7 +55,9 @@ import com.xayah.databackup.R
 import com.xayah.databackup.database.entity.ContactDeserialized
 import com.xayah.databackup.ui.component.SearchTextField
 import com.xayah.databackup.ui.component.verticalFadingEdges
+import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.popBackStackSafely
+import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun BackupContactsScreen(
@@ -74,10 +76,10 @@ fun BackupContactsScreen(
     var showEndEdge by remember { mutableStateOf(false) }
     val startEdgeRange: Float by animateFloatAsState(if (showStartEdge) 1f else 0f, label = "alpha")
     val endEdgeRange: Float by animateFloatAsState(if (showEndEdge) 1f else 0f, label = "alpha")
-    LaunchedEffect(lazyListState.canScrollBackward) {
+    LaunchedEffect(context = Dispatchers.Default, lazyListState.canScrollBackward) {
         showStartEdge = lazyListState.canScrollBackward
     }
-    LaunchedEffect(lazyListState.canScrollForward) {
+    LaunchedEffect(context = Dispatchers.Default, lazyListState.canScrollForward) {
         showEndEdge = lazyListState.canScrollForward
     }
 

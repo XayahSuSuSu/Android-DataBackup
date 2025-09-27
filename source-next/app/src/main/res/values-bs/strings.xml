@@ -32,7 +32,6 @@
     <string name="args_loading_from_user">Učitavanje od korisnika %1$s</string>
     <string name="no_backups_found_warning">Nisu pronađene sigurnosne kopije, vratite se i pokušajte ponovno učitati</string>
     <string name="auto_screen_off">Automatski isključi ekran</string>
-    <string name="auto_screen_off_desc">Automatsko isključivanje ekrana tokom sigurnosnog kopiranja ili obnavljanja aplikacija/datoteka, a zatim automatsko uključivanje nakon završetka</string>
     <string name="application_desc">Dobijte informacije o paketu aplikacije, koriste se za generiranje liste sigurnosnih kopija i dobijanje veličine app podataka</string>
     <string name="integral">Integral</string>
     <string name="save">Spremi</string>

@@ -219,7 +219,6 @@
     <string name="confirm_remove_from_blacklist">Видалити з заблокованих?</string>
     <string name="report">Звіт</string>
     <string name="auto_screen_off">Автоматичне вимкненя екрану</string>
-    <string name="auto_screen_off_desc">Автоматично вимикати екран під час створення бекапів або відновлення програм/файлів, а потім увімкнути його після завершення</string>
     <string name="_import">Імпорт</string>
     <string name="protect_desc">Захистити цей бекап від перезапису</string>
     <string name="translators_desc">Ми цінуємо їхні зусилля</string>

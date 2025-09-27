@@ -11,7 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import com.xayah.databackup.ui.theme.color.hct.Hct
+import com.xayah.databackup.ui.theme.color.scheme.SchemeContent
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -64,25 +67,34 @@ class CustomColorScheme(
     val primary: Color,
     val onPrimary: Color,
     val primaryContainer: Color,
-    val onPrimaryContainer: Color,
     val surfaceContainer: Color,
 )
 
-private val GreenDarkColorScheme = CustomColorScheme(
-    primary = GreenPrimaryDark,
-    onPrimary = GreenOnPrimaryDark,
-    primaryContainer = GreenPrimaryContainerDark,
-    onPrimaryContainer = GreenOnPrimaryContainerDark,
-    surfaceContainer = GreenSurfaceContainerDark,
-)
+private val GreenDarkColorScheme = SchemeContent(
+    sourceColorHct = Hct.fromInt(GreenSource.toArgb()),
+    isDark = true,
+    contrastLevel = 0.0,
+).let { scheme ->
+    CustomColorScheme(
+        primary = Color(scheme.primary),
+        onPrimary = Color(scheme.onPrimary),
+        primaryContainer = Color(scheme.primaryContainer),
+        surfaceContainer = Color(scheme.surfaceContainer),
+    )
+}
 
-private val GreenLightColorScheme = CustomColorScheme(
-    primary = GreenPrimaryLight,
-    onPrimary = GreenOnPrimaryLight,
-    primaryContainer = GreenPrimaryContainerLight,
-    onPrimaryContainer = GreenOnPrimaryContainerLight,
-    surfaceContainer = GreenSurfaceContainerLight
-)
+private val GreenLightColorScheme = SchemeContent(
+    sourceColorHct = Hct.fromInt(GreenSource.toArgb()),
+    isDark = false,
+    contrastLevel = 0.0,
+).let { scheme ->
+    CustomColorScheme(
+        primary = Color(scheme.primary),
+        onPrimary = Color(scheme.onPrimary),
+        primaryContainer = Color(scheme.primaryContainer),
+        surfaceContainer = Color(scheme.surfaceContainer),
+    )
+}
 
 object DataBackupTheme {
     val greenColorScheme: CustomColorScheme

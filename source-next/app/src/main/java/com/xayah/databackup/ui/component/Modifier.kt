@@ -1,15 +1,23 @@
 package com.xayah.databackup.ui.component
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.xayah.databackup.ui.material3.placeholder.PlaceholderHighlight
+import com.xayah.databackup.ui.material3.placeholder.fade
+import com.xayah.databackup.ui.material3.placeholder.placeholder
 import kotlin.math.min
 
 fun Modifier.horizontalFadingEdges(
@@ -135,8 +143,12 @@ private fun Modifier.fadingEdges(
 
             colors = listOf(Color.Black, Color.Transparent)
             range = fadingEdgePx * endRange
-            start = size.height - range
-            end = size.height
+            val max = when (direction) {
+                Direction.HORIZONTAL -> size.width
+                Direction.VERTICAL -> size.height
+            }
+            start = max - range
+            end = max
             if (range != 0f) {
                 drawRect(
                     brush = when (direction) {
@@ -157,3 +169,17 @@ private fun Modifier.fadingEdges(
             }
         }
 )
+
+fun Modifier.shimmer(visible: Boolean = true, colorAlpha: Float = 0.1f, highlightAlpha: Float = 0.3f) = composed {
+    val isSystemInDarkTheme = isSystemInDarkTheme()
+    val alphaColor = if (isSystemInDarkTheme) highlightAlpha else colorAlpha
+    val alphaHighlight = if (isSystemInDarkTheme) colorAlpha else highlightAlpha
+    placeholder(
+        visible = visible,
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.onSurface
+            .copy(alpha = alphaColor)
+            .compositeOver(MaterialTheme.colorScheme.surface),
+        highlight = PlaceholderHighlight.fade(MaterialTheme.colorScheme.surface.copy(alpha = alphaHighlight)),
+    )
+}

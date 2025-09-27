@@ -40,7 +40,12 @@ suspend fun Context.saveBoolean(key: Preferences.Key<Boolean>, value: Boolean) =
 suspend fun Context.saveInt(key: Preferences.Key<Int>, value: Int) = dataStore.edit { settings -> settings[key] = value }
 suspend fun Context.saveLong(key: Preferences.Key<Long>, value: Long) = dataStore.edit { settings -> settings[key] = value }
 
+// ----------------------------------------------------------------------------------------------------------------------------Setup
+
 // Key to defValue
+val KeyBackupPath = stringPreferencesKey("backup_path")
+val BackupPath = Pair(KeyBackupPath, PathHelper.DEFAULT_BACKUP_PATH)
+
 val KeyFirstLaunch = booleanPreferencesKey("first_launch")
 const val DefFirstLaunch = true
 val FirstLaunch = Pair(KeyFirstLaunch, DefFirstLaunch)
@@ -48,6 +53,8 @@ val FirstLaunch = Pair(KeyFirstLaunch, DefFirstLaunch)
 val KeyCustomSuFile = stringPreferencesKey("custom_su_file")
 const val DefCustomSuFile = "su"
 val CustomSuFile = Pair(KeyCustomSuFile, DefCustomSuFile)
+
+// ----------------------------------------------------------------------------------------------------------------------------List
 
 val KeyFilterBackupUser = intPreferencesKey("filter_backup_user")
 const val DefFilterBackupUser = 0
@@ -68,6 +75,26 @@ val FiltersUserAppsBackup = Pair(KeyFiltersUserAppsBackup, DefFiltersUserAppsBac
 val KeyFiltersSystemAppsBackup = booleanPreferencesKey("filters_system_apps_backup")
 const val DefFiltersSystemAppsBackup = false
 val FiltersSystemAppsBackup = Pair(KeyFiltersSystemAppsBackup, DefFiltersSystemAppsBackup)
+
+// ----------------------------------------------------------------------------------------------------------------------------Settings
+
+val KeyIncrementalBackup = booleanPreferencesKey("incremental_backup")
+const val DefIncrementalBackup = true
+val IncrementalBackup = Pair(KeyIncrementalBackup, DefIncrementalBackup)
+
+val KeyCleanBackup = booleanPreferencesKey("clean_backup")
+const val DefCleanBackup = false
+val CleanBackup = Pair(KeyCleanBackup, DefCleanBackup)
+
+val KeyAutoScreenOff = booleanPreferencesKey("auto_screen_off")
+const val DefAutoScreenOff = true
+val AutoScreenOff = Pair(KeyAutoScreenOff, DefAutoScreenOff)
+
+val KeyResetBackupList = booleanPreferencesKey("reset_backup_list")
+const val DefResetBackupList = false
+val ResetBackupList = Pair(KeyResetBackupList, DefResetBackupList)
+
+// ----------------------------------------------------------------------------------------------------------------------------Backup
 
 val KeyAppsOptionSelectedBackup = booleanPreferencesKey("apps_option_selected_backup")
 const val DefAppsOptionSelectedBackup = true

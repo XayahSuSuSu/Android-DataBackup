@@ -293,7 +293,6 @@
     <string name="custom_su_file">Fichier SU personnalisé</string>
     <string name="insecure_server_connection">Autoriser les connections serveur non sécurisées</string>
     <string name="launch">Lancer</string>
-    <string name="auto_screen_off_desc">Automatique éteindre l\'écran pendant une sauvegarde ou une restauration, puis le rallumer après complétion</string>
     <string name="all_selected">Tous les éléments sélectionnés</string>
     <string name="block">Bloquer</string>
     <string name="labels">Étiquettes</string>

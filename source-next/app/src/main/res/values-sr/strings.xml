@@ -248,7 +248,6 @@
     <string name="calculating">Izračunavanje</string>
     <string name="blacklist">Popis blokiranih</string>
     <string name="blacklist_desc">Upravljanje blokiranim unosima</string>
-    <string name="auto_screen_off_desc">Automatsko isključivanje ekrana tokom sigurnosnog kopiranja ili obnavljanja aplikacija/datoteka, a zatim automatsko uključivanje nakon završetka</string>
     <string name="args_screen_off_in_seconds">Ekran će se isključiti za %1$s s</string>
     <string name="configurations_desc">Podešavanja, crna lista, konfiguracije oblaka</string>
     <string name="_import">Uvezi</string>

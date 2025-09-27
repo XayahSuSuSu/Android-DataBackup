@@ -102,6 +102,10 @@ dependencies {
 
     // Moshi
     implementation(libs.moshi)
+    ksp(libs.moshi.kotlin.codegen)
+
+    // Koin
+    implementation(libs.koin.androidx.compose)
 }
 
 kotlin {
@@ -111,6 +115,8 @@ kotlin {
             "-opt-in=androidx.compose.animation.graphics.ExperimentalAnimationGraphicsApi",
             "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi",
             "-opt-in=kotlin.ExperimentalStdlibApi",
+            "-opt-in=kotlin.uuid.ExperimentalUuidApi",
+            "-XXLanguage:+PropertyParamAnnotationDefaultTargetMode",
         )
     }
 }

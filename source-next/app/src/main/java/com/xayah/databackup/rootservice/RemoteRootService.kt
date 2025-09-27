@@ -18,6 +18,7 @@ import android.os.IBinder
 import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.RemoteException
+import android.os.StatFs
 import android.os.UserManagerHidden
 import com.topjohnwu.superuser.ipc.RootService
 import com.xayah.databackup.App
@@ -26,6 +27,8 @@ import com.xayah.databackup.database.entity.AppStorage
 import com.xayah.databackup.database.entity.Info
 import com.xayah.databackup.database.entity.Storage
 import com.xayah.databackup.parcelables.BytesParcelable
+import com.xayah.databackup.parcelables.FilePathParcelable
+import com.xayah.databackup.parcelables.StatFsParcelable
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.ParcelableHelper.marshall
 import com.xayah.databackup.util.ParcelableHelper.unmarshall
@@ -87,7 +90,7 @@ object RemoteRootService {
         override fun onBind(intent: Intent): IBinder = Impl(applicationContext).apply { onBind() }
     }
 
-    class Impl(private val context: Context) : IRemoteRootService.Stub() {
+    private class Impl(private val context: Context) : IRemoteRootService.Stub() {
         private lateinit var mSystemContext: Context
         private lateinit var mPackageManager: PackageManager
         private lateinit var mPackageManagerHidden: PackageManagerHidden
@@ -184,6 +187,29 @@ object RemoteRootService {
                 }
             }
             return networkIds.toIntArray()
+        }
+
+        override fun readStatFs(path: String): StatFsParcelable {
+            val statFs = StatFs(path)
+            return StatFsParcelable(statFs.availableBytes, statFs.totalBytes)
+        }
+
+        override fun listFilePaths(path: String, listFiles: Boolean, listDirs: Boolean): List<FilePathParcelable> {
+            return File(path).listFiles()?.filter {
+                (it.isFile && listFiles) || (it.isDirectory && listDirs)
+            }?.map {
+                FilePathParcelable(it.path, if (it.isFile) 0 else if (it.isDirectory) 1 else -1)
+            } ?: listOf()
+        }
+
+        override fun readText(path: String): ParcelFileDescriptor {
+            return writeToParcel(context) { parcel ->
+                parcel.writeString(File(path).readText())
+            }
+        }
+
+        override fun calculateTreeSize(path: String): Long {
+            return NativeLib.calculateTreeSize(path)
         }
     }
 
@@ -310,5 +336,23 @@ object RemoteRootService {
             networks.add(BytesParcelable(bytes.size, bytes))
         }
         return getService()?.addNetworks(networks) ?: intArrayOf()
+    }
+
+    suspend fun readStatFs(path: String): StatFsParcelable? {
+        return getService()?.readStatFs(path)
+    }
+
+    suspend fun listFilePaths(path: String, listFiles: Boolean, listDirs: Boolean): List<FilePathParcelable> {
+        return getService()?.listFilePaths(path, listFiles, listDirs) ?: listOf()
+    }
+
+    suspend fun readText(path: String): String {
+        var text = ""
+        getService()?.readText(path)?.also { pfd -> readFromParcel(pfd) { parcel -> parcel.readString()?.also { text = it } } }
+        return text
+    }
+
+    suspend fun calculateTreeSize(path: String): Long {
+        return getService()?.calculateTreeSize(path) ?: 0
     }
 }

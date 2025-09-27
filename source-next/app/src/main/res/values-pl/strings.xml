@@ -120,7 +120,6 @@
     <string name="set_up_inst_env">Skonfiguruj środowisko instalacyjne</string>
     <string name="theme_auto">Automatycznie</string>
     <string name="theme_auto_desc">Włączy się automatycznie</string>
-    <string name="auto_screen_off_desc">Automatycznie wyłącz ekran podczas tworzenia kopii zapasowej lub przywracania aplikacji/plików, następnie włącz ekran ponownie po zakończeniu</string>
     <string name="it_is_empty">To jest puste</string>
     <string name="configurations_desc">Ustawienia, czarna lista, konfiguracja konta w chmurze</string>
     <string name="configurations">Konfiguracje</string>

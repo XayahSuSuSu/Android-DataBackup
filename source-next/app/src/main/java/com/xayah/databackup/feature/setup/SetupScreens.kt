@@ -167,12 +167,10 @@ fun CustomSUFileDialog(
             TextButton(
                 enabled = isError.not(),
                 onClick = {
-                    scope.launch {
-                        withContext(Dispatchers.Default) {
-                            context.saveString(KeyCustomSuFile, text.text)
-                            onDismissRequest()
-                            ProcessHelper.killSelf(context as Activity)
-                        }
+                    scope.launch(Dispatchers.Default) {
+                        context.saveString(KeyCustomSuFile, text.text)
+                        onDismissRequest()
+                        ProcessHelper.killSelf(context as Activity)
                     }
                 }
             ) {

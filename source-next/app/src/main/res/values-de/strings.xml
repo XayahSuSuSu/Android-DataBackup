@@ -324,7 +324,6 @@
     <string name="it_is_empty">Es ist leer</string>
     <string name="report">Melden</string>
     <string name="auto_screen_off">Automatische Bildschirmabschaltung</string>
-    <string name="auto_screen_off_desc">Während des Backup oder der Wiederherstellung automatisch den Bildschirm ausschalten. Am Ende wieder Einschalten</string>
     <string name="args_screen_off_in_seconds">Der Bildschirm wird in %1$s Sekunden abgeschaltet</string>
     <string name="configurations_desc">Einstellungen, Blacklist, Cloudkonten Konfiguration</string>
     <string name="_import">Importieren</string>

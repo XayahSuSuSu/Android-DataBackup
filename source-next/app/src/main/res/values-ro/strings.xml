@@ -298,7 +298,6 @@
     <string name="kill_app_options">Opțiuni de omorâre a aplicației</string>
     <string name="apk_selected">APK selectat</string>
     <string name="backup_contacts">Copie rezervă contacte</string>
-    <string name="auto_screen_off_desc">Stingeți automat ecranul în timpul copierii de rezervă sau restaurării aplicațiilor/fișierelor, apoi porniți-l după finalizare</string>
     <string name="save_icons">Salvare iconițe</string>
     <string name="option_i">Opțiunea 1</string>
     <string name="smb_setup">Configurare SMB / CIFS</string>
