@@ -459,4 +459,13 @@
     <string name="contacts">Контакти</string>
     <string name="call_logs">Журнали викликів</string>
     <string name="messages">Повідомленням</string>
+    <string name="auto_screen_off_desc">Автоматично вимикати екран під час резервного копіювання або відновлення, а потім увімкнути його після завершення</string>
+    <string name="not_set_up">Не налаштовано</string>
+    <string name="new_backup">Нова резервна копія</string>
+    <string name="time_format_pattern">МММ дд, ГГ:хх</string>
+    <string name="incremental_backup">Інкрементне резервне копіювання</string>
+    <string name="incremental_backup_desc">Працювати з інкрементним архівом, де додаткові метадані зберігаються в окремому файлі</string>
+    <string name="clean_backup">Чиста резервна копія</string>
+    <string name="clean_backup_desc">Очистити всі попередні резервні копії вибраного елемента резервної копії перед створенням резервної копії</string>
+    <string name="target">Ціль</string>
 </resources>
