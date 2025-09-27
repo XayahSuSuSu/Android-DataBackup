@@ -459,4 +459,13 @@
     <string name="call_logs">Rejestry połączeń</string>
     <string name="free">Wolne</string>
     <string name="other">Inne</string>
+    <string name="auto_screen_off_desc">Automatycznie wyłącz ekran podczas tworzenia kopii zapasowej lub przywracania, a następnie włącz go ponownie po zakończeniu</string>
+    <string name="not_set_up">Nie skonfigurowano</string>
+    <string name="new_backup">Nowa kopia zapasowa</string>
+    <string name="time_format_pattern">DD.MM, HH:mm</string>
+    <string name="incremental_backup">Przyrostowa kopia zapasowa</string>
+    <string name="incremental_backup_desc">Operuj na przyrostowym archiwum z dodatkowymi metadanymi zapisanymi w samodzielnym pliku</string>
+    <string name="clean_backup">Czysta kopia zapasowa</string>
+    <string name="clean_backup_desc">Wyczyść wszystkie poprzednie kopie zapasowe wybranego elementu kopii zapasowej przed utworzeniem kopii zapasowej</string>
+    <string name="target">Cel</string>
 </resources>
