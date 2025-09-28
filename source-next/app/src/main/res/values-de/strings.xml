@@ -442,4 +442,20 @@
     <string name="hidden_password">Verstecktes Passwort</string>
     <string name="select_contacts">Kontakte auswählen</string>
     <string name="select_call_logs">Anrufprotokolle auswählen</string>
+    <string name="not_set_up">Nicht eingerichtet</string>
+    <string name="new_backup">Neue Datensicherung</string>
+    <string name="incremental_backup">Inkrementelle Datensicherung</string>
+    <string name="target">Ziel</string>
+    <string name="sms">SMS</string>
+    <string name="mms">MMS</string>
+    <string name="select_messages">Nachrichten auswählen</string>
+    <string name="actions">Aktionen</string>
+    <string name="set_up_cloud_storage">Cloud-Speicherung einrichten</string>
+    <string name="configure_automatic_backups">Automatische Datensicherungen konfigurieren</string>
+    <string name="backups">Datensicherungen</string>
+    <string name="free">Frei</string>
+    <string name="networks">Netzwerke</string>
+    <string name="contacts">Kontakte</string>
+    <string name="call_logs">Anrufprotokolle</string>
+    <string name="messages">Nachrichten</string>
 </resources>
