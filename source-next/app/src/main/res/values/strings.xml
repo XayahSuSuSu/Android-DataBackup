@@ -485,4 +485,7 @@
     <string name="call_log_permission_desc">This permission is required to backup/restore call logs</string>
     <string name="message_permission_desc">This permission is required to backup/restore messages</string>
     <string name="skip">Skip</string>
+    <string name="worker_update_apps_basic_info">Updating apps basic information</string>
+    <string name="worker_update_apps_storage_info">Updating apps storage information</string>
+    <string name="worker_update_other_info">Updating other information</string>
 </resources>

@@ -39,6 +39,7 @@ class MainViewModel : BaseViewModel() {
 
     fun initialize() {
         checkRootService {
+            WorkManagerHelper.enqueueOthersUpdateWork()
             WorkManagerHelper.enqueueAppsUpdateWork()
         }
     }

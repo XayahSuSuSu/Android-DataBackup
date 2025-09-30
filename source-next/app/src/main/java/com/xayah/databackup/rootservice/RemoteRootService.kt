@@ -7,6 +7,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.PackageManagerHidden
 import android.content.pm.UserInfo
@@ -22,6 +23,7 @@ import android.os.StatFs
 import android.os.UserManagerHidden
 import com.topjohnwu.superuser.ipc.RootService
 import com.xayah.databackup.App
+import com.xayah.databackup.R
 import com.xayah.databackup.database.entity.AppInfo
 import com.xayah.databackup.database.entity.AppStorage
 import com.xayah.databackup.database.entity.Info
@@ -30,6 +32,8 @@ import com.xayah.databackup.parcelables.BytesParcelable
 import com.xayah.databackup.parcelables.FilePathParcelable
 import com.xayah.databackup.parcelables.StatFsParcelable
 import com.xayah.databackup.util.LogHelper
+import com.xayah.databackup.util.NotificationHelper
+import com.xayah.databackup.util.NotificationHelper.NOTIFICATION_ID_APPS_UPDATE_WORKER
 import com.xayah.databackup.util.ParcelableHelper.marshall
 import com.xayah.databackup.util.ParcelableHelper.unmarshall
 import com.xayah.databackup.util.PathHelper
@@ -136,30 +140,39 @@ object RemoteRootService {
 
         override fun getInstalledAppStorages(): ParcelFileDescriptor {
             return writeToParcel(context) { parcel ->
+                val builder = NotificationHelper.getNotificationBuilder(context)
+                val manager = NotificationHelper.getNotificationManager(context)
+                val packages = mutableListOf<Pair<Int, PackageInfo>>()
                 val storages = mutableListOf<AppStorage>()
                 val users = mUserManager.users
                 users.forEach { user ->
-                    storages.addAll(mPackageManagerHidden.getInstalledPackagesAsUser(0, user.id).map {
-                        val apkBytes = runCatching {
-                            it.applicationInfo?.sourceDir?.let { path -> File(path).parent }?.let { path -> NativeLib.calculateTreeSize(path) }
-                        }.getOrNull() ?: 0
-                        val userBytes = NativeLib.calculateTreeSize(PathHelper.getAppUserDir(user.id, it.packageName))
-                        val userDeBytes = NativeLib.calculateTreeSize(PathHelper.getAppUserDeDir(user.id, it.packageName))
-                        val dataBytes = NativeLib.calculateTreeSize(PathHelper.getAppDataDir(user.id, it.packageName))
-                        val obbBytes = NativeLib.calculateTreeSize(PathHelper.getAppObbDir(user.id, it.packageName))
-                        val mediaBytes = NativeLib.calculateTreeSize(PathHelper.getAppMediaDir(user.id, it.packageName))
-                        AppStorage(
-                            packageName = it.packageName,
-                            userId = user.id,
-                            storage = Storage(
-                                apkBytes = apkBytes,
-                                internalDataBytes = userBytes + userDeBytes,
-                                externalDataBytes = dataBytes,
-                                obbAndMediaBytes = obbBytes + mediaBytes,
-                            )
-                        )
-                    })
+                    packages.addAll(mPackageManagerHidden.getInstalledPackagesAsUser(0, user.id).map { user.id to it })
                 }
+                storages.addAll(packages.mapIndexed { index, (userId, item) ->
+                    builder.setContentTitle(context.getString(R.string.worker_update_apps_storage_info))
+                        .setSubText(item.applicationInfo?.loadLabel(mPackageManager) ?: item.packageName)
+                        .setProgress(packages.size, index, false)
+                        .setOngoing(true)
+                    manager.notify(NOTIFICATION_ID_APPS_UPDATE_WORKER, builder.build())
+                    val apkBytes = runCatching {
+                        item.applicationInfo?.sourceDir?.let { path -> File(path).parent }?.let { path -> NativeLib.calculateTreeSize(path) }
+                    }.getOrNull() ?: 0
+                    val userBytes = NativeLib.calculateTreeSize(PathHelper.getAppUserDir(userId, item.packageName))
+                    val userDeBytes = NativeLib.calculateTreeSize(PathHelper.getAppUserDeDir(userId, item.packageName))
+                    val dataBytes = NativeLib.calculateTreeSize(PathHelper.getAppDataDir(userId, item.packageName))
+                    val obbBytes = NativeLib.calculateTreeSize(PathHelper.getAppObbDir(userId, item.packageName))
+                    val mediaBytes = NativeLib.calculateTreeSize(PathHelper.getAppMediaDir(userId, item.packageName))
+                    AppStorage(
+                        packageName = item.packageName,
+                        userId = userId,
+                        storage = Storage(
+                            apkBytes = apkBytes,
+                            internalDataBytes = userBytes + userDeBytes,
+                            externalDataBytes = dataBytes,
+                            obbAndMediaBytes = obbBytes + mediaBytes,
+                        )
+                    )
+                })
                 parcel.writeTypedList(storages)
             }
         }

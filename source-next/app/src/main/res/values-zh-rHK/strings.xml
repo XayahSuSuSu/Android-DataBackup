@@ -472,4 +472,7 @@
     <string name="call_log_permission_desc">備份/還原通話記錄需使用此權限</string>
     <string name="message_permission_desc">備份/還原資訊需要使用到此權限</string>
     <string name="skip">跳過</string>
+    <string name="worker_update_apps_basic_info">正在更新應用程式基礎信息</string>
+    <string name="worker_update_apps_storage_info">正在更新應用程式記憶體信息</string>
+    <string name="worker_update_other_info">正在更新其餘信息</string>
 </resources>

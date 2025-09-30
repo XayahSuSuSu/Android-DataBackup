@@ -22,8 +22,10 @@ object NotificationHelper {
     private const val FOREGROUND_SERVICE_CHANNEL_ID = "ForegroundServiceChannel"
     private const val FOREGROUND_SERVICE_CHANNEL_NAME = "ForegroundService"
     private const val FOREGROUND_SERVICE_CHANNEL_DESC = "For foreground service"
-    private var mNotificationId = 0
     const val REQUEST_CODE = 1
+
+    const val NOTIFICATION_ID_APPS_UPDATE_WORKER = 1
+    const val NOTIFICATION_ID_OTHERS_UPDATE_WORKER = 2
 
     fun checkPermission(context: Context): Boolean =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -71,14 +73,13 @@ object NotificationHelper {
             ).apply {
                 description = FOREGROUND_SERVICE_CHANNEL_DESC
             }
-            val notificationManager: NotificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager: NotificationManager = getNotificationManager(context)
             notificationManager.createNotificationChannel(channel)
         }
     }
 
-    fun generateNotificationId() = mNotificationId++
-
     fun getNotificationBuilder(context: Context) =
-        NotificationCompat.Builder(context, FOREGROUND_SERVICE_CHANNEL_ID).setSmallIcon(R.mipmap.ic_launcher)
+        NotificationCompat.Builder(context, FOREGROUND_SERVICE_CHANNEL_ID).setSmallIcon(R.mipmap.ic_launcher).setOnlyAlertOnce(true).setSilent(true)
+
+    fun getNotificationManager(context: Context) = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 }
