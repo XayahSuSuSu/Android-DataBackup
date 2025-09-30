@@ -468,4 +468,11 @@
     <string name="clean_backup">Чиста резервна копія</string>
     <string name="clean_backup_desc">Очистити всі попередні резервні копії вибраного елемента резервної копії перед створенням резервної копії</string>
     <string name="target">Ціль</string>
+    <string name="contact_permission_desc">Цей дозвіл потрібен для резервного копіювання/відновлення контактів</string>
+    <string name="call_log_permission_desc">Цей дозвіл потрібен для резервного копіювання/відновлення журналів викликів</string>
+    <string name="message_permission_desc">Цей дозвіл потрібен для резервного копіювання/відновлення повідомлень</string>
+    <string name="skip">Пропустити</string>
+    <string name="worker_update_apps_basic_info">Оновлення основної інформації про програми</string>
+    <string name="worker_update_apps_storage_info">Оновлення інформації про сховище програм</string>
+    <string name="worker_update_other_info">Оновлення іншої інформації</string>
 </resources>
