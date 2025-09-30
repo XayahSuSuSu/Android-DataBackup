@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,6 +55,7 @@ import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.database.entity.ContactDeserialized
 import com.xayah.databackup.ui.component.SearchTextField
+import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.popBackStackSafely
@@ -65,6 +67,7 @@ fun BackupContactsScreen(
     viewModel: ContactsViewModel = viewModel(),
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val searchScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val contacts by viewModel.contacts.collectAsStateWithLifecycle()
     val selected by viewModel.selected.collectAsStateWithLifecycle()
     val searchText by viewModel.searchText.collectAsStateWithLifecycle()
@@ -90,7 +93,9 @@ fun BackupContactsScreen(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .fillMaxSize(),
         topBar = {
             AnimatedContent(onSearch) { target ->
                 if (target) {
@@ -118,7 +123,7 @@ fun BackupContactsScreen(
                                 )
                             }
                         },
-                        scrollBehavior = scrollBehavior,
+                        scrollBehavior = searchScrollBehavior,
                     )
                 } else {
                     LargeTopAppBar(
@@ -163,6 +168,7 @@ fun BackupContactsScreen(
                             }
                         },
                         scrollBehavior = scrollBehavior,
+                        colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
                     )
                 }
             }

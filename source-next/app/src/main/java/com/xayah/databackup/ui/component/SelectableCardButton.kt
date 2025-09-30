@@ -86,6 +86,36 @@ fun selectableCardButtonPrimaryColors(
 )
 
 @Composable
+fun selectableCardButtonSecondaryColors(
+    selectedCircleColor: Color = MaterialTheme.colorScheme.secondary,
+    selectedIconColor: Color = MaterialTheme.colorScheme.onSecondary,
+    selectedIconButtonColor: Color = MaterialTheme.colorScheme.secondary,
+    selectedTitleColor: Color = MaterialTheme.colorScheme.secondary,
+    selectedBorderColor: Color = MaterialTheme.colorScheme.secondary,
+) = selectableCardButtonPrimaryColors(
+    selectedCircleColor = selectedCircleColor,
+    selectedIconColor = selectedIconColor,
+    selectedIconButtonColor = selectedIconButtonColor,
+    selectedTitleColor = selectedTitleColor,
+    selectedBorderColor = selectedBorderColor,
+)
+
+@Composable
+fun selectableCardButtonTertiaryColors(
+    selectedCircleColor: Color = MaterialTheme.colorScheme.tertiary,
+    selectedIconColor: Color = MaterialTheme.colorScheme.onTertiary,
+    selectedIconButtonColor: Color = MaterialTheme.colorScheme.tertiary,
+    selectedTitleColor: Color = MaterialTheme.colorScheme.tertiary,
+    selectedBorderColor: Color = MaterialTheme.colorScheme.tertiary,
+) = selectableCardButtonPrimaryColors(
+    selectedCircleColor = selectedCircleColor,
+    selectedIconColor = selectedIconColor,
+    selectedIconButtonColor = selectedIconButtonColor,
+    selectedTitleColor = selectedTitleColor,
+    selectedBorderColor = selectedBorderColor,
+)
+
+@Composable
 fun selectableCardButtonGreenColors(
     selectedCircleColor: Color = DataBackupTheme.greenColorScheme.primary,
     selectedIconColor: Color = DataBackupTheme.greenColorScheme.onPrimary,

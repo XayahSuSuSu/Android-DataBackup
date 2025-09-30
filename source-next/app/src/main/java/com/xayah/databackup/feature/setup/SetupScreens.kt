@@ -2,6 +2,7 @@ package com.xayah.databackup.feature.setup
 
 import android.app.Activity
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -42,13 +43,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.OnResume
 import com.xayah.databackup.ui.component.PermissionCard
 import com.xayah.databackup.ui.component.verticalFadingEdges
-import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.CustomSuFile
 import com.xayah.databackup.util.KeyCustomSuFile
 import com.xayah.databackup.util.ProcessHelper
@@ -60,7 +62,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 
 @Composable
 fun WelcomeScreen(navController: NavHostController) {
@@ -119,7 +120,7 @@ fun WelcomeScreen(navController: NavHostController) {
                     Button(
                         modifier = Modifier
                             .wrapContentSize(),
-                        colors = ButtonDefaults.buttonColors(containerColor = DataBackupTheme.greenColorScheme.primary),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         onClick = {
                             navController.navigateSafely(Permissions(true))
                         }
@@ -198,11 +199,34 @@ fun PermissionsScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var openCustomSUFileDialog by remember { mutableStateOf(false) }
+    val contactsPermissionState = rememberMultiplePermissionsState(
+        listOf(android.Manifest.permission.READ_CONTACTS, android.Manifest.permission.WRITE_CONTACTS)
+    ) { result ->
+        viewModel.viewModelScope.launch {
+            viewModel.checkContact(context, result)
+        }
+    }
+    val callLogsPermissionState = rememberMultiplePermissionsState(
+        listOf(android.Manifest.permission.READ_CALL_LOG, android.Manifest.permission.WRITE_CALL_LOG)
+    ) { result ->
+        viewModel.viewModelScope.launch {
+            viewModel.checkCallLog(context, result)
+        }
+    }
+    val messagesPermissionState = rememberMultiplePermissionsState(
+        listOf(android.Manifest.permission.READ_SMS)
+    ) { result ->
+        viewModel.viewModelScope.launch {
+            viewModel.checkMessage(context, result)
+        }
+    }
 
     OnResume {
         if (viewModel.mIsGrantingNotificationPermission) {
-            viewModel.checkNotification(context)
-            viewModel.mIsGrantingNotificationPermission = false
+            viewModel.viewModelScope.launch {
+                viewModel.checkNotification(context)
+                viewModel.mIsGrantingNotificationPermission = false
+            }
         }
     }
 
@@ -253,12 +277,23 @@ fun PermissionsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(R.string.required),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.labelLarge
+                    )
+
                     PermissionCard(
                         state = uiState.rootCardProp.state,
                         icon = ImageVector.vectorResource(uiState.rootCardProp.icon),
                         title = uiState.rootCardProp.title,
                         content = uiState.rootCardProp.content,
-                        onClick = { viewModel.validateRoot(context) },
+                        onClick = {
+                            viewModel.withLock {
+                                viewModel.validateRoot(context)
+                            }
+                        },
                         actionIcon = ImageVector.vectorResource(R.drawable.ic_settings),
                         actionIconDescription = stringResource(R.string.custom_su_file),
                         onActionButtonClick = {
@@ -271,7 +306,54 @@ fun PermissionsScreen(
                         icon = ImageVector.vectorResource(uiState.notificationProp.icon),
                         title = uiState.notificationProp.title,
                         content = uiState.notificationProp.content,
-                        onClick = { viewModel.validateNotification(context) },
+                        onClick = {
+                            viewModel.withLock {
+                                viewModel.validateNotification(context)
+                            }
+                        },
+                    )
+
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(R.string.optional),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.labelLarge
+                    )
+
+                    PermissionCard(
+                        state = uiState.contactProp.state,
+                        icon = ImageVector.vectorResource(uiState.contactProp.icon),
+                        title = uiState.contactProp.title,
+                        content = uiState.contactProp.content,
+                        onClick = {
+                            viewModel.withLock {
+                                viewModel.validateContact(contactsPermissionState)
+                            }
+                        },
+                    )
+
+                    PermissionCard(
+                        state = uiState.callLogProp.state,
+                        icon = ImageVector.vectorResource(uiState.callLogProp.icon),
+                        title = uiState.callLogProp.title,
+                        content = uiState.callLogProp.content,
+                        onClick = {
+                            viewModel.withLock {
+                                viewModel.validateCallLog(callLogsPermissionState)
+                            }
+                        },
+                    )
+
+                    PermissionCard(
+                        state = uiState.messageProp.state,
+                        icon = ImageVector.vectorResource(uiState.messageProp.icon),
+                        title = uiState.messageProp.title,
+                        content = uiState.messageProp.content,
+                        onClick = {
+                            viewModel.withLock {
+                                viewModel.validateMessage(messagesPermissionState)
+                            }
+                        },
                     )
                 }
 
@@ -289,7 +371,7 @@ fun PermissionsScreen(
                     enabled = permissions.enableBackBtn,
                     modifier = Modifier
                         .wrapContentSize(),
-                    colors = ButtonDefaults.textButtonColors(contentColor = DataBackupTheme.greenColorScheme.primary),
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.primary),
                     onClick = {
                         navController.popBackStackSafely()
                     }
@@ -299,15 +381,28 @@ fun PermissionsScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
+                AnimatedVisibility(visible = viewModel.misRequiredGranted && viewModel.misAllGranted.not()) {
+                    TextButton(
+                        enabled = permissions.enableBackBtn,
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .padding(end = 16.dp),
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.primary),
+                        onClick = { viewModel.onSkipButtonClick(context) }
+                    ) {
+                        Text(text = stringResource(R.string.skip))
+                    }
+                }
+
                 Button(
                     modifier = Modifier
                         .wrapContentSize()
                         .animateContentSize(),
-                    colors = ButtonDefaults.buttonColors(containerColor = DataBackupTheme.greenColorScheme.primary),
-                    onClick = { viewModel.onNextButtonClick(context) }
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                    onClick = { viewModel.onNextButtonClick(context, contactsPermissionState, callLogsPermissionState, messagesPermissionState) }
                 ) {
                     AnimatedContent(
-                        targetState = if (viewModel.mAllGranted) stringResource(R.string.next) else stringResource(R.string.grant_all),
+                        targetState = if (viewModel.misAllGranted) stringResource(R.string.next) else stringResource(R.string.grant_all),
                         label = "Animated content"
                     ) { targetContent ->
                         Text(text = targetContent)

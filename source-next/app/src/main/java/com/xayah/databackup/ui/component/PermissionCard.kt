@@ -86,7 +86,7 @@ fun PermissionCard(
                 LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth(),
                     strokeCap = StrokeCap.Round,
-                    color = DataBackupTheme.greenColorScheme.primary
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
 

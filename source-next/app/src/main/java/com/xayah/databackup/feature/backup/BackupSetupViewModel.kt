@@ -52,6 +52,7 @@ data class SetupUiState(
 
 data class TargetItem(
     var selected: Boolean,
+    var initialized: Boolean,
     val title: String,
     var subtitle: String,
     val icon: ImageVector,
@@ -61,6 +62,82 @@ data class TargetItem(
 
 const val MaxSelectedItems = 6
 val DefSelectedItems = 0 to MaxSelectedItems
+val DefTargetItems = listOf(
+    TargetItem(
+        selected = false,
+        initialized = false,
+        title = App.application.getString(R.string.apps),
+        subtitle = App.application.getString(R.string.items_selected, "0", "0"),
+        icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_layout_grid),
+        onClickSettings = {
+            it.navigateSafely(BackupApps)
+        },
+        onSelectedChanged = {
+            App.application.saveBoolean(AppsOptionSelectedBackup.first, it)
+        }
+    ),
+    TargetItem(
+        selected = false,
+        initialized = false,
+        title = App.application.getString(R.string.files),
+        subtitle = App.application.getString(R.string.items_selected, "0", "0"),
+        icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_folder),
+        onClickSettings = {},
+        onSelectedChanged = {}
+    ),
+    TargetItem(
+        selected = false,
+        initialized = false,
+        title = App.application.getString(R.string.networks),
+        subtitle = App.application.getString(R.string.items_selected, "0", "0"),
+        icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_wifi),
+        onClickSettings = {
+            it.navigateSafely(BackupNetworks)
+        },
+        onSelectedChanged = {
+            App.application.saveBoolean(NetworksOptionSelectedBackup.first, it)
+        }
+    ),
+    TargetItem(
+        selected = false,
+        initialized = false,
+        title = App.application.getString(R.string.contacts),
+        subtitle = App.application.getString(R.string.items_selected, "0", "0"),
+        icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_user_round),
+        onClickSettings = {
+            it.navigateSafely(BackupContacts)
+        },
+        onSelectedChanged = {
+            App.application.saveBoolean(ContactsOptionSelectedBackup.first, it)
+        }
+    ),
+    TargetItem(
+        selected = false,
+        initialized = false,
+        title = App.application.getString(R.string.call_logs),
+        subtitle = App.application.getString(R.string.items_selected, "0", "0"),
+        icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_phone),
+        onClickSettings = {
+            it.navigateSafely(BackupCallLogs)
+        },
+        onSelectedChanged = {
+            App.application.saveBoolean(CallLogsOptionSelectedBackup.first, it)
+        }
+    ),
+    TargetItem(
+        selected = false,
+        initialized = false,
+        title = App.application.getString(R.string.messages),
+        subtitle = App.application.getString(R.string.items_selected, "0", "0"),
+        icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_message_circle),
+        onClickSettings = {
+            it.navigateSafely(BackupMessages)
+        },
+        onSelectedChanged = {
+            App.application.saveBoolean(MessagesOptionSelectedBackup.first, it)
+        }
+    ),
+)
 
 open class BackupSetupViewModel(
     private val backupConfigRepo: BackupConfigRepository
@@ -68,78 +145,7 @@ open class BackupSetupViewModel(
     private val _uiState: MutableStateFlow<SetupUiState> = MutableStateFlow(SetupUiState())
     val uiState: StateFlow<SetupUiState> = _uiState.asStateFlow()
 
-    private val targetSourceItems: Flow<List<TargetItem>> = flowOf(
-        listOf(
-            TargetItem(
-                selected = false,
-                title = App.application.getString(R.string.apps),
-                subtitle = App.application.getString(R.string.items_selected, "0", "0"),
-                icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_layout_grid),
-                onClickSettings = {
-                    it.navigateSafely(BackupApps)
-                },
-                onSelectedChanged = {
-                    App.application.saveBoolean(AppsOptionSelectedBackup.first, it)
-                }
-            ),
-            TargetItem(
-                selected = false,
-                title = App.application.getString(R.string.files),
-                subtitle = App.application.getString(R.string.items_selected, "0", "0"),
-                icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_folder),
-                onClickSettings = {},
-                onSelectedChanged = {}
-            ),
-            TargetItem(
-                selected = false,
-                title = App.application.getString(R.string.networks),
-                subtitle = App.application.getString(R.string.items_selected, "0", "0"),
-                icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_wifi),
-                onClickSettings = {
-                    it.navigateSafely(BackupNetworks)
-                },
-                onSelectedChanged = {
-                    App.application.saveBoolean(NetworksOptionSelectedBackup.first, it)
-                }
-            ),
-            TargetItem(
-                selected = false,
-                title = App.application.getString(R.string.contacts),
-                subtitle = App.application.getString(R.string.items_selected, "0", "0"),
-                icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_user_round),
-                onClickSettings = {
-                    it.navigateSafely(BackupContacts)
-                },
-                onSelectedChanged = {
-                    App.application.saveBoolean(ContactsOptionSelectedBackup.first, it)
-                }
-            ),
-            TargetItem(
-                selected = false,
-                title = App.application.getString(R.string.call_logs),
-                subtitle = App.application.getString(R.string.items_selected, "0", "0"),
-                icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_phone),
-                onClickSettings = {
-                    it.navigateSafely(BackupCallLogs)
-                },
-                onSelectedChanged = {
-                    App.application.saveBoolean(CallLogsOptionSelectedBackup.first, it)
-                }
-            ),
-            TargetItem(
-                selected = false,
-                title = App.application.getString(R.string.messages),
-                subtitle = App.application.getString(R.string.items_selected, "0", "0"),
-                icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_message_circle),
-                onClickSettings = {
-                    it.navigateSafely(BackupMessages)
-                },
-                onSelectedChanged = {
-                    App.application.saveBoolean(MessagesOptionSelectedBackup.first, it)
-                }
-            ),
-        )
-    )
+    private val targetSourceItems: Flow<List<TargetItem>> = flowOf(DefTargetItems)
 
     private val appsSelections = combine(
         DatabaseHelper.appDao.loadFlowApps(),
@@ -183,36 +189,42 @@ open class BackupSetupViewModel(
         newItems.add(
             items[0].copy(
                 selected = appsSelected,
+                initialized = true,
                 subtitle = App.application.getString(R.string.items_selected, "${apps.first}", "${apps.second}")
             )
         )
         newItems.add(
             items[1].copy(
                 selected = filesSelected,
+                initialized = true,
                 subtitle = App.application.getString(R.string.items_selected, "${files.first}", "${files.second}")
             )
         )
         newItems.add(
             items[2].copy(
                 selected = networksSelected,
+                initialized = true,
                 subtitle = App.application.getString(R.string.items_selected, "${networks.first}", "${networks.second}")
             )
         )
         newItems.add(
             items[3].copy(
                 selected = contactsSelected,
+                initialized = true,
                 subtitle = App.application.getString(R.string.items_selected, "${contacts.first}", "${contacts.second}")
             )
         )
         newItems.add(
             items[4].copy(
                 selected = callLogsSelected,
+                initialized = true,
                 subtitle = App.application.getString(R.string.items_selected, "${callLogs.first}", "${callLogs.second}")
             )
         )
         newItems.add(
             items[5].copy(
                 selected = messagesSelected,
+                initialized = true,
                 subtitle = App.application.getString(R.string.items_selected, "${messages.first}", "${messages.second}")
             )
         )
@@ -221,7 +233,7 @@ open class BackupSetupViewModel(
 
     val targetItems: StateFlow<List<TargetItem>> = _targetItems.stateIn(
         scope = viewModelScope,
-        initialValue = listOf(),
+        initialValue = DefTargetItems,
         started = SharingStarted.WhileSubscribed(5_000),
     )
 

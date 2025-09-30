@@ -58,6 +58,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -76,6 +77,7 @@ import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.ui.component.FilterButton
 import com.xayah.databackup.ui.component.SearchTextField
 import com.xayah.databackup.ui.component.SelectableChip
+import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
 import com.xayah.databackup.ui.component.filterButtonSecondaryColors
 import com.xayah.databackup.ui.component.horizontalFadingEdges
 import com.xayah.databackup.ui.component.verticalFadingEdges
@@ -106,7 +108,8 @@ fun BackupAppsScreen(
     viewModel: AppsViewModel = viewModel(),
 ) {
     val context = LocalContext.current
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val searchScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val apps by viewModel.apps.collectAsStateWithLifecycle()
     val allSelected by viewModel.allSelected.collectAsStateWithLifecycle()
     val selectedBytes by viewModel.selectedBytes.collectAsStateWithLifecycle()
@@ -136,7 +139,9 @@ fun BackupAppsScreen(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .fillMaxSize(),
         topBar = {
             AnimatedContent(onSearch) { target ->
                 if (target) {
@@ -163,7 +168,7 @@ fun BackupAppsScreen(
                             }
                             SelectIconButton(viewModel = viewModel)
                         },
-                        scrollBehavior = scrollBehavior,
+                        scrollBehavior = searchScrollBehavior,
                     )
                 } else {
                     LargeTopAppBar(
@@ -207,6 +212,7 @@ fun BackupAppsScreen(
                             SelectIconButton(viewModel = viewModel)
                         },
                         scrollBehavior = scrollBehavior,
+                        colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
                     )
                 }
             }

@@ -41,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -52,6 +53,7 @@ import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.database.entity.NetworkUnmarshalled
 import com.xayah.databackup.ui.component.SearchTextField
+import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.popBackStackSafely
@@ -64,6 +66,7 @@ fun BackupNetworksScreen(
 ) {
     val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val searchScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val networks by viewModel.networks.collectAsStateWithLifecycle()
     val selected by viewModel.selected.collectAsStateWithLifecycle()
@@ -90,7 +93,9 @@ fun BackupNetworksScreen(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .fillMaxSize(),
         topBar = {
             AnimatedContent(onSearch) { target ->
                 if (target) {
@@ -130,7 +135,7 @@ fun BackupNetworksScreen(
                                 )
                             }
                         },
-                        scrollBehavior = scrollBehavior,
+                        scrollBehavior = searchScrollBehavior,
                     )
                 } else {
                     LargeTopAppBar(
@@ -187,6 +192,7 @@ fun BackupNetworksScreen(
                             }
                         },
                         scrollBehavior = scrollBehavior,
+                        colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
                     )
                 }
             }

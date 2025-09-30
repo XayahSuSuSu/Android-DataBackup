@@ -106,6 +106,9 @@ dependencies {
 
     // Koin
     implementation(libs.koin.androidx.compose)
+
+    // Accompanist permissions
+    implementation(libs.accompanist.permissions)
 }
 
 kotlin {
@@ -117,6 +120,7 @@ kotlin {
             "-opt-in=kotlin.ExperimentalStdlibApi",
             "-opt-in=kotlin.uuid.ExperimentalUuidApi",
             "-XXLanguage:+PropertyParamAnnotationDefaultTargetMode",
+            "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
         )
     }
 }

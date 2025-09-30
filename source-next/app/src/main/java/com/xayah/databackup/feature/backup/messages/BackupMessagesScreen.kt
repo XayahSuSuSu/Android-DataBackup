@@ -47,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.Placeholder
@@ -60,6 +61,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.database.entity.MmsDeserialized
 import com.xayah.databackup.database.entity.SmsDeserialized
 import com.xayah.databackup.ui.component.SearchTextField
+import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.popBackStackSafely
@@ -70,7 +72,8 @@ fun BackupMessagesScreen(
     navController: NavHostController,
     viewModel: MessagesViewModel = viewModel(),
 ) {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val searchScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val smsList by viewModel.smsList.collectAsStateWithLifecycle()
     val mmsList by viewModel.mmsList.collectAsStateWithLifecycle()
@@ -98,7 +101,9 @@ fun BackupMessagesScreen(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .fillMaxSize(),
         topBar = {
             AnimatedContent(onSearch) { target ->
                 if (target) {
@@ -129,55 +134,79 @@ fun BackupMessagesScreen(
                                 )
                             }
                         },
-                        scrollBehavior = scrollBehavior,
+                        scrollBehavior = searchScrollBehavior,
                     )
                 } else {
-                    LargeTopAppBar(
-                        title = {
-                            Column {
-                                Text(
-                                    text = stringResource(R.string.select_messages),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                Text(
-                                    text = stringResource(R.string.items_selected, selected, smsList.size + mmsList.size),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        },
-                        navigationIcon = {
-                            IconButton(onClick = { navController.popBackStackSafely() }) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_left),
-                                    contentDescription = stringResource(R.string.back)
-                                )
-                            }
-                        },
-                        actions = {
-                            IconButton(onClick = { onSearch = true }) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.ic_search),
-                                    contentDescription = stringResource(R.string.search)
-                                )
-                            }
-                            IconButton(onClick = {
-                                when (uiState.selectedIndex) {
-                                    0 -> viewModel.selectAllSms()
-                                    1 -> viewModel.selectAllMms()
+                    Column {
+                        LargeTopAppBar(
+                            title = {
+                                Column {
+                                    Text(
+                                        text = stringResource(R.string.select_messages),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Text(
+                                        text = stringResource(R.string.items_selected, selected, smsList.size + mmsList.size),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 }
-                            }) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.ic_list_checks),
-                                    contentDescription = stringResource(R.string.select_all)
+                            },
+                            navigationIcon = {
+                                IconButton(onClick = { navController.popBackStackSafely() }) {
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_left),
+                                        contentDescription = stringResource(R.string.back)
+                                    )
+                                }
+                            },
+                            actions = {
+                                IconButton(onClick = { onSearch = true }) {
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource(R.drawable.ic_search),
+                                        contentDescription = stringResource(R.string.search)
+                                    )
+                                }
+                                IconButton(onClick = {
+                                    when (uiState.selectedIndex) {
+                                        0 -> viewModel.selectAllSms()
+                                        1 -> viewModel.selectAllMms()
+                                    }
+                                }) {
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource(R.drawable.ic_list_checks),
+                                        contentDescription = stringResource(R.string.select_all)
+                                    )
+                                }
+                            },
+                            scrollBehavior = scrollBehavior,
+                            colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
+                        )
+
+                        val options = listOf(stringResource(R.string.sms), stringResource(R.string.mms))
+                        SingleChoiceSegmentedButtonRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            options.forEachIndexed { index, label ->
+                                SegmentedButton(
+                                    shape = SegmentedButtonDefaults.itemShape(
+                                        index = index,
+                                        count = options.size
+                                    ),
+                                    onClick = {
+                                        viewModel.updateUiState(uiState.copy(index))
+                                    },
+                                    selected = index == uiState.selectedIndex,
+                                    label = { Text(label) }
                                 )
                             }
-                        },
-                        scrollBehavior = scrollBehavior,
-                    )
+                        }
+                    }
                 }
             }
         },
@@ -203,29 +232,6 @@ fun BackupMessagesScreen(
                     }
                 } else {
                     Column {
-                        if (onSearch.not()) {
-                            val options = listOf(stringResource(R.string.sms), stringResource(R.string.mms))
-                            SingleChoiceSegmentedButtonRow(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp)
-                            ) {
-                                options.forEachIndexed { index, label ->
-                                    SegmentedButton(
-                                        shape = SegmentedButtonDefaults.itemShape(
-                                            index = index,
-                                            count = options.size
-                                        ),
-                                        onClick = {
-                                            viewModel.updateUiState(uiState.copy(index))
-                                        },
-                                        selected = index == uiState.selectedIndex,
-                                        label = { Text(label) }
-                                    )
-                                }
-                            }
-                        }
-
                         AnimatedContent(targetState = uiState.selectedIndex) { selectedIndex ->
                             when (selectedIndex) {
                                 0 -> {

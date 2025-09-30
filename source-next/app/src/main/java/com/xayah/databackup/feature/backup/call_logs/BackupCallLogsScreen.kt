@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,6 +53,7 @@ import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.database.entity.CallLogDeserialized
 import com.xayah.databackup.ui.component.SearchTextField
+import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.popBackStackSafely
@@ -63,6 +65,7 @@ fun BackupCallLogsScreen(
     viewModel: CallLogsViewModel = viewModel(),
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val searchScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val callLogs by viewModel.callLogs.collectAsStateWithLifecycle()
     val selected by viewModel.selected.collectAsStateWithLifecycle()
     val searchText by viewModel.searchText.collectAsStateWithLifecycle()
@@ -88,7 +91,9 @@ fun BackupCallLogsScreen(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .fillMaxSize(),
         topBar = {
             AnimatedContent(onSearch) { target ->
                 if (target) {
@@ -116,7 +121,7 @@ fun BackupCallLogsScreen(
                                 )
                             }
                         },
-                        scrollBehavior = scrollBehavior,
+                        scrollBehavior = searchScrollBehavior,
                     )
                 } else {
                     LargeTopAppBar(
@@ -161,6 +166,7 @@ fun BackupCallLogsScreen(
                             }
                         },
                         scrollBehavior = scrollBehavior,
+                        colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
                     )
                 }
             }

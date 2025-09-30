@@ -481,4 +481,8 @@
     <string name="clean_backup">Clean backup</string>
     <string name="clean_backup_desc">Clear all previous backups of the selected backup item before backing up</string>
     <string name="target">Target</string>
+    <string name="contact_permission_desc">This permission is required to backup/restore contacts</string>
+    <string name="call_log_permission_desc">This permission is required to backup/restore call logs</string>
+    <string name="message_permission_desc">This permission is required to backup/restore messages</string>
+    <string name="skip">Skip</string>
 </resources>

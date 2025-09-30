@@ -4,15 +4,21 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -45,9 +51,11 @@ import com.xayah.databackup.ui.component.AutoScreenOffSwitch
 import com.xayah.databackup.ui.component.IncrementalBackupAndCleanBackupSwitches
 import com.xayah.databackup.ui.component.ResetBackupListSwitch
 import com.xayah.databackup.ui.component.SelectableCardButton
+import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
 import com.xayah.databackup.ui.component.horizontalFadingEdges
+import com.xayah.databackup.ui.component.selectableCardButtonSecondaryColors
+import com.xayah.databackup.ui.component.selectableCardButtonTertiaryColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
-import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.items
 import com.xayah.databackup.util.popBackStackSafely
@@ -59,9 +67,9 @@ fun BackupSetupScreen(
     navController: NavHostController,
     viewModel: BackupSetupViewModel = koinViewModel(),
 ) {
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val targetItems by viewModel.targetItems.collectAsStateWithLifecycle(listOf())
+    val targetItems by viewModel.targetItems.collectAsStateWithLifecycle(DefTargetItems)
     val selectedItems by viewModel.selectedItems.collectAsStateWithLifecycle(DefSelectedItems)
     val nextBtnEnabled by viewModel.nextBtnEnabled.collectAsStateWithLifecycle()
 
@@ -100,6 +108,7 @@ fun BackupSetupScreen(
                     }
                 },
                 scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
             )
         },
     ) { innerPadding ->
@@ -153,46 +162,47 @@ private fun TargetRow(
     targetItems: List<TargetItem>,
     viewModel: BackupSetupViewModel,
 ) {
-    val lazyListState = rememberLazyListState()
+    val lazyGridState = rememberLazyGridState()
     var showStartEdge by remember { mutableStateOf(false) }
     var showEndEdge by remember { mutableStateOf(false) }
     val startEdgeRange: Float by animateFloatAsState(if (showStartEdge) 1f else 0f, label = "alpha")
     val endEdgeRange: Float by animateFloatAsState(if (showEndEdge) 1f else 0f, label = "alpha")
-    LaunchedEffect(context = Dispatchers.Default, lazyListState.canScrollBackward) {
-        showStartEdge = lazyListState.canScrollBackward
+    LaunchedEffect(context = Dispatchers.Default, lazyGridState.canScrollBackward) {
+        showStartEdge = lazyGridState.canScrollBackward
     }
-    LaunchedEffect(context = Dispatchers.Default, lazyListState.canScrollForward) {
-        showEndEdge = lazyListState.canScrollForward
+    LaunchedEffect(context = Dispatchers.Default, lazyGridState.canScrollForward) {
+        showEndEdge = lazyGridState.canScrollForward
     }
 
     Text(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 16.dp),
+            .padding(16.dp),
         text = stringResource(R.string.target),
         color = MaterialTheme.colorScheme.primary,
         style = MaterialTheme.typography.labelLarge
     )
-    LazyRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalFadingEdges(startEdgeRange, endEdgeRange),
-        state = lazyListState,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item {
-            Spacer(modifier = Modifier.size(0.dp, 148.dp))
-        }
 
-        items(items = targetItems, key = { index, _ -> index }) { index, item ->
+    LazyHorizontalGrid(
+        modifier = Modifier
+            .heightIn(max = (148 * 2 + 16).dp)
+            .horizontalFadingEdges(startEdgeRange, endEdgeRange),
+        state = lazyGridState,
+        rows = GridCells.Fixed(2),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        itemsIndexed(items = targetItems, key = { index, _ -> index }) { index, item ->
             SelectableCardButton(
                 modifier = Modifier
                     .size(148.dp)
                     .animateItem(),
                 selected = item.selected,
                 title = item.title,
+                titleShimmer = item.initialized.not(),
                 subtitle = item.subtitle,
+                subtitleShimmer = item.initialized.not(),
                 icon = item.icon,
                 iconButton = ImageVector.vectorResource(R.drawable.ic_settings),
                 onIconButtonClick = {
@@ -203,10 +213,6 @@ private fun TargetRow(
                     item.onSelectedChanged.invoke(item.selected.not())
                 }
             }
-        }
-
-        item {
-            Spacer(modifier = Modifier.size(0.dp, 148.dp))
         }
     }
 }
@@ -222,7 +228,7 @@ private fun StorageRow(
             .fillMaxWidth()
             .padding(16.dp),
         text = stringResource(R.string.storage),
-        color = MaterialTheme.colorScheme.primary,
+        color = MaterialTheme.colorScheme.secondary,
         style = MaterialTheme.typography.labelLarge
     )
     Row(
@@ -246,6 +252,7 @@ private fun StorageRow(
             subtitle = localStorage,
             subtitleShimmer = localStorage.isEmpty(),
             icon = ImageVector.vectorResource(R.drawable.ic_smartphone),
+            colors = selectableCardButtonSecondaryColors(),
         ) {
         }
 
@@ -275,7 +282,7 @@ private fun BackupRow(
     Text(
         modifier = Modifier.padding(16.dp),
         text = stringResource(R.string.backup),
-        color = DataBackupTheme.greenColorScheme.primary,
+        color = MaterialTheme.colorScheme.tertiary,
         style = MaterialTheme.typography.labelLarge
     )
 
@@ -309,6 +316,7 @@ private fun BackupRow(
                 selected = uiState.selectedConfigIndex == -1,
                 title = stringResource(R.string.new_backup),
                 titleShimmer = uiState.isLoadingConfigs,
+                colors = selectableCardButtonTertiaryColors(),
                 icon = ImageVector.vectorResource(R.drawable.ic_plus),
                 iconShimmer = uiState.isLoadingConfigs,
             ) {
@@ -329,6 +337,7 @@ private fun BackupRow(
                 title = item.displayTitle,
                 subtitle = backupStorage,
                 subtitleShimmer = backupStorage.isEmpty(),
+                colors = selectableCardButtonTertiaryColors(),
                 icon = ImageVector.vectorResource(R.drawable.ic_archive),
                 iconButton = ImageVector.vectorResource(R.drawable.ic_trash),
                 onIconButtonClick = {},

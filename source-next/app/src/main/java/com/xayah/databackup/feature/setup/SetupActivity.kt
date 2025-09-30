@@ -73,7 +73,9 @@ class SetupActivity : ComponentActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults, deviceId)
         when (requestCode) {
             NotificationHelper.REQUEST_CODE -> {
-                mPermissionsViewModel.checkNotification(this)
+                mPermissionsViewModel.withLock {
+                    mPermissionsViewModel.checkNotification(this)
+                }
             }
         }
     }
