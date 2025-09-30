@@ -459,4 +459,20 @@
     <string name="contacts">Contatos</string>
     <string name="call_logs">Registros de chamadas</string>
     <string name="messages">Mensagens</string>
+    <string name="not_set_up">Não configurado</string>
+    <string name="new_backup">Novo backup</string>
+    <string name="time_format_pattern">dd \'de\' MMM, HH:mm</string>
+    <string name="incremental_backup">Backup incremental</string>
+    <string name="incremental_backup_desc">Opere em um arquivo incremental com metadados adicionais armazenados em um arquivo independente</string>
+    <string name="clean_backup">Limpar backup</string>
+    <string name="clean_backup_desc">Limpe todos os backups anteriores do item de backup selecionado antes de fazer o backup</string>
+    <string name="target">Alvo</string>
+    <string name="contact_permission_desc">Esta permissão é necessária para fazer backup/restaurar contatos</string>
+    <string name="call_log_permission_desc">Esta permissão é necessária para fazer backup/restaurar registros de chamadas</string>
+    <string name="message_permission_desc">Esta permissão é necessária para fazer backup/restaurar mensagens</string>
+    <string name="skip">Pular</string>
+    <string name="worker_update_apps_basic_info">Atualizando informações básicas de apps</string>
+    <string name="worker_update_apps_storage_info">Atualizando informações de armazenamento de apps</string>
+    <string name="worker_update_other_info">Atualizando outras informações</string>
+    <string name="auto_screen_off_desc">Desligue a tela automaticamente durante o backup ou restauração e ligue-a novamente após a conclusão</string>
 </resources>
