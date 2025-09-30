@@ -472,4 +472,7 @@
     <string name="message_permission_desc">To uprawnienie jest wymagane do tworzenia i przywracania kopii zapasowych wiadomości</string>
     <string name="skip">Pomiń</string>
     <string name="contact_permission_desc">To uprawnienie jest wymagane do tworzenia i przywracania kopii zapasowych kontaktów</string>
+    <string name="worker_update_apps_basic_info">Aktualizowanie podstawowych informacji o aplikacjach</string>
+    <string name="worker_update_apps_storage_info">Aktualizowanie informacji o pamięci aplikacji</string>
+    <string name="worker_update_other_info">Aktualizacja innych informacji</string>
 </resources>
