@@ -468,4 +468,8 @@
     <string name="clean_backup">Czysta kopia zapasowa</string>
     <string name="clean_backup_desc">Wyczyść wszystkie poprzednie kopie zapasowe wybranego elementu kopii zapasowej przed utworzeniem kopii zapasowej</string>
     <string name="target">Cel</string>
+    <string name="call_log_permission_desc">To uprawnienie jest wymagane do tworzenia i przywracania kopii zapasowych dzienników połączeń</string>
+    <string name="message_permission_desc">To uprawnienie jest wymagane do tworzenia i przywracania kopii zapasowych wiadomości</string>
+    <string name="skip">Pomiń</string>
+    <string name="contact_permission_desc">To uprawnienie jest wymagane do tworzenia i przywracania kopii zapasowych kontaktów</string>
 </resources>
