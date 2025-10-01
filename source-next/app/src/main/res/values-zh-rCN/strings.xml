@@ -475,4 +475,5 @@
     <string name="worker_update_apps_basic_info">正在更新应用基础信息</string>
     <string name="worker_update_apps_storage_info">正在更新应用内存信息</string>
     <string name="worker_update_other_info">正在更新其余信息</string>
+    <string name="no_permissions">无权限</string>
 </resources>

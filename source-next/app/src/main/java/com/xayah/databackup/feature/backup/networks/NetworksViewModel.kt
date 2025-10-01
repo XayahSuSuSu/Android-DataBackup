@@ -1,6 +1,7 @@
 package com.xayah.databackup.feature.backup.networks
 
 import androidx.lifecycle.viewModelScope
+import com.xayah.databackup.data.NetworkRepository
 import com.xayah.databackup.database.entity.unmarshall
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.DatabaseHelper
@@ -18,14 +19,16 @@ data class UiState(
     val showPassword: Boolean = false,
 )
 
-open class NetworksViewModel : BaseViewModel() {
+open class NetworksViewModel(
+    networkRepo: NetworkRepository
+) : BaseViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     private val _searchText = MutableStateFlow("")
     val searchText: StateFlow<String> = _searchText.asStateFlow()
     val networks = combine(
-        DatabaseHelper.networkDao.loadFlowNetworks().unmarshall(),
+        networkRepo.networks.unmarshall(),
         _searchText,
     ) { networks, searchText ->
         networks.filterNetwork(searchText)

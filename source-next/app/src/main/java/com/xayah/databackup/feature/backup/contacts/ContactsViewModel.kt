@@ -1,6 +1,7 @@
 package com.xayah.databackup.feature.backup.contacts
 
 import androidx.lifecycle.viewModelScope
+import com.xayah.databackup.data.ContactRepository
 import com.xayah.databackup.database.entity.deserialize
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.DatabaseHelper
@@ -16,14 +17,16 @@ import kotlinx.coroutines.flow.stateIn
 
 data object UiState
 
-open class ContactsViewModel : BaseViewModel() {
+open class ContactsViewModel(
+    contactRepo: ContactRepository,
+) : BaseViewModel() {
     private val _uiState = MutableStateFlow(UiState)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     private val _searchText = MutableStateFlow("")
     val searchText: StateFlow<String> = _searchText.asStateFlow()
     val contacts = combine(
-        DatabaseHelper.contactDao.loadFlowContacts().deserialize(),
+        contactRepo.contacts.deserialize(),
         _searchText,
     ) { contacts, searchText ->
         contacts.filterContact(searchText)

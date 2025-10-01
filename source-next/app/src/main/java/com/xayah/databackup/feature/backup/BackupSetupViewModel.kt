@@ -1,260 +1,177 @@
 package com.xayah.databackup.feature.backup
 
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
+import android.content.pm.PackageManager
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
 import com.xayah.databackup.App
 import com.xayah.databackup.R
+import com.xayah.databackup.data.AppRepository
 import com.xayah.databackup.data.BackupConfigRepository
+import com.xayah.databackup.data.CallLogRepository
+import com.xayah.databackup.data.ContactRepository
+import com.xayah.databackup.data.FileRepository
+import com.xayah.databackup.data.MessageRepository
+import com.xayah.databackup.data.NetworkRepository
 import com.xayah.databackup.entity.BackupConfig
-import com.xayah.databackup.feature.BackupApps
-import com.xayah.databackup.feature.BackupCallLogs
-import com.xayah.databackup.feature.BackupContacts
-import com.xayah.databackup.feature.BackupMessages
-import com.xayah.databackup.feature.BackupNetworks
 import com.xayah.databackup.rootservice.RemoteRootService
-import com.xayah.databackup.util.AppsOptionSelectedBackup
+import com.xayah.databackup.ui.component.CallLogPermissions
+import com.xayah.databackup.ui.component.ContactPermissions
+import com.xayah.databackup.ui.component.MessagePermissions
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.CallLogsOptionSelectedBackup
 import com.xayah.databackup.util.ContactsOptionSelectedBackup
-import com.xayah.databackup.util.DatabaseHelper
-import com.xayah.databackup.util.FilterBackupUser
-import com.xayah.databackup.util.FiltersSystemAppsBackup
-import com.xayah.databackup.util.FiltersUserAppsBackup
 import com.xayah.databackup.util.MessagesOptionSelectedBackup
-import com.xayah.databackup.util.NetworksOptionSelectedBackup
 import com.xayah.databackup.util.PathHelper
 import com.xayah.databackup.util.combine
-import com.xayah.databackup.util.filterApp
 import com.xayah.databackup.util.formatToStorageSize
-import com.xayah.databackup.util.navigateSafely
-import com.xayah.databackup.util.readBoolean
-import com.xayah.databackup.util.readInt
 import com.xayah.databackup.util.saveBoolean
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.withContext
 
-data class SetupUiState(
+data class BackupSetupUiState(
     val isLoadingConfigs: Boolean = true,
     val selectedConfigIndex: Int = -1,
     val configs: List<BackupConfig> = listOf()
 )
 
 data class TargetItem(
-    var selected: Boolean,
-    var initialized: Boolean,
-    val title: String,
-    var subtitle: String,
-    val icon: ImageVector,
-    val onClickSettings: (NavHostController) -> Unit,
-    val onSelectedChanged: suspend (Boolean) -> Unit,
+    val selected: Boolean,
+    val selections: Pair<Int, Int>,
 )
 
 const val MaxSelectedItems = 6
-val DefSelectedItems = 0 to MaxSelectedItems
-val DefTargetItems = listOf(
-    TargetItem(
-        selected = false,
-        initialized = false,
-        title = App.application.getString(R.string.apps),
-        subtitle = App.application.getString(R.string.items_selected, "0", "0"),
-        icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_layout_grid),
-        onClickSettings = {
-            it.navigateSafely(BackupApps)
-        },
-        onSelectedChanged = {
-            App.application.saveBoolean(AppsOptionSelectedBackup.first, it)
-        }
-    ),
-    TargetItem(
-        selected = false,
-        initialized = false,
-        title = App.application.getString(R.string.files),
-        subtitle = App.application.getString(R.string.items_selected, "0", "0"),
-        icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_folder),
-        onClickSettings = {},
-        onSelectedChanged = {}
-    ),
-    TargetItem(
-        selected = false,
-        initialized = false,
-        title = App.application.getString(R.string.networks),
-        subtitle = App.application.getString(R.string.items_selected, "0", "0"),
-        icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_wifi),
-        onClickSettings = {
-            it.navigateSafely(BackupNetworks)
-        },
-        onSelectedChanged = {
-            App.application.saveBoolean(NetworksOptionSelectedBackup.first, it)
-        }
-    ),
-    TargetItem(
-        selected = false,
-        initialized = false,
-        title = App.application.getString(R.string.contacts),
-        subtitle = App.application.getString(R.string.items_selected, "0", "0"),
-        icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_user_round),
-        onClickSettings = {
-            it.navigateSafely(BackupContacts)
-        },
-        onSelectedChanged = {
-            App.application.saveBoolean(ContactsOptionSelectedBackup.first, it)
-        }
-    ),
-    TargetItem(
-        selected = false,
-        initialized = false,
-        title = App.application.getString(R.string.call_logs),
-        subtitle = App.application.getString(R.string.items_selected, "0", "0"),
-        icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_phone),
-        onClickSettings = {
-            it.navigateSafely(BackupCallLogs)
-        },
-        onSelectedChanged = {
-            App.application.saveBoolean(CallLogsOptionSelectedBackup.first, it)
-        }
-    ),
-    TargetItem(
-        selected = false,
-        initialized = false,
-        title = App.application.getString(R.string.messages),
-        subtitle = App.application.getString(R.string.items_selected, "0", "0"),
-        icon = ImageVector.vectorResource(null, App.application.resources, R.drawable.ic_message_circle),
-        onClickSettings = {
-            it.navigateSafely(BackupMessages)
-        },
-        onSelectedChanged = {
-            App.application.saveBoolean(MessagesOptionSelectedBackup.first, it)
-        }
-    ),
-)
 
 open class BackupSetupViewModel(
-    private val backupConfigRepo: BackupConfigRepository
+    private val backupConfigRepo: BackupConfigRepository,
+    appRepo: AppRepository,
+    fileRepo: FileRepository,
+    networkRepo: NetworkRepository,
+    contactRepo: ContactRepository,
+    callLogRepo: CallLogRepository,
+    messageRepo: MessageRepository,
 ) : BaseViewModel() {
-    private val _uiState: MutableStateFlow<SetupUiState> = MutableStateFlow(SetupUiState())
-    val uiState: StateFlow<SetupUiState> = _uiState.asStateFlow()
+    private val _uiState: MutableStateFlow<BackupSetupUiState> = MutableStateFlow(BackupSetupUiState())
+    val uiState: StateFlow<BackupSetupUiState> = _uiState.asStateFlow()
 
-    private val targetSourceItems: Flow<List<TargetItem>> = flowOf(DefTargetItems)
-
-    private val appsSelections = combine(
-        DatabaseHelper.appDao.loadFlowApps(),
-        App.application.readInt(FilterBackupUser),
-        App.application.readBoolean(FiltersUserAppsBackup),
-        App.application.readBoolean(FiltersSystemAppsBackup),
-    ) { apps, userId, filterUserApps, filterSystemApps ->
-        val list = apps.filterApp(userId, filterUserApps, filterSystemApps)
-        list.count { it.option.apk || it.option.internalData || it.option.externalData || it.option.obbAndMedia } to list.size
-    }
-    private val networksSelections = DatabaseHelper.networkDao.loadFlowNetworks().map { list ->
-        list.count { it.selected } to list.size
-    }
-    private val contactsSelections = DatabaseHelper.contactDao.loadFlowContacts().map { list ->
-        list.count { it.selected } to list.size
-    }
-    private val callLogsSelections = DatabaseHelper.callLogDao.loadFlowCallLogs().map { list ->
-        list.count { it.selected } to list.size
-    }
-    private val messagesSelections = combine(DatabaseHelper.messageDao.loadFlowSms(), DatabaseHelper.messageDao.loadFlowMms()) { smsList, mmsList ->
-        smsList.count { it.selected } + mmsList.count { it.selected } to smsList.size + mmsList.size
-    }
-    private val _targetItems = combine(
-        targetSourceItems,
-        App.application.readBoolean(AppsOptionSelectedBackup),
-        flowOf(false),
-        App.application.readBoolean(NetworksOptionSelectedBackup),
-        App.application.readBoolean(ContactsOptionSelectedBackup),
-        App.application.readBoolean(CallLogsOptionSelectedBackup),
-        App.application.readBoolean(MessagesOptionSelectedBackup),
-        appsSelections,
-        flowOf(0 to 0),
-        networksSelections,
-        contactsSelections,
-        callLogsSelections,
-        messagesSelections,
-    ) { items,
-        appsSelected, filesSelected, networksSelected, contactsSelected, callLogsSelected, messagesSelected,
-        apps, files, networks, contacts, callLogs, messages ->
-        val newItems = mutableListOf<TargetItem>()
-        newItems.add(
-            items[0].copy(
-                selected = appsSelected,
-                initialized = true,
-                subtitle = App.application.getString(R.string.items_selected, "${apps.first}", "${apps.second}")
-            )
+    val appsItem: StateFlow<TargetItem?> = combine(
+        appRepo.isBackupAppsSelected,
+        appRepo.appsFiltered,
+    ) { selected, apps ->
+        TargetItem(
+            selected = selected,
+            selections = apps.count { it.option.apk || it.option.internalData || it.option.externalData || it.option.obbAndMedia } to apps.size
         )
-        newItems.add(
-            items[1].copy(
-                selected = filesSelected,
-                initialized = true,
-                subtitle = App.application.getString(R.string.items_selected, "${files.first}", "${files.second}")
-            )
-        )
-        newItems.add(
-            items[2].copy(
-                selected = networksSelected,
-                initialized = true,
-                subtitle = App.application.getString(R.string.items_selected, "${networks.first}", "${networks.second}")
-            )
-        )
-        newItems.add(
-            items[3].copy(
-                selected = contactsSelected,
-                initialized = true,
-                subtitle = App.application.getString(R.string.items_selected, "${contacts.first}", "${contacts.second}")
-            )
-        )
-        newItems.add(
-            items[4].copy(
-                selected = callLogsSelected,
-                initialized = true,
-                subtitle = App.application.getString(R.string.items_selected, "${callLogs.first}", "${callLogs.second}")
-            )
-        )
-        newItems.add(
-            items[5].copy(
-                selected = messagesSelected,
-                initialized = true,
-                subtitle = App.application.getString(R.string.items_selected, "${messages.first}", "${messages.second}")
-            )
-        )
-        newItems
-    }
-
-    val targetItems: StateFlow<List<TargetItem>> = _targetItems.stateIn(
+    }.stateIn(
         scope = viewModelScope,
-        initialValue = DefTargetItems,
+        initialValue = null,
         started = SharingStarted.WhileSubscribed(5_000),
     )
 
-    private val _selectedItems = _targetItems.map {
-        var count = 0
-        if (it[0].selected) count++
-        if (it[1].selected) count++
-        if (it[2].selected) count++
-        if (it[3].selected) count++
-        if (it[4].selected) count++
-        if (it[5].selected) count++
-        count to MaxSelectedItems
-    }
-    val selectedItems: StateFlow<Pair<Int, Int>> = _selectedItems.stateIn(
+    val filesItem: StateFlow<TargetItem?> = combine(
+        fileRepo.isBackupFilesSelected,
+        fileRepo.files,
+    ) { selected, files ->
+        TargetItem(
+            selected = selected,
+            selections = files.count { it.selected } to files.size
+        )
+    }.stateIn(
         scope = viewModelScope,
-        initialValue = DefSelectedItems,
+        initialValue = null,
+        started = SharingStarted.WhileSubscribed(5_000),
+    )
+
+    val networksItem: StateFlow<TargetItem?> = combine(
+        networkRepo.isBackupNetworksSelected,
+        networkRepo.networks,
+    ) { selected, networks ->
+        TargetItem(
+            selected = selected,
+            selections = networks.count { it.selected } to networks.size
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        initialValue = null,
+        started = SharingStarted.WhileSubscribed(5_000),
+    )
+
+    val contactsItem: StateFlow<TargetItem?> = combine(
+        contactRepo.isBackupMessagesSelected,
+        contactRepo.contacts,
+    ) { selected, contacts ->
+        TargetItem(
+            selected = selected,
+            selections = contacts.count { it.selected } to contacts.size
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        initialValue = null,
+        started = SharingStarted.WhileSubscribed(5_000),
+    )
+
+    val callLogsItem: StateFlow<TargetItem?> = combine(
+        callLogRepo.isBackupCallLogsSelected,
+        callLogRepo.callLogs,
+    ) { selected, callLogs ->
+        TargetItem(
+            selected = selected,
+            selections = callLogs.count { it.selected } to callLogs.size
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        initialValue = null,
+        started = SharingStarted.WhileSubscribed(5_000),
+    )
+
+    val messagesItem: StateFlow<TargetItem?> = combine(
+        messageRepo.isBackupContactsSelected,
+        messageRepo.smsList,
+        messageRepo.mmsList,
+    ) { selected, smsList, mmsList ->
+        TargetItem(
+            selected = selected,
+            selections = smsList.count { it.selected } + mmsList.count { it.selected } to smsList.size + mmsList.size
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        initialValue = null,
+        started = SharingStarted.WhileSubscribed(5_000),
+    )
+
+    val selectedItems: StateFlow<Pair<Int, Int>?> = combine(
+        appsItem,
+        filesItem,
+        networksItem,
+        contactsItem,
+        callLogsItem,
+        messagesItem,
+    ) { appsItem, filesItem, networksItem, contactsItem, callLogsItem, messagesItem ->
+        if (appsItem == null || filesItem == null || networksItem == null || contactsItem == null || callLogsItem == null || messagesItem == null) {
+            return@combine null
+        }
+        var count = 0
+        if (appsItem.selected) count++
+        if (filesItem.selected) count++
+        if (networksItem.selected) count++
+        if (contactsItem.selected) count++
+        if (callLogsItem.selected) count++
+        if (messagesItem.selected) count++
+        count to MaxSelectedItems
+    }.stateIn(
+        scope = viewModelScope,
+        initialValue = null,
         started = SharingStarted.WhileSubscribed(5_000),
     )
 
     val nextBtnEnabled = combine(uiState, selectedItems) { uiState, selectedItems ->
-        uiState.isLoadingConfigs.not() && selectedItems.first != 0
+        uiState.isLoadingConfigs.not() && selectedItems?.first != 0
     }.stateIn(
         scope = viewModelScope,
         initialValue = false,
@@ -279,10 +196,48 @@ open class BackupSetupViewModel(
         }
     }
 
-    fun initialize() {
-        withLock(Dispatchers.IO) {
+    private suspend fun checkPermissions() {
+        withContext(Dispatchers.Default) {
+            var isContactPermissionsGranted = true
+            ContactPermissions.forEach {
+                isContactPermissionsGranted = isContactPermissionsGranted &&
+                        ContextCompat.checkSelfPermission(App.application, it) == PackageManager.PERMISSION_GRANTED
+            }
+            if (isContactPermissionsGranted.not()) {
+                App.application.saveBoolean(ContactsOptionSelectedBackup.first, false)
+            }
+
+            var isCallLogPermissionsGranted = true
+            CallLogPermissions.forEach {
+                isCallLogPermissionsGranted = isCallLogPermissionsGranted &&
+                        ContextCompat.checkSelfPermission(App.application, it) == PackageManager.PERMISSION_GRANTED
+            }
+            if (isCallLogPermissionsGranted.not()) {
+                App.application.saveBoolean(CallLogsOptionSelectedBackup.first, false)
+            }
+
+            var isMessagePermissionsGranted = true
+            MessagePermissions.forEach {
+                isMessagePermissionsGranted = isMessagePermissionsGranted
+                        && ContextCompat.checkSelfPermission(App.application, it) == PackageManager.PERMISSION_GRANTED
+            }
+            if (isMessagePermissionsGranted.not()) {
+                App.application.saveBoolean(MessagesOptionSelectedBackup.first, false)
+            }
+        }
+    }
+
+    private suspend fun initBackupConfigs() {
+        withContext(Dispatchers.IO) {
             backupConfigRepo.loadBackupConfigsFromLocal()
             _uiState.emit(uiState.value.copy(isLoadingConfigs = false, configs = backupConfigRepo.getConfigs()))
+        }
+    }
+
+    fun initialize() {
+        withLock {
+            checkPermissions()
+            initBackupConfigs()
         }
     }
 

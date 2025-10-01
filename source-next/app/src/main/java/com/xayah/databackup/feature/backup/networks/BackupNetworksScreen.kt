@@ -48,7 +48,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.database.entity.NetworkUnmarshalled
@@ -58,11 +57,12 @@ import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.Dispatchers
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BackupNetworksScreen(
     navController: NavHostController,
-    viewModel: NetworksViewModel = viewModel(),
+    viewModel: NetworksViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())

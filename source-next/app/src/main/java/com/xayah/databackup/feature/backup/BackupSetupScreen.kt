@@ -4,21 +4,15 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -46,19 +40,38 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.xayah.databackup.App
 import com.xayah.databackup.R
+import com.xayah.databackup.feature.BackupApps
+import com.xayah.databackup.feature.BackupCallLogs
+import com.xayah.databackup.feature.BackupContacts
+import com.xayah.databackup.feature.BackupMessages
+import com.xayah.databackup.feature.BackupNetworks
+import com.xayah.databackup.ui.component.ActionButtonState
 import com.xayah.databackup.ui.component.AutoScreenOffSwitch
 import com.xayah.databackup.ui.component.IncrementalBackupAndCleanBackupSwitches
 import com.xayah.databackup.ui.component.ResetBackupListSwitch
 import com.xayah.databackup.ui.component.SelectableCardButton
+import com.xayah.databackup.ui.component.SmallCheckActionButton
 import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
 import com.xayah.databackup.ui.component.horizontalFadingEdges
+import com.xayah.databackup.ui.component.rememberCallLogPermissionsState
+import com.xayah.databackup.ui.component.rememberContactPermissionsState
+import com.xayah.databackup.ui.component.rememberMessagePermissionsState
 import com.xayah.databackup.ui.component.selectableCardButtonSecondaryColors
 import com.xayah.databackup.ui.component.selectableCardButtonTertiaryColors
+import com.xayah.databackup.ui.component.shimmer
 import com.xayah.databackup.ui.component.verticalFadingEdges
+import com.xayah.databackup.util.AppsOptionSelectedBackup
+import com.xayah.databackup.util.CallLogsOptionSelectedBackup
+import com.xayah.databackup.util.ContactsOptionSelectedBackup
 import com.xayah.databackup.util.LaunchedEffect
+import com.xayah.databackup.util.MessagesOptionSelectedBackup
+import com.xayah.databackup.util.NetworksOptionSelectedBackup
 import com.xayah.databackup.util.items
+import com.xayah.databackup.util.navigateSafely
 import com.xayah.databackup.util.popBackStackSafely
+import com.xayah.databackup.util.saveBoolean
 import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.compose.koinViewModel
 
@@ -69,8 +82,7 @@ fun BackupSetupScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val targetItems by viewModel.targetItems.collectAsStateWithLifecycle(DefTargetItems)
-    val selectedItems by viewModel.selectedItems.collectAsStateWithLifecycle(DefSelectedItems)
+    val selectedItems by viewModel.selectedItems.collectAsStateWithLifecycle(null)
     val nextBtnEnabled by viewModel.nextBtnEnabled.collectAsStateWithLifecycle()
 
     LaunchedEffect(context = Dispatchers.IO, null) {
@@ -91,7 +103,8 @@ fun BackupSetupScreen(
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = stringResource(R.string.items_selected, selectedItems.first, selectedItems.second),
+                            modifier = Modifier.shimmer(selectedItems == null),
+                            text = selectedItems?.let { stringResource(R.string.items_selected, it.first, it.second) } ?: "",
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             style = MaterialTheme.typography.labelMedium,
@@ -122,7 +135,7 @@ fun BackupSetupScreen(
                     .verticalScroll(scrollState)
                     .verticalFadingEdges(scrollState),
             ) {
-                TargetRow(navController = navController, targetItems = targetItems, viewModel = viewModel)
+                TargetRow(navController = navController, viewModel = viewModel)
 
                 StorageRow(viewModel = viewModel)
 
@@ -159,20 +172,14 @@ fun BackupSetupScreen(
 @Composable
 private fun TargetRow(
     navController: NavHostController,
-    targetItems: List<TargetItem>,
     viewModel: BackupSetupViewModel,
 ) {
-    val lazyGridState = rememberLazyGridState()
-    var showStartEdge by remember { mutableStateOf(false) }
-    var showEndEdge by remember { mutableStateOf(false) }
-    val startEdgeRange: Float by animateFloatAsState(if (showStartEdge) 1f else 0f, label = "alpha")
-    val endEdgeRange: Float by animateFloatAsState(if (showEndEdge) 1f else 0f, label = "alpha")
-    LaunchedEffect(context = Dispatchers.Default, lazyGridState.canScrollBackward) {
-        showStartEdge = lazyGridState.canScrollBackward
-    }
-    LaunchedEffect(context = Dispatchers.Default, lazyGridState.canScrollForward) {
-        showEndEdge = lazyGridState.canScrollForward
-    }
+    val appsItem by viewModel.appsItem.collectAsStateWithLifecycle(null)
+    val filesItem by viewModel.filesItem.collectAsStateWithLifecycle(null)
+    val networksItem by viewModel.networksItem.collectAsStateWithLifecycle(null)
+    val contactsItem by viewModel.contactsItem.collectAsStateWithLifecycle(null)
+    val callLogsItem by viewModel.callLogsItem.collectAsStateWithLifecycle(null)
+    val messagesItem by viewModel.messagesItem.collectAsStateWithLifecycle(null)
 
     Text(
         modifier = Modifier
@@ -183,34 +190,161 @@ private fun TargetRow(
         style = MaterialTheme.typography.labelLarge
     )
 
-    LazyHorizontalGrid(
+    Column(
         modifier = Modifier
-            .heightIn(max = (148 * 2 + 16).dp)
-            .horizontalFadingEdges(startEdgeRange, endEdgeRange),
-        state = lazyGridState,
-        rows = GridCells.Fixed(2),
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        itemsIndexed(items = targetItems, key = { index, _ -> index }) { index, item ->
-            SelectableCardButton(
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            SmallCheckActionButton(
                 modifier = Modifier
-                    .size(148.dp)
-                    .animateItem(),
-                selected = item.selected,
-                title = item.title,
-                titleShimmer = item.initialized.not(),
-                subtitle = item.subtitle,
-                subtitleShimmer = item.initialized.not(),
-                icon = item.icon,
-                iconButton = ImageVector.vectorResource(R.drawable.ic_settings),
-                onIconButtonClick = {
-                    item.onClickSettings.invoke(navController)
+                    .weight(1f)
+                    .wrapContentSize(),
+                checked = appsItem?.selected ?: false,
+                icon = ImageVector.vectorResource(R.drawable.ic_layout_grid),
+                title = stringResource(R.string.apps),
+                titleShimmer = appsItem == null,
+                subtitle = stringResource(R.string.items_selected, appsItem?.selections?.first ?: 0, appsItem?.selections?.second ?: 0),
+                subtitleShimmer = appsItem == null,
+                onCheckedChange = {
+                    viewModel.withLock(Dispatchers.Default) {
+                        App.application.saveBoolean(AppsOptionSelectedBackup.first, it)
+                    }
                 }
             ) {
-                viewModel.withLock(Dispatchers.Default) {
-                    item.onSelectedChanged.invoke(item.selected.not())
+                navController.navigateSafely(BackupApps)
+            }
+
+            SmallCheckActionButton(
+                modifier = Modifier
+                    .weight(1f)
+                    .wrapContentSize(),
+                checked = filesItem?.selected ?: false,
+                icon = ImageVector.vectorResource(R.drawable.ic_folder),
+                title = stringResource(R.string.files),
+                titleShimmer = filesItem == null,
+                subtitle = stringResource(R.string.items_selected, filesItem?.selections?.first ?: 0, filesItem?.selections?.second ?: 0),
+                subtitleShimmer = filesItem == null,
+                onCheckedChange = {}
+            ) {}
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            SmallCheckActionButton(
+                modifier = Modifier
+                    .weight(1f)
+                    .wrapContentSize(),
+                checked = networksItem?.selected ?: false,
+                icon = ImageVector.vectorResource(R.drawable.ic_wifi),
+                title = stringResource(R.string.networks),
+                titleShimmer = networksItem == null,
+                subtitle = stringResource(R.string.items_selected, networksItem?.selections?.first ?: 0, networksItem?.selections?.second ?: 0),
+                subtitleShimmer = networksItem == null,
+                onCheckedChange = {
+                    viewModel.withLock(Dispatchers.Default) {
+                        App.application.saveBoolean(NetworksOptionSelectedBackup.first, it)
+                    }
+                }
+            ) {
+                navController.navigateSafely(BackupNetworks)
+            }
+
+            val contactsPermissionState = rememberContactPermissionsState()
+            SmallCheckActionButton(
+                modifier = Modifier
+                    .weight(1f)
+                    .wrapContentSize(),
+                state = if (contactsPermissionState.allPermissionsGranted) ActionButtonState.NORMAL else ActionButtonState.ERROR,
+                checked = contactsItem?.selected ?: false,
+                checkBoxVisible = contactsPermissionState.allPermissionsGranted,
+                icon = ImageVector.vectorResource(R.drawable.ic_user_round),
+                title = stringResource(R.string.contacts),
+                titleShimmer = contactsItem == null,
+                subtitle = if (contactsPermissionState.allPermissionsGranted)
+                    stringResource(R.string.items_selected, contactsItem?.selections?.first ?: 0, contactsItem?.selections?.second ?: 0)
+                else
+                    stringResource(R.string.no_permissions),
+                subtitleShimmer = contactsItem == null,
+                onCheckedChange = {
+                    viewModel.withLock(Dispatchers.Default) {
+                        App.application.saveBoolean(ContactsOptionSelectedBackup.first, it)
+                    }
+                }
+            ) {
+                if (contactsPermissionState.allPermissionsGranted) {
+                    navController.navigateSafely(BackupContacts)
+                } else {
+                    contactsPermissionState.launchMultiplePermissionRequest()
+                }
+            }
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            val callLogsPermissionState = rememberCallLogPermissionsState()
+            SmallCheckActionButton(
+                modifier = Modifier
+                    .weight(1f)
+                    .wrapContentSize(),
+                state = if (callLogsPermissionState.allPermissionsGranted) ActionButtonState.NORMAL else ActionButtonState.ERROR,
+                checked = callLogsItem?.selected ?: false,
+                checkBoxVisible = callLogsPermissionState.allPermissionsGranted,
+                icon = ImageVector.vectorResource(R.drawable.ic_phone),
+                title = stringResource(R.string.call_logs),
+                titleShimmer = callLogsItem == null,
+                subtitle = if (callLogsPermissionState.allPermissionsGranted)
+                    stringResource(R.string.items_selected, callLogsItem?.selections?.first ?: 0, callLogsItem?.selections?.second ?: 0)
+                else
+                    stringResource(R.string.no_permissions),
+                subtitleShimmer = callLogsItem == null,
+                onCheckedChange = {
+                    viewModel.withLock(Dispatchers.Default) {
+                        App.application.saveBoolean(CallLogsOptionSelectedBackup.first, it)
+                    }
+                }
+            ) {
+                if (callLogsPermissionState.allPermissionsGranted) {
+                    navController.navigateSafely(BackupCallLogs)
+                } else {
+                    callLogsPermissionState.launchMultiplePermissionRequest()
+                }
+            }
+
+            val messagesPermissionState = rememberMessagePermissionsState()
+            SmallCheckActionButton(
+                modifier = Modifier
+                    .weight(1f)
+                    .wrapContentSize(),
+                state = if (messagesPermissionState.allPermissionsGranted) ActionButtonState.NORMAL else ActionButtonState.ERROR,
+                checked = messagesItem?.selected ?: false,
+                checkBoxVisible = messagesPermissionState.allPermissionsGranted,
+                icon = ImageVector.vectorResource(R.drawable.ic_message_circle),
+                title = stringResource(R.string.messages),
+                titleShimmer = messagesItem == null,
+                subtitle = if (messagesPermissionState.allPermissionsGranted)
+                    stringResource(R.string.items_selected, messagesItem?.selections?.first ?: 0, messagesItem?.selections?.second ?: 0)
+                else
+                    stringResource(R.string.no_permissions),
+                subtitleShimmer = messagesItem == null,
+                onCheckedChange = {
+                    viewModel.withLock(Dispatchers.Default) {
+                        App.application.saveBoolean(MessagesOptionSelectedBackup.first, it)
+                    }
+                }
+            ) {
+                if (messagesPermissionState.allPermissionsGranted) {
+                    navController.navigateSafely(BackupMessages)
+                } else {
+                    messagesPermissionState.launchMultiplePermissionRequest()
                 }
             }
         }
@@ -276,7 +410,7 @@ private fun StorageRow(
 
 @Composable
 private fun BackupRow(
-    uiState: SetupUiState,
+    uiState: BackupSetupUiState,
     viewModel: BackupSetupViewModel,
 ) {
     Text(

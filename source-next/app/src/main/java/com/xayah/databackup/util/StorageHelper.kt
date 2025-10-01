@@ -5,6 +5,8 @@ import kotlin.math.pow
 
 private const val UNIT = 1024F
 
+const val DefStorageSize = "0.00 Bytes"
+
 val Long.formatToStorageSize: String
     get() {
         var unit = "Bytes"

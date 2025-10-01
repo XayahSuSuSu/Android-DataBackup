@@ -55,7 +55,6 @@ import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.database.entity.MmsDeserialized
@@ -66,11 +65,12 @@ import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.Dispatchers
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BackupMessagesScreen(
     navController: NavHostController,
-    viewModel: MessagesViewModel = viewModel(),
+    viewModel: MessagesViewModel = koinViewModel(),
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val searchScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())

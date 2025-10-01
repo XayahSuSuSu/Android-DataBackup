@@ -5,23 +5,18 @@ import androidx.compose.ui.state.ToggleableState
 import androidx.datastore.preferences.core.Preferences
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
+import com.xayah.databackup.data.AppRepository
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.DatabaseHelper
-import com.xayah.databackup.util.FilterBackupUser
-import com.xayah.databackup.util.FiltersSystemAppsBackup
-import com.xayah.databackup.util.FiltersUserAppsBackup
+import com.xayah.databackup.util.DefStorageSize
 import com.xayah.databackup.util.KeyFilterBackupUser
 import com.xayah.databackup.util.KeySortsSequenceBackup
 import com.xayah.databackup.util.SortsSequence
 import com.xayah.databackup.util.SortsSequenceBackup
 import com.xayah.databackup.util.SortsType
 import com.xayah.databackup.util.SortsTypeBackup
-import com.xayah.databackup.util.combine
-import com.xayah.databackup.util.filterApp
 import com.xayah.databackup.util.formatToStorageSize
-import com.xayah.databackup.util.readBoolean
 import com.xayah.databackup.util.readEnum
-import com.xayah.databackup.util.readInt
 import com.xayah.databackup.util.saveBoolean
 import com.xayah.databackup.util.saveEnum
 import com.xayah.databackup.util.saveInt
@@ -34,31 +29,31 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 data object UiState
 
-open class AppsViewModel : BaseViewModel() {
+open class AppsViewModel(
+    appRepo: AppRepository,
+) : BaseViewModel() {
     private val _uiState = MutableStateFlow(UiState)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
     private val _searchText = MutableStateFlow("")
     val searchText: StateFlow<String> = _searchText.asStateFlow()
     val apps = combine(
-        DatabaseHelper.appDao.loadFlowApps(),
+        appRepo.appsFiltered,
         _searchText,
-        App.application.readInt(FilterBackupUser),
         App.application.readEnum(SortsTypeBackup),
         App.application.readEnum(SortsSequenceBackup),
-        App.application.readBoolean(FiltersUserAppsBackup),
-        App.application.readBoolean(FiltersSystemAppsBackup),
-    ) { apps, searchText, userId, sortType, sortSequence, filterUserApps, filterSystemApps ->
+    ) { apps, searchText, sortType, sortSequence ->
         when (sortType) {
             SortsType.A2Z -> apps.sortByA2Z(sortSequence)
             SortsType.DATA_SIZE -> apps.sortByDataSize(sortSequence)
             SortsType.INSTALL_TIME -> apps.sortByInstallTime(sortSequence)
             SortsType.UPDATE_TIME -> apps.sortByUpdateTime(sortSequence)
-        }.filterApp(searchText, userId, filterUserApps, filterSystemApps)
+        }
     }.stateIn(
         scope = viewModelScope,
         initialValue = listOf(),
@@ -75,7 +70,7 @@ open class AppsViewModel : BaseViewModel() {
     val selectedBytes =
         apps.map { list -> list.sumOf { it.selectedBytes }.formatToStorageSize }.stateIn(
             scope = viewModelScope,
-            initialValue = "0.00 Bytes",
+            initialValue = DefStorageSize,
             started = SharingStarted.WhileSubscribed(5_000),
         )
 

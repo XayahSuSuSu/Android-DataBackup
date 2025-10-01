@@ -488,4 +488,5 @@
     <string name="worker_update_apps_basic_info">Updating apps basic information</string>
     <string name="worker_update_apps_storage_info">Updating apps storage information</string>
     <string name="worker_update_other_info">Updating other information</string>
+    <string name="no_permissions">No permissions</string>
 </resources>

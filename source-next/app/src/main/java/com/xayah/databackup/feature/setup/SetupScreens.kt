@@ -46,10 +46,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.OnResume
 import com.xayah.databackup.ui.component.PermissionCard
+import com.xayah.databackup.ui.component.rememberCallLogPermissionsState
+import com.xayah.databackup.ui.component.rememberContactPermissionsState
+import com.xayah.databackup.ui.component.rememberMessagePermissionsState
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.CustomSuFile
 import com.xayah.databackup.util.KeyCustomSuFile
@@ -199,23 +201,17 @@ fun PermissionsScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var openCustomSUFileDialog by remember { mutableStateOf(false) }
-    val contactsPermissionState = rememberMultiplePermissionsState(
-        listOf(android.Manifest.permission.READ_CONTACTS, android.Manifest.permission.WRITE_CONTACTS)
-    ) { result ->
+    val contactsPermissionState = rememberContactPermissionsState { result ->
         viewModel.viewModelScope.launch {
             viewModel.checkContact(context, result)
         }
     }
-    val callLogsPermissionState = rememberMultiplePermissionsState(
-        listOf(android.Manifest.permission.READ_CALL_LOG, android.Manifest.permission.WRITE_CALL_LOG)
-    ) { result ->
+    val callLogsPermissionState = rememberCallLogPermissionsState { result ->
         viewModel.viewModelScope.launch {
             viewModel.checkCallLog(context, result)
         }
     }
-    val messagesPermissionState = rememberMultiplePermissionsState(
-        listOf(android.Manifest.permission.READ_SMS)
-    ) { result ->
+    val messagesPermissionState = rememberMessagePermissionsState { result ->
         viewModel.viewModelScope.launch {
             viewModel.checkMessage(context, result)
         }

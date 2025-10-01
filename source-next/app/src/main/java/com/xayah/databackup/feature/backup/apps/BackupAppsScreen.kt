@@ -66,7 +66,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -83,6 +82,7 @@ import com.xayah.databackup.ui.component.horizontalFadingEdges
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.ui.material3.ModalDropdownMenu
 import com.xayah.databackup.ui.material3.ModalDropdownMenuItem
+import com.xayah.databackup.util.DefStorageSize
 import com.xayah.databackup.util.FilterBackupUser
 import com.xayah.databackup.util.FiltersSystemAppsBackup
 import com.xayah.databackup.util.FiltersUserAppsBackup
@@ -101,11 +101,12 @@ import com.xayah.databackup.util.readEnum
 import com.xayah.databackup.util.readInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BackupAppsScreen(
     navController: NavHostController,
-    viewModel: AppsViewModel = viewModel(),
+    viewModel: AppsViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -180,7 +181,11 @@ fun BackupAppsScreen(
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
-                                    text = stringResource(R.string.items_selected_and_size, allSelected, apps.size, selectedBytes),
+                                    text = if (selectedBytes == DefStorageSize) {
+                                        stringResource(R.string.items_selected, allSelected, apps.size)
+                                    } else {
+                                        stringResource(R.string.items_selected_and_size, allSelected, apps.size, selectedBytes)
+                                    },
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                     style = MaterialTheme.typography.labelMedium,
@@ -493,13 +498,15 @@ fun AppListItem(
                     val storage by remember(app.selectedBytes, app.totalBytes) {
                         mutableStateOf("${app.selectedBytes.formatToStorageSize} / ${app.totalBytes.formatToStorageSize}")
                     }
-                    Text(
-                        text = storage,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    AnimatedVisibility(visible = app.totalBytes != 0L) {
+                        Text(
+                            text = storage,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
 
                 val animatedCheckIcon = rememberAnimatedVectorPainter(
