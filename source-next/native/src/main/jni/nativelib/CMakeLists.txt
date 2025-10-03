@@ -15,6 +15,7 @@ add_link_options(
         -Wl,--hash-style=both
 )
 
+# libnativelib.so
 add_library(nativelib SHARED
         nativelib.cpp
 )

@@ -14,4 +14,5 @@ interface IRemoteRootService {
     List<FilePathParcelable> listFilePaths(String path, boolean listFiles, boolean listDirs);
     ParcelFileDescriptor readText(String path);
     long calculateTreeSize(String path);
+    int callTarCli(String stdOut, String stdErr, in String[] argv);
 }

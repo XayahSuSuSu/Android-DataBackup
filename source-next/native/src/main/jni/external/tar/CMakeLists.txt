@@ -1,0 +1,324 @@
+set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR})
+
+add_compile_options(
+        -DHAVE_CONFIG_H
+        -O3
+        -fPIC
+        -ffunction-sections
+        -fdata-sections
+        -D_FORTIFY_SOURCE=0
+        -ffile-prefix-map=${CMAKE_CURRENT_SOURCE_DIR}=/src
+)
+
+add_link_options(
+        -s
+        -flto
+        -Wl,--gc-sections
+        -Wl,--build-id=none
+        -Wl,--hash-style=both
+        -Wl,-allow-multiple-definition
+
+        # lld bug: https://bugs.llvm.org/show_bug.cgi?id=36295
+        # error: symbol __aeabi_*@@LIBC_N has undefined version LIBC_N
+        -Wl,-Bsymbolic
+        -Wl,--exclude-libs,ALL
+        -Wl,-soname,ld-android.so
+)
+
+# libgnu.a
+add_library(libgnu STATIC
+        tar/gnu/acl-errno-valid.c
+        tar/gnu/acl-internal.c
+        tar/gnu/allocator.c
+        tar/gnu/areadlink-with-size.c
+        tar/gnu/areadlink.c
+        tar/gnu/areadlinkat-with-size.c
+        tar/gnu/areadlinkat.c
+        tar/gnu/argmatch.c
+        tar/gnu/argp-ba.c
+        tar/gnu/argp-eexst.c
+        tar/gnu/argp-fmtstream.c
+        tar/gnu/argp-fs-xinl.c
+        tar/gnu/argp-help.c
+        tar/gnu/argp-parse.c
+        tar/gnu/argp-pin.c
+        tar/gnu/argp-pv.c
+        tar/gnu/argp-pvh.c
+        tar/gnu/argp-version-etc.c
+        tar/gnu/argp-xinl.c
+        tar/gnu/asnprintf.c
+        tar/gnu/backup-find.c
+        tar/gnu/backupfile.c
+        tar/gnu/basename-lgpl.c
+        tar/gnu/basename.c
+        tar/gnu/bitrotate.c
+        tar/gnu/btowc.c
+        tar/gnu/c-ctype.c
+        tar/gnu/c-strcasecmp.c
+        tar/gnu/c-strncasecmp.c
+        tar/gnu/c32isalnum.c
+        tar/gnu/c32isalpha.c
+        tar/gnu/c32isblank.c
+        tar/gnu/c32iscntrl.c
+        tar/gnu/c32isdigit.c
+        tar/gnu/c32isgraph.c
+        tar/gnu/c32islower.c
+        tar/gnu/c32isprint.c
+        tar/gnu/c32ispunct.c
+        tar/gnu/c32isspace.c
+        tar/gnu/c32isupper.c
+        tar/gnu/c32isxdigit.c
+        tar/gnu/c32tolower.c
+        tar/gnu/c32width.c
+        tar/gnu/calloc.c
+        tar/gnu/canonicalize-lgpl.c
+        tar/gnu/careadlinkat.c
+        tar/gnu/chdir-long.c
+        tar/gnu/chmod.c
+        tar/gnu/chown.c
+        tar/gnu/cloexec.c
+        tar/gnu/close-stream.c
+        tar/gnu/closeout.c
+        tar/gnu/creat-safer.c
+        tar/gnu/dirname-lgpl.c
+        tar/gnu/dirname.c
+        tar/gnu/dup-safer-flag.c
+        tar/gnu/dup-safer.c
+        tar/gnu/dup2.c
+        tar/gnu/error.c
+        tar/gnu/euidaccess.c
+        tar/gnu/exclude.c
+        tar/gnu/exitfail.c
+        tar/gnu/fchmodat.c
+        tar/gnu/fchownat.c
+        tar/gnu/fcntl.c
+        tar/gnu/fd-hook.c
+        tar/gnu/fd-safer-flag.c
+        tar/gnu/fd-safer.c
+        tar/gnu/fdopendir.c
+        tar/gnu/fdutimensat.c
+        tar/gnu/file-has-acl.c
+        tar/gnu/filenamecat-lgpl.c
+        tar/gnu/fnmatch.c
+        tar/gnu/fopen.c
+        tar/gnu/fprintftime.c
+        tar/gnu/free.c
+        tar/gnu/fseek.c
+        tar/gnu/fseeko.c
+        tar/gnu/full-read.c
+        tar/gnu/full-write.c
+        tar/gnu/get-permissions.c
+        tar/gnu/getcwd-lgpl.c
+        tar/gnu/getcwd.c
+        tar/gnu/getdelim.c
+        tar/gnu/getdtablesize.c
+        tar/gnu/getgroups.c
+        tar/gnu/getline.c
+        tar/gnu/getopt.c
+        tar/gnu/getopt1.c
+        tar/gnu/gettime.c
+        tar/gnu/group-member.c
+        tar/gnu/hard-locale.c
+        tar/gnu/hash.c
+        tar/gnu/human.c
+        tar/gnu/ialloc.c
+        tar/gnu/imaxtostr.c
+        tar/gnu/inttostr.c
+        tar/gnu/lchmod.c
+        tar/gnu/lchown.c
+        tar/gnu/localcharset.c
+        tar/gnu/localeconv.c
+        tar/gnu/malloc.c
+        tar/gnu/malloc/dynarray_at_failure.c
+        tar/gnu/malloc/dynarray_emplace_enlarge.c
+        tar/gnu/malloc/dynarray_finalize.c
+        tar/gnu/malloc/dynarray_resize_clear.c
+        tar/gnu/malloc/dynarray_resize.c
+        tar/gnu/malloc/scratch_buffer_grow_preserve.c
+        tar/gnu/malloc/scratch_buffer_grow.c
+        tar/gnu/malloc/scratch_buffer_set_array_size.c
+        tar/gnu/malloca.c
+        tar/gnu/mbchar.c
+        tar/gnu/mbrtoc32.c
+        tar/gnu/mbrtowc.c
+        tar/gnu/mbscasecmp.c
+        tar/gnu/mbsrtowcs-state.c
+        tar/gnu/mbsrtowcs.c
+        tar/gnu/mbuiter.c
+        tar/gnu/memchr.c
+        tar/gnu/mkdir.c
+        tar/gnu/mktime.c
+        tar/gnu/modechange.c
+        tar/gnu/nl_langinfo.c
+        tar/gnu/nstrftime.c
+        tar/gnu/obstack.c
+        tar/gnu/offtostr.c
+        tar/gnu/open-safer.c
+        tar/gnu/openat-die.c
+        tar/gnu/openat-proc.c
+        tar/gnu/openat-safer.c
+        tar/gnu/opendir-safer.c
+        tar/gnu/opendirat.c
+        tar/gnu/parse-datetime.c
+        tar/gnu/pipe-safer.c
+        tar/gnu/printf-args.c
+        tar/gnu/printf-parse.c
+        tar/gnu/priv-set.c
+        tar/gnu/progname.c
+        tar/gnu/quotearg.c
+        tar/gnu/rawmemchr.c
+        tar/gnu/realloc.c
+        tar/gnu/reallocarray.c
+        tar/gnu/regex.c
+        tar/gnu/renameatu.c
+        tar/gnu/rpmatch.c
+        tar/gnu/safe-read.c
+        tar/gnu/safe-write.c
+        tar/gnu/save-cwd.c
+        tar/gnu/savedir.c
+        tar/gnu/se-context.c
+        tar/gnu/se-label.c
+        tar/gnu/se-selinux.c
+        tar/gnu/selinux-at.c
+        tar/gnu/set-permissions.c
+        tar/gnu/setenv.c
+        tar/gnu/setlocale_null.c
+        tar/gnu/setlocale-lock.c
+        tar/gnu/sleep.c
+        tar/gnu/stat-time.c
+        tar/gnu/stdopen.c
+        tar/gnu/strerror-override.c
+        tar/gnu/strerror.c
+        tar/gnu/stripslash.c
+        tar/gnu/strnlen1.c
+        tar/gnu/strtol.c
+        tar/gnu/strtoll.c
+        tar/gnu/strtoul.c
+        tar/gnu/strtoull.c
+        tar/gnu/tempname.c
+        tar/gnu/time_rz.c
+        tar/gnu/timegm.c
+        tar/gnu/timespec-sub.c
+        tar/gnu/timespec.c
+        tar/gnu/uinttostr.c
+        tar/gnu/umaxtostr.c
+        tar/gnu/unicase/tolower.c
+        tar/gnu/unictype/ctype_alnum.c
+        tar/gnu/unictype/ctype_alpha.c
+        tar/gnu/unictype/ctype_blank.c
+        tar/gnu/unictype/ctype_cntrl.c
+        tar/gnu/unictype/ctype_digit.c
+        tar/gnu/unictype/ctype_graph.c
+        tar/gnu/unictype/ctype_lower.c
+        tar/gnu/unictype/ctype_print.c
+        tar/gnu/unictype/ctype_punct.c
+        tar/gnu/unictype/ctype_space.c
+        tar/gnu/unictype/ctype_upper.c
+        tar/gnu/unictype/ctype_xdigit.c
+        tar/gnu/unistd.c
+        tar/gnu/uniwidth/width.c
+        tar/gnu/unlinkdir.c
+        tar/gnu/unsetenv.c
+        tar/gnu/utimens.c
+        tar/gnu/vasnprintf.c
+        tar/gnu/version-etc-fsf.c
+        tar/gnu/version-etc.c
+        tar/gnu/wcrtomb.c
+        tar/gnu/wctype-h.c
+        tar/gnu/wcwidth.c
+        tar/gnu/xalloc-die.c
+        tar/gnu/xasprintf.c
+        tar/gnu/xgetcwd.c
+        tar/gnu/xmalloc.c
+        tar/gnu/xsize.c
+        tar/gnu/xstrtol.c
+        tar/gnu/xstrtoul.c
+        tar/gnu/xstrtoumax.c
+        tar/gnu/xvasprintf.c
+)
+target_compile_definitions(libgnu
+        PRIVATE
+        HAVE_CONFIG_H
+)
+target_include_directories(libgnu
+        PRIVATE
+        tar-config
+        tar-gnu-embedded
+        tar/gnu
+)
+
+# libtar.a
+add_library(libtar STATIC
+        tar/lib/paxerror.c
+        tar/lib/paxexit-status.c
+        tar/lib/paxnames.c
+        tar/lib/rtapelib.c
+        tar/lib/wordsplit.c
+        tar/lib/xattr-at.c
+)
+target_compile_definitions(libtar
+        PRIVATE
+        HAVE_CONFIG_H
+)
+target_include_directories(libtar
+        PRIVATE
+        tar-config
+        tar-gnu-embedded
+        tar-lib-embedded
+        tar/gnu
+        tar/lib
+)
+
+# tar.a
+add_library(tar STATIC
+        tar/src/buffer.c
+        tar/src/checkpoint.c
+        tar/src/compare.c
+        tar/src/create.c
+        tar/src/delete.c
+        tar/src/exclist.c
+        tar/src/exit.c
+        tar/src/extract.c
+        tar/src/incremen.c
+        tar/src/list.c
+        tar/src/map.c
+        tar/src/misc.c
+        tar/src/names.c
+        tar/src/sparse.c
+        tar/src/suffix.c
+        tar/src/system.c
+        tar/src/tar.c
+        tar/src/transform.c
+        tar/src/unlink.c
+        tar/src/update.c
+        tar/src/utf8.c
+        tar/src/warning.c
+        tar/src/xattrs.c
+        tar/src/xheader.c
+)
+target_compile_definitions(tar
+        PRIVATE
+        HAVE_CONFIG_H
+)
+target_include_directories(tar
+        PRIVATE
+        tar-config
+        tar-gnu-embedded
+        tar-lib-embedded
+        tar/gnu
+        tar/lib
+        tar/src
+)
+
+# libtar-wrapper.so
+add_library(tar-wrapper SHARED
+        tar-wrapper.cpp
+)
+
+target_link_libraries(tar-wrapper
+        android
+        log
+        libgnu
+        libtar
+        tar
+)

@@ -39,6 +39,7 @@ import com.xayah.databackup.util.ParcelableHelper.unmarshall
 import com.xayah.databackup.util.PathHelper
 import com.xayah.hiddenapi.castTo
 import com.xayah.libnative.NativeLib
+import com.xayah.libnative.TarWrapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -89,6 +90,7 @@ object RemoteRootService {
     class Service : RootService() {
         init {
             System.loadLibrary("nativelib")
+            System.loadLibrary("tar-wrapper")
         }
 
         override fun onBind(intent: Intent): IBinder = Impl(applicationContext).apply { onBind() }
@@ -223,6 +225,10 @@ object RemoteRootService {
 
         override fun calculateTreeSize(path: String): Long {
             return NativeLib.calculateTreeSize(path)
+        }
+
+        override fun callTarCli(stdOut: String, stdErr: String, argv: Array<String>): Int {
+            return TarWrapper.callCli(stdOut, stdErr, argv)
         }
     }
 
@@ -367,5 +373,9 @@ object RemoteRootService {
 
     suspend fun calculateTreeSize(path: String): Long {
         return getService()?.calculateTreeSize(path) ?: 0
+    }
+
+    suspend fun callTarCli(stdOut: String, stdErr: String, argv: Array<String>): Int {
+        return getService()?.callTarCli(stdOut, stdErr, argv) ?: -1
     }
 }

@@ -12,6 +12,12 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        externalNativeBuild {
+            cmake {
+                arguments.addAll(listOf("-DANDROID_PLATFORM=28"))
+            }
+        }
     }
 
     buildTypes {
