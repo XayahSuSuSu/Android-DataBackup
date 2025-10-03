@@ -475,4 +475,5 @@
     <string name="worker_update_apps_basic_info">Оновлення основної інформації про програми</string>
     <string name="worker_update_apps_storage_info">Оновлення інформації про сховище програм</string>
     <string name="worker_update_other_info">Оновлення іншої інформації</string>
+    <string name="no_permissions">Без дозволів</string>
 </resources>
