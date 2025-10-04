@@ -8,6 +8,23 @@ android {
     ndkVersion = libs.versions.ndkVersion.get()
     compileSdk = libs.versions.compileSdk.get().toInt()
 
+    buildFeatures {
+        buildConfig = true
+    }
+
+    buildTypes {
+        all {
+            val zstdVersion = File("${projectDir}/src/main/jni/external/zstd/zstd-jni/version").readText().trim()
+            buildConfigField("String", "ZSTD_VERSION", "\"${zstdVersion}\"")
+        }
+    }
+
+    sourceSets {
+        getByName("main") {
+            java.srcDir("src/main/jni/external/zstd/zstd-jni/src/main/java")
+        }
+    }
+
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
 

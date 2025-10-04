@@ -4,3 +4,6 @@
 [submodule "source-next/native/src/main/jni/external/tar/tar"]
 	path = source-next/native/src/main/jni/external/tar/tar
 	url = https://github.com/XayahSuSuSu/tar
+[submodule "source-next/native/src/main/jni/external/zstd/zstd-jni"]
+	path = source-next/native/src/main/jni/external/zstd/zstd-jni
+	url = https://github.com/luben/zstd-jni
