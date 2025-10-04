@@ -475,4 +475,5 @@
     <string name="worker_update_apps_storage_info">Atualizando informações de armazenamento de apps</string>
     <string name="worker_update_other_info">Atualizando outras informações</string>
     <string name="auto_screen_off_desc">Desligue a tela automaticamente durante o backup ou restauração e ligue-a novamente após a conclusão</string>
+    <string name="no_permissions">Sem permissões</string>
 </resources>
