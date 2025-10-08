@@ -20,6 +20,7 @@ import com.xayah.databackup.ui.component.MessagePermissions
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.CallLogsOptionSelectedBackup
 import com.xayah.databackup.util.ContactsOptionSelectedBackup
+import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.MessagesOptionSelectedBackup
 import com.xayah.databackup.util.PathHelper
 import com.xayah.databackup.util.combine
@@ -37,8 +38,6 @@ import kotlinx.coroutines.withContext
 
 data class BackupSetupUiState(
     val isLoadingConfigs: Boolean = true,
-    val selectedConfigIndex: Int = -1,
-    val configs: List<BackupConfig> = listOf()
 )
 
 data class TargetItem(
@@ -57,16 +56,24 @@ open class BackupSetupViewModel(
     callLogRepo: CallLogRepository,
     messageRepo: MessageRepository,
 ) : BaseViewModel() {
+    companion object {
+        private const val TAG = "BackupSetupViewModel"
+    }
+
     private val _uiState: MutableStateFlow<BackupSetupUiState> = MutableStateFlow(BackupSetupUiState())
     val uiState: StateFlow<BackupSetupUiState> = _uiState.asStateFlow()
 
+    val selectedConfigIndex: StateFlow<Int> = backupConfigRepo.selectedIndex
+    val backupConfigs: StateFlow<List<BackupConfig>> = backupConfigRepo.configs
+
     val appsItem: StateFlow<TargetItem?> = combine(
         appRepo.isBackupAppsSelected,
+        appRepo.appsFilteredAndSelected,
         appRepo.appsFiltered,
-    ) { selected, apps ->
+    ) { selected, appsFilteredAndSelected, appsFiltered ->
         TargetItem(
             selected = selected,
-            selections = apps.count { it.option.apk || it.option.internalData || it.option.externalData || it.option.obbAndMedia } to apps.size
+            selections = appsFilteredAndSelected.size to appsFiltered.size
         )
     }.stateIn(
         scope = viewModelScope,
@@ -179,6 +186,10 @@ open class BackupSetupViewModel(
     )
 
     suspend fun getLocalStorage(): String {
+        val backupPath = PathHelper.getBackupPath().first()
+        if (RemoteRootService.mkdirs(backupPath).not()) {
+            LogHelper.e(TAG, "getLocalStorage", "Failed to mkdirs: $backupPath.}")
+        }
         val stat = RemoteRootService.readStatFs(PathHelper.getBackupPath().first())
         return if (stat == null) {
             App.application.getString(R.string.unknown)
@@ -229,8 +240,9 @@ open class BackupSetupViewModel(
 
     private suspend fun initBackupConfigs() {
         withContext(Dispatchers.IO) {
+            _uiState.emit(uiState.value.copy(isLoadingConfigs = true))
             backupConfigRepo.loadBackupConfigsFromLocal()
-            _uiState.emit(uiState.value.copy(isLoadingConfigs = false, configs = backupConfigRepo.getConfigs()))
+            _uiState.emit(uiState.value.copy(isLoadingConfigs = false))
         }
     }
 
@@ -243,7 +255,7 @@ open class BackupSetupViewModel(
 
     fun selectBackup(index: Int) {
         withLock(Dispatchers.Default) {
-            _uiState.emit(uiState.value.copy(selectedConfigIndex = index))
+            backupConfigRepo.selectBackup(index)
         }
     }
 }

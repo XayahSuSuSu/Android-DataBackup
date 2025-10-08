@@ -7,6 +7,8 @@ add_compile_options(
         -fdata-sections
         -D_FORTIFY_SOURCE=0
         -ffile-prefix-map=${CMAKE_CURRENT_SOURCE_DIR}=/src
+        -DZSTD_LEGACY_SUPPORT=4
+        -DZSTD_MULTITHREAD=1
 )
 
 add_link_options(

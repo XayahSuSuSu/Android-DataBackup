@@ -115,3 +115,7 @@ val CallLogsOptionSelectedBackup = Pair(KeyCallLogsOptionSelectedBackup, DefCall
 val KeyMessagesOptionSelectedBackup = booleanPreferencesKey("messages_option_selected_backup")
 const val DefMessagesOptionSelectedBackup = true
 val MessagesOptionSelectedBackup = Pair(KeyMessagesOptionSelectedBackup, DefMessagesOptionSelectedBackup)
+
+val KeyBackupConfigSelectedUuid = stringPreferencesKey("backup_config_selected_uuid")
+const val DefBackupConfigSelectedUuid = ""
+val BackupConfigSelectedUuid = Pair(KeyBackupConfigSelectedUuid, DefBackupConfigSelectedUuid)

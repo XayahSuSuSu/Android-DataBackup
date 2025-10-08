@@ -20,6 +20,10 @@
     <!-- SMS/MMS permissions -->
     <uses-permission android:name="android.permission.READ_SMS" />
 
+    <!-- Process service -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
     <!-- https://developer.android.com/guide/topics/manifest/uses-feature-element -->
     <uses-feature
         android:name="android.hardware.telephony"
@@ -41,6 +45,11 @@
             android:name="androidx.work.impl.foreground.SystemForegroundService"
             android:foregroundServiceType="dataSync"
             tools:node="merge" />
+
+        <service
+            android:name=".service.BackupService$BackupServiceImpl"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
 
         <activity
             android:name=".feature.MainActivity"

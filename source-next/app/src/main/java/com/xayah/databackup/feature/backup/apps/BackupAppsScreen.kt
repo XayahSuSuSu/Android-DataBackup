@@ -556,10 +556,10 @@ fun AppListItem(
                     )
 
                     SelectableChip(
-                        selected = app.option.obbAndMedia,
+                        selected = app.option.additionalData,
                         icon = AnimatedImageVector.animatedVectorResource(R.drawable.ic_animated_gamepad_2),
-                        text = stringResource(R.string.obb_and_media),
-                        onCheckedChange = { viewModel.selectObbAndMedia(app.packageName, app.userId, it.not()) },
+                        text = stringResource(R.string.additional_data),
+                        onCheckedChange = { viewModel.selectAdditionalData(app.packageName, app.userId, it.not()) },
                     )
 
                     Spacer(modifier = Modifier.width(6.dp))
@@ -578,7 +578,7 @@ private fun SelectIconButton(viewModel: AppsViewModel) {
     val dataAllSelected by viewModel.dataAllSelected.collectAsStateWithLifecycle()
     val intDataAllSelected by viewModel.intDataAllSelected.collectAsStateWithLifecycle()
     val extDataAllSelected by viewModel.extDataAllSelected.collectAsStateWithLifecycle()
-    val obbAndMediaAllSelected by viewModel.obbAndMediaAllSelected.collectAsStateWithLifecycle()
+    val addlDataAllSelected by viewModel.addlDataAllSelected.collectAsStateWithLifecycle()
 
     Box {
         IconButton(onClick = {
@@ -703,18 +703,18 @@ private fun SelectIconButton(viewModel: AppsViewModel) {
                 }
             )
             ModalDropdownMenuItem(
-                text = { Text(if (obbAndMediaAllSelected.not()) stringResource(R.string.select_all_obb_and_media) else stringResource(R.string.unselect_all_obb_and_media)) },
+                text = { Text(if (addlDataAllSelected.not()) stringResource(R.string.select_all_addl_data) else stringResource(R.string.unselect_all_addl_data)) },
                 leadingIcon = {
                     Icon(
-                        imageVector = if (obbAndMediaAllSelected.not())
+                        imageVector = if (addlDataAllSelected.not())
                             ImageVector.vectorResource(R.drawable.ic_square_check_big)
                         else
                             ImageVector.vectorResource(R.drawable.ic_square),
-                        contentDescription = if (obbAndMediaAllSelected.not()) stringResource(R.string.select_all_obb_and_media) else stringResource(R.string.unselect_all_obb_and_media)
+                        contentDescription = if (addlDataAllSelected.not()) stringResource(R.string.select_all_addl_data) else stringResource(R.string.unselect_all_addl_data)
                     )
                 },
                 onClick = {
-                    viewModel.selectAllObbAndMedia()
+                    viewModel.selectAllAddlData()
                 }
             )
         }

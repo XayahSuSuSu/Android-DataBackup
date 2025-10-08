@@ -15,12 +15,14 @@ import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiConfigurationHidden
 import android.net.wifi.WifiManagerHidden
 import android.os.Build
+import android.os.DeadObjectException
 import android.os.IBinder
 import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.RemoteException
 import android.os.StatFs
 import android.os.UserManagerHidden
+import com.github.luben.zstd.ZstdOutputStream
 import com.topjohnwu.superuser.ipc.RootService
 import com.xayah.databackup.App
 import com.xayah.databackup.R
@@ -37,6 +39,8 @@ import com.xayah.databackup.util.NotificationHelper.NOTIFICATION_ID_APPS_UPDATE_
 import com.xayah.databackup.util.ParcelableHelper.marshall
 import com.xayah.databackup.util.ParcelableHelper.unmarshall
 import com.xayah.databackup.util.PathHelper
+import com.xayah.databackup.util.PathHelper.TMP_PARCEL_PREFIX
+import com.xayah.databackup.util.PathHelper.TMP_SUFFIX
 import com.xayah.hiddenapi.castTo
 import com.xayah.libnative.NativeLib
 import com.xayah.libnative.TarWrapper
@@ -49,18 +53,21 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 object RemoteRootService {
     private const val TAG = "RemoteRootService"
-    private const val TIMEOUT = 10000L // 10s
+    private const val TIMEOUT_10S = 10000L
+    private const val TIMEOUT_30S = 30000L
 
     private fun writeToParcel(context: Context, block: (Parcel) -> Unit): ParcelFileDescriptor {
         val parcel = Parcel.obtain()
         parcel.setDataPosition(0)
         block(parcel)
-        val tmpFile = File.createTempFile("databackup-parcel-", ".tmp", context.cacheDir)
+        val tmpFile = File.createTempFile(TMP_PARCEL_PREFIX, TMP_SUFFIX, context.cacheDir)
         tmpFile.delete()
         tmpFile.createNewFile()
         tmpFile.writeBytes(parcel.marshall())
@@ -81,6 +88,7 @@ object RemoteRootService {
     }
 
     private var mMutex = Mutex()
+    private var mBinder: IBinder? = null
     private var mService: IRemoteRootService? = null
     private var mConnection: ServiceConnection? = null
     private val mServiceIntent by lazy { Intent().apply { component = ComponentName(App.application.packageName, Service::class.java.name) } }
@@ -110,6 +118,8 @@ object RemoteRootService {
             mUserManager = UserManagerHidden.get(mSystemContext).castTo()
             mWifiManager = mSystemContext.getSystemService(Context.WIFI_SERVICE).castTo()
         }
+
+        override fun testConnection() {}
 
         override fun getInstalledAppInfos(): ParcelFileDescriptor {
             return writeToParcel(context) { parcel ->
@@ -171,7 +181,7 @@ object RemoteRootService {
                             apkBytes = apkBytes,
                             internalDataBytes = userBytes + userDeBytes,
                             externalDataBytes = dataBytes,
-                            obbAndMediaBytes = obbBytes + mediaBytes,
+                            additionalDataBytes = obbBytes + mediaBytes,
                         )
                     )
                 })
@@ -219,8 +229,19 @@ object RemoteRootService {
 
         override fun readText(path: String): ParcelFileDescriptor {
             return writeToParcel(context) { parcel ->
-                parcel.writeString(File(path).readText())
+                parcel.writeString(runCatching { File(path).readText() }.getOrNull() ?: "")
             }
+        }
+
+        override fun writeText(path: String, pfd: ParcelFileDescriptor) {
+            var text = ""
+            readFromParcel(pfd) { parcel -> parcel.readString()?.also { text = it } }
+            val textFile = File(path)
+            if (textFile.isDirectory || textFile.exists()) {
+                textFile.deleteRecursively()
+            }
+            textFile.createNewFile()
+            textFile.writeText(text)
         }
 
         override fun calculateTreeSize(path: String): Long {
@@ -230,49 +251,85 @@ object RemoteRootService {
         override fun callTarCli(stdOut: String, stdErr: String, argv: Array<String>): Int {
             return TarWrapper.callCli(stdOut, stdErr, argv)
         }
+
+        override fun getPackageSourceDir(packageName: String, userId: Int): List<String> {
+            val sourceDirList = mutableListOf<String>()
+            val packageInfo = mPackageManagerHidden.getPackageInfoAsUser(packageName, 0, userId)
+            packageInfo.applicationInfo?.sourceDir?.also { sourceDirList.add(it) }
+            val splitSourceDirs = packageInfo.applicationInfo?.splitSourceDirs
+            if (!splitSourceDirs.isNullOrEmpty()) for (i in splitSourceDirs) sourceDirList.add(i)
+            return sourceDirList
+        }
+
+        override fun compress(level: Int, inputPath: String, outputPath: String): String? {
+            runCatching {
+                FileInputStream(inputPath).use { fileInputStream ->
+                    FileOutputStream(outputPath).use { fileOutputStream ->
+                        ZstdOutputStream(fileOutputStream, level).use { zstdOutputStream ->
+                            zstdOutputStream.setWorkers(Runtime.getRuntime().availableProcessors())
+                            fileInputStream.copyTo(zstdOutputStream)
+                        }
+                    }
+                }
+            }.onFailure { return it.message }
+            return null
+        }
+
+        override fun mkdirs(path: String): Boolean {
+            return runCatching {
+                val file = File(path)
+                if (file.exists().not()) file.mkdirs() else true
+            }.getOrNull() ?: false
+        }
+
+        override fun exists(path: String): Boolean {
+            return runCatching { File(path).exists() }.getOrNull() ?: false
+        }
     }
 
     private fun destroyService() {
-        if (mConnection != null || mService != null) {
-            LogHelper.i(TAG, "Destroy the root service.")
+        if (mConnection != null || mService != null || mBinder != null) {
+            LogHelper.i(TAG, "destroyService", "Destroy the root service.")
             mConnection = null
             mService = null
+            mBinder = null
         }
     }
 
     private suspend fun bindService(): IRemoteRootService {
-        return withTimeout(TIMEOUT) {
+        return withTimeout(TIMEOUT_10S) {
             suspendCancellableCoroutine { continuation ->
                 if (mService == null) {
                     mRetries++
                     destroyService()
-                    LogHelper.i(TAG, "Bind the root service, retries: $mRetries.")
+                    LogHelper.i(TAG, "bindService", "Bind the root service, retries: $mRetries.")
                     val connection = object : ServiceConnection {
                         override fun onServiceConnected(name: ComponentName, service: IBinder) {
                             val ipc = IRemoteRootService.Stub.asInterface(service)
+                            mBinder = service
                             mService = ipc
                             val msg = "Service connected."
-                            LogHelper.i(TAG, msg)
+                            LogHelper.i(TAG, "bindService", msg)
                             if (continuation.context.isActive) continuation.resume(ipc)
                         }
 
                         override fun onServiceDisconnected(name: ComponentName) {
                             val msg = "Service disconnected."
-                            LogHelper.w(TAG, msg)
+                            LogHelper.w(TAG, "bindService", msg)
                             destroyService()
                             if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
                         }
 
                         override fun onBindingDied(name: ComponentName) {
                             val msg = "Binding died."
-                            LogHelper.e(TAG, msg)
+                            LogHelper.e(TAG, "bindService", msg)
                             destroyService()
                             if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
                         }
 
                         override fun onNullBinding(name: ComponentName) {
                             val msg = "Null binding."
-                            LogHelper.e(TAG, msg)
+                            LogHelper.e(TAG, "bindService", msg)
                             destroyService()
                             if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
                         }
@@ -288,21 +345,34 @@ object RemoteRootService {
     }
 
     private suspend fun getService(): IRemoteRootService? {
-        mMutex.withLock {
-            var rootService: IRemoteRootService? = mService
-            while (rootService == null && mRetries < 3) {
-                withContext(Dispatchers.Main) {
-                    rootService = runCatching { bindService() }.getOrNull()
+        try {
+            mMutex.withLock {
+                if (mBinder?.isBinderAlive == false) {
+                    destroyService()
                 }
-                delay(1000)
+                runCatching {
+                    withTimeout(TIMEOUT_30S) {
+                        while (mService == null) {
+                            withContext(Dispatchers.Main) {
+                                mService = runCatching { bindService() }.getOrNull()
+                            }
+                            delay(1000)
+                        }
+                    }
+                }
+                if (mService == null) {
+                    val msg = "Failed to bind the root service."
+                    LogHelper.e(TAG, "getService", msg)
+                    mOnErrorEvent?.invoke()
+                }
+                mService?.testConnection()
+                return mService
             }
-            if (rootService == null) {
-                val msg = "Failed to bind the root service."
-                LogHelper.e(TAG, msg)
-                mOnErrorEvent?.invoke()
-            }
-            return rootService
+        } catch (e: DeadObjectException) {
+            getService()
+            LogHelper.e(TAG, "getService", "Failed to get root service", e)
         }
+        return mService
     }
 
     fun setOnErrorEvent(block: () -> Unit) {
@@ -371,11 +441,37 @@ object RemoteRootService {
         return text
     }
 
+    suspend fun writeText(path: String, text: String) {
+        getService()?.writeText(
+            path,
+            writeToParcel(App.application) { parcel ->
+                parcel.writeString(text)
+            }
+        )
+    }
+
+
     suspend fun calculateTreeSize(path: String): Long {
         return getService()?.calculateTreeSize(path) ?: 0
     }
 
     suspend fun callTarCli(stdOut: String, stdErr: String, argv: Array<String>): Int {
         return getService()?.callTarCli(stdOut, stdErr, argv) ?: -1
+    }
+
+    suspend fun getPackageSourceDir(packageName: String, userId: Int): List<String> {
+        return getService()?.getPackageSourceDir(packageName, userId) ?: listOf()
+    }
+
+    suspend fun compress(level: Int, inputPath: String, outputPath: String): String? {
+        return getService()?.compress(level, inputPath, outputPath)
+    }
+
+    suspend fun mkdirs(path: String): Boolean {
+        return getService()?.mkdirs(path) ?: false
+    }
+
+    suspend fun exists(path: String): Boolean {
+        return getService()?.exists(path) ?: false
     }
 }

@@ -12,6 +12,7 @@ import com.xayah.databackup.util.readBoolean
 import com.xayah.databackup.util.readInt
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 
 class AppRepository {
     companion object {
@@ -28,4 +29,6 @@ class AppRepository {
     ) { apps, userId, filterUserApps, filterSystemApps ->
         apps.filterApp(userId, filterUserApps, filterSystemApps)
     }
+
+    val appsFilteredAndSelected: Flow<List<App>> = appsFiltered.map { apps -> apps.filter { it.isSelected } }
 }

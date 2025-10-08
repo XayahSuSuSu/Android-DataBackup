@@ -102,7 +102,7 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                 }
                 DatabaseHelper.networkDao.upsert(networks.values.toList())
             }.onFailure {
-                LogHelper.e(TAG, "Failed to update networks.", it)
+                LogHelper.e(TAG, "doWork", "Failed to update networks.", it)
             }
 
             mNotificationBuilder.setContentTitle(appContext.getString(R.string.worker_update_other_info))
@@ -143,7 +143,7 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                 }
                 DatabaseHelper.contactDao.upsert(contacts)
             }.onFailure {
-                LogHelper.e(TAG, "Failed to update contacts.", it)
+                LogHelper.e(TAG, "doWork", "Failed to update contacts.", it)
             }
 
             mNotificationBuilder.setContentTitle(appContext.getString(R.string.worker_update_other_info))
@@ -171,7 +171,7 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                 }
                 DatabaseHelper.callLogDao.upsert(callLogs)
             }.onFailure {
-                LogHelper.e(TAG, "Failed to update call logs.", it)
+                LogHelper.e(TAG, "doWork", "Failed to update call logs.", it)
             }
 
             mNotificationBuilder.setContentTitle(appContext.getString(R.string.worker_update_other_info))
@@ -200,7 +200,7 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                     }
                 DatabaseHelper.messageDao.upsertSms(smsList)
             }.onFailure {
-                LogHelper.e(TAG, "Failed to update sms.", it)
+                LogHelper.e(TAG, "doWork", "Failed to update sms.", it)
             }
 
             // Messages(MMS)
@@ -256,7 +256,7 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                     }
                 DatabaseHelper.messageDao.upsertMms(mmsList)
             }.onFailure {
-                LogHelper.e(TAG, "Failed to update mms.", it)
+                LogHelper.e(TAG, "doWork", "Failed to update mms.", it)
             }
         }
         return Result.success()

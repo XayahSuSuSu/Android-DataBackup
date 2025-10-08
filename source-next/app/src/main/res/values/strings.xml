@@ -436,16 +436,19 @@
     <string name="custom_selection">Custom selection</string>
     <string name="select_all_int_data">Select all: Int. Data</string>
     <string name="select_all_ext_data">Select all: Ext. Data</string>
+    <string name="select_all_addl_data">Select all: Addl. Data</string>
     <string name="select_all_obb_and_media"><![CDATA[Select all: OBB & Media]]></string>
     <string name="unselect_all_apk">Unselect all: APK</string>
     <string name="unselect_all_data">Unselect all: Data</string>
     <string name="unselect_all_int_data">Unselect all: Int. Data</string>
     <string name="unselect_all_ext_data">Unselect all: Ext. Data</string>
+    <string name="unselect_all_addl_data">Unselect all: Addl. Data</string>
     <string name="unselect_all_obb_and_media"><![CDATA[Unselect all: OBB & Media]]></string>
     <string name="expand">Expand</string>
     <string name="collapsed">Collapsed</string>
     <string name="internal_data">Int. Data</string>
     <string name="external_data">Ext. Data</string>
+    <string name="additional_data">Addl. Data</string>
     <string name="obb_and_media" translatable="false"><![CDATA[OBB & Media]]></string>
     <string name="close">Close</string>
     <string name="select_networks">Select networks</string>

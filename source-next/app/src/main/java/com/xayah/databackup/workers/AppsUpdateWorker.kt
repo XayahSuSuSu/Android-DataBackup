@@ -40,7 +40,7 @@ class AppsUpdateWorker(private val appContext: Context, workerParams: WorkerPara
                 val appInfos = RemoteRootService.getInstalledAppInfos()
                 DatabaseHelper.appDao.upsertInfo(appInfos)
             }.onFailure {
-                LogHelper.e(TAG, "Failed to update app infos.", it)
+                LogHelper.e(TAG, "doWork", "Failed to update app infos.", it)
             }
 
             mNotificationBuilder.setContentTitle(appContext.getString(R.string.worker_update_apps_storage_info))
@@ -53,7 +53,7 @@ class AppsUpdateWorker(private val appContext: Context, workerParams: WorkerPara
                 val appStorages = RemoteRootService.getInstalledAppStorages()
                 DatabaseHelper.appDao.upsertStorage(appStorages)
             }.onFailure {
-                LogHelper.e(TAG, "Failed to update app storages.", it)
+                LogHelper.e(TAG, "doWork", "Failed to update app storages.", it)
             }
         }
         return Result.success()

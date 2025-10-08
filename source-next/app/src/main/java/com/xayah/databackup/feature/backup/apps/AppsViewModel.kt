@@ -15,6 +15,7 @@ import com.xayah.databackup.util.SortsSequence
 import com.xayah.databackup.util.SortsSequenceBackup
 import com.xayah.databackup.util.SortsType
 import com.xayah.databackup.util.SortsTypeBackup
+import com.xayah.databackup.util.filterApp
 import com.xayah.databackup.util.formatToStorageSize
 import com.xayah.databackup.util.readEnum
 import com.xayah.databackup.util.saveBoolean
@@ -53,7 +54,7 @@ open class AppsViewModel(
             SortsType.DATA_SIZE -> apps.sortByDataSize(sortSequence)
             SortsType.INSTALL_TIME -> apps.sortByInstallTime(sortSequence)
             SortsType.UPDATE_TIME -> apps.sortByUpdateTime(sortSequence)
-        }
+        }.filterApp(searchText)
     }.stateIn(
         scope = viewModelScope,
         initialValue = listOf(),
@@ -61,7 +62,7 @@ open class AppsViewModel(
     )
 
     val allSelected =
-        apps.map { list -> list.count { it.option.apk || it.option.internalData || it.option.externalData || it.option.obbAndMedia } }.stateIn(
+        apps.map { list -> list.count { it.isSelected } }.stateIn(
             scope = viewModelScope,
             initialValue = 0,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -82,7 +83,7 @@ open class AppsViewModel(
         )
 
     val dataAllSelected =
-        apps.map { list -> list.count { it.option.internalData && it.option.externalData && it.option.obbAndMedia } == list.size }.stateIn(
+        apps.map { list -> list.count { it.isDataAllSelected } == list.size }.stateIn(
             scope = viewModelScope,
             initialValue = true,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -102,8 +103,8 @@ open class AppsViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
         )
 
-    val obbAndMediaAllSelected =
-        apps.map { list -> list.count { it.option.obbAndMedia } == list.size }.stateIn(
+    val addlDataAllSelected =
+        apps.map { list -> list.count { it.option.additionalData } == list.size }.stateIn(
             scope = viewModelScope,
             initialValue = true,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -127,9 +128,9 @@ open class AppsViewModel(
         }
     }
 
-    fun selectObbAndMedia(packageName: String, userId: Int, selected: Boolean) {
+    fun selectAdditionalData(packageName: String, userId: Int, selected: Boolean) {
         withLock(Dispatchers.IO) {
-            DatabaseHelper.appDao.selectObbAndMedia(packageName, userId, selected)
+            DatabaseHelper.appDao.selectAdditionalData(packageName, userId, selected)
         }
     }
 
@@ -176,9 +177,9 @@ open class AppsViewModel(
         }
     }
 
-    fun selectAllObbAndMedia() {
+    fun selectAllAddlData() {
         withLock(Dispatchers.IO) {
-            DatabaseHelper.appDao.selectAllObbAndMedia(apps.value.map { it.pkgUserKey }, obbAndMediaAllSelected.value.not())
+            DatabaseHelper.appDao.selectAllAddlData(apps.value.map { it.pkgUserKey }, addlDataAllSelected.value.not())
         }
     }
 

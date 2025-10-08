@@ -121,6 +121,7 @@ kotlin {
             "-opt-in=kotlin.uuid.ExperimentalUuidApi",
             "-XXLanguage:+PropertyParamAnnotationDefaultTargetMode",
             "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
+            "-opt-in=androidx.compose.material3.ExperimentalMaterial3ExpressiveApi",
         )
     }
 }

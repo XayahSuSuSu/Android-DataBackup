@@ -34,15 +34,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ClosedAlphaTarget
-import androidx.compose.material3.ClosedScaleTarget
 import androidx.compose.material3.DropdownMenuItemContent
-import androidx.compose.material3.ExpandedAlphaTarget
-import androidx.compose.material3.ExpandedScaleTarget
-import androidx.compose.material3.InTransitionDuration
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.MenuItemColors
-import androidx.compose.material3.OutTransitionDuration
 import androidx.compose.material3.Surface
 import androidx.compose.material3.calculateTransformOrigin
 import androidx.compose.material3.internal.DropdownMenuPositionProvider
@@ -61,6 +55,13 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+
+private const val InTransitionDuration = 120
+private const val OutTransitionDuration = 75
+private const val ExpandedScaleTarget = 1f
+private const val ClosedScaleTarget = 0.8f
+private const val ExpandedAlphaTarget = 1f
+private const val ClosedAlphaTarget = 0f
 
 @Composable
 fun ModalDropdownMenu(

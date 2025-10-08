@@ -30,6 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.R
+import com.xayah.databackup.feature.backup.BackupProcessScreen
 import com.xayah.databackup.feature.backup.BackupSetupScreen
 import com.xayah.databackup.feature.backup.apps.BackupAppsScreen
 import com.xayah.databackup.feature.backup.call_logs.BackupCallLogsScreen
@@ -60,6 +61,9 @@ data object Backup
 
 @Serializable
 data object BackupSetup
+
+@Serializable
+data object BackupProcess
 
 @Serializable
 data object BackupApps
@@ -112,7 +116,7 @@ class MainActivity : ComponentActivity() {
         } else {
             runCatching {
                 runBlocking { ShellHelper.initMainShell(context = App.application) }
-            }.onFailure { LogHelper.e(TAG, "Failed to init main shell.", it) }
+            }.onFailure { LogHelper.e(TAG, "onCreate", "Failed to init main shell.", it) }
             if (Shell.getShell().isRoot.not()) {
                 // Permissions are denied
                 startActivity(Intent(this, SetupActivity::class.java).putExtra(NoPermKey, true))
@@ -171,6 +175,10 @@ class MainActivity : ComponentActivity() {
                         navigation<Backup>(startDestination = BackupSetup) {
                             composable<BackupSetup> {
                                 BackupSetupScreen(navController)
+                            }
+
+                            composable<BackupProcess> {
+                                BackupProcessScreen(navController)
                             }
 
                             composable<BackupApps> {

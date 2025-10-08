@@ -28,17 +28,17 @@ data class App(
             if (option.apk) size += storage.apkBytes
             if (option.internalData) size += storage.internalDataBytes
             if (option.externalData) size += storage.externalDataBytes
-            if (option.obbAndMedia) size += storage.obbAndMediaBytes
+            if (option.additionalData) size += storage.additionalDataBytes
             return size
         }
 
     val totalBytes: Long
-        get() = storage.apkBytes + storage.internalDataBytes + storage.externalDataBytes + storage.obbAndMediaBytes
+        get() = storage.apkBytes + storage.internalDataBytes + storage.externalDataBytes + storage.additionalDataBytes
 
     val toggleableState: ToggleableState
-        get() = if (option.apk && option.internalData && option.externalData && option.obbAndMedia) {
+        get() = if (option.apk && option.internalData && option.externalData && option.additionalData) {
             ToggleableState.On
-        } else if (option.apk.not() && option.internalData.not() && option.externalData.not() && option.obbAndMedia.not()) {
+        } else if (option.apk.not() && option.internalData.not() && option.externalData.not() && option.additionalData.not()) {
             ToggleableState.Off
         } else {
             ToggleableState.Indeterminate
@@ -46,6 +46,12 @@ data class App(
 
     val isSystemApp: Boolean
         get() = (info.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+
+    val isSelected: Boolean
+        get() = option.apk || option.internalData || option.externalData || option.additionalData
+
+    val isDataAllSelected: Boolean
+        get() = option.internalData && option.externalData && option.additionalData
 }
 
 data class AppInfo(
@@ -164,7 +170,7 @@ data class Option(
     @ColumnInfo(defaultValue = "1") var apk: Boolean = true,
     @ColumnInfo(defaultValue = "1") var internalData: Boolean = true,
     @ColumnInfo(defaultValue = "1") var externalData: Boolean = true,
-    @ColumnInfo(defaultValue = "1") var obbAndMedia: Boolean = true,
+    @ColumnInfo(defaultValue = "1") var additionalData: Boolean = true,
 )
 
 @Serializable
@@ -172,13 +178,13 @@ data class Storage(
     @ColumnInfo(defaultValue = "0") var apkBytes: Long = 0,
     @ColumnInfo(defaultValue = "0") var internalDataBytes: Long = 0,
     @ColumnInfo(defaultValue = "0") var externalDataBytes: Long = 0,
-    @ColumnInfo(defaultValue = "0") var obbAndMediaBytes: Long = 0,
+    @ColumnInfo(defaultValue = "0") var additionalDataBytes: Long = 0,
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         apkBytes = parcel.readLong(),
         internalDataBytes = parcel.readLong(),
         externalDataBytes = parcel.readLong(),
-        obbAndMediaBytes = parcel.readLong()
+        additionalDataBytes = parcel.readLong()
     )
 
     override fun describeContents(): Int = 0
@@ -187,7 +193,7 @@ data class Storage(
         dest.writeLong(apkBytes)
         dest.writeLong(internalDataBytes)
         dest.writeLong(externalDataBytes)
-        dest.writeLong(obbAndMediaBytes)
+        dest.writeLong(additionalDataBytes)
     }
 
     companion object CREATOR : Parcelable.Creator<Storage> {

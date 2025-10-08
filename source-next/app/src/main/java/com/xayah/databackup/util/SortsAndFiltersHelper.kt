@@ -37,11 +37,7 @@ private fun filterSearchText(mms: MmsDeserialized, searchText: String) =
     searchText.isEmpty()
             || mms.body.toString().contains(searchText.lowercase())
 
-fun Iterable<App>.filterApp(searchText: String, userId: Int, filterUserApps: Boolean, filterSystemApps: Boolean): List<App> = filter {
-    filterUserId(it, userId)
-            && filterApps(it, filterUserApps, filterSystemApps)
-            && filterSearchText(it, searchText)
-}
+fun Iterable<App>.filterApp(searchText: String): List<App> = filter { filterSearchText(it, searchText) }
 
 fun Iterable<App>.filterApp(userId: Int, filterUserApps: Boolean, filterSystemApps: Boolean): List<App> = filter {
     filterUserId(it, userId)

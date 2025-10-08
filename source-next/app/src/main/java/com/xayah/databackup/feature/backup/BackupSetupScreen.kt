@@ -47,6 +47,7 @@ import com.xayah.databackup.feature.BackupCallLogs
 import com.xayah.databackup.feature.BackupContacts
 import com.xayah.databackup.feature.BackupMessages
 import com.xayah.databackup.feature.BackupNetworks
+import com.xayah.databackup.feature.BackupProcess
 import com.xayah.databackup.ui.component.ActionButtonState
 import com.xayah.databackup.ui.component.AutoScreenOffSwitch
 import com.xayah.databackup.ui.component.IncrementalBackupAndCleanBackupSwitches
@@ -158,7 +159,9 @@ fun BackupSetupScreen(
                 Button(
                     modifier = Modifier.wrapContentSize(),
                     enabled = nextBtnEnabled,
-                    onClick = { }
+                    onClick = {
+                        navController.navigateSafely(BackupProcess)
+                    }
                 ) {
                     Text(text = stringResource(R.string.next))
                 }
@@ -413,6 +416,9 @@ private fun BackupRow(
     uiState: BackupSetupUiState,
     viewModel: BackupSetupViewModel,
 ) {
+    val selectedConfigIndex by viewModel.selectedConfigIndex.collectAsStateWithLifecycle()
+    val backupConfigs by viewModel.backupConfigs.collectAsStateWithLifecycle()
+
     Text(
         modifier = Modifier.padding(16.dp),
         text = stringResource(R.string.backup),
@@ -447,7 +453,7 @@ private fun BackupRow(
                 modifier = Modifier
                     .size(148.dp)
                     .animateItem(),
-                selected = uiState.selectedConfigIndex == -1,
+                selected = selectedConfigIndex == -1,
                 title = stringResource(R.string.new_backup),
                 titleShimmer = uiState.isLoadingConfigs,
                 colors = selectableCardButtonTertiaryColors(),
@@ -458,7 +464,7 @@ private fun BackupRow(
             }
         }
 
-        items(items = uiState.configs, key = { _, item -> item.uuid }) { index, item ->
+        items(items = backupConfigs, key = { _, item -> item.uuid }) { index, item ->
             var backupStorage: String by remember { mutableStateOf("") }
             LaunchedEffect(context = Dispatchers.IO, null) {
                 backupStorage = viewModel.getBackupStorage(item.path)
@@ -467,7 +473,7 @@ private fun BackupRow(
                 modifier = Modifier
                     .size(148.dp)
                     .animateItem(),
-                selected = uiState.selectedConfigIndex == index,
+                selected = selectedConfigIndex == index,
                 title = item.displayTitle,
                 subtitle = backupStorage,
                 subtitleShimmer = backupStorage.isEmpty(),
