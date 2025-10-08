@@ -476,4 +476,7 @@
     <string name="worker_update_apps_storage_info">Aktualizowanie informacji o pamięci aplikacji</string>
     <string name="worker_update_other_info">Aktualizacja innych informacji</string>
     <string name="no_permissions">Brak uprawnień</string>
+    <string name="unselect_all_addl_data">Odznacz wszystko: dane dodatkowe</string>
+    <string name="select_all_addl_data">Zaznacz wszystko: dane dodatkowe</string>
+    <string name="additional_data">Dane dodatkowe</string>
 </resources>
