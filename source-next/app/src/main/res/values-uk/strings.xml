@@ -476,4 +476,7 @@
     <string name="worker_update_apps_storage_info">Оновлення інформації про сховище програм</string>
     <string name="worker_update_other_info">Оновлення іншої інформації</string>
     <string name="no_permissions">Без дозволів</string>
+    <string name="select_all_addl_data">Вибрати все: Додаткові дані</string>
+    <string name="unselect_all_addl_data">Зняти вибір: Додаткові дані</string>
+    <string name="additional_data">Додаткові дані</string>
 </resources>
