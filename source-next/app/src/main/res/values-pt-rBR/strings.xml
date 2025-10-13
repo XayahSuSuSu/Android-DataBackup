@@ -476,4 +476,7 @@
     <string name="worker_update_other_info">Atualizando outras informações</string>
     <string name="auto_screen_off_desc">Desligue a tela automaticamente durante o backup ou restauração e ligue-a novamente após a conclusão</string>
     <string name="no_permissions">Sem permissões</string>
+    <string name="select_all_addl_data">Selecionar tudo: Dados adicionais</string>
+    <string name="unselect_all_addl_data">Desmarcar tudo: Dados adicionais</string>
+    <string name="additional_data">Dados adicionais</string>
 </resources>
