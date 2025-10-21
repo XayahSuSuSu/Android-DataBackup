@@ -341,4 +341,25 @@
     <string name="args_files_backed_up">%1$s fayl zaxiralandi</string>
     <string name="guest">Mehmon</string>
     <string name="_import">Import</string>
+    <string name="update_time">Yangilash vaqti</string>
+    <string name="args_apps_restored">%1$s ilova tiklandi</string>
+    <string name="insecure_server_connection">No xavfsiz server ulanishiga ruxsat bering</string>
+    <string name="insecure_server_connection_desc">Self-signed sertifikatdan foydalanayotganingizda ushbu parametrni yoqing</string>
+    <string name="auto_screen_off_desc">Zaxiralash yoki tiklash vaqtida ekranni avtomatik ravishda o\'chiring, so\'ngra uni tugatgandan so\'ng yoqing</string>
+    <string name="args_files_restored">%1$s fayl tiklandi</string>
+    <string name="no_item_selected">Hech qanday element tanlanmagan</string>
+    <string name="apk_selected">APK tanlandi</string>
+    <string name="data_selected">Kun tanlandi</string>
+    <string name="all_selected">Barchasi tanlandi</string>
+    <string name="custom_selected">Bazi elementlar tanlandi</string>
+    <string name="data_items">Ma\'lumotlar elementlari</string>
+    <string name="unselect_all">Barchasini bekor qilish</string>
+    <string name="reverse_selection">Teskari tanlash</string>
+    <string name="for_selected">Tanlanganlar uchun…</string>
+    <string name="block">Bloklash</string>
+    <string name="unblock">Blokdan chiqarish</string>
+    <string name="detailed_data_items">Batafsil ma\'lumotlar elementlari</string>
+    <string name="refresh">Yamgilash</string>
+    <string name="initializing_app_list">Ilovalar roʻyxati ishga tushirilmoqda</string>
+    <string name="updating_app_list">Ilovalar roʻyxati yangilanmoqda</string>
 </resources>
