@@ -1,3 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="welcome_to_use">Welkom bij DataBackup</string>
+    <string name="start">Begin</string>
+    <string name="app_name">DataBackup</string>
 </resources>
