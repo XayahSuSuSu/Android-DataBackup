@@ -459,4 +459,6 @@
     <string name="contacts">Контакты</string>
     <string name="call_logs">Журналы вызовов</string>
     <string name="messages">Сообщения</string>
+    <string name="auto_screen_off_desc">Автоматическое отключение экрана при создании или восстановления бекапов, и включение после завершения</string>
+    <string name="new_backup">Новый бэкап</string>
 </resources>
