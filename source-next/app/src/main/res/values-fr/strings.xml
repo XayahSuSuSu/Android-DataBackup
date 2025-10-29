@@ -468,4 +468,12 @@
     <string name="clean_backup">Nettoyer la sauvegarde</string>
     <string name="clean_backup_desc">Nettoyer toutes les précédentes sauvegardes de la sauvegarde sélectionnée avant de sauver</string>
     <string name="target">Cible</string>
+    <string name="contact_permission_desc">Cette authorisation est nécessaire pour sauvegarder/restaurer les contacts</string>
+    <string name="call_log_permission_desc">Cette authorisation est nécessaire pour sauvegarder/restaurer les journaux d\'appel</string>
+    <string name="message_permission_desc">Cette authorisation est nécessaire pour sauvegarder/restaurer les messages</string>
+    <string name="skip">Passer</string>
+    <string name="worker_update_apps_basic_info">Mise à jour des informations basiques des applications</string>
+    <string name="worker_update_apps_storage_info">Mise à jour des informations de stockage</string>
+    <string name="worker_update_other_info">Mise à jour des autres informations</string>
+    <string name="no_permissions">Pas d\'authorisation</string>
 </resources>
