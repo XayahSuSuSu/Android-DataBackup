@@ -27,7 +27,7 @@
     <string name="app_name">Datensicherung</string>
     <string name="welcome_to_use">Willkommen zur Datensicherung</string>
     <string name="environment_detection">Umgebungserkennung</string>
-    <string name="start">Start</string>
+    <string name="start">Fang an</string>
     <string name="network">Netzwerk</string>
     <string name="application_desc">Informationen zum Applikationspaket erhalten, die zum Generieren einer Sicherungsliste und zur Bestimmung der Größe der Applikationsdaten genutzt werden</string>
     <string name="unsupported_format">Format wird nicht unterstützt</string>
@@ -66,8 +66,8 @@
     <string name="confirm_delete_selected_restoring_items">Ausgewählte Elemente aus der Datenbank und den lokalen Dateien löschen?</string>
     <string name="supported_format">Unterstütztes Format</string>
     <string name="confirm_delete">Dadurch werden alle von Ihnen ausgewählten zugehörigen Dateien gelöscht</string>
-    <string name="media_target_path_missing">Der Zielordner fehlt. Bitte legen Sie ihn manuell fest.</string>
-    <string name="media_set_path">Pfad festlegen</string>
+    <string name="media_target_path_missing">Der Zielordner fehlt. Bitte lege ihn manuell fest.</string>
+    <string name="media_set_path">Lege den Pfad fest</string>
     <string name="restore_completed">Wiederherstellung abgeschlossen</string>
     <string name="update_available">Aktualisierung verfügbar</string>
     <string name="account">Konto</string>
@@ -136,7 +136,7 @@
     <string name="backed_up_files">Gesicherte Dateien</string>
     <string name="anonymous">Anonym</string>
     <string name="protect">Schützen</string>
-    <string name="update_records">Datensätze aktualisieren</string>
+    <string name="update_records">Aktualisierungsprotokolle</string>
     <string name="utilities">Dienstprogramme</string>
     <string name="both">Beide</string>
     <string name="manifest">manifest</string>
