@@ -475,4 +475,8 @@
     <string name="worker_update_apps_basic_info">Aktualiziranje osnovnih informacija o aplikacijama</string>
     <string name="worker_update_apps_storage_info">Aktualiziranje informacija o spremištu aplikacija</string>
     <string name="worker_update_other_info">Aktualiziranje drugih informacija</string>
+    <string name="select_all_addl_data">Odaberi sve: Dodatni podaci</string>
+    <string name="unselect_all_addl_data">Odznači sve: Dodatni podaci</string>
+    <string name="additional_data">Dodatni podaci</string>
+    <string name="no_permissions">Nema dozvola</string>
 </resources>
