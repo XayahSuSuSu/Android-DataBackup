@@ -479,4 +479,6 @@
     <string name="unselect_all_addl_data">Odznacz wszystko: dane dodatkowe</string>
     <string name="select_all_addl_data">Zaznacz wszystko: dane dodatkowe</string>
     <string name="additional_data">Dane dodatkowe</string>
+    <string name="error_no_space_left_desc">Brak miejsca na urządzeniu. Przed wykonaniem tej operacji upewnij się, że na urządzeniu jest wystarczająco dużo wolnego miejsca</string>
+    <string name="prompt_cancel_operation">Przerwać trwającą operację?</string>
 </resources>
