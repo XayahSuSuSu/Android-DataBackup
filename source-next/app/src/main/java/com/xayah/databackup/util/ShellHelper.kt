@@ -51,7 +51,8 @@ object ShellHelper {
             args.add("|")
             args.add("xargs")
             args.add("kill")
-            Shell.cmd(args.joinToString(separator = " ")).exec()
+            shell.newJob().to(null, null).add(args.joinToString(separator = " ")).exec()
+            shell.close()
         } else {
             LogHelper.e(TAG, "kill", "Failed to get a new shell!")
         }
@@ -59,5 +60,15 @@ object ShellHelper {
 
     suspend fun killRootService() {
         kill(App.application, "${App.application.packageName}:root")
+    }
+
+    suspend fun rm(path: String) {
+        val shell = getNewShell(App.application)
+        if (shell != null) {
+            shell.newJob().to(null, null).add("rm $path").exec()
+            shell.close()
+        } else {
+            LogHelper.e(TAG, "rm", "Failed to get a new shell!")
+        }
     }
 }

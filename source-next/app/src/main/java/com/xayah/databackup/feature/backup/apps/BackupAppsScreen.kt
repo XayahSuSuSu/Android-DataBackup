@@ -5,7 +5,6 @@ import android.content.pm.UserInfo
 import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.graphics.res.animatedVectorResource
 import androidx.compose.animation.graphics.res.rememberAnimatedVectorPainter
@@ -73,6 +72,7 @@ import coil3.request.crossfade
 import com.xayah.databackup.R
 import com.xayah.databackup.database.entity.App
 import com.xayah.databackup.rootservice.RemoteRootService
+import com.xayah.databackup.ui.component.FadeVisibility
 import com.xayah.databackup.ui.component.FilterButton
 import com.xayah.databackup.ui.component.SearchTextField
 import com.xayah.databackup.ui.component.SelectableChip
@@ -498,7 +498,7 @@ fun AppListItem(
                     val storage by remember(app.selectedBytes, app.totalBytes) {
                         mutableStateOf("${app.selectedBytes.formatToStorageSize} / ${app.totalBytes.formatToStorageSize}")
                     }
-                    AnimatedVisibility(visible = app.totalBytes != 0L) {
+                    FadeVisibility(visible = app.totalBytes != 0L) {
                         Text(
                             text = storage,
                             maxLines = 1,
@@ -525,7 +525,7 @@ fun AppListItem(
                     onClick = { viewModel.selectAll(app.packageName, app.userId, app.toggleableState) }
                 )
             }
-            AnimatedVisibility(expanded) {
+            FadeVisibility(expanded) {
                 Row(
                     modifier = Modifier
                         .horizontalScroll(rememberScrollState())

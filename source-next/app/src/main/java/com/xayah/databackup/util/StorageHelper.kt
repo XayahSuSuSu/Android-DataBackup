@@ -26,3 +26,24 @@ val Long.formatToStorageSize: String
         }
         return if (size == 0F) "0.00 $unit" else "${DecimalFormat("#.00").format(size)} $unit"
     }
+
+val Long.formatToStorageSizePerSecond: String
+    get() {
+        var unit = "Bytes/S"
+        var size = this.toFloat()
+        val gb = UNIT.pow(3)
+        val mb = UNIT.pow(2)
+        val kb = UNIT
+        if (this > gb) {
+            size = this / gb
+            unit = "GB/S"
+        } else if (this > mb) {
+            size = this / mb
+            unit = "MB/S"
+        } else if (this > kb) {
+            size = this / kb
+            unit = "KB/S"
+        }
+        return if (size == 0F) "0.00 $unit" else "${DecimalFormat("#.00").format(size)} $unit"
+    }
+

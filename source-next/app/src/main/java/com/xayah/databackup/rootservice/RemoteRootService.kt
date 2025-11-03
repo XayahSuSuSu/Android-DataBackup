@@ -94,6 +94,7 @@ object RemoteRootService {
     private val mServiceIntent by lazy { Intent().apply { component = ComponentName(App.application.packageName, Service::class.java.name) } }
     private var mRetries = 0
     private var mOnErrorEvent: (() -> Unit)? = null
+    private var mOnNoSpaceLeftEvent: (() -> Unit)? = null
 
     class Service : RootService() {
         init {
@@ -261,13 +262,18 @@ object RemoteRootService {
             return sourceDirList
         }
 
-        override fun compress(level: Int, inputPath: String, outputPath: String): String? {
+        override fun compress(level: Int, inputPath: String, outputPath: String, callback: ICallback?): String? {
             runCatching {
                 FileInputStream(inputPath).use { fileInputStream ->
                     FileOutputStream(outputPath).use { fileOutputStream ->
-                        ZstdOutputStream(fileOutputStream, level).use { zstdOutputStream ->
-                            zstdOutputStream.setWorkers(Runtime.getRuntime().availableProcessors())
-                            fileInputStream.copyTo(zstdOutputStream)
+                        CountingOutputStream(
+                            source = fileOutputStream,
+                            onProgress = if (callback != null) { bytesWritten, speed -> callback.onProgress(bytesWritten, speed) } else null
+                        ).use { countingOutputStream ->
+                            ZstdOutputStream(countingOutputStream, level).use { zstdOutputStream ->
+                                zstdOutputStream.setWorkers(Runtime.getRuntime().availableProcessors())
+                                fileInputStream.copyTo(zstdOutputStream)
+                            }
                         }
                     }
                 }
@@ -284,6 +290,10 @@ object RemoteRootService {
 
         override fun exists(path: String): Boolean {
             return runCatching { File(path).exists() }.getOrNull() ?: false
+        }
+
+        override fun deleteRecursively(path: String): Boolean {
+            return runCatching { File(path).deleteRecursively() }.getOrNull() ?: false
         }
     }
 
@@ -379,6 +389,20 @@ object RemoteRootService {
         mOnErrorEvent = block
     }
 
+    fun setOnNoSpaceLeftEvent(block: () -> Unit) {
+        mOnNoSpaceLeftEvent = block
+    }
+
+    /**
+     * Check ENOSPC in exception message
+     */
+    fun checkENOSPC(msg: String) {
+        if (msg.contains("ENOSPC")) {
+            // ENOSPC (No space left on device)
+            mOnNoSpaceLeftEvent?.invoke()
+        }
+    }
+
     suspend fun checkService(): Boolean {
         mRetries = 0
         return getService() != null
@@ -450,7 +474,6 @@ object RemoteRootService {
         )
     }
 
-
     suspend fun calculateTreeSize(path: String): Long {
         return getService()?.calculateTreeSize(path) ?: 0
     }
@@ -463,8 +486,8 @@ object RemoteRootService {
         return getService()?.getPackageSourceDir(packageName, userId) ?: listOf()
     }
 
-    suspend fun compress(level: Int, inputPath: String, outputPath: String): String? {
-        return getService()?.compress(level, inputPath, outputPath)
+    suspend fun compress(level: Int, inputPath: String, outputPath: String, callback: ICallback?): String? {
+        return getService()?.compress(level, inputPath, outputPath, callback)
     }
 
     suspend fun mkdirs(path: String): Boolean {
@@ -473,5 +496,9 @@ object RemoteRootService {
 
     suspend fun exists(path: String): Boolean {
         return getService()?.exists(path) ?: false
+    }
+
+    suspend fun deleteRecursively(path: String): Boolean {
+        return getService()?.deleteRecursively(path) ?: false
     }
 }

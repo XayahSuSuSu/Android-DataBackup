@@ -1,9 +1,6 @@
 package com.xayah.databackup.ui.component
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -142,11 +139,9 @@ fun SmallCheckActionButton(
         subtitle = subtitle,
         subtitleShimmer = subtitleShimmer,
         action = {
-            AnimatedVisibility(
+            FadeVisibility(
                 modifier = Modifier.align(Alignment.TopEnd),
                 visible = checkBoxVisible,
-                enter = fadeIn(),
-                exit = fadeOut()
             ) {
                 Checkbox(
                     modifier = Modifier.size(48.dp),

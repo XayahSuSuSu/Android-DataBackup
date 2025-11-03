@@ -82,7 +82,7 @@ fun PermissionCard(
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
-            androidx.compose.animation.AnimatedVisibility(state == CardState.Waiting) {
+            FadeVisibility(state == CardState.Waiting) {
                 LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth(),
                     strokeCap = StrokeCap.Round,

@@ -92,6 +92,16 @@ fun ErrorServiceDialog(onConfirm: () -> Unit, onRetry: () -> Unit) {
     )
 }
 
+@Composable
+fun NoSpaceLeftDialog(onDismissRequest: () -> Unit) {
+    AlertDialog(
+        icon = { Icon(imageVector = ImageVector.vectorResource(R.drawable.ic_circle_x), contentDescription = stringResource(R.string.error)) },
+        title = { Text(text = stringResource(R.string.error)) },
+        text = { Text(text = stringResource(R.string.error_no_space_left_desc)) },
+        onDismissRequest = onDismissRequest,
+        confirmButton = { TextButton(onClick = onDismissRequest) { Text(text = stringResource(R.string.confirm)) } },
+    )
+}
 
 class MainActivity : ComponentActivity() {
     companion object {
@@ -117,7 +127,10 @@ class MainActivity : ComponentActivity() {
             runCatching {
                 runBlocking { ShellHelper.initMainShell(context = App.application) }
             }.onFailure { LogHelper.e(TAG, "onCreate", "Failed to init main shell.", it) }
-            if (Shell.getShell().isRoot.not()) {
+            val isRoot = runCatching {
+                Shell.getShell().isRoot
+            }.getOrNull() ?: false
+            if (isRoot.not()) {
                 // Permissions are denied
                 startActivity(Intent(this, SetupActivity::class.java).putExtra(NoPermKey, true))
                 finish()
@@ -137,6 +150,12 @@ class MainActivity : ComponentActivity() {
 
                 if (uiState.showErrorServiceDialog) {
                     ErrorServiceDialog(onConfirm = { ProcessHelper.killSelf(this) }, onRetry = { mMainViewModel.checkRootService() })
+                }
+
+                if (uiState.showNoSpaceLeftDialog) {
+                    NoSpaceLeftDialog {
+                        mMainViewModel.dismissNoSpaceLeftDialog()
+                    }
                 }
 
                 Surface {

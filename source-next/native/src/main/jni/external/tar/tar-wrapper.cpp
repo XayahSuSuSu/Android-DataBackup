@@ -11,6 +11,7 @@
 #include <fstream>
 #include <asm-generic/fcntl.h>
 #include <fcntl.h>
+#include <sys/prctl.h>
 
 #define LOG_TAG "Tar-Wrapper"
 #define ALOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
@@ -48,6 +49,13 @@ Java_com_xayah_libnative_TarWrapper_callCli(JNIEnv *env, jobject, jstring std_ou
 
     pid_t pid = fork();
     if (pid == 0) {
+        // Set the parent death signal to SIGTERM: if the parent process exits,
+        // the kernel will send SIGTERM to this process.
+        prctl(PR_SET_PDEATHSIG, SIGTERM);
+        if (getppid() == 1) {
+            _exit(SIGTERM);
+        }
+
         // Redirect STDOUT/STDERR
         dup2(out_fd, STDOUT_FILENO);
         dup2(err_fd, STDERR_FILENO);

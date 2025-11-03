@@ -109,6 +109,10 @@ dependencies {
 
     // Accompanist permissions
     implementation(libs.accompanist.permissions)
+
+    // Arrow optics
+    implementation(libs.arrow.optics)
+    ksp(libs.arrow.optics.ksp.plugin)
 }
 
 kotlin {

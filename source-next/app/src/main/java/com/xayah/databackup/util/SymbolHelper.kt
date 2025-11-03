@@ -6,4 +6,5 @@ object SymbolHelper {
     const val QUOTE = '"'
     const val LF = '\n'
     const val DOT = '•'
+    const val PERCENT = '%'
 }

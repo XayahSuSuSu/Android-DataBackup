@@ -4,6 +4,7 @@ activityCompose = "1.10.1"
 agp = "8.11.0"
 animationGraphics = "1.8.3"
 appcompat = "1.7.1"
+arrowOptics = "2.1.2"
 coilCompose = "3.2.0"
 composeBom = "2025.08.01" # https://developer.android.com/develop/ui/compose/bom/bom-mapping
 coreKtx = "1.16.0"
@@ -18,7 +19,7 @@ kotlin-ksp = "2.2.0-2.0.2" # https://github.com/google/ksp/releases
 kotlinxSerializationJson = "1.9.0"
 libsu = "6.0.0"
 lifecycleRuntimeKtx = "2.9.1"
-material3 = "1.5.0-alpha04"
+material3 = "1.5.0-alpha07"
 moshi = "1.15.2"
 navigationCompose = "2.9.0"
 refine = "4.4.0"
@@ -58,6 +59,8 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
+arrow-optics = { module = "io.arrow-kt:arrow-optics", version.ref = "arrowOptics" }
+arrow-optics-ksp-plugin = { module = "io.arrow-kt:arrow-optics-ksp-plugin", version.ref = "arrowOptics" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinAndroidxCompose" }

@@ -479,4 +479,6 @@
     <string name="worker_update_apps_storage_info">正在更新应用内存信息</string>
     <string name="worker_update_other_info">正在更新其余信息</string>
     <string name="no_permissions">无权限</string>
+    <string name="error_no_space_left_desc">设备空间不足，请确保您的设备在执行此操作前有足够的可用空间</string>
+    <string name="prompt_cancel_operation">是否中断正在进行的操作？</string>
 </resources>

@@ -10,7 +10,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 data class UiState(
-    val showErrorServiceDialog: Boolean = false
+    val showErrorServiceDialog: Boolean = false,
+    val showNoSpaceLeftDialog: Boolean = false,
 )
 
 class MainViewModel : BaseViewModel() {
@@ -28,12 +29,23 @@ class MainViewModel : BaseViewModel() {
                     currentState.copy(showErrorServiceDialog = true)
                 }
             }
+            RemoteRootService.setOnNoSpaceLeftEvent {
+                _uiState.update { currentState ->
+                    currentState.copy(showNoSpaceLeftDialog = true)
+                }
+            }
             if (RemoteRootService.checkService()) {
                 _uiState.update { currentState ->
                     currentState.copy(showErrorServiceDialog = false)
                 }
                 onBind?.invoke()
             }
+        }
+    }
+
+    fun dismissNoSpaceLeftDialog() {
+        _uiState.update { currentState ->
+            currentState.copy(showNoSpaceLeftDialog = false)
         }
     }
 

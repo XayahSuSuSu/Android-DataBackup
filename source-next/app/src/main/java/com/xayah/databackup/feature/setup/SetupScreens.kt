@@ -2,7 +2,6 @@ package com.xayah.databackup.feature.setup
 
 import android.app.Activity
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +46,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.xayah.databackup.R
+import com.xayah.databackup.ui.component.FadeVisibility
 import com.xayah.databackup.ui.component.OnResume
 import com.xayah.databackup.ui.component.PermissionCard
 import com.xayah.databackup.ui.component.rememberCallLogPermissionsState
@@ -377,7 +377,7 @@ fun PermissionsScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                AnimatedVisibility(visible = viewModel.misRequiredGranted && viewModel.misAllGranted.not()) {
+                FadeVisibility(visible = viewModel.misRequiredGranted && viewModel.misAllGranted.not()) {
                     TextButton(
                         enabled = permissions.enableBackBtn,
                         modifier = Modifier

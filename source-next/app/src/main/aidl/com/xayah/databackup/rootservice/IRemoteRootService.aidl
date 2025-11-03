@@ -3,6 +3,7 @@ package com.xayah.databackup.rootservice;
 import com.xayah.databackup.parcelables.BytesParcelable;
 import com.xayah.databackup.parcelables.StatFsParcelable;
 import com.xayah.databackup.parcelables.FilePathParcelable;
+import com.xayah.databackup.rootservice.ICallback;
 
 interface IRemoteRootService {
     void testConnection();
@@ -18,7 +19,8 @@ interface IRemoteRootService {
     long calculateTreeSize(String path);
     int callTarCli(String stdOut, String stdErr, in String[] argv);
     List<String> getPackageSourceDir(String packageName, int userId);
-    String compress(int level, String inputPath, String outputPath);
+    String compress(int level, String inputPath, String outputPath, ICallback callback);
     boolean mkdirs(String path);
     boolean exists(String path);
+    boolean deleteRecursively(String path);
 }

@@ -87,7 +87,7 @@ open class BackupSetupViewModel(
     ) { selected, files ->
         TargetItem(
             selected = selected,
-            selections = files.count { it.selected } to files.size
+            selections = files.count { false } to files.size
         )
     }.stateIn(
         scope = viewModelScope,
