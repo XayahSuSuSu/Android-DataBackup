@@ -479,4 +479,6 @@
     <string name="unselect_all_addl_data">Odznači sve: Dodatni podaci</string>
     <string name="additional_data">Dodatni podaci</string>
     <string name="no_permissions">Nema dozvola</string>
+    <string name="prompt_cancel_operation">Prekinuti tekuću operaciju?</string>
+    <string name="error_no_space_left_desc">Nema više memorije na uređaju. Prije ove operacije provjeri je li tvoj uređaj ima dovoljno memorije</string>
 </resources>
