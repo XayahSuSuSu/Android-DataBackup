@@ -479,4 +479,6 @@
     <string name="select_all_addl_data">Вибрати все: Додаткові дані</string>
     <string name="unselect_all_addl_data">Зняти вибір: Додаткові дані</string>
     <string name="additional_data">Додаткові дані</string>
+    <string name="error_no_space_left_desc">На пристрої не залишилося місця. Будь ласка, переконайтеся, що на вашому пристрої достатньо вільного місця, перш ніж виконувати цю операцію</string>
+    <string name="prompt_cancel_operation">Перервати поточну операцію?</string>
 </resources>
