@@ -458,4 +458,17 @@
     <string name="contacts">Kontakte</string>
     <string name="call_logs">Anrufprotokolle</string>
     <string name="messages">Nachrichten</string>
+    <string name="auto_screen_off_desc">Schaltet den Bildschirm während der Daten­sicherung oder -wieder­herstellung automatisch aus und nach Abschluss des Vorgangs wieder ein.</string>
+    <string name="select_all_addl_data">Alles auswählen: Zusätzliche Daten</string>
+    <string name="unselect_all_addl_data">Alles abwählen: Zusätzliche Daten</string>
+    <string name="additional_data">Zusätzliche Daten</string>
+    <string name="backup_your_data">Daten sichern</string>
+    <string name="restore_your_data">Daten wiederherstellen</string>
+    <string name="see_your_previous_backups">Bisherige Sicherungen anzeigen</string>
+    <string name="schedule">Planen</string>
+    <string name="other">Andere</string>
+    <string name="time_format_pattern">MMM dd, HH:mm</string>
+    <string name="incremental_backup_desc">Inkrementelles Archiv mit zusätzlichen Metadaten in eigenständiger Datei verarbeiten</string>
+    <string name="clean_backup">Saubere Datensicherung</string>
+    <string name="clean_backup_desc">Vorherige Sicherungen des ausgewählten Elements vor der Datensicherung löschen</string>
 </resources>
