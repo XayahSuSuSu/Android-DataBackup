@@ -352,4 +352,8 @@
     <string name="all_selected">Sve stavke odabrane</string>
     <string name="custom_selected">Specifične stavke odabrane</string>
     <string name="data_items">Stavke s podacima</string>
+    <string name="auto_screen_off_desc">Automatski isključi ekran tokom sigurnosnog kopiranja ili obnavljanja, a nakon završetka ga ponovo uključi</string>
+    <string name="unselect_all">Odznači sve</string>
+    <string name="reverse_selection">Obrni odabir</string>
+    <string name="for_selected">Za odabrane …</string>
 </resources>
