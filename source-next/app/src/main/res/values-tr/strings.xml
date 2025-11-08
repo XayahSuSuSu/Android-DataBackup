@@ -421,8 +421,8 @@
     <string name="select_all_apk">Hepsini seç: APK</string>
     <string name="select_all_data">Hepsini seç: Data</string>
     <string name="custom_selection">Özel Seçim</string>
-    <string name="select_all_int_data">Tümünü Seç:</string>
-    <string name="select_all_ext_data">Tümünü Seç:</string>
+    <string name="select_all_int_data">Tümünü seç: Int. Veriler</string>
+    <string name="select_all_ext_data">Tümünü seç: Ekstra Veriler</string>
     <string name="unselect_all_apk">Tüm Seçimi Kaldırın: APK</string>
     <string name="unselect_all_data">Tüm Seçimi Kaldırın: Data</string>
     <string name="unselect_all_int_data">Tüm Seçimi Kaldırın: Int. Data</string>
@@ -436,4 +436,5 @@
     <string name="hide_password">Şifreyi Göster</string>
     <string name="public_network">Genel Ağ</string>
     <string name="hidden_password">Gizli Şifre</string>
+    <string name="auto_screen_off_desc">Yedekleme veya geri yükleme sırasında ekranı otomatik olarak kapatın, ardından işlem tamamlandıktan sonra açın.</string>
 </resources>
