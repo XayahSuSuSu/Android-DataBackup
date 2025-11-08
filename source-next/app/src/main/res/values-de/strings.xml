@@ -471,4 +471,6 @@
     <string name="incremental_backup_desc">Inkrementelles Archiv mit zusätzlichen Metadaten in eigenständiger Datei verarbeiten</string>
     <string name="clean_backup">Saubere Datensicherung</string>
     <string name="clean_backup_desc">Vorherige Sicherungen des ausgewählten Elements vor der Datensicherung löschen</string>
+    <string name="skip">Überspringen</string>
+    <string name="no_permissions">Keine Berechtigungen</string>
 </resources>
