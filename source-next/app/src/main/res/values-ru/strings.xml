@@ -234,7 +234,7 @@
     <string name="backup_apps">Бекап приложений</string>
     <string name="backup_contacts">Бекап контактов</string>
     <string name="confirm_delete">Это удалит все выбранные вами файлы</string>
-    <string name="storage">Хрaнилище</string>
+    <string name="storage">Хранение</string>
     <string name="restore_user_desc">Какого пользователя вы хотите восстановить?</string>
     <string name="quick_actions">Быстрые действия</string>
     <string name="backup_files">Бекап файлов</string>
@@ -461,4 +461,24 @@
     <string name="messages">Сообщения</string>
     <string name="auto_screen_off_desc">Автоматическое отключение экрана при создании или восстановления бекапов, и включение после завершения</string>
     <string name="new_backup">Новый бэкап</string>
+    <string name="select_all_addl_data">Выбрать все: Дополнительные данные</string>
+    <string name="unselect_all_addl_data">Снять выбор: Дополнительные данные</string>
+    <string name="additional_data">Дополнительные данные</string>
+    <string name="not_set_up">Не настроено</string>
+    <string name="time_format_pattern">МММ дд, ГГ:хх</string>
+    <string name="incremental_backup">Инкрементное резервное копирование</string>
+    <string name="incremental_backup_desc">Работать с инкрементным архивом с дополнительными метаданными, хранящимися в отдельном файле</string>
+    <string name="clean_backup">Очистить резервные копии</string>
+    <string name="clean_backup_desc">Очистить все предыдущие резервные копии выбранного элемента резервного копирования перед резервным копированием</string>
+    <string name="target">Цель</string>
+    <string name="contact_permission_desc">Это разрешение необходимо для резервного копирования/восстановления контактов</string>
+    <string name="call_log_permission_desc">Это разрешение необходимо для резервного копирования/восстановления журналов вызовов</string>
+    <string name="message_permission_desc">Это разрешение необходимо для резервного копирования/восстановления сообщений</string>
+    <string name="skip">Пропустить</string>
+    <string name="worker_update_apps_basic_info">Обновление основной информации о приложениях</string>
+    <string name="worker_update_apps_storage_info">Обновление информации о хранении приложений</string>
+    <string name="worker_update_other_info">Обновление другой информации</string>
+    <string name="no_permissions">Нет разрешений</string>
+    <string name="error_no_space_left_desc">На устройстве нет свободного места. Перед выполнением этой операции убедитесь, что на вашем устройстве достаточно свободного места</string>
+    <string name="prompt_cancel_operation">Прервать текущую операцию?</string>
 </resources>
