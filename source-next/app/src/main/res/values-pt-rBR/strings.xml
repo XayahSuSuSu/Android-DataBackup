@@ -479,4 +479,6 @@
     <string name="select_all_addl_data">Selecionar tudo: Dados adicionais</string>
     <string name="unselect_all_addl_data">Desmarcar tudo: Dados adicionais</string>
     <string name="additional_data">Dados adicionais</string>
+    <string name="error_no_space_left_desc">Não há espaço no dispositivo. Certifique-se de que o dispositivo tenha espaço livre suficiente antes desta operação</string>
+    <string name="prompt_cancel_operation">Interrompeu a operação em curso?</string>
 </resources>
