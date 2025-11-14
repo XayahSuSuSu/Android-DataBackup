@@ -478,7 +478,7 @@
     <string name="unselect_all_addl_data">Deseleccionar todo: Addl. Data</string>
     <string name="mms">MMS</string>
     <string name="incremental_backup_desc">Operar sobre un archivo incremental con metadatos adicionales almacenados en un archivo independiente</string>
-    <string name="clean_backup_desc">Elimine todas las copias de seguridad anteriores del elemento de copia de seguridad seleccionado antes de realizar la copia de seguridad</string>
-    <string name="error_no_space_left_desc">No hay espacio disponible en el dispositivo. Asegúrese de que su dispositivo tenga suficiente espacio libre antes de esta operación</string>
+    <string name="clean_backup_desc">Elimina todas las copias de seguridad anteriores del elemento de copia seleccionado antes de hacer una nueva</string>
+    <string name="error_no_space_left_desc">El almacenamiento del dispositivo está lleno. Asegúrate de que tenga suficiente espacio libre antes de realizar la operación</string>
     <string name="prompt_cancel_operation">¿Interrumpir la operación en curso?</string>
 </resources>
