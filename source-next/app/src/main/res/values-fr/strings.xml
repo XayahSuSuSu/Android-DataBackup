@@ -442,7 +442,7 @@
     <string name="items_selected">%1$s/%2$s objets sélectionnés</string>
     <string name="select_contacts">Sélectionner les contacts</string>
     <string name="select_call_logs">Sélectionner les journaux d\'appels</string>
-    <string name="auto_screen_off_desc">"Eteindre automatiquement l\'écran lors de la  récupération ou restauration, puis le réactiver après finalisation du traitement"</string>
+    <string name="auto_screen_off_desc">Eteindre automatiquement l\'écran lors de la récupération ou restauration, puis le réactiver après finalisation du traitement</string>
     <string name="sms">SMS</string>
     <string name="mms">MMS</string>
     <string name="select_messages">Sélectionner les messages</string>
