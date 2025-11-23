@@ -5,4 +5,5 @@
     <string name="update_records">Aktualizovat záznamy</string>
     <string name="environment_detection">Detekce prostředí</string>
     <string name="start">Start</string>
+    <string name="start_subtitle">Podle příslušných zásad je třeba pečlivě přečíst a souhlasit s následujícími smluvními podmínkami a zásadami ochrany osobních údajů před zahájením používání této aplikace</string>
 </resources>
