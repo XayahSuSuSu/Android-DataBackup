@@ -476,4 +476,9 @@
     <string name="no_permissions">Senza autorizzazioni</string>
     <string name="error_no_space_left_desc">Non c\'è più spazio sul dispositivo. Assicurati che il tuo dispositivo abbia spazio libero sufficiente prima di questa operazione</string>
     <string name="prompt_cancel_operation">Interrompere l\'operazione in corso?</string>
+    <string name="select_all_addl_data">Seleziona tutto: Addl. Dati</string>
+    <string name="unselect_all_addl_data">Deseleziona tutto: Addl. Dati</string>
+    <string name="collapsed">Ridotto</string>
+    <string name="additional_data">Addl. Dati</string>
+    <string name="time_format_pattern">dd MMM, HH:mm</string>
 </resources>
