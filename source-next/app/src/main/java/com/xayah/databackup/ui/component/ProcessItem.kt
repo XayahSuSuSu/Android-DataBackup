@@ -59,7 +59,7 @@ fun ProcessItemCard(
     totalCount: Int,
     subtitle: String,
     subtitleShimmer: Boolean,
-    onIconBtnClick: () -> Unit,
+    onIconBtnClick: (() -> Unit)?,
     onClick: () -> Unit
 ) {
     Card(
@@ -125,13 +125,14 @@ fun ProcessItemCard(
                     }
                 }
             }
-            IconButton(onClick = onIconBtnClick) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_badge_info),
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = null
-                )
-            }
+            if (onIconBtnClick != null)
+                IconButton(onClick = onIconBtnClick) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_badge_info),
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = null
+                    )
+                }
         }
     }
 }

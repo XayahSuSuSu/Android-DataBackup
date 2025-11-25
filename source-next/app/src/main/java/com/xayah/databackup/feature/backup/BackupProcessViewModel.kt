@@ -34,11 +34,7 @@ open class BackupProcessViewModel(private val backupProcessRepo: BackupProcessRe
     val uiState: StateFlow<BackupProcessUiState> = _uiState.asStateFlow()
 
     val appsItem: StateFlow<ProcessItem> = backupProcessRepo.getAppsItem().asStateFlow()
-    val processingAppItem: StateFlow<ProcessAppItem?> = backupProcessRepo.getProcessAppItems().map { it.lastOrNull() }.stateIn(
-        scope = viewModelScope,
-        initialValue = null,
-        started = SharingStarted.WhileSubscribed(5_000),
-    )
+    val allProcessedAppItems = backupProcessRepo.getProcessAppItems().asStateFlow()
 
     val filesItem: StateFlow<ProcessItem> = backupProcessRepo.getFilesItem().asStateFlow()
     val networksItem: StateFlow<ProcessItem> = backupProcessRepo.getNetworksItem().asStateFlow()

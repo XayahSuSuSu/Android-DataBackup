@@ -3,7 +3,9 @@ package com.xayah.databackup.feature.backup
 import android.graphics.drawable.Drawable
 import androidx.activity.compose.BackHandler
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -37,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -47,6 +51,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
@@ -67,6 +72,7 @@ import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
+@Suppress("AssignedValueIsNeverRead")
 fun BackupProcessScreen(
     navController: NavHostController,
     viewModel: BackupProcessViewModel = koinViewModel(),
@@ -348,43 +354,104 @@ private fun AppItemDialog(
             }
         },
         text = {
-            val scrollState = rememberScrollState()
-            Column(
-                modifier = Modifier
-                    .verticalScroll(scrollState)
-                    .verticalFadingEdges(scrollState)
-            ) {
-                AppItemDialogListItem(
-                    enabled = appItem.apkItem.enabled,
-                    icon = ImageVector.vectorResource(R.drawable.ic_resource_package),
-                    name = appItem.apkItem.title,
-                    bytes = appItem.apkItem.subtitle,
-                    msg = appItem.apkItem.msg
+            AppItemDialogItem(appItem)
+        },
+        onDismissRequest = {
+            onDismissRequest()
+        },
+        confirmButton = {
+            TextButton(onClick = { onDismissRequest() }) {
+                Text(text = stringResource(R.string.confirm))
+            }
+        }
+    )
+}
+
+@Composable
+private fun AppCompleteDialog(
+    appItemList: List<ProcessAppItem>,
+    onDismissRequest: () -> Unit,
+) {
+    val context = LocalContext.current
+    AlertDialog(
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                var icon: Drawable? by remember { mutableStateOf(null) }
+                LaunchedEffect(context = Dispatchers.IO, "appCompleteDialog") {
+                    icon = ResourcesCompat.getDrawable(context.resources, R.drawable.ic_layout_grid, context.theme)
+                }
+                AsyncImage(
+                    modifier = Modifier.size(32.dp),
+                    model = ImageRequest.Builder(context)
+                        .data(icon)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = null
                 )
-                HorizontalDivider()
-                AppItemDialogListItem(
-                    enabled = appItem.intDataItem.enabled,
-                    icon = ImageVector.vectorResource(R.drawable.ic_user),
-                    name = appItem.intDataItem.title,
-                    bytes = appItem.intDataItem.subtitle,
-                    msg = appItem.intDataItem.msg
-                )
-                HorizontalDivider()
-                AppItemDialogListItem(
-                    enabled = appItem.extDataItem.enabled,
-                    icon = ImageVector.vectorResource(R.drawable.ic_database),
-                    name = appItem.extDataItem.title,
-                    bytes = appItem.extDataItem.subtitle,
-                    msg = appItem.extDataItem.msg
-                )
-                HorizontalDivider()
-                AppItemDialogListItem(
-                    enabled = appItem.addlDataItem.enabled,
-                    icon = ImageVector.vectorResource(R.drawable.ic_gamepad_2),
-                    name = appItem.addlDataItem.title,
-                    bytes = appItem.addlDataItem.subtitle,
-                    msg = appItem.addlDataItem.msg
-                )
+
+                Text(text = stringResource(R.string.apps))
+            }
+        },
+        text = {
+            val collapsedState = remember(appItemList) { appItemList.map { true }.toMutableStateList() }
+
+            LazyColumn(Modifier) {
+                appItemList.forEachIndexed { i, item ->
+                    val collapsed = collapsedState[i]
+                    item(key = "header_$i") {
+                        var appIcon: Drawable? by remember { mutableStateOf(null) }
+                        LaunchedEffect(context = Dispatchers.IO, item.packageName) {
+                            appIcon = runCatching { context.packageManager.getApplicationIcon(item.packageName) }.getOrNull()
+                            if (appIcon == null) {
+                                appIcon = AppCompatResources.getDrawable(context, android.R.drawable.sym_def_app_icon)
+                            }
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .clickable {
+                                    val expandedIndex = collapsedState.indexOfFirst { !it }
+                                    if (expandedIndex >= 0) collapsedState[expandedIndex] = true
+
+                                    collapsedState[i] = !collapsed
+                                }
+                        ) {
+                            Icon(
+                                ImageVector.vectorResource(
+                                    if (collapsed)
+                                    R.drawable.ic_chevron_right
+                                else
+                                    R.drawable.ic_chevron_down
+                                ),
+                                contentDescription = null,
+                            )
+                            AsyncImage(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .padding(start = 8.dp, end = 8.dp),
+                                model = ImageRequest.Builder(context)
+                                    .data(appIcon)
+                                    .crossfade(true)
+                                    .build(),
+                                contentDescription = null
+                            )
+                            Text(
+                                item.label,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier
+                                    .padding(vertical = 10.dp)
+                                    .weight(1f)
+                            )
+                        }
+                    }
+
+                    item("content_$i") {
+                        AnimatedVisibility(!collapsed) {
+                            AppItemDialogItem(item, false)
+                        }
+                    }
+                }
             }
         },
         onDismissRequest = {
@@ -399,15 +466,72 @@ private fun AppItemDialog(
 }
 
 @Composable
+private fun AppItemDialogItem(
+    appItem: ProcessAppItem,
+    scrollable: Boolean = true,
+) {
+    var modifier: Modifier = Modifier
+    if (scrollable) {
+        val scrollState = rememberScrollState()
+        modifier = Modifier
+            .verticalScroll(scrollState)
+            .verticalFadingEdges(scrollState)
+    }
+
+    Column(
+        modifier = modifier
+    ) {
+        AppItemDialogListItem(
+            enabled = appItem.apkItem.enabled,
+            icon = ImageVector.vectorResource(R.drawable.ic_resource_package),
+            name = appItem.apkItem.title,
+            bytes = appItem.apkItem.subtitle,
+            msg = appItem.apkItem.msg
+        )
+        HorizontalDivider()
+        AppItemDialogListItem(
+            enabled = appItem.intDataItem.enabled,
+            icon = ImageVector.vectorResource(R.drawable.ic_user),
+            name = appItem.intDataItem.title,
+            bytes = appItem.intDataItem.subtitle,
+            msg = appItem.intDataItem.msg
+        )
+        HorizontalDivider()
+        AppItemDialogListItem(
+            enabled = appItem.extDataItem.enabled,
+            icon = ImageVector.vectorResource(R.drawable.ic_database),
+            name = appItem.extDataItem.title,
+            bytes = appItem.extDataItem.subtitle,
+            msg = appItem.extDataItem.msg
+        )
+        HorizontalDivider()
+        AppItemDialogListItem(
+            enabled = appItem.addlDataItem.enabled,
+            icon = ImageVector.vectorResource(R.drawable.ic_gamepad_2),
+            name = appItem.addlDataItem.title,
+            bytes = appItem.addlDataItem.subtitle,
+            msg = appItem.addlDataItem.msg
+        )
+    }
+}
+
+@Composable
+@Suppress("AssignedValueIsNeverRead")
 private fun ProcessAppsItem(viewModel: BackupProcessViewModel) {
     val appsItem by viewModel.appsItem.collectAsStateWithLifecycle()
-    val processingAppItem by viewModel.processingAppItem.collectAsStateWithLifecycle()
+    val allItems by viewModel.allProcessedAppItems.collectAsStateWithLifecycle()
 
     var openAppItemDialog by remember { mutableStateOf(false) }
     if (openAppItemDialog) {
-        processingAppItem?.also {
-            AppItemDialog(appItem = it) {
+        if (appsItem.currentIndex == appsItem.totalCount && appsItem.progress == 1.0f) {
+            AppCompleteDialog(appItemList = allItems) {
                 openAppItemDialog = false
+            }
+        } else {
+            allItems.lastOrNull()?.also {
+                AppItemDialog(appItem = it) {
+                    openAppItemDialog = false
+                }
             }
         }
     }
@@ -445,7 +569,7 @@ private fun ProcessFilesItem(filesItem: ProcessItem) {
                 totalCount = filesItem.totalCount,
                 subtitle = filesItem.msg,
                 subtitleShimmer = filesItem.isLoading,
-                onIconBtnClick = {},
+                onIconBtnClick = null,
                 onClick = {}
             )
         }
@@ -466,7 +590,7 @@ private fun ProcessNetworksItem(networksItem: ProcessItem) {
                 totalCount = networksItem.totalCount,
                 subtitle = networksItem.msg,
                 subtitleShimmer = networksItem.isLoading,
-                onIconBtnClick = {},
+                onIconBtnClick = null,
                 onClick = {}
             )
         }
@@ -487,7 +611,7 @@ private fun ProcessContactsItem(contactsItem: ProcessItem) {
                 totalCount = contactsItem.totalCount,
                 subtitle = contactsItem.msg,
                 subtitleShimmer = contactsItem.isLoading,
-                onIconBtnClick = {},
+                onIconBtnClick = null,
                 onClick = {}
             )
         }
@@ -508,7 +632,7 @@ private fun ProcessCallLogsItem(callLogsItem: ProcessItem) {
                 totalCount = callLogsItem.totalCount,
                 subtitle = callLogsItem.msg,
                 subtitleShimmer = callLogsItem.isLoading,
-                onIconBtnClick = {},
+                onIconBtnClick = null,
                 onClick = {}
             )
         }
@@ -529,7 +653,7 @@ private fun ProcessMessagesItem(messagesItem: ProcessItem) {
                 totalCount = messagesItem.totalCount,
                 subtitle = messagesItem.msg,
                 subtitleShimmer = messagesItem.isLoading,
-                onIconBtnClick = {},
+                onIconBtnClick = null,
                 onClick = {}
             )
         }
