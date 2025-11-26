@@ -67,4 +67,20 @@
     <string name="export">I-export</string>
     <string name="simplify">I-simplify</string>
     <string name="prompt">I-prompt</string>
+    <string name="confirm_reload">I-reload?</string>
+    <string name="version">Bersiyon</string>
+    <string name="feature">Katangian</string>
+    <string name="architecture">Arkitektura</string>
+    <string name="premium_for_this_feature">I-download ang premium version para sa feature na ito</string>
+    <string name="keep_screen_on">Hayaang bukas ang screen</string>
+    <string name="reset_backup_list">I-reset and backup list</string>
+    <string name="reset_restore_list">I-reset ang restore list</string>
+    <string name="delete">I-delete</string>
+    <string name="confirm_delete_selected_restoring_items">I-delete ang selected items mula sa database at local files?</string>
+    <string name="app_crashed">Nag-crash ang app</string>
+    <string name="no_browser">Maaaring walang browser para buksan ito</string>
+    <string name="supported_format">Supported na format</string>
+    <string name="reload">I-reload</string>
+    <string name="restart_failed">Hindi ma-restart ang app. I-restart ito manually.</string>
+    <string name="monet_desc">Mag-generate ng colors mula sa wallpaper</string>
 </resources>
