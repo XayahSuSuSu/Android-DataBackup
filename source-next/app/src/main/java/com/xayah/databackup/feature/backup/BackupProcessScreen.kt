@@ -72,7 +72,6 @@ import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-@Suppress("AssignedValueIsNeverRead")
 fun BackupProcessScreen(
     navController: NavHostController,
     viewModel: BackupProcessViewModel = koinViewModel(),
@@ -516,7 +515,6 @@ private fun AppItemDialogItem(
 }
 
 @Composable
-@Suppress("AssignedValueIsNeverRead")
 private fun ProcessAppsItem(viewModel: BackupProcessViewModel) {
     val appsItem by viewModel.appsItem.collectAsStateWithLifecycle()
     val allItems by viewModel.allProcessedAppItems.collectAsStateWithLifecycle()
