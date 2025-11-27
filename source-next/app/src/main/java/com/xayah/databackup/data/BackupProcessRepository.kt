@@ -204,6 +204,7 @@ class BackupProcessRepository(
     }
 
     private suspend fun loadProcessItems() {
+        clearProcessAppItems()
         loadAppsProcessItems()
         loadFilesProcessItems()
         loadNetworksProcessItems()
@@ -260,6 +261,10 @@ class BackupProcessRepository(
 
     fun getApps(): List<App> {
         return _apps
+    }
+
+    fun clearProcessAppItems() {
+        _processAppItems.value = listOf()
     }
 
     fun getProcessAppItems(): MutableStateFlow<List<ProcessAppItem>> {
