@@ -3,4 +3,5 @@
     <string name="welcome_to_use">Welkom bij DataBackup</string>
     <string name="start">Begin</string>
     <string name="app_name">DataBackup</string>
+    <string name="network">Netwerk</string>
 </resources>
