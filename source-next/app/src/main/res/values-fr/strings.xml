@@ -476,4 +476,6 @@
     <string name="worker_update_apps_storage_info">Mise à jour des informations de stockage</string>
     <string name="worker_update_other_info">Mise à jour des autres informations</string>
     <string name="no_permissions">Pas d\'authorisation</string>
+    <string name="error_no_space_left_desc">Espace insuffisant sur l\'appareil. Veuillez vous assurer que votre appareil dispose de suffisamment d\'espace libre avant cette opération</string>
+    <string name="prompt_cancel_operation">Interrompre l\'opération en cours ?</string>
 </resources>
