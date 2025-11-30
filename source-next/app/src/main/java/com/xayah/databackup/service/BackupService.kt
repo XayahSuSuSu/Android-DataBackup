@@ -11,6 +11,7 @@ import android.os.RemoteException
 import com.xayah.databackup.App
 import com.xayah.databackup.data.BackupConfigRepository
 import com.xayah.databackup.service.util.BackupAppsHelper
+import com.xayah.databackup.service.util.BackupNetworksHelper
 import com.xayah.databackup.util.LogHelper
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -33,6 +34,7 @@ object BackupService {
     class BackupServiceImpl : Service() {
         private val mBackupConfigRepo: BackupConfigRepository by inject()
         private val mBackupAppsHelper: BackupAppsHelper by inject()
+        private val mBackupNetworksHelper: BackupNetworksHelper by inject()
         private val mBinder: Binder = Service()
 
         inner class Service : Binder() {
@@ -46,6 +48,12 @@ object BackupService {
         suspend fun backupApps() {
             mMutex.withLock {
                 mBackupAppsHelper.start()
+            }
+        }
+
+        suspend fun backupNetworks() {
+            mMutex.withLock {
+                mBackupNetworksHelper.start()
             }
         }
 
@@ -122,6 +130,7 @@ object BackupService {
 
     suspend fun start() {
         getService()?.backupApps()
+        getService()?.backupNetworks()
         getService()?.setupBackupConfig()
     }
 }

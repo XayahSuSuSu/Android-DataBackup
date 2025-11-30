@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.ServiceInfo
 import android.database.Cursor
 import android.net.Uri
+import android.net.wifi.WifiConfiguration
 import android.os.Build
 import android.provider.CallLog.Calls
 import android.provider.ContactsContract
@@ -17,6 +18,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
 import com.xayah.databackup.App
 import com.xayah.databackup.R
+import com.xayah.databackup.adapter.WifiConfigurationAdapter
 import com.xayah.databackup.database.entity.CallLog
 import com.xayah.databackup.database.entity.Contact
 import com.xayah.databackup.database.entity.FiledMap
@@ -29,13 +31,12 @@ import com.xayah.databackup.util.DatabaseHelper
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.NotificationHelper
 import com.xayah.databackup.util.NotificationHelper.NOTIFICATION_ID_OTHERS_UPDATE_WORKER
-import com.xayah.databackup.util.ParcelableHelper.marshall
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerParameters) : CoroutineWorker(appContext, workerParams) {
     private var mNotificationBuilder = NotificationHelper.getNotificationBuilder(appContext)
-    private val mMoshi: Moshi = Moshi.Builder().build()
+    private val mMoshi: Moshi = Moshi.Builder().add(WifiConfigurationAdapter()).build()
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -51,14 +52,13 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
             runCatching {
                 val index = cursor.getColumnIndex(column)
                 if (index != -1) {
-                    val type = cursor.getType(index)
-                    when (type) {
+                    when (val type = cursor.getType(index)) {
                         Cursor.FIELD_TYPE_INTEGER -> {
-                            map.put(column, cursor.getLong(index))
+                            map[column] = cursor.getLong(index)
                         }
 
                         Cursor.FIELD_TYPE_STRING -> {
-                            map.put(column, cursor.getString(index))
+                            map[column] = cursor.getString(index)
                         }
 
                         Cursor.FIELD_TYPE_NULL -> {
@@ -93,11 +93,11 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                             ssid = it.SSID,
                             preSharedKey = it.preSharedKey,
                             selected = true,
-                            config1 = it.marshall(),
+                            config1 = mMoshi.adapter<WifiConfiguration>().toJson(it),
                             config2 = null
                         )
                     } else {
-                        networks[it.networkId]?.config2 = it.marshall()
+                        networks[it.networkId]?.config2 = mMoshi.adapter<WifiConfiguration>().toJson(it)
                     }
                 }
                 DatabaseHelper.networkDao.upsert(networks.values.toList())
@@ -219,9 +219,9 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                                     throw IllegalStateException("Unexpected id: ${mms.id}")
                                 }
 
-                                val ADDR_CONTENT_URI = Telephony.Mms.CONTENT_URI.buildUpon().appendPath(mms.id.toString()).appendPath("addr").build()
+                                val addrContentUri = Telephony.Mms.CONTENT_URI.buildUpon().appendPath(mms.id.toString()).appendPath("addr").build()
                                 App.application.contentResolver.query(
-                                    ADDR_CONTENT_URI,
+                                    addrContentUri,
                                     null,
                                     null,
                                     null,
@@ -234,10 +234,10 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                                     mms.addr = mMoshi.adapter<List<FiledMap>>().toJson(addr)
                                 }
 
-                                val TABLE_PART = "part"
-                                val CONTENT_URI = Uri.withAppendedPath(Telephony.Mms.CONTENT_URI, TABLE_PART)
+                                val tablePart = "part"
+                                val contentUri = Uri.withAppendedPath(Telephony.Mms.CONTENT_URI, tablePart)
                                 App.application.contentResolver.query(
-                                    CONTENT_URI,
+                                    contentUri,
                                     null,
                                     "${Telephony.Mms.Part.MSG_ID} = ?",
                                     arrayOf(mms.id.toString()),

@@ -1,49 +1,24 @@
 package com.xayah.databackup.database.entity
 
 import android.net.wifi.WifiConfiguration
-import android.net.wifi.WifiConfigurationHidden
 import androidx.room.Entity
-import com.xayah.databackup.util.ParcelableHelper.unmarshall
+import com.squareup.moshi.JsonClass
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapter
+import com.xayah.databackup.adapter.WifiConfigurationAdapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.Serializable
 
-@Serializable
+@JsonClass(generateAdapter = true)
 @Entity(tableName = "networks", primaryKeys = ["id"])
 data class Network(
     var id: Int,
     var ssid: String,
     var preSharedKey: String?,
     var selected: Boolean,
-    var config1: ByteArray?,
-    var config2: ByteArray?,
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Network
-
-        if (id != other.id) return false
-        if (selected != other.selected) return false
-        if (ssid != other.ssid) return false
-        if (preSharedKey != other.preSharedKey) return false
-        if (!config1.contentEquals(other.config1)) return false
-        if (!config2.contentEquals(other.config2)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = id
-        result = 31 * result + selected.hashCode()
-        result = 31 * result + ssid.hashCode()
-        result = 31 * result + (preSharedKey?.hashCode() ?: 0)
-        result = 31 * result + (config1?.contentHashCode() ?: 0)
-        result = 31 * result + (config2?.contentHashCode() ?: 0)
-        return result
-    }
-}
+    var config1: String?,
+    var config2: String?,
+)
 
 data class NetworkUnmarshalled(
     var id: Int,
@@ -56,14 +31,15 @@ data class NetworkUnmarshalled(
 
 private fun String.trimQuotes() = removeSurrounding("\"")
 
-fun Flow<List<Network>>.unmarshall(): Flow<List<NetworkUnmarshalled>> = map { flow ->
+fun Flow<List<Network>>.deserialize(): Flow<List<NetworkUnmarshalled>> = map { flow ->
     flow.map {
+        val moshi: Moshi = Moshi.Builder().add(WifiConfigurationAdapter()).build()
         val networkUnmarshalled = NetworkUnmarshalled(it.id, it.ssid.trimQuotes(), it.preSharedKey?.trimQuotes(), it.selected, null, null)
-        it.config1?.unmarshall { parcel ->
-            networkUnmarshalled.config1 = WifiConfigurationHidden.CREATOR.createFromParcel(parcel)
+        it.config1?.also { json ->
+            networkUnmarshalled.config1 = moshi.adapter<WifiConfiguration>().fromJson(json)
         }
-        it.config2?.unmarshall { parcel ->
-            networkUnmarshalled.config2 = WifiConfigurationHidden.CREATOR.createFromParcel(parcel)
+        it.config2?.also { json ->
+            networkUnmarshalled.config2 = moshi.adapter<WifiConfiguration>().fromJson(json)
         }
         networkUnmarshalled
     }

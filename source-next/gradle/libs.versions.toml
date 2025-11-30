@@ -11,6 +11,7 @@ coreKtx = "1.16.0"
 coreSplashscreen = "1.0.1"
 datastorePreferences = "1.1.7"
 espressoCore = "3.6.1"
+gson = "2.13.2"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 koinAndroidxCompose = "4.1.1"
@@ -62,6 +63,7 @@ androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version
 arrow-optics = { module = "io.arrow-kt:arrow-optics", version.ref = "arrowOptics" }
 arrow-optics-ksp-plugin = { module = "io.arrow-kt:arrow-optics-ksp-plugin", version.ref = "arrowOptics" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinAndroidxCompose" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }

@@ -263,6 +263,10 @@ class BackupProcessRepository(
         return _apps
     }
 
+    fun getNetworks(): List<Network> {
+        return _networks
+    }
+
     fun clearProcessAppItems() {
         _processAppItems.value = listOf()
     }
@@ -273,6 +277,10 @@ class BackupProcessRepository(
 
     fun updateAppsItem(onUpdate: ProcessItem.() -> ProcessItem) {
         _appsItem.value = onUpdate(_appsItem.value)
+    }
+
+    fun updateNetworksItem(onUpdate: ProcessItem.() -> ProcessItem) {
+        _networksItem.value = onUpdate(_networksItem.value)
     }
 
     fun addProcessAppItem(item: ProcessAppItem) {

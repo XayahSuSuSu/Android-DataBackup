@@ -104,6 +104,9 @@ dependencies {
     implementation(libs.moshi)
     ksp(libs.moshi.kotlin.codegen)
 
+    // Gson
+    implementation(libs.gson)
+
     // Koin
     implementation(libs.koin.androidx.compose)
 

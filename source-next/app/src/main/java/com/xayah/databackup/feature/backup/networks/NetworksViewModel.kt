@@ -2,7 +2,7 @@ package com.xayah.databackup.feature.backup.networks
 
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.data.NetworkRepository
-import com.xayah.databackup.database.entity.unmarshall
+import com.xayah.databackup.database.entity.deserialize
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.DatabaseHelper
 import com.xayah.databackup.util.filterNetwork
@@ -28,7 +28,7 @@ open class NetworksViewModel(
     private val _searchText = MutableStateFlow("")
     val searchText: StateFlow<String> = _searchText.asStateFlow()
     val networks = combine(
-        networkRepo.networks.unmarshall(),
+        networkRepo.networks.deserialize(),
         _searchText,
     ) { networks, searchText ->
         networks.filterNetwork(searchText)
