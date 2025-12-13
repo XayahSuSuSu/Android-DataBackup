@@ -473,4 +473,12 @@
     <string name="clean_backup_desc">Vorherige Sicherungen des ausgewählten Elements vor der Datensicherung löschen</string>
     <string name="skip">Überspringen</string>
     <string name="no_permissions">Keine Berechtigungen</string>
+    <string name="contact_permission_desc">Diese Berechtigung ist zum Sichern/Wiederherstellen von Kontakten erforderlich</string>
+    <string name="call_log_permission_desc">Diese Berechtigung ist zum Sichern/Wiederherstellen von Anrufprotokollen erforderlich</string>
+    <string name="message_permission_desc">Diese Berechtigung ist zum Sichern/Wiederherstellen von Nachrichten erforderlich</string>
+    <string name="worker_update_apps_basic_info">Aktualisierung der grundlegenden Informationen zu Apps</string>
+    <string name="worker_update_apps_storage_info">Aktualisierung der Speicherinformationen von Apps</string>
+    <string name="worker_update_other_info">Aktualisierung anderer Informationen</string>
+    <string name="error_no_space_left_desc">Auf dem Gerät ist kein Speicherplatz mehr verfügbar. Bitte stellen Sie vor diesem Vorgang sicher, dass auf Ihrem Gerät ausreichend Speicherplatz vorhanden ist</string>
+    <string name="prompt_cancel_operation">Den laufenden Vorgang unterbrechen?</string>
 </resources>
