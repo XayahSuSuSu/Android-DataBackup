@@ -478,4 +478,7 @@
     <string name="no_permissions">Pas d\'authorisation</string>
     <string name="error_no_space_left_desc">Espace insuffisant sur l\'appareil. Veuillez vous assurer que votre appareil dispose de suffisamment d\'espace libre avant cette opération</string>
     <string name="prompt_cancel_operation">Interrompre l\'opération en cours ?</string>
+    <string name="select_all_addl_data">Tout sélectionner : Données Additionnelles</string>
+    <string name="unselect_all_addl_data">Tout déselectionner : Données Additionnelles</string>
+    <string name="additional_data">Données Additionnelles</string>
 </resources>
