@@ -5,6 +5,7 @@ import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.room.Entity
+import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
 import com.xayah.databackup.App
@@ -18,6 +19,7 @@ object MessageConstant {
     const val INVALID_ADDR = "insert-address-token"
 }
 
+@JsonClass(generateAdapter = true)
 @Entity(tableName = "messages_sms", primaryKeys = ["id"])
 data class Sms(
     var id: Long,
@@ -51,6 +53,7 @@ fun Flow<List<Sms>>.deserializeSms(): Flow<List<SmsDeserialized>> = map { flow -
     }
 }
 
+@JsonClass(generateAdapter = true)
 @Entity(tableName = "messages_mms", primaryKeys = ["id"])
 data class Mms(
     var id: Long,
