@@ -481,4 +481,10 @@
     <string name="additional_data">Dane dodatkowe</string>
     <string name="error_no_space_left_desc">Brak miejsca na urządzeniu. Przed wykonaniem tej operacji upewnij się, że na urządzeniu jest wystarczająco dużo wolnego miejsca</string>
     <string name="prompt_cancel_operation">Przerwać trwającą operację?</string>
+    <string name="apps_backup_strategy">Strategia tworzenia kopii zapasowych aplikacji</string>
+    <string name="unnamed">Bez nazwy</string>
+    <string name="not_created_yet">Jeszcze nie utworzona</string>
+    <string name="created_at">Utworzona</string>
+    <string name="updated_at">Zaktualizowana</string>
+    <string name="edit_name">Edytuj nazwę</string>
 </resources>
