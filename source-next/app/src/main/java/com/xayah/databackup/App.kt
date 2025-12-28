@@ -9,6 +9,7 @@ import com.xayah.databackup.data.ContactRepository
 import com.xayah.databackup.data.FileRepository
 import com.xayah.databackup.data.MessageRepository
 import com.xayah.databackup.data.NetworkRepository
+import com.xayah.databackup.feature.backup.BackupConfigViewModel
 import com.xayah.databackup.feature.backup.BackupProcessViewModel
 import com.xayah.databackup.feature.backup.BackupSetupViewModel
 import com.xayah.databackup.feature.backup.apps.AppsViewModel
@@ -45,6 +46,7 @@ class App : Application() {
 
         viewModelOf(::BackupSetupViewModel)
         viewModelOf(::BackupProcessViewModel)
+        viewModelOf(::BackupConfigViewModel)
         viewModelOf(::AppsViewModel)
         viewModelOf(::NetworksViewModel)
         viewModelOf(::ContactsViewModel)

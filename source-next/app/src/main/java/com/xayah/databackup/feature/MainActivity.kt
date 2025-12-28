@@ -30,6 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.R
+import com.xayah.databackup.feature.backup.BackupConfigScreen
 import com.xayah.databackup.feature.backup.BackupProcessScreen
 import com.xayah.databackup.feature.backup.BackupSetupScreen
 import com.xayah.databackup.feature.backup.apps.BackupAppsScreen
@@ -51,34 +52,6 @@ import com.xayah.databackup.util.readBoolean
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.Serializable
-
-@Serializable
-data object Dashboard
-
-@Serializable
-data object Backup
-
-@Serializable
-data object BackupSetup
-
-@Serializable
-data object BackupProcess
-
-@Serializable
-data object BackupApps
-
-@Serializable
-data object BackupNetworks
-
-@Serializable
-data object BackupContacts
-
-@Serializable
-data object BackupCallLogs
-
-@Serializable
-data object BackupMessages
 
 @Composable
 fun ErrorServiceDialog(onConfirm: () -> Unit, onRetry: () -> Unit) {
@@ -161,7 +134,7 @@ class MainActivity : ComponentActivity() {
                 Surface {
                     NavHost(
                         navController = navController,
-                        startDestination = Dashboard,
+                        startDestination = DashboardRoute,
                         enterTransition = {
                             slideInHorizontally(
                                 initialOffsetX = { it },
@@ -187,36 +160,40 @@ class MainActivity : ComponentActivity() {
                             )
                         },
                     ) {
-                        composable<Dashboard> {
+                        composable<DashboardRoute> {
                             DashboardScreen(navController)
                         }
 
-                        navigation<Backup>(startDestination = BackupSetup) {
-                            composable<BackupSetup> {
+                        navigation<BackupRoute>(startDestination = BackupSetupRoute) {
+                            composable<BackupSetupRoute> {
                                 BackupSetupScreen(navController)
                             }
 
-                            composable<BackupProcess> {
+                            composable<BackupProcessRoute> {
                                 BackupProcessScreen(navController)
                             }
 
-                            composable<BackupApps> {
+                            composable<BackupConfigRoute> {
+                                BackupConfigScreen(navController)
+                            }
+
+                            composable<BackupAppsRoute> {
                                 BackupAppsScreen(navController)
                             }
 
-                            composable<BackupNetworks> {
+                            composable<BackupNetworksRoute> {
                                 BackupNetworksScreen(navController)
                             }
 
-                            composable<BackupContacts> {
+                            composable<BackupContactsRoute> {
                                 BackupContactsScreen(navController)
                             }
 
-                            composable<BackupCallLogs> {
+                            composable<BackupCallLogsRoute> {
                                 BackupCallLogsScreen(navController)
                             }
 
-                            composable<BackupMessages> {
+                            composable<BackupMessagesRoute> {
                                 BackupMessagesScreen(navController)
                             }
                         }

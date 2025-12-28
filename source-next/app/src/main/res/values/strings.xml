@@ -494,4 +494,10 @@
     <string name="no_permissions">No permissions</string>
     <string name="error_no_space_left_desc">No space left on device. Please ensure your device has sufficient free space before this operation</string>
     <string name="prompt_cancel_operation">Interrupt the ongoing operation?</string>
+    <string name="apps_backup_strategy">Apps backup strategy</string>
+    <string name="unnamed">Unnamed</string>
+    <string name="not_created_yet">Not created yet</string>
+    <string name="created_at">Created at</string>
+    <string name="updated_at">Updated at</string>
+    <string name="edit_name">Edit name</string>
 </resources>

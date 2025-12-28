@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
-import com.xayah.databackup.feature.Backup
+import com.xayah.databackup.feature.BackupRoute
 import com.xayah.databackup.ui.component.ActionButton
 import com.xayah.databackup.ui.component.SmallActionButton
 import com.xayah.databackup.ui.component.StorageCard
@@ -122,7 +122,7 @@ fun DashboardScreen(navController: NavHostController) {
                         title = stringResource(R.string.backup),
                         subtitle = stringResource(R.string.backup_your_data)
                     ) {
-                        navController.navigateSafely(Backup)
+                        navController.navigateSafely(BackupRoute)
                     }
 
                     SmallActionButton(

@@ -140,7 +140,7 @@ fun WelcomeScreen(navController: NavHostController) {
 }
 
 @Composable
-fun CustomSUFileDialog(
+private fun CustomSUFileDialog(
     onDismissRequest: () -> Unit,
 ) {
     val context = LocalContext.current

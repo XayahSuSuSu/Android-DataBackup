@@ -481,4 +481,10 @@
     <string name="no_permissions">無權限</string>
     <string name="error_no_space_left_desc">裝置空間不足，請確保您的裝置在執行此操作前有足夠的可用空間</string>
     <string name="prompt_cancel_operation">是否中斷正在進行的操作？</string>
+    <string name="apps_backup_strategy">應用程式備份策略</string>
+    <string name="unnamed">未命名</string>
+    <string name="not_created_yet">未創建</string>
+    <string name="created_at">創建於</string>
+    <string name="updated_at">更新於</string>
+    <string name="edit_name">編輯名稱</string>
 </resources>

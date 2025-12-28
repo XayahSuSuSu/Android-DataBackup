@@ -4,6 +4,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,14 +36,14 @@ import kotlinx.coroutines.launch
 private const val DisabledOpacity = 0.38f
 
 @Composable
-fun SwitchablePreference(
+fun Preference(
     modifier: Modifier = Modifier,
-    enabled: Boolean,
-    checked: Boolean,
+    enabled: Boolean = true,
     icon: ImageVector,
     title: String,
     subtitle: String,
-    onCheckedChange: ((Boolean) -> Unit)?,
+    slot: @Composable (RowScope.() -> Unit)? = null,
+    onClick: (() -> Unit)? = null,
 ) {
     val animatedIconColor by animateColorAsState(
         targetValue = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(alpha = DisabledOpacity),
@@ -60,8 +61,7 @@ fun SwitchablePreference(
         label = "animatedColor"
     )
 
-
-    Surface(modifier = modifier.fillMaxWidth(), enabled = enabled, onClick = { onCheckedChange?.invoke(checked.not()) }) {
+    Surface(modifier = modifier.fillMaxWidth(), enabled = enabled, onClick = { onClick?.invoke() }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -93,6 +93,28 @@ fun SwitchablePreference(
                     color = animatedSubtitleColor
                 )
             }
+            slot?.invoke(this)
+        }
+    }
+}
+
+@Composable
+fun SwitchablePreference(
+    modifier: Modifier = Modifier,
+    enabled: Boolean,
+    checked: Boolean,
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    onCheckedChange: ((Boolean) -> Unit)?,
+) {
+    Preference(
+        modifier = modifier,
+        enabled = enabled,
+        icon = icon,
+        title = title,
+        subtitle = subtitle,
+        slot = {
             Switch(
                 enabled = enabled,
                 checked = checked,
@@ -106,6 +128,8 @@ fun SwitchablePreference(
                 }
             )
         }
+    ) {
+        onCheckedChange?.invoke(checked.not())
     }
 }
 

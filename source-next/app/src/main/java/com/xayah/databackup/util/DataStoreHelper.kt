@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.xayah.databackup.entity.AppsBackupStrategy
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -78,13 +79,9 @@ val FiltersSystemAppsBackup = Pair(KeyFiltersSystemAppsBackup, DefFiltersSystemA
 
 // ----------------------------------------------------------------------------------------------------------------------------Settings
 
-val KeyIncrementalBackup = booleanPreferencesKey("incremental_backup")
-const val DefIncrementalBackup = true
-val IncrementalBackup = Pair(KeyIncrementalBackup, DefIncrementalBackup)
-
-val KeyCleanBackup = booleanPreferencesKey("clean_backup")
-const val DefCleanBackup = false
-val CleanBackup = Pair(KeyCleanBackup, DefCleanBackup)
+val KeyDefaultAppsBackupStrategy = stringPreferencesKey("default_apps_backup_strategy")
+val DefDefaultAppsBackupStrategy = AppsBackupStrategy.Incremental
+val DefaultAppsBackupStrategy = Pair(KeyDefaultAppsBackupStrategy, DefDefaultAppsBackupStrategy)
 
 val KeyAutoScreenOff = booleanPreferencesKey("auto_screen_off")
 const val DefAutoScreenOff = true

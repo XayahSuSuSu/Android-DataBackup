@@ -42,15 +42,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.xayah.databackup.App
 import com.xayah.databackup.R
-import com.xayah.databackup.feature.BackupApps
-import com.xayah.databackup.feature.BackupCallLogs
-import com.xayah.databackup.feature.BackupContacts
-import com.xayah.databackup.feature.BackupMessages
-import com.xayah.databackup.feature.BackupNetworks
-import com.xayah.databackup.feature.BackupProcess
+import com.xayah.databackup.data.BackupConfigRepository
+import com.xayah.databackup.feature.BackupAppsRoute
+import com.xayah.databackup.feature.BackupCallLogsRoute
+import com.xayah.databackup.feature.BackupConfigRoute
+import com.xayah.databackup.feature.BackupContactsRoute
+import com.xayah.databackup.feature.BackupMessagesRoute
+import com.xayah.databackup.feature.BackupNetworksRoute
+import com.xayah.databackup.feature.BackupProcessRoute
 import com.xayah.databackup.ui.component.ActionButtonState
 import com.xayah.databackup.ui.component.AutoScreenOffSwitch
-import com.xayah.databackup.ui.component.IncrementalBackupAndCleanBackupSwitches
 import com.xayah.databackup.ui.component.ResetBackupListSwitch
 import com.xayah.databackup.ui.component.SelectableCardButton
 import com.xayah.databackup.ui.component.SmallCheckActionButton
@@ -140,7 +141,7 @@ fun BackupSetupScreen(
 
                 StorageRow(viewModel = viewModel)
 
-                BackupRow(uiState = uiState, viewModel = viewModel)
+                BackupRow(navController = navController, uiState = uiState, viewModel = viewModel)
 
                 Settings()
 
@@ -160,7 +161,7 @@ fun BackupSetupScreen(
                     modifier = Modifier.wrapContentSize(),
                     enabled = nextBtnEnabled,
                     onClick = {
-                        navController.navigateSafely(BackupProcess)
+                        navController.navigateSafely(BackupProcessRoute)
                     }
                 ) {
                     Text(text = stringResource(R.string.next))
@@ -219,7 +220,7 @@ private fun TargetRow(
                     }
                 }
             ) {
-                navController.navigateSafely(BackupApps)
+                navController.navigateSafely(BackupAppsRoute)
             }
 
             SmallCheckActionButton(
@@ -256,7 +257,7 @@ private fun TargetRow(
                     }
                 }
             ) {
-                navController.navigateSafely(BackupNetworks)
+                navController.navigateSafely(BackupNetworksRoute)
             }
 
             val contactsPermissionState = rememberContactPermissionsState()
@@ -282,7 +283,7 @@ private fun TargetRow(
                 }
             ) {
                 if (contactsPermissionState.allPermissionsGranted) {
-                    navController.navigateSafely(BackupContacts)
+                    navController.navigateSafely(BackupContactsRoute)
                 } else {
                     contactsPermissionState.launchMultiplePermissionRequest()
                 }
@@ -316,7 +317,7 @@ private fun TargetRow(
                 }
             ) {
                 if (callLogsPermissionState.allPermissionsGranted) {
-                    navController.navigateSafely(BackupCallLogs)
+                    navController.navigateSafely(BackupCallLogsRoute)
                 } else {
                     callLogsPermissionState.launchMultiplePermissionRequest()
                 }
@@ -345,7 +346,7 @@ private fun TargetRow(
                 }
             ) {
                 if (messagesPermissionState.allPermissionsGranted) {
-                    navController.navigateSafely(BackupMessages)
+                    navController.navigateSafely(BackupMessagesRoute)
                 } else {
                     messagesPermissionState.launchMultiplePermissionRequest()
                 }
@@ -413,6 +414,7 @@ private fun StorageRow(
 
 @Composable
 private fun BackupRow(
+    navController: NavHostController,
     uiState: BackupSetupUiState,
     viewModel: BackupSetupViewModel,
 ) {
@@ -453,14 +455,18 @@ private fun BackupRow(
                 modifier = Modifier
                     .size(148.dp)
                     .animateItem(),
-                selected = selectedConfigIndex == -1,
+                selected = selectedConfigIndex == BackupConfigRepository.NEW_CONFIG_INDEX,
                 title = stringResource(R.string.new_backup),
                 titleShimmer = uiState.isLoadingConfigs,
                 colors = selectableCardButtonTertiaryColors(),
                 icon = ImageVector.vectorResource(R.drawable.ic_plus),
                 iconShimmer = uiState.isLoadingConfigs,
+                iconButton = ImageVector.vectorResource(R.drawable.ic_settings),
+                onIconButtonClick = {
+                    navController.navigateSafely(BackupConfigRoute(index = BackupConfigRepository.NEW_CONFIG_INDEX))
+                },
             ) {
-                viewModel.selectBackup(-1)
+                viewModel.selectBackup(BackupConfigRepository.NEW_CONFIG_INDEX)
             }
         }
 
@@ -469,18 +475,21 @@ private fun BackupRow(
             LaunchedEffect(context = Dispatchers.IO, null) {
                 backupStorage = viewModel.getBackupStorage(item.path)
             }
+            val title = remember(item.name, item.createdAt) { item.displayTitle }
             SelectableCardButton(
                 modifier = Modifier
                     .size(148.dp)
                     .animateItem(),
                 selected = selectedConfigIndex == index,
-                title = item.displayTitle,
+                title = title,
                 subtitle = backupStorage,
                 subtitleShimmer = backupStorage.isEmpty(),
                 colors = selectableCardButtonTertiaryColors(),
                 icon = ImageVector.vectorResource(R.drawable.ic_archive),
-                iconButton = ImageVector.vectorResource(R.drawable.ic_trash),
-                onIconButtonClick = {},
+                iconButton = ImageVector.vectorResource(R.drawable.ic_settings),
+                onIconButtonClick = {
+                    navController.navigateSafely(BackupConfigRoute(index = index))
+                },
             ) {
                 viewModel.selectBackup(index)
             }
@@ -502,8 +511,6 @@ private fun Settings() {
         color = MaterialTheme.colorScheme.primary,
         style = MaterialTheme.typography.labelLarge
     )
-
-    IncrementalBackupAndCleanBackupSwitches()
 
     AutoScreenOffSwitch()
 
