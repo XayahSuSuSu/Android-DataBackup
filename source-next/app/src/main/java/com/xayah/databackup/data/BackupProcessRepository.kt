@@ -267,6 +267,10 @@ class BackupProcessRepository(
         return _networks
     }
 
+    fun getContacts(): List<Contact> {
+        return _contacts
+    }
+
     fun clearProcessAppItems() {
         _processAppItems.value = listOf()
     }
@@ -281,6 +285,10 @@ class BackupProcessRepository(
 
     fun updateNetworksItem(onUpdate: ProcessItem.() -> ProcessItem) {
         _networksItem.value = onUpdate(_networksItem.value)
+    }
+
+    fun updateContactsItem(onUpdate: ProcessItem.() -> ProcessItem) {
+        _contactsItem.value = onUpdate(_contactsItem.value)
     }
 
     fun addProcessAppItem(item: ProcessAppItem) {
