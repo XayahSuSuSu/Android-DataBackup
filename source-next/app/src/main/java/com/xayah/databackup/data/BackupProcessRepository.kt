@@ -271,6 +271,10 @@ class BackupProcessRepository(
         return _contacts
     }
 
+    fun getCallLogs(): List<CallLog> {
+        return _callLogs
+    }
+
     fun clearProcessAppItems() {
         _processAppItems.value = listOf()
     }
@@ -289,6 +293,10 @@ class BackupProcessRepository(
 
     fun updateContactsItem(onUpdate: ProcessItem.() -> ProcessItem) {
         _contactsItem.value = onUpdate(_contactsItem.value)
+    }
+
+    fun updateCallLogsItem(onUpdate: ProcessItem.() -> ProcessItem) {
+        _callLogsItem.value = onUpdate(_callLogsItem.value)
     }
 
     fun addProcessAppItem(item: ProcessAppItem) {

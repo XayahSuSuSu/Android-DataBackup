@@ -11,6 +11,7 @@ import android.os.RemoteException
 import com.xayah.databackup.App
 import com.xayah.databackup.data.BackupConfigRepository
 import com.xayah.databackup.service.util.BackupAppsHelper
+import com.xayah.databackup.service.util.BackupCallLogsHelper
 import com.xayah.databackup.service.util.BackupContactsHelper
 import com.xayah.databackup.service.util.BackupNetworksHelper
 import com.xayah.databackup.util.LogHelper
@@ -37,6 +38,7 @@ object BackupService {
         private val mBackupAppsHelper: BackupAppsHelper by inject()
         private val mBackupNetworksHelper: BackupNetworksHelper by inject()
         private val mBackupContactsHelper: BackupContactsHelper by inject()
+        private val mBackupCallLogsHelper: BackupCallLogsHelper by inject()
         private val mBinder: Binder = Service()
 
         inner class Service : Binder() {
@@ -62,6 +64,12 @@ object BackupService {
         suspend fun backupContacts() {
             mMutex.withLock {
                 mBackupContactsHelper.start()
+            }
+        }
+
+        suspend fun backupCallLogs() {
+            mMutex.withLock {
+                mBackupCallLogsHelper.start()
             }
         }
 
@@ -140,6 +148,7 @@ object BackupService {
         getService()?.backupApps()
         getService()?.backupNetworks()
         getService()?.backupContacts()
+        getService()?.backupCallLogs()
         getService()?.setupBackupConfig()
     }
 }

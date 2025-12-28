@@ -21,6 +21,7 @@ object PathHelper {
     private const val SUBDIR_ADDL_DATA = "addl_data"
     private const val SUBDIR_NETWORKS = "networks"
     private const val SUBDIR_CONTACTS = "contacts"
+    private const val SUBDIR_CALL_LOGS = "call_logs"
 
     private const val CONFIG_FILE_SUFFIX = ".config"
 
@@ -33,6 +34,7 @@ object PathHelper {
 
     private const val NETWORKS_PREFIX = "networks_"
     private const val CONTACTS_PREFIX = "contacts_"
+    private const val CALL_LOGS_PREFIX = "call_logs_"
 
     /**
      * Returns the parent path, or empty string if this path does not have a parent.
@@ -63,6 +65,7 @@ object PathHelper {
     fun getBackupAppsAddlDataDir(parent: String, packageName: String): String = "$parent/$SUBDIR_APPS/$packageName/$SUBDIR_ADDL_DATA"
     fun getBackupNetworksDir(parent: String): String = "$parent/$SUBDIR_NETWORKS"
     fun getBackupContactsDir(parent: String): String = "$parent/$SUBDIR_CONTACTS"
+    fun getBackupCallLogsDir(parent: String): String = "$parent/$SUBDIR_CALL_LOGS"
 
     fun getBackupAppsApkFilePath(parent: String, packageName: String): String =
         "${getBackupAppsApkDir(parent, packageName)}/$APK_FILE_NAME"
@@ -87,6 +90,9 @@ object PathHelper {
 
     fun getBackupContactsConfigFilePath(parent: String, timestamp: Long): String =
         "${getBackupContactsDir(parent)}/$CONTACTS_PREFIX${TimeHelper.formatTimestampInDetail(timestamp)}$CONFIG_FILE_SUFFIX"
+
+    fun getBackupCallLogsConfigFilePath(parent: String, timestamp: Long): String =
+        "${getBackupCallLogsDir(parent)}/$CALL_LOGS_PREFIX${TimeHelper.formatTimestampInDetail(timestamp)}$CONFIG_FILE_SUFFIX"
 
     fun getBackupPath(): Flow<String> = App.application.readString(BackupPath)
     fun getBackupPathBackups(): Flow<String> = getBackupPath().map { "${it.trimEnd('/')}/$SUBDIR_BACKUPS" }
