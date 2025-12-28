@@ -49,35 +49,34 @@ class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessReposito
             }
         }
         
+        val moshi: Moshi = Moshi.Builder().build()
         val smsJson = runCatching {
-            val moshi: Moshi = Moshi.Builder().build()
             moshi.adapter<List<Sms>>().toJson(smsList)
         }.onFailure {
             LogHelper.e(TAG, "start", "Failed to serialize SMS to json.", it)
         }.getOrNull()
         
         val mmsJson = runCatching {
-            val moshi: Moshi = Moshi.Builder().build()
             moshi.adapter<List<Mms>>().toJson(mmsList)
         }.onFailure {
             LogHelper.e(TAG, "start", "Failed to serialize MMS to json.", it)
         }.getOrNull()
         
-        if (smsJson != null && mmsJson != null) {
-            val backupConfig = mBackupProcessRepo.getBackupConfig()
-            val messagesPath = PathHelper.getBackupMessagesDir(backupConfig.path)
-            if (RemoteRootService.exists(messagesPath).not() && RemoteRootService.mkdirs(messagesPath).not()) {
-                LogHelper.e(TAG, "start", "Failed to mkdirs: $messagesPath.")
-            }
-            val timestamp = System.currentTimeMillis()
-            val configPath = PathHelper.getBackupMessagesConfigFilePath(backupConfig.path, timestamp)
-            
-            // Combine SMS and MMS into a single JSON structure
-            val combinedJson = """{"sms":$smsJson,"mms":$mmsJson}"""
-            RemoteRootService.writeText(configPath, combinedJson)
-        } else {
-            LogHelper.e(TAG, "start", "Failed to save messages, json is null (sms: ${smsJson != null}, mms: ${mmsJson != null})")
+        // Save backup even if only one type succeeds, using empty arrays for failures
+        val finalSmsJson = smsJson ?: "[]"
+        val finalMmsJson = mmsJson ?: "[]"
+        
+        val backupConfig = mBackupProcessRepo.getBackupConfig()
+        val messagesPath = PathHelper.getBackupMessagesDir(backupConfig.path)
+        if (RemoteRootService.exists(messagesPath).not() && RemoteRootService.mkdirs(messagesPath).not()) {
+            LogHelper.e(TAG, "start", "Failed to mkdirs: $messagesPath.")
         }
+        val timestamp = System.currentTimeMillis()
+        val configPath = PathHelper.getBackupMessagesConfigFilePath(backupConfig.path, timestamp)
+        
+        // Combine SMS and MMS into a single JSON structure
+        val combinedJson = """{"sms":$finalSmsJson,"mms":$finalMmsJson}"""
+        RemoteRootService.writeText(configPath, combinedJson)
 
         mBackupProcessRepo.updateMessagesItem {
             copy {
