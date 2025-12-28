@@ -40,7 +40,7 @@ class BackupContactsHelper(private val mBackupProcessRepo: BackupProcessReposito
         if (json != null) {
             val backupConfig = mBackupProcessRepo.getBackupConfig()
             val contactsPath = PathHelper.getBackupContactsDir(backupConfig.path)
-            if (RemoteRootService.exists(contactsPath).not() && RemoteRootService.mkdirs(contactsPath)) {
+            if (RemoteRootService.exists(contactsPath).not() && RemoteRootService.mkdirs(contactsPath).not()) {
                 LogHelper.e(TAG, "start", "Failed to mkdirs: $contactsPath.")
             }
             val configPath = PathHelper.getBackupContactsConfigFilePath(backupConfig.path, System.currentTimeMillis())

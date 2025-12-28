@@ -41,7 +41,7 @@ class BackupNetworksHelper(private val mBackupProcessRepo: BackupProcessReposito
         if (json != null) {
             val backupConfig = mBackupProcessRepo.getBackupConfig()
             val networksPath = PathHelper.getBackupNetworksDir(backupConfig.path)
-            if (RemoteRootService.exists(networksPath).not() && RemoteRootService.mkdirs(networksPath)) {
+            if (RemoteRootService.exists(networksPath).not() && RemoteRootService.mkdirs(networksPath).not()) {
                 LogHelper.e(TAG, "start", "Failed to mkdirs: $networksPath.")
             }
             val configPath = PathHelper.getBackupNetworksConfigFilePath(backupConfig.path, System.currentTimeMillis())
