@@ -36,7 +36,8 @@ object PathHelper {
     private const val NETWORKS_PREFIX = "networks_"
     private const val CONTACTS_PREFIX = "contacts_"
     private const val CALL_LOGS_PREFIX = "call_logs_"
-    private const val MESSAGES_PREFIX = "messages_"
+    private const val MESSAGES_SMS_PREFIX = "messages_sms_"
+    private const val MESSAGES_MMS_PREFIX = "messages_mms_"
 
     /**
      * Returns the parent path, or empty string if this path does not have a parent.
@@ -97,8 +98,11 @@ object PathHelper {
     fun getBackupCallLogsConfigFilePath(parent: String, timestamp: Long): String =
         "${getBackupCallLogsDir(parent)}/$CALL_LOGS_PREFIX${TimeHelper.formatTimestampInDetail(timestamp)}$CONFIG_FILE_SUFFIX"
 
-    fun getBackupMessagesConfigFilePath(parent: String, timestamp: Long): String =
-        "${getBackupMessagesDir(parent)}/$MESSAGES_PREFIX${TimeHelper.formatTimestampInDetail(timestamp)}$CONFIG_FILE_SUFFIX"
+    fun getBackupMessagesSmsConfigFilePath(parent: String, timestamp: Long): String =
+        "${getBackupMessagesDir(parent)}/$MESSAGES_SMS_PREFIX${TimeHelper.formatTimestampInDetail(timestamp)}$CONFIG_FILE_SUFFIX"
+
+    fun getBackupMessagesMmsConfigFilePath(parent: String, timestamp: Long): String =
+        "${getBackupMessagesDir(parent)}/$MESSAGES_MMS_PREFIX${TimeHelper.formatTimestampInDetail(timestamp)}$CONFIG_FILE_SUFFIX"
 
     fun getBackupPath(): Flow<String> = App.application.readString(BackupPath)
     fun getBackupPathBackups(): Flow<String> = getBackupPath().map { "${it.trimEnd('/')}/$SUBDIR_BACKUPS" }

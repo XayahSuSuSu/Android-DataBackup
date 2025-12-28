@@ -1,7 +1,6 @@
 package com.xayah.databackup.service.util
 
 import arrow.optics.copy
-import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
 import com.xayah.databackup.App.Companion.application
@@ -16,12 +15,6 @@ import com.xayah.databackup.database.entity.Sms
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.PathHelper
-
-@JsonClass(generateAdapter = true)
-data class MessagesBackup(
-    val sms: List<Sms>,
-    val mms: List<Mms>
-)
 
 class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessRepository) {
     companion object {
@@ -56,24 +49,40 @@ class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessReposito
             }
         }
         
-        val json = runCatching {
-            val moshi: Moshi = Moshi.Builder().build()
-            val messagesBackup = MessagesBackup(sms = smsList, mms = mmsList)
-            moshi.adapter<MessagesBackup>().toJson(messagesBackup)
+        val moshi: Moshi = Moshi.Builder().build()
+        val backupConfig = mBackupProcessRepo.getBackupConfig()
+        val messagesPath = PathHelper.getBackupMessagesDir(backupConfig.path)
+        if (RemoteRootService.exists(messagesPath).not() && RemoteRootService.mkdirs(messagesPath).not()) {
+            LogHelper.e(TAG, "start", "Failed to mkdirs: $messagesPath.")
+        }
+        val timestamp = System.currentTimeMillis()
+        
+        // Backup SMS
+        val smsJson = runCatching {
+            moshi.adapter<List<Sms>>().toJson(smsList)
         }.onFailure {
-            LogHelper.e(TAG, "start", "Failed to serialize messages to json.", it)
+            LogHelper.e(TAG, "start", "Failed to serialize SMS to json.", it)
         }.getOrNull()
         
-        if (json != null) {
-            val backupConfig = mBackupProcessRepo.getBackupConfig()
-            val messagesPath = PathHelper.getBackupMessagesDir(backupConfig.path)
-            if (RemoteRootService.exists(messagesPath).not() && RemoteRootService.mkdirs(messagesPath).not()) {
-                LogHelper.e(TAG, "start", "Failed to mkdirs: $messagesPath.")
-            }
-            val configPath = PathHelper.getBackupMessagesConfigFilePath(backupConfig.path, System.currentTimeMillis())
-            RemoteRootService.writeText(configPath, json)
+        if (smsJson != null) {
+            val smsConfigPath = PathHelper.getBackupMessagesSmsConfigFilePath(backupConfig.path, timestamp)
+            RemoteRootService.writeText(smsConfigPath, smsJson)
         } else {
-            LogHelper.e(TAG, "start", "Failed to save messages, json is null")
+            LogHelper.e(TAG, "start", "Failed to save SMS, json is null")
+        }
+        
+        // Backup MMS
+        val mmsJson = runCatching {
+            moshi.adapter<List<Mms>>().toJson(mmsList)
+        }.onFailure {
+            LogHelper.e(TAG, "start", "Failed to serialize MMS to json.", it)
+        }.getOrNull()
+        
+        if (mmsJson != null) {
+            val mmsConfigPath = PathHelper.getBackupMessagesMmsConfigFilePath(backupConfig.path, timestamp)
+            RemoteRootService.writeText(mmsConfigPath, mmsJson)
+        } else {
+            LogHelper.e(TAG, "start", "Failed to save MMS, json is null")
         }
 
         mBackupProcessRepo.updateMessagesItem {
