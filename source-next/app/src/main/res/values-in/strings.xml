@@ -481,4 +481,10 @@
     <string name="no_permissions">Tidak ada izin</string>
     <string name="error_no_space_left_desc">Tidak ada ruang kosong yang tersisa di perangkat. Pastikan perangkat Anda memiliki ruang kosong yang cukup sebelum melakukan operasi ini</string>
     <string name="prompt_cancel_operation">Apakah Anda ingin menghentikan operasi yang sedang berlangsung?</string>
+    <string name="apps_backup_strategy">Strategi pencadangan aplikasi</string>
+    <string name="unnamed">Tanpa nama</string>
+    <string name="not_created_yet">Belum dibuat</string>
+    <string name="created_at">Dibuat pada</string>
+    <string name="updated_at">Diperbarui pada</string>
+    <string name="edit_name">Edit nama</string>
 </resources>
