@@ -481,4 +481,10 @@
     <string name="worker_update_other_info">Aktualisierung anderer Informationen</string>
     <string name="error_no_space_left_desc">Auf dem Gerät ist kein Speicherplatz mehr verfügbar. Bitte stellen Sie vor diesem Vorgang sicher, dass auf Ihrem Gerät ausreichend Speicherplatz vorhanden ist</string>
     <string name="prompt_cancel_operation">Den laufenden Vorgang unterbrechen?</string>
+    <string name="apps_backup_strategy">Datensicherungsstrategie</string>
+    <string name="unnamed">Unbenannt</string>
+    <string name="not_created_yet">Noch nicht erstellt</string>
+    <string name="created_at">Erstellt am</string>
+    <string name="updated_at">Aktualisiert am</string>
+    <string name="edit_name">Namen bearbeiten</string>
 </resources>
