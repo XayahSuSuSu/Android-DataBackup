@@ -481,4 +481,10 @@
     <string name="collapsed">Ridotto</string>
     <string name="additional_data">Addl. Dati</string>
     <string name="time_format_pattern">dd MMM, HH:mm</string>
+    <string name="apps_backup_strategy">Strategia backup app</string>
+    <string name="unnamed">Senza nome</string>
+    <string name="not_created_yet">Non ancora creato</string>
+    <string name="created_at">Creato in</string>
+    <string name="updated_at">Aggiornato in</string>
+    <string name="edit_name">Modifica nome</string>
 </resources>
