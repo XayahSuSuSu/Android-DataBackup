@@ -10,15 +10,18 @@ import com.xayah.databackup.data.ProcessItem
 import com.xayah.databackup.data.currentIndex
 import com.xayah.databackup.data.msg
 import com.xayah.databackup.data.progress
+import com.xayah.databackup.database.entity.FiledMap
 import com.xayah.databackup.database.entity.Mms
 import com.xayah.databackup.database.entity.Sms
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.PathHelper
+import java.io.File
 
 class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessRepository) {
     companion object {
         private const val TAG = "BackupMessagesHelper"
+        private const val SUBDIR_APP_PARTS = "app_parts"
     }
 
     suspend fun start() {
@@ -84,6 +87,9 @@ class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessReposito
         } else {
             LogHelper.e(TAG, "start", "Failed to save MMS, json is null")
         }
+        
+        // Backup MMS part files
+        backupMmsPartFiles(mmsList, messagesPath, moshi)
 
         mBackupProcessRepo.updateMessagesItem {
             copy {
@@ -92,5 +98,57 @@ class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessReposito
                 ProcessItem.progress set 1f
             }
         }
+    }
+    
+    private suspend fun backupMmsPartFiles(mmsList: List<Mms>, messagesPath: String, moshi: Moshi) {
+        val appPartsPath = "$messagesPath/$SUBDIR_APP_PARTS"
+        if (RemoteRootService.exists(appPartsPath).not() && RemoteRootService.mkdirs(appPartsPath).not()) {
+            LogHelper.e(TAG, "backupMmsPartFiles", "Failed to mkdirs: $appPartsPath.")
+            return
+        }
+        
+        var backedUpCount = 0
+        mmsList.forEach { mms ->
+            runCatching {
+                // Parse the part JSON
+                val partList = mms.part?.let { json -> 
+                    moshi.adapter<List<FiledMap>>().fromJson(json) 
+                } ?: emptyList()
+                
+                // Process each part
+                partList.forEach { part ->
+                    val dataPath = part["_data"]?.toString()
+                    if (dataPath != null && dataPath.isNotEmpty()) {
+                        // Check if file exists
+                        if (RemoteRootService.exists(dataPath)) {
+                            val sourceFile = File(dataPath)
+                            val fileName = sourceFile.name
+                            // Use MMS ID and part index to create unique filenames
+                            val partId = part["_id"]?.toString() ?: System.currentTimeMillis().toString()
+                            val destPath = "$appPartsPath/${mms.id}_${partId}_$fileName"
+                            
+                            // Use tar to copy the file (with compression level 0 to avoid compression overhead)
+                            val argv = arrayOf(
+                                "-cf", destPath,
+                                "-C", sourceFile.parent ?: "/",
+                                sourceFile.name
+                            )
+                            val result = RemoteRootService.callTarCli("/dev/null", "/dev/null", argv)
+                            if (result == 0) {
+                                backedUpCount++
+                                LogHelper.i(TAG, "backupMmsPartFiles", "Successfully backed up MMS part file: $dataPath to $destPath")
+                            } else {
+                                LogHelper.e(TAG, "backupMmsPartFiles", "Failed to backup MMS part file: $dataPath, tar exit code: $result")
+                            }
+                        } else {
+                            LogHelper.w(TAG, "backupMmsPartFiles", "MMS part file does not exist: $dataPath")
+                        }
+                    }
+                }
+            }.onFailure { e ->
+                LogHelper.e(TAG, "backupMmsPartFiles", "Failed to process MMS part files for MMS id: ${mms.id}", e)
+            }
+        }
+        LogHelper.i(TAG, "backupMmsPartFiles", "Backed up $backedUpCount MMS part files")
     }
 }
