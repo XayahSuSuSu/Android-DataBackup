@@ -23,4 +23,5 @@ interface IRemoteRootService {
     boolean mkdirs(String path);
     boolean exists(String path);
     boolean deleteRecursively(String path);
+    boolean copyRecursively(String source, String target, boolean overwrite);
 }
