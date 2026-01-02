@@ -479,4 +479,12 @@
     <string name="worker_update_apps_storage_info">به‌روزرسانی اطلاعات حافظه برنامه‌ها</string>
     <string name="worker_update_other_info">به‌روزرسانی اطلاعات دیگر</string>
     <string name="no_permissions">بدون دسترسی</string>
+    <string name="error_no_space_left_desc">فضایی در دستگاه باقی نمانده. لطفا پیش از عملیات مطمئن شوید دستگاه شما به اندازة کافی فضای خالی دارد</string>
+    <string name="prompt_cancel_operation">عملیات جاری مختل شود؟</string>
+    <string name="apps_backup_strategy">رویکرد پشتیبان‌گیری برنامه‌ها</string>
+    <string name="unnamed">بی‌نام</string>
+    <string name="not_created_yet">هنوز ساخته نشده</string>
+    <string name="created_at">ساخته شده در</string>
+    <string name="updated_at">به‌روزرسانی شده در</string>
+    <string name="edit_name">ویرایش نام</string>
 </resources>
