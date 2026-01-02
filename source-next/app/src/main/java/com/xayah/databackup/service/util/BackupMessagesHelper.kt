@@ -16,12 +16,10 @@ import com.xayah.databackup.database.entity.Sms
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.PathHelper
-import java.io.File
 
 class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessRepository) {
     companion object {
         private const val TAG = "BackupMessagesHelper"
-        private const val SUBDIR_APP_PARTS = "app_parts"
     }
 
     suspend fun start() {
@@ -101,14 +99,12 @@ class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessReposito
     }
     
     private suspend fun backupMmsPartFiles(mmsList: List<Mms>, messagesPath: String, moshi: Moshi) {
-        val appPartsPath = "$messagesPath/$SUBDIR_APP_PARTS"
+        val appPartsPath = PathHelper.getBackupAppPartsDir(messagesPath)
         if (RemoteRootService.exists(appPartsPath).not() && RemoteRootService.mkdirs(appPartsPath).not()) {
             LogHelper.e(TAG, "backupMmsPartFiles", "Failed to mkdirs: $appPartsPath.")
             return
         }
         
-        var backedUpCount = 0
-        var partCounter = 0L
         mmsList.forEach { mms ->
             runCatching {
                 // Parse the part JSON
@@ -122,19 +118,13 @@ class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessReposito
                     if (dataPath != null && dataPath.isNotEmpty()) {
                         // Check if file exists
                         if (RemoteRootService.exists(dataPath)) {
-                            val sourceFile = File(dataPath)
-                            val fileName = sourceFile.name
-                            // Use MMS ID and incremental counter to create unique filenames
-                            val partId = part["_id"]?.toString() ?: (partCounter++).toString()
-                            val destPath = "$appPartsPath/${mms.id}_${partId}_$fileName"
-                            
-                            // Use compress with level 0 (store only, no compression) to copy the file
-                            val error = RemoteRootService.compress(0, dataPath, destPath, null)
-                            if (error == null) {
-                                backedUpCount++
+                            val fileName = PathHelper.getChildPath(dataPath)
+                            val destPath = "$appPartsPath/${fileName}"
+
+                            if (RemoteRootService.copyRecursively(dataPath, destPath, true)) {
                                 LogHelper.i(TAG, "backupMmsPartFiles", "Successfully backed up MMS part file: $dataPath")
                             } else {
-                                LogHelper.e(TAG, "backupMmsPartFiles", "Failed to backup MMS part file: $dataPath, error: $error")
+                                LogHelper.e(TAG, "backupMmsPartFiles", "Failed to backup MMS part file: $dataPath")
                             }
                         } else {
                             LogHelper.w(TAG, "backupMmsPartFiles", "MMS part file does not exist: $dataPath")
@@ -145,6 +135,5 @@ class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessReposito
                 LogHelper.e(TAG, "backupMmsPartFiles", "Failed to process MMS part files for MMS id: ${mms.id}", e)
             }
         }
-        LogHelper.i(TAG, "backupMmsPartFiles", "Backed up $backedUpCount MMS part files")
     }
 }
