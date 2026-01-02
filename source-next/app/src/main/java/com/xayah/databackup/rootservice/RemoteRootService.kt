@@ -295,6 +295,10 @@ object RemoteRootService {
         override fun deleteRecursively(path: String): Boolean {
             return runCatching { File(path).deleteRecursively() }.getOrNull() ?: false
         }
+
+        override fun copyRecursively(source: String, target: String, overwrite: Boolean): Boolean {
+            return runCatching { File(source).copyRecursively(File(target), overwrite) }.getOrNull() ?: false
+        }
     }
 
     private fun destroyService() {
@@ -500,5 +504,9 @@ object RemoteRootService {
 
     suspend fun deleteRecursively(path: String): Boolean {
         return getService()?.deleteRecursively(path) ?: false
+    }
+
+    suspend fun copyRecursively(source: String, target: String, overwrite: Boolean = false): Boolean {
+        return getService()?.copyRecursively(source, target, overwrite) ?: false
     }
 }
