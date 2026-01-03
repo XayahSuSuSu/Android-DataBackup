@@ -481,4 +481,10 @@
     <string name="additional_data">Додаткові дані</string>
     <string name="error_no_space_left_desc">На пристрої не залишилося місця. Будь ласка, переконайтеся, що на вашому пристрої достатньо вільного місця, перш ніж виконувати цю операцію</string>
     <string name="prompt_cancel_operation">Перервати поточну операцію?</string>
+    <string name="apps_backup_strategy">Стратегія резервного копіювання програм</string>
+    <string name="unnamed">Безіменний</string>
+    <string name="not_created_yet">Ще не створено</string>
+    <string name="created_at">Створено в</string>
+    <string name="updated_at">Оновлено о</string>
+    <string name="edit_name">Редагувати ім\'я</string>
 </resources>
