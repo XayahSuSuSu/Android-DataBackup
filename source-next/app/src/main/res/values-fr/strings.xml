@@ -481,4 +481,10 @@
     <string name="select_all_addl_data">Tout sélectionner : Données Additionnelles</string>
     <string name="unselect_all_addl_data">Tout déselectionner : Données Additionnelles</string>
     <string name="additional_data">Données Additionnelles</string>
+    <string name="apps_backup_strategy">Stratégie de sauvegarde de l\'application</string>
+    <string name="unnamed">Non nommé</string>
+    <string name="not_created_yet">Pas encore créé</string>
+    <string name="created_at">Créé le</string>
+    <string name="updated_at">Mis à jour le</string>
+    <string name="edit_name">Modifier le nom</string>
 </resources>
