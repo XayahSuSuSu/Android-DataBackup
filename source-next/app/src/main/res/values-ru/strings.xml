@@ -234,7 +234,7 @@
     <string name="backup_apps">Бекап приложений</string>
     <string name="backup_contacts">Бекап контактов</string>
     <string name="confirm_delete">Это удалит все выбранные вами файлы</string>
-    <string name="storage">Хранение</string>
+    <string name="storage">Хранилище</string>
     <string name="restore_user_desc">Какого пользователя вы хотите восстановить?</string>
     <string name="quick_actions">Быстрые действия</string>
     <string name="backup_files">Бекап файлов</string>
@@ -481,4 +481,10 @@
     <string name="no_permissions">Нет разрешений</string>
     <string name="error_no_space_left_desc">На устройстве нет свободного места. Перед выполнением этой операции убедитесь, что на вашем устройстве достаточно свободного места</string>
     <string name="prompt_cancel_operation">Прервать текущую операцию?</string>
+    <string name="apps_backup_strategy">Стратегия резервного копирования приложений</string>
+    <string name="unnamed">Безымянный</string>
+    <string name="not_created_yet">Ещё не создано</string>
+    <string name="created_at">Создано в</string>
+    <string name="updated_at">Обновлено в</string>
+    <string name="edit_name">Изменить название</string>
 </resources>
