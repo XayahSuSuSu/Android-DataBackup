@@ -1,3 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <plurals name="num_seconds_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> seconde</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> secondes</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> secondes</item>
+    </plurals>
+    <plurals name="num_minutes_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> minute</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> minutes</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> minutes</item>
+    </plurals>
+    <plurals name="num_hours_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> heure</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> heures</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> heures</item>
+    </plurals>
+    <plurals name="num_days_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> jour</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> jours</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> jours</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> élément</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> éléments</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> éléments</item>
+    </plurals>
 </resources>
