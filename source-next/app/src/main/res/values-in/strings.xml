@@ -96,7 +96,7 @@
     <string name="restore_dir">Direktori pemulihan</string>
     <string name="restore_list">Daftar pemulihan</string>
     <string name="date">Tanggal</string>
-    <string name="restoring">Pemulihan</string>
+    <string name="restoring">Memulihkan</string>
     <string name="processing_exit_confirmation">Apakah kamu yakin ingin keluar dari aplikasi dan menghentikan operasi yang sedang berlangsung?</string>
     <string name="reload">Memuat ulang</string>
     <string name="databases_reload_failed">Tak dapat memuat ulang basis data</string>
