@@ -78,7 +78,7 @@ jobs:
           if [ ${BUILD_FOSS} = 'true' ]; then
             TASKS="$TASKS assembleArm64-v8aFossRelease assembleArmeabi-v7aFossRelease assembleX86FossRelease assembleX86_64FossRelease"
           fi
-          if [ -z ${TASKS} ]; then
+          if [ -z "${TASKS}" ]; then
             TASKS="assembleRelease"
           fi
           ./gradlew $TASKS --daemon --parallel
