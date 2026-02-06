@@ -284,8 +284,8 @@
     <string name="it_is_empty">انها فارغة :/</string>
     <string name="configurations_desc">الإعدادات، القائمة السوداء، إعدادات الحساب السحابي</string>
     <string name="_import">استيراد</string>
-    <string name="exported">تم تصديره</string>
-    <string name="config_file_may_be_broken">ملف الإعداد قد يكون تالفاً</string>
+    <string name="exported">مصدر</string>
+    <string name="config_file_may_be_broken">قد يكون ملف الإعداد تالفا</string>
     <string name="imported">تم استيراده</string>
     <string name="select_files">اختر الملفات</string>
     <string name="choose_a_custom_path">اختر مسار مخصص</string>
@@ -311,7 +311,7 @@
     <string name="kill_app_options">خيارات ايقاف التطبيق</string>
     <string name="kill_app_options_desc">سلوك ما قبل النسخ الاحتياطي</string>
     <string name="no_root_directory">الرجاء عدم اختيار المسار الجذري \"/\"</string>
-    <string name="auto_screen_off">ايقاف تشغيل الشاشة تلقائياً</string>
+    <string name="auto_screen_off">ايقاف تشغيل الشاشة تلقائيا</string>
     <string name="args_screen_off_in_seconds">الشاشة ستغلق في غضون %1$s ثانية</string>
     <string name="language">اللغة</string>
     <string name="download">تنزيل</string>
@@ -407,4 +407,6 @@
     <string name="insecure_server_connection">السماح بالاتصال بخادم غير آمن</string>
     <string name="insecure_server_connection_desc">قم بتفعيل هذا الخيار عند استخدام شهادة موقعة ذاتيًا</string>
     <string name="next">التالي</string>
+    <string name="update_time">وقت التحديث</string>
+    <string name="auto_screen_off_desc">إيقاف تشغيل الشاشة تلقائيا أثناء النسخ الاحتياطي أو الاستعادة، ثم تشغيلها بعد اكتمال العملية</string>
 </resources>
