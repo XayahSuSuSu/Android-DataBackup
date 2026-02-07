@@ -282,7 +282,7 @@
     <string name="docs">Documents</string>
     <string name="reverse_selection">Inverser la sélection</string>
     <string name="args_restored_at">Restauré à %1$s</string>
-    <string name="restore_ssaid_desc">Restaurer l\'application Android ID, elle requiert un redémarrage immédiat pour que la restauration prenne effet</string>
+    <string name="restore_ssaid_desc">Restaurer l\'ID d\'application Android, cette opération requiert un redémarrage immédiat pour que la restauration prenne effet</string>
     <string name="welcome_screen_app_desc">Profitez de sauvegardes sans encombres avec DataBackup. C\'est simple d\'utilisation et entièrement libre. Gardez vos données en sécurité sans le stress</string>
     <string name="root_desc">Cette application vous permet de faire une sauvegarde complète de votre appareil, elle requiert les permissions root (super-utilisateur) pour accéder aux fichiers système et aux paramètres auxquels les applications standard n\'ont pas accès</string>
     <string name="root_denied_msg">Veuillez vérifier votre gestionnaire de root et redémarrer l\'application</string>
@@ -384,7 +384,7 @@
     <string name="backup_configs">Sauvegarder les configurations</string>
     <string name="backup_configs_desc">Exporter les configurations vers le dossier de sauvegarde</string>
     <string name="restore_permissions_desc">Restaurer les permissions des applications</string>
-    <string name="restore_ssaid">Restaurer l\'Android ID</string>
+    <string name="restore_ssaid">Restaurer l\'ID Android</string>
     <string name="last_update">Dernière mise à jour</string>
     <string name="args_apps_restored">%1$s des applications restaurées</string>
     <string name="provider">Fournisseur</string>
