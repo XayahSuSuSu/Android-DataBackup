@@ -9,13 +9,19 @@ import android.os.Binder
 import android.os.IBinder
 import android.os.RemoteException
 import com.xayah.databackup.App
+import com.xayah.databackup.data.AppRepository
 import com.xayah.databackup.data.BackupConfigRepository
+import com.xayah.databackup.data.CallLogRepository
+import com.xayah.databackup.data.ContactRepository
+import com.xayah.databackup.data.MessageRepository
+import com.xayah.databackup.data.NetworkRepository
 import com.xayah.databackup.service.util.BackupAppsHelper
 import com.xayah.databackup.service.util.BackupCallLogsHelper
 import com.xayah.databackup.service.util.BackupContactsHelper
 import com.xayah.databackup.service.util.BackupMessagesHelper
 import com.xayah.databackup.service.util.BackupNetworksHelper
 import com.xayah.databackup.util.LogHelper
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
@@ -36,6 +42,11 @@ object BackupService {
 
     class BackupServiceImpl : Service() {
         private val mBackupConfigRepo: BackupConfigRepository by inject()
+        private val mAppRepo: AppRepository by inject()
+        private val mNetworkRepo: NetworkRepository by inject()
+        private val mContactRepo: ContactRepository by inject()
+        private val mCallLogRepo: CallLogRepository by inject()
+        private val mMessageRepo: MessageRepository by inject()
         private val mBackupAppsHelper: BackupAppsHelper by inject()
         private val mBackupNetworksHelper: BackupNetworksHelper by inject()
         private val mBackupContactsHelper: BackupContactsHelper by inject()
@@ -85,6 +96,25 @@ object BackupService {
             mMutex.withLock {
                 mBackupConfigRepo.setupBackupConfig()
             }
+        }
+
+        suspend fun start() {
+            if (mAppRepo.isBackupAppsSelected.first()) {
+                backupApps()
+            }
+            if (mNetworkRepo.isBackupNetworksSelected.first()) {
+                backupNetworks()
+            }
+            if (mContactRepo.isBackupMessagesSelected.first()) {
+                backupContacts()
+            }
+            if (mCallLogRepo.isBackupCallLogsSelected.first()) {
+                backupCallLogs()
+            }
+            if (mMessageRepo.isBackupContactsSelected.first()) {
+                backupMessages()
+            }
+            setupBackupConfig()
         }
     }
 
@@ -153,11 +183,6 @@ object BackupService {
     }
 
     suspend fun start() {
-        getService()?.backupApps()
-        getService()?.backupNetworks()
-        getService()?.backupContacts()
-        getService()?.backupCallLogs()
-        getService()?.backupMessages()
-        getService()?.setupBackupConfig()
+        getService()?.start()
     }
 }

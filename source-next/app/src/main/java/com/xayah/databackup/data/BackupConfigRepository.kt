@@ -135,7 +135,7 @@ class BackupConfigRepository {
 
     suspend fun setupBackupConfig() {
         val currentConfig = getCurrentConfig()
-        currentConfig.createdAt = System.currentTimeMillis()
+        currentConfig.updatedAt = System.currentTimeMillis()
         if (_selectedIndex.value == NEW_CONFIG_INDEX) {
             App.application.saveString(BackupConfigSelectedUuid.first, currentConfig.uuidString)
         }

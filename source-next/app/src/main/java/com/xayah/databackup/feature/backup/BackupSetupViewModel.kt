@@ -164,12 +164,12 @@ open class BackupSetupViewModel(
             return@combine null
         }
         var count = 0
-        if (appsItem.selected) count++
-        if (filesItem.selected) count++
-        if (networksItem.selected) count++
-        if (contactsItem.selected) count++
-        if (callLogsItem.selected) count++
-        if (messagesItem.selected) count++
+        if (appsItem.selected && appsItem.selections.first > 0) count++
+        if (filesItem.selected && filesItem.selections.first > 0) count++
+        if (networksItem.selected && networksItem.selections.first > 0) count++
+        if (contactsItem.selected && contactsItem.selections.first > 0) count++
+        if (callLogsItem.selected && callLogsItem.selections.first > 0) count++
+        if (messagesItem.selected && messagesItem.selections.first > 0) count++
         count to MaxSelectedItems
     }.stateIn(
         scope = viewModelScope,

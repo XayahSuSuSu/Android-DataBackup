@@ -534,7 +534,7 @@ private fun ProcessAppsItem(viewModel: BackupProcessViewModel) {
         }
     }
 
-    FadeVisibility(visible = appsItem.isSelected) {
+    FadeVisibility(visible = appsItem.isSelected && appsItem.totalCount > 0) {
         ProcessItemHolder(
             modifier = Modifier.fillMaxWidth(),
             process = { appsItem.progress },
@@ -555,7 +555,7 @@ private fun ProcessAppsItem(viewModel: BackupProcessViewModel) {
 
 @Composable
 private fun ProcessFilesItem(filesItem: ProcessItem) {
-    FadeVisibility(visible = filesItem.isSelected) {
+    FadeVisibility(visible = filesItem.isSelected && filesItem.totalCount > 0) {
         ProcessItemHolder(
             modifier = Modifier.fillMaxWidth(),
             process = { filesItem.progress },
@@ -576,7 +576,7 @@ private fun ProcessFilesItem(filesItem: ProcessItem) {
 
 @Composable
 private fun ProcessNetworksItem(networksItem: ProcessItem) {
-    FadeVisibility(visible = networksItem.isSelected) {
+    FadeVisibility(visible = networksItem.isSelected && networksItem.totalCount > 0) {
         ProcessItemHolder(
             modifier = Modifier.fillMaxWidth(),
             process = { networksItem.progress },
@@ -597,7 +597,7 @@ private fun ProcessNetworksItem(networksItem: ProcessItem) {
 
 @Composable
 private fun ProcessContactsItem(contactsItem: ProcessItem) {
-    FadeVisibility(visible = contactsItem.isSelected) {
+    FadeVisibility(visible = contactsItem.isSelected && contactsItem.totalCount > 0) {
         ProcessItemHolder(
             modifier = Modifier.fillMaxWidth(),
             process = { contactsItem.progress },
@@ -618,7 +618,7 @@ private fun ProcessContactsItem(contactsItem: ProcessItem) {
 
 @Composable
 private fun ProcessCallLogsItem(callLogsItem: ProcessItem) {
-    FadeVisibility(visible = callLogsItem.isSelected) {
+    FadeVisibility(visible = callLogsItem.isSelected && callLogsItem.totalCount > 0) {
         ProcessItemHolder(
             modifier = Modifier.fillMaxWidth(),
             process = { callLogsItem.progress },
@@ -639,7 +639,7 @@ private fun ProcessCallLogsItem(callLogsItem: ProcessItem) {
 
 @Composable
 private fun ProcessMessagesItem(messagesItem: ProcessItem) {
-    FadeVisibility(visible = messagesItem.isSelected) {
+    FadeVisibility(visible = messagesItem.isSelected && messagesItem.totalCount > 0) {
         ProcessItemHolder(
             modifier = Modifier.fillMaxWidth(),
             process = { messagesItem.progress },

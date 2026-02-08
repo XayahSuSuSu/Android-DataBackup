@@ -44,7 +44,8 @@ class BackupNetworksHelper(private val mBackupProcessRepo: BackupProcessReposito
             if (RemoteRootService.exists(networksPath).not() && RemoteRootService.mkdirs(networksPath).not()) {
                 LogHelper.e(TAG, "start", "Failed to mkdirs: $networksPath.")
             }
-            val configPath = PathHelper.getBackupNetworksConfigFilePath(backupConfig.path, System.currentTimeMillis())
+            val configPath = PathHelper.getBackupNetworksConfigFilePath(backupConfig.path)
+            RemoteRootService.deleteRecursively(configPath)
             RemoteRootService.writeText(configPath, json)
         } else {
             LogHelper.e(TAG, "start", "Failed to save networks, json is null")

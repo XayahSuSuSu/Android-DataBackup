@@ -56,8 +56,7 @@ class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessReposito
         if (RemoteRootService.exists(messagesPath).not() && RemoteRootService.mkdirs(messagesPath).not()) {
             LogHelper.e(TAG, "start", "Failed to mkdirs: $messagesPath.")
         }
-        val timestamp = System.currentTimeMillis()
-        
+
         // Backup SMS
         val smsJson = runCatching {
             moshi.adapter<List<Sms>>().toJson(smsList)
@@ -66,7 +65,8 @@ class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessReposito
         }.getOrNull()
         
         if (smsJson != null) {
-            val smsConfigPath = PathHelper.getBackupMessagesSmsConfigFilePath(backupConfig.path, timestamp)
+            val smsConfigPath = PathHelper.getBackupMessagesSmsConfigFilePath(backupConfig.path)
+            RemoteRootService.deleteRecursively(smsConfigPath)
             RemoteRootService.writeText(smsConfigPath, smsJson)
         } else {
             LogHelper.e(TAG, "start", "Failed to save SMS, json is null")
@@ -80,7 +80,8 @@ class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessReposito
         }.getOrNull()
         
         if (mmsJson != null) {
-            val mmsConfigPath = PathHelper.getBackupMessagesMmsConfigFilePath(backupConfig.path, timestamp)
+            val mmsConfigPath = PathHelper.getBackupMessagesMmsConfigFilePath(backupConfig.path)
+            RemoteRootService.deleteRecursively(mmsConfigPath)
             RemoteRootService.writeText(mmsConfigPath, mmsJson)
         } else {
             LogHelper.e(TAG, "start", "Failed to save MMS, json is null")

@@ -43,7 +43,8 @@ class BackupCallLogsHelper(private val mBackupProcessRepo: BackupProcessReposito
             if (RemoteRootService.exists(callLogsPath).not() && RemoteRootService.mkdirs(callLogsPath).not()) {
                 LogHelper.e(TAG, "start", "Failed to mkdirs: $callLogsPath.")
             }
-            val configPath = PathHelper.getBackupCallLogsConfigFilePath(backupConfig.path, System.currentTimeMillis())
+            val configPath = PathHelper.getBackupCallLogsConfigFilePath(backupConfig.path)
+            RemoteRootService.deleteRecursively(configPath)
             RemoteRootService.writeText(configPath, json)
         } else {
             LogHelper.e(TAG, "start", "Failed to save call logs, json is null")

@@ -43,7 +43,8 @@ class BackupContactsHelper(private val mBackupProcessRepo: BackupProcessReposito
             if (RemoteRootService.exists(contactsPath).not() && RemoteRootService.mkdirs(contactsPath).not()) {
                 LogHelper.e(TAG, "start", "Failed to mkdirs: $contactsPath.")
             }
-            val configPath = PathHelper.getBackupContactsConfigFilePath(backupConfig.path, System.currentTimeMillis())
+            val configPath = PathHelper.getBackupContactsConfigFilePath(backupConfig.path)
+            RemoteRootService.deleteRecursively(configPath)
             RemoteRootService.writeText(configPath, json)
         } else {
             LogHelper.e(TAG, "start", "Failed to save contacts, json is null")
