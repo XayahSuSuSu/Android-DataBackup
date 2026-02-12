@@ -2,4 +2,6 @@
 <resources>
     <string name="start">Start</string>
     <string name="welcome_to_use">Välkommen till DataBackup</string>
+    <string name="app_name">Databackup</string>
+    <string name="update_records">Uppdatera register</string>
 </resources>
