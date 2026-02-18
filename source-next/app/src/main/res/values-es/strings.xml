@@ -57,7 +57,7 @@
     <string name="time">Hora</string>
     <string name="export">Exportar</string>
     <string name="simplify">Simplificar</string>
-    <string name="integral">Integral</string>
+    <string name="integral">Entero</string>
     <string name="wait_for_remaining_data_processing">Procesando datos restantes…</string>
     <string name="restore">Restaurar</string>
     <string name="last_restore">Última restauración</string>
@@ -71,7 +71,7 @@
     <string name="prompt">Instrucción</string>
     <string name="feature">Característica</string>
     <string name="monet">Monet</string>
-    <string name="keep_screen_on">Mantener la pantalla encendida</string>
+    <string name="keep_screen_on">Mantener pantalla encendida</string>
     <string name="keep_screen_on_desc">Mantener el dispositivo encendido mientras se trabaja</string>
     <string name="compression_type">Tipo de compresión</string>
     <string name="backup_user">Usuario del respaldo</string>
@@ -301,7 +301,7 @@
     <string name="report">Informar</string>
     <string name="auto_screen_off">Apagado automático de la pantalla</string>
     <string name="args_screen_off_in_seconds">La pantalla se apagará en %1$s segundos</string>
-    <string name="restore_user_desc">¿A qué usuario quieres restaurar?</string>
+    <string name="restore_user_desc">¿Cual usuario quiere restaurar?</string>
     <string name="config_file_may_be_broken">El archivo de configuración puede estar dañado</string>
     <string name="imported">Importado</string>
     <string name="configurations">Configuraciones</string>
@@ -481,4 +481,10 @@
     <string name="clean_backup_desc">Elimina todas las copias de seguridad anteriores del elemento de copia seleccionado antes de hacer una nueva</string>
     <string name="error_no_space_left_desc">El almacenamiento del dispositivo está lleno. Asegúrate de que tenga suficiente espacio libre antes de realizar la operación</string>
     <string name="prompt_cancel_operation">¿Interrumpir la operación en curso?</string>
+    <string name="apps_backup_strategy">Estrategia de respaldo de aplicaciones</string>
+    <string name="unnamed">Sin nombre</string>
+    <string name="not_created_yet">Aún no creado</string>
+    <string name="created_at">Creado el</string>
+    <string name="updated_at">Actualizado a</string>
+    <string name="edit_name">Editar nombre</string>
 </resources>
