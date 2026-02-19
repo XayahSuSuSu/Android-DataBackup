@@ -301,7 +301,7 @@
     <string name="report">Informar</string>
     <string name="auto_screen_off">Apagado automático de la pantalla</string>
     <string name="args_screen_off_in_seconds">La pantalla se apagará en %1$s segundos</string>
-    <string name="restore_user_desc">¿Cual usuario quiere restaurar?</string>
+    <string name="restore_user_desc">¿Qué usuario quieres restaurar?</string>
     <string name="config_file_may_be_broken">El archivo de configuración puede estar dañado</string>
     <string name="imported">Importado</string>
     <string name="configurations">Configuraciones</string>
