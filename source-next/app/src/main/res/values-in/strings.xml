@@ -487,4 +487,5 @@
     <string name="created_at">Dibuat pada</string>
     <string name="updated_at">Diperbarui pada</string>
     <string name="edit_name">Edit nama</string>
+    <string name="canceled">Dibatalkan</string>
 </resources>
