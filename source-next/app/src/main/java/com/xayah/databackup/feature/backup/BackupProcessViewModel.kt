@@ -19,14 +19,24 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+enum class BackupProcessStatus {
+    Processing,
+    Canceling,
+    Canceled,
+    Finished,
+}
+
 @optics
 data class BackupProcessUiState(
     val isLoaded: Boolean = false,
-    val isProcessing: Boolean = true,
+    val status: BackupProcessStatus = BackupProcessStatus.Processing,
 ) {
     companion object
 
-    val canBeCanceled: Boolean = isLoaded && isProcessing
+    val isProcessing: Boolean = status == BackupProcessStatus.Processing
+    val isCanceling: Boolean = status == BackupProcessStatus.Canceling
+    val isCanceled: Boolean = status == BackupProcessStatus.Canceled
+    val canBeCanceled: Boolean = isLoaded && status == BackupProcessStatus.Processing
 }
 
 open class BackupProcessViewModel(private val backupProcessRepo: BackupProcessRepository) : BaseViewModel() {
@@ -94,6 +104,12 @@ open class BackupProcessViewModel(private val backupProcessRepo: BackupProcessRe
     }
 
     fun cancel() {
+        if (uiState.value.canBeCanceled.not()) return
+        updateUiState {
+            copy {
+                BackupProcessUiState.status set BackupProcessStatus.Canceling
+            }
+        }
         viewModelScope.launch(Dispatchers.Default) {
             backupProcessRepo.cancel()
         }
@@ -105,12 +121,17 @@ open class BackupProcessViewModel(private val backupProcessRepo: BackupProcessRe
                 updateUiState {
                     copy {
                         BackupProcessUiState.isLoaded set true
+                        BackupProcessUiState.status set BackupProcessStatus.Processing
                     }
                 }
                 backupProcessRepo.onStart()
                 updateUiState {
                     copy {
-                        BackupProcessUiState.isProcessing set false
+                        BackupProcessUiState.status set if (status == BackupProcessStatus.Canceling) {
+                            BackupProcessStatus.Canceled
+                        } else {
+                            BackupProcessStatus.Finished
+                        }
                     }
                 }
             }

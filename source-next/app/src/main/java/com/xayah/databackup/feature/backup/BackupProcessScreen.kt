@@ -2,9 +2,14 @@ package com.xayah.databackup.feature.backup
 
 import android.graphics.drawable.Drawable
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +32,7 @@ import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -104,6 +110,20 @@ fun BackupProcessScreen(
         onBack.invoke()
     }
 
+    val statusLabel = when (uiState.status) {
+        BackupProcessStatus.Canceling -> stringResource(R.string.processing)
+        BackupProcessStatus.Canceled -> stringResource(R.string.canceled)
+        BackupProcessStatus.Processing -> stringResource(R.string.backing_up)
+        BackupProcessStatus.Finished -> stringResource(R.string.finished)
+    }
+    val actionLabel = when (uiState.status) {
+        BackupProcessStatus.Canceling -> stringResource(R.string.processing)
+        BackupProcessStatus.Processing -> stringResource(R.string.cancel)
+        else -> stringResource(R.string.finish)
+    }
+    val itemStatusOverride = if (uiState.isCanceled) stringResource(R.string.canceled) else null
+    val showItemProgress = uiState.isCanceling.not() && uiState.isCanceled.not()
+
     if (openConfirmExitDialog) {
         ConfirmExitDialog(
             onConfirm = {
@@ -166,18 +186,28 @@ fun BackupProcessScreen(
                         )
                     }
 
-                    Text(
-                        text = if (uiState.isProcessing) stringResource(R.string.backing_up) else stringResource(R.string.finished),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    AnimatedContent(
+                        targetState = statusLabel,
+                        transitionSpec = { fadeIn() togetherWith fadeOut() },
+                        label = "statusLabelAnimation"
+                    ) { label ->
+                        Text(
+                            text = label,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 FadeVisibility(visible = uiState.isProcessing) {
                     ContainedLoadingIndicator(modifier = Modifier.size(64.dp))
                 }
+            }
+
+            AnimatedVisibility(visible = uiState.isCanceling) {
+                CancelingNotice()
             }
 
             val scrollState = rememberScrollState()
@@ -191,17 +221,17 @@ fun BackupProcessScreen(
             ) {
                 Spacer(modifier = Modifier.size(0.dp))
 
-                ProcessAppsItem(viewModel = viewModel)
+                ProcessAppsItem(viewModel = viewModel, showProgress = showItemProgress, statusOverride = itemStatusOverride)
 
-                ProcessFilesItem(filesItem = filesItem)
+                ProcessFilesItem(filesItem = filesItem, showProgress = showItemProgress, statusOverride = itemStatusOverride)
 
-                ProcessNetworksItem(networksItem = networksItem)
+                ProcessNetworksItem(networksItem = networksItem, showProgress = showItemProgress, statusOverride = itemStatusOverride)
 
-                ProcessContactsItem(contactsItem = contactsItem)
+                ProcessContactsItem(contactsItem = contactsItem, showProgress = showItemProgress, statusOverride = itemStatusOverride)
 
-                ProcessCallLogsItem(callLogsItem = callLogsItem)
+                ProcessCallLogsItem(callLogsItem = callLogsItem, showProgress = showItemProgress, statusOverride = itemStatusOverride)
 
-                ProcessMessagesItem(messagesItem = messagesItem)
+                ProcessMessagesItem(messagesItem = messagesItem, showProgress = showItemProgress, statusOverride = itemStatusOverride)
 
                 Spacer(modifier = Modifier.size(16.dp))
             }
@@ -217,16 +247,53 @@ fun BackupProcessScreen(
 
                 Button(
                     modifier = Modifier.wrapContentSize(),
-                    enabled = true,
+                    enabled = uiState.isCanceling.not(),
                     onClick = {
                         onBack.invoke()
                     }
                 ) {
-                    Text(text = if (uiState.isProcessing) stringResource(R.string.cancel) else stringResource(R.string.finish))
+                    AnimatedContent(
+                        targetState = actionLabel,
+                        transitionSpec = { fadeIn() togetherWith fadeOut() },
+                        label = "actionLabelAnimation"
+                    ) { label ->
+                        Text(text = label)
+                    }
                 }
             }
 
             Spacer(modifier = Modifier.size(innerPadding.calculateBottomPadding()))
+        }
+    }
+}
+
+@Composable
+private fun CancelingNotice() {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.4f)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_badge_info),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.error
+            )
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = stringResource(R.string.wait_for_remaining_data_processing),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
         }
     }
 }
@@ -417,12 +484,7 @@ private fun AppCompleteDialog(
                                 }
                         ) {
                             Icon(
-                                ImageVector.vectorResource(
-                                    if (collapsed)
-                                    R.drawable.ic_chevron_right
-                                else
-                                    R.drawable.ic_chevron_down
-                                ),
+                                ImageVector.vectorResource(if (collapsed) R.drawable.ic_chevron_right else R.drawable.ic_chevron_down),
                                 contentDescription = null,
                             )
                             AsyncImage(
@@ -515,7 +577,7 @@ private fun AppItemDialogItem(
 }
 
 @Composable
-private fun ProcessAppsItem(viewModel: BackupProcessViewModel) {
+private fun ProcessAppsItem(viewModel: BackupProcessViewModel, showProgress: Boolean, statusOverride: String?) {
     val appsItem by viewModel.appsItem.collectAsStateWithLifecycle()
     val allItems by viewModel.allProcessedAppItems.collectAsStateWithLifecycle()
 
@@ -538,14 +600,15 @@ private fun ProcessAppsItem(viewModel: BackupProcessViewModel) {
         ProcessItemHolder(
             modifier = Modifier.fillMaxWidth(),
             process = { appsItem.progress },
+            showProgress = showProgress,
         ) {
             ProcessItemCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_layout_grid),
                 title = stringResource(R.string.apps),
                 currentIndex = appsItem.currentIndex,
                 totalCount = appsItem.totalCount,
-                subtitle = appsItem.msg,
-                subtitleShimmer = appsItem.isLoading,
+                subtitle = statusOverride ?: appsItem.msg,
+                subtitleShimmer = appsItem.isLoading && statusOverride == null,
                 onIconBtnClick = { openAppItemDialog = true },
                 onClick = { }
             )
@@ -554,19 +617,20 @@ private fun ProcessAppsItem(viewModel: BackupProcessViewModel) {
 }
 
 @Composable
-private fun ProcessFilesItem(filesItem: ProcessItem) {
+private fun ProcessFilesItem(filesItem: ProcessItem, showProgress: Boolean, statusOverride: String?) {
     FadeVisibility(visible = filesItem.isSelected && filesItem.totalCount > 0) {
         ProcessItemHolder(
             modifier = Modifier.fillMaxWidth(),
             process = { filesItem.progress },
+            showProgress = showProgress,
         ) {
             ProcessItemCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_folder),
                 title = stringResource(R.string.files),
                 currentIndex = filesItem.currentIndex,
                 totalCount = filesItem.totalCount,
-                subtitle = filesItem.msg,
-                subtitleShimmer = filesItem.isLoading,
+                subtitle = statusOverride ?: filesItem.msg,
+                subtitleShimmer = filesItem.isLoading && statusOverride == null,
                 onIconBtnClick = null,
                 onClick = {}
             )
@@ -575,19 +639,20 @@ private fun ProcessFilesItem(filesItem: ProcessItem) {
 }
 
 @Composable
-private fun ProcessNetworksItem(networksItem: ProcessItem) {
+private fun ProcessNetworksItem(networksItem: ProcessItem, showProgress: Boolean, statusOverride: String?) {
     FadeVisibility(visible = networksItem.isSelected && networksItem.totalCount > 0) {
         ProcessItemHolder(
             modifier = Modifier.fillMaxWidth(),
             process = { networksItem.progress },
+            showProgress = showProgress,
         ) {
             ProcessItemCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_wifi),
                 title = stringResource(R.string.network),
                 currentIndex = networksItem.currentIndex,
                 totalCount = networksItem.totalCount,
-                subtitle = networksItem.msg,
-                subtitleShimmer = networksItem.isLoading,
+                subtitle = statusOverride ?: networksItem.msg,
+                subtitleShimmer = networksItem.isLoading && statusOverride == null,
                 onIconBtnClick = null,
                 onClick = {}
             )
@@ -596,19 +661,20 @@ private fun ProcessNetworksItem(networksItem: ProcessItem) {
 }
 
 @Composable
-private fun ProcessContactsItem(contactsItem: ProcessItem) {
+private fun ProcessContactsItem(contactsItem: ProcessItem, showProgress: Boolean, statusOverride: String?) {
     FadeVisibility(visible = contactsItem.isSelected && contactsItem.totalCount > 0) {
         ProcessItemHolder(
             modifier = Modifier.fillMaxWidth(),
             process = { contactsItem.progress },
+            showProgress = showProgress,
         ) {
             ProcessItemCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_user_round),
                 title = stringResource(R.string.contacts),
                 currentIndex = contactsItem.currentIndex,
                 totalCount = contactsItem.totalCount,
-                subtitle = contactsItem.msg,
-                subtitleShimmer = contactsItem.isLoading,
+                subtitle = statusOverride ?: contactsItem.msg,
+                subtitleShimmer = contactsItem.isLoading && statusOverride == null,
                 onIconBtnClick = null,
                 onClick = {}
             )
@@ -617,19 +683,20 @@ private fun ProcessContactsItem(contactsItem: ProcessItem) {
 }
 
 @Composable
-private fun ProcessCallLogsItem(callLogsItem: ProcessItem) {
+private fun ProcessCallLogsItem(callLogsItem: ProcessItem, showProgress: Boolean, statusOverride: String?) {
     FadeVisibility(visible = callLogsItem.isSelected && callLogsItem.totalCount > 0) {
         ProcessItemHolder(
             modifier = Modifier.fillMaxWidth(),
             process = { callLogsItem.progress },
+            showProgress = showProgress,
         ) {
             ProcessItemCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_phone),
                 title = stringResource(R.string.call_logs),
                 currentIndex = callLogsItem.currentIndex,
                 totalCount = callLogsItem.totalCount,
-                subtitle = callLogsItem.msg,
-                subtitleShimmer = callLogsItem.isLoading,
+                subtitle = statusOverride ?: callLogsItem.msg,
+                subtitleShimmer = callLogsItem.isLoading && statusOverride == null,
                 onIconBtnClick = null,
                 onClick = {}
             )
@@ -638,19 +705,20 @@ private fun ProcessCallLogsItem(callLogsItem: ProcessItem) {
 }
 
 @Composable
-private fun ProcessMessagesItem(messagesItem: ProcessItem) {
+private fun ProcessMessagesItem(messagesItem: ProcessItem, showProgress: Boolean, statusOverride: String?) {
     FadeVisibility(visible = messagesItem.isSelected && messagesItem.totalCount > 0) {
         ProcessItemHolder(
             modifier = Modifier.fillMaxWidth(),
             process = { messagesItem.progress },
+            showProgress = showProgress,
         ) {
             ProcessItemCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_message_circle),
                 title = stringResource(R.string.messages),
                 currentIndex = messagesItem.currentIndex,
                 totalCount = messagesItem.totalCount,
-                subtitle = messagesItem.msg,
-                subtitleShimmer = messagesItem.isLoading,
+                subtitle = statusOverride ?: messagesItem.msg,
+                subtitleShimmer = messagesItem.isLoading && statusOverride == null,
                 onIconBtnClick = null,
                 onClick = {}
             )

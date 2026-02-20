@@ -1,9 +1,15 @@
 package com.xayah.databackup.ui.component
 
 import androidx.annotation.FloatRange
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -38,16 +44,26 @@ import com.xayah.databackup.R
 fun ProcessItemHolder(
     modifier: Modifier,
     @FloatRange(0.0, 1.0) process: () -> Float,
+    showProgress: Boolean = true,
     item: @Composable ColumnScope.() -> Unit,
 ) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    Column(
+        modifier = modifier.animateContentSize(),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
         item()
-        val animatedProgress: Float by animateFloatAsState(
-            targetValue = process.invoke(),
-            label = "progress",
-            animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessVeryLow)
-        )
-        LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = { animatedProgress })
+        AnimatedVisibility(
+            visible = showProgress,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            val animatedProgress: Float by animateFloatAsState(
+                targetValue = process.invoke(),
+                label = "progress",
+                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessVeryLow)
+            )
+            LinearWavyProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = { animatedProgress })
+        }
     }
 }
 

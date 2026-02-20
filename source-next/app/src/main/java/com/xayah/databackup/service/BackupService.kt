@@ -11,6 +11,7 @@ import android.os.RemoteException
 import com.xayah.databackup.App
 import com.xayah.databackup.data.AppRepository
 import com.xayah.databackup.data.BackupConfigRepository
+import com.xayah.databackup.data.BackupProcessRepository
 import com.xayah.databackup.data.CallLogRepository
 import com.xayah.databackup.data.ContactRepository
 import com.xayah.databackup.data.MessageRepository
@@ -21,6 +22,7 @@ import com.xayah.databackup.service.util.BackupContactsHelper
 import com.xayah.databackup.service.util.BackupMessagesHelper
 import com.xayah.databackup.service.util.BackupNetworksHelper
 import com.xayah.databackup.util.LogHelper
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -42,6 +44,7 @@ object BackupService {
 
     class BackupServiceImpl : Service() {
         private val mBackupConfigRepo: BackupConfigRepository by inject()
+        private val mBackupProcessRepo: BackupProcessRepository by inject()
         private val mAppRepo: AppRepository by inject()
         private val mNetworkRepo: NetworkRepository by inject()
         private val mContactRepo: ContactRepository by inject()
@@ -98,23 +101,43 @@ object BackupService {
             }
         }
 
+        private fun ensureNotCanceled(stage: String) {
+            if (mBackupProcessRepo.mIsCanceled) {
+                throw CancellationException("Backup canceled before $stage.")
+            }
+        }
+
         suspend fun start() {
-            if (mAppRepo.isBackupAppsSelected.first()) {
-                backupApps()
+            try {
+                ensureNotCanceled("apps backup")
+                if (mAppRepo.isBackupAppsSelected.first()) {
+                    backupApps()
+                }
+
+                ensureNotCanceled("networks backup")
+                if (mNetworkRepo.isBackupNetworksSelected.first()) {
+                    backupNetworks()
+                }
+
+                ensureNotCanceled("contacts backup")
+                if (mContactRepo.isBackupMessagesSelected.first()) {
+                    backupContacts()
+                }
+
+                ensureNotCanceled("call logs backup")
+                if (mCallLogRepo.isBackupCallLogsSelected.first()) {
+                    backupCallLogs()
+                }
+
+                ensureNotCanceled("messages backup")
+                if (mMessageRepo.isBackupContactsSelected.first()) {
+                    backupMessages()
+                }
+
+                setupBackupConfig()
+            } catch (e: CancellationException) {
+                LogHelper.i(TAG, "start", "Backup pipeline canceled and exited early: ${e.message}")
             }
-            if (mNetworkRepo.isBackupNetworksSelected.first()) {
-                backupNetworks()
-            }
-            if (mContactRepo.isBackupMessagesSelected.first()) {
-                backupContacts()
-            }
-            if (mCallLogRepo.isBackupCallLogsSelected.first()) {
-                backupCallLogs()
-            }
-            if (mMessageRepo.isBackupContactsSelected.first()) {
-                backupMessages()
-            }
-            setupBackupConfig()
         }
     }
 

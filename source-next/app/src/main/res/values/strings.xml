@@ -22,6 +22,7 @@
     <string name="release_prebuilt_binaries">Release prebuilt binaries</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
+    <string name="canceled">Canceled</string>
     <string name="overlook">Overview</string>
     <string name="last_backup">Last backup</string>
     <string name="none">None</string>

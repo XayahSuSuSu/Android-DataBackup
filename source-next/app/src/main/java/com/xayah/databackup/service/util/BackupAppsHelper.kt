@@ -30,6 +30,7 @@ import com.xayah.databackup.util.PathHelper
 import com.xayah.databackup.util.ZstdHelper
 import com.xayah.databackup.util.formatToStorageSize
 import com.xayah.databackup.util.formatToStorageSizePerSecond
+import kotlinx.coroutines.CancellationException
 
 class BackupAppsHelper(private val mBackupProcessRepo: BackupProcessRepository) {
     companion object {
@@ -74,6 +75,12 @@ class BackupAppsHelper(private val mBackupProcessRepo: BackupProcessRepository) 
         }
     }
 
+    private fun ensureNotCanceled() {
+        if (mBackupProcessRepo.mIsCanceled) {
+            throw CancellationException("Backup apps canceled.")
+        }
+    }
+
     private suspend fun packageAndCompressApk(app: App, onProgress: (bytesWritten: Long, speed: Long) -> Unit): Pair<Int, String> {
         var status = STATUS_SUCCESS
         var info = ""
@@ -82,12 +89,7 @@ class BackupAppsHelper(private val mBackupProcessRepo: BackupProcessRepository) 
         val apkParentPath = PathHelper.getParentPath(apkPath)
         val apkList = RemoteRootService.getPackageSourceDir(app.packageName, app.userId)
 
-        if (mBackupProcessRepo.mIsCanceled) {
-            status = STATUS_CANCEL
-            info = "Process is canceled."
-            LogHelper.i(TAG, "packageAndCompress", info)
-            return status to info
-        }
+        ensureNotCanceled()
 
         if (apkList.isEmpty()) {
             status = STATUS_ERROR
@@ -132,12 +134,7 @@ class BackupAppsHelper(private val mBackupProcessRepo: BackupProcessRepository) 
         var status = STATUS_SUCCESS
         var info = ""
 
-        if (mBackupProcessRepo.mIsCanceled) {
-            status = STATUS_CANCEL
-            info = "Process is canceled."
-            LogHelper.i(TAG, "packageAndCompress", info)
-            return status to info
-        }
+        ensureNotCanceled()
 
         if (RemoteRootService.exists(inputDir).not()) {
             status = STATUS_SKIP
@@ -250,6 +247,7 @@ class BackupAppsHelper(private val mBackupProcessRepo: BackupProcessRepository) 
     suspend fun start() {
         val apps = mBackupProcessRepo.getApps()
         apps.forEachIndexed { index, app ->
+            ensureNotCanceled()
             mBackupProcessRepo.updateAppsItem {
                 copy {
                     ProcessItem.currentIndex set index

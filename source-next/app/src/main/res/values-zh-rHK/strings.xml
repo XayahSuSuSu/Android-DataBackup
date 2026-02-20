@@ -19,6 +19,7 @@
     <string name="release_prebuilt_binaries">釋放預編譯二進製文件</string>
     <string name="confirm">確定</string>
     <string name="cancel">取消</string>
+    <string name="canceled">已取消</string>
     <string name="overlook">概覽</string>
     <string name="last_backup">最近備份</string>
     <string name="none">無</string>
