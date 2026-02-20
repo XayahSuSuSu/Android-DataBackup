@@ -487,4 +487,5 @@
     <string name="created_at">Creado el</string>
     <string name="updated_at">Actualizado a</string>
     <string name="edit_name">Editar nombre</string>
+    <string name="canceled">Cancelado</string>
 </resources>
