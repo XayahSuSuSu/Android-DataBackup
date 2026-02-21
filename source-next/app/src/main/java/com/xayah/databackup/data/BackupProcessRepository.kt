@@ -283,6 +283,16 @@ class BackupProcessRepository(
         return _mmsList
     }
 
+    fun reset() {
+        updateAppsItem { ProcessItem() }
+        updateFilesItem { ProcessItem() }
+        updateNetworksItem { ProcessItem() }
+        updateContactsItem { ProcessItem() }
+        updateCallLogsItem { ProcessItem() }
+        updateMessagesItem { ProcessItem() }
+        clearProcessAppItems()
+    }
+
     fun clearProcessAppItems() {
         _processAppItems.value = listOf()
     }
@@ -293,6 +303,10 @@ class BackupProcessRepository(
 
     fun updateAppsItem(onUpdate: ProcessItem.() -> ProcessItem) {
         _appsItem.value = onUpdate(_appsItem.value)
+    }
+
+    fun updateFilesItem(onUpdate: ProcessItem.() -> ProcessItem) {
+        _filesItem.value = onUpdate(_filesItem.value)
     }
 
     fun updateNetworksItem(onUpdate: ProcessItem.() -> ProcessItem) {

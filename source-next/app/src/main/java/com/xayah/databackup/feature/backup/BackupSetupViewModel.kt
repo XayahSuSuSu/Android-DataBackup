@@ -7,6 +7,7 @@ import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.AppRepository
 import com.xayah.databackup.data.BackupConfigRepository
+import com.xayah.databackup.data.BackupProcessRepository
 import com.xayah.databackup.data.CallLogRepository
 import com.xayah.databackup.data.ContactRepository
 import com.xayah.databackup.data.FileRepository
@@ -49,6 +50,7 @@ const val MaxSelectedItems = 6
 
 open class BackupSetupViewModel(
     private val backupConfigRepo: BackupConfigRepository,
+    private val backupProcessRepo: BackupProcessRepository,
     appRepo: AppRepository,
     fileRepo: FileRepository,
     networkRepo: NetworkRepository,
@@ -257,5 +259,9 @@ open class BackupSetupViewModel(
         withLock(Dispatchers.Default) {
             backupConfigRepo.selectBackup(index)
         }
+    }
+
+    fun resetProcessRepo() {
+        backupProcessRepo.reset()
     }
 }

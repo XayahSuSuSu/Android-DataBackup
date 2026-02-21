@@ -161,6 +161,7 @@ fun BackupSetupScreen(
                     modifier = Modifier.wrapContentSize(),
                     enabled = nextBtnEnabled,
                     onClick = {
+                        viewModel.resetProcessRepo()
                         navController.navigateSafely(BackupProcessRoute)
                     }
                 ) {
