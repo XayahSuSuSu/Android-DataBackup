@@ -46,4 +46,5 @@ include(":feature:main:directory")
 include(":feature:flavor:foss")
 include(":feature:flavor:premium")
 include(":feature:flavor:alpha")
+include(":feature:main:verify") // Added new module
 include(":native")

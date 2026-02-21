@@ -206,6 +206,20 @@ data class PackageEntity(
     val mediaSelected: Boolean
         get() = dataStates.mediaState == DataState.Selected
 
+    // Added for TWRP backup selection
+    val backupApk: Boolean
+        get() = dataStates.apkState == DataState.Selected
+    val backupUser: Boolean
+        get() = dataStates.userState == DataState.Selected
+    val backupUserDe: Boolean
+        get() = dataStates.userDeState == DataState.Selected
+    val backupData: Boolean
+        get() = dataStates.dataState == DataState.Selected
+    val backupObb: Boolean
+        get() = dataStates.obbState == DataState.Selected
+    val backupMedia: Boolean
+        get() = dataStates.mediaState == DataState.Selected
+
     companion object {
         const val FLAG_NONE = 0
         const val FLAG_APK = 1     // 000001
