@@ -31,6 +31,7 @@ import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.feature.backup.BackupConfigScreen
+import com.xayah.databackup.feature.backup.BackupProcessDetailsScreen
 import com.xayah.databackup.feature.backup.BackupProcessScreen
 import com.xayah.databackup.feature.backup.BackupSetupScreen
 import com.xayah.databackup.feature.backup.apps.BackupAppsScreen
@@ -171,6 +172,10 @@ class MainActivity : ComponentActivity() {
 
                             composable<BackupProcessRoute> {
                                 BackupProcessScreen(navController)
+                            }
+
+                            composable<BackupProcessDetailsRoute> {
+                                BackupProcessDetailsScreen(navController)
                             }
 
                             composable<BackupConfigRoute> {

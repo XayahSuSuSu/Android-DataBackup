@@ -6,11 +6,9 @@ import androidx.compose.animation.AnimatedContent
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -46,7 +43,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -57,7 +53,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
@@ -66,6 +61,7 @@ import coil3.request.crossfade
 import com.xayah.databackup.R
 import com.xayah.databackup.data.ProcessAppItem
 import com.xayah.databackup.data.ProcessItem
+import com.xayah.databackup.feature.BackupProcessDetailsRoute
 import com.xayah.databackup.ui.component.FadeVisibility
 import com.xayah.databackup.ui.component.ProcessItemCard
 import com.xayah.databackup.ui.component.ProcessItemHolder
@@ -73,6 +69,7 @@ import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.SymbolHelper
+import com.xayah.databackup.util.navigateSafely
 import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.compose.koinViewModel
@@ -221,7 +218,13 @@ fun BackupProcessScreen(
             ) {
                 Spacer(modifier = Modifier.size(0.dp))
 
-                ProcessAppsItem(viewModel = viewModel, showProgress = showItemProgress, statusOverride = itemStatusOverride)
+                ProcessAppsItem(
+                    navController = navController,
+                    viewModel = viewModel,
+                    showProgress = showItemProgress,
+                    statusOverride = itemStatusOverride,
+                    openDetailsPage = uiState.isProcessing.not() && uiState.isCanceling.not()
+                )
 
                 ProcessFilesItem(filesItem = filesItem, showProgress = showItemProgress, statusOverride = itemStatusOverride)
 
@@ -274,7 +277,7 @@ private fun CancelingNotice() {
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.4f)
+        color = MaterialTheme.colorScheme.errorContainer.copy(alpha = CANCELING_NOTICE_ALPHA)
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
@@ -434,99 +437,6 @@ private fun AppItemDialog(
 }
 
 @Composable
-private fun AppCompleteDialog(
-    appItemList: List<ProcessAppItem>,
-    onDismissRequest: () -> Unit,
-) {
-    val context = LocalContext.current
-    AlertDialog(
-        title = {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                var icon: Drawable? by remember { mutableStateOf(null) }
-                LaunchedEffect(context = Dispatchers.IO, "appCompleteDialog") {
-                    icon = ResourcesCompat.getDrawable(context.resources, R.drawable.ic_layout_grid, context.theme)
-                }
-                AsyncImage(
-                    modifier = Modifier.size(32.dp),
-                    model = ImageRequest.Builder(context)
-                        .data(icon)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = null
-                )
-
-                Text(text = stringResource(R.string.apps))
-            }
-        },
-        text = {
-            val collapsedState = remember(appItemList) { appItemList.map { true }.toMutableStateList() }
-
-            LazyColumn(Modifier) {
-                appItemList.forEachIndexed { i, item ->
-                    val collapsed = collapsedState[i]
-                    item(key = "header_$i") {
-                        var appIcon: Drawable? by remember { mutableStateOf(null) }
-                        LaunchedEffect(context = Dispatchers.IO, item.packageName) {
-                            appIcon = runCatching { context.packageManager.getApplicationIcon(item.packageName) }.getOrNull()
-                            if (appIcon == null) {
-                                appIcon = AppCompatResources.getDrawable(context, android.R.drawable.sym_def_app_icon)
-                            }
-                        }
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .clickable {
-                                    val expandedIndex = collapsedState.indexOfFirst { !it }
-                                    if (expandedIndex >= 0) collapsedState[expandedIndex] = true
-
-                                    collapsedState[i] = !collapsed
-                                }
-                        ) {
-                            Icon(
-                                ImageVector.vectorResource(if (collapsed) R.drawable.ic_chevron_right else R.drawable.ic_chevron_down),
-                                contentDescription = null,
-                            )
-                            AsyncImage(
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .padding(start = 8.dp, end = 8.dp),
-                                model = ImageRequest.Builder(context)
-                                    .data(appIcon)
-                                    .crossfade(true)
-                                    .build(),
-                                contentDescription = null
-                            )
-                            Text(
-                                item.label,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier
-                                    .padding(vertical = 10.dp)
-                                    .weight(1f)
-                            )
-                        }
-                    }
-
-                    item("content_$i") {
-                        AnimatedVisibility(!collapsed) {
-                            AppItemDialogItem(item, false)
-                        }
-                    }
-                }
-            }
-        },
-        onDismissRequest = {
-            onDismissRequest()
-        },
-        confirmButton = {
-            TextButton(onClick = { onDismissRequest() }) {
-                Text(text = stringResource(R.string.confirm))
-            }
-        }
-    )
-}
-
-@Composable
 private fun AppItemDialogItem(
     appItem: ProcessAppItem,
     scrollable: Boolean = true,
@@ -577,21 +487,21 @@ private fun AppItemDialogItem(
 }
 
 @Composable
-private fun ProcessAppsItem(viewModel: BackupProcessViewModel, showProgress: Boolean, statusOverride: String?) {
+private fun ProcessAppsItem(
+    navController: NavHostController,
+    viewModel: BackupProcessViewModel,
+    showProgress: Boolean,
+    statusOverride: String?,
+    openDetailsPage: Boolean,
+) {
     val appsItem by viewModel.appsItem.collectAsStateWithLifecycle()
     val allItems by viewModel.allProcessedAppItems.collectAsStateWithLifecycle()
 
     var openAppItemDialog by remember { mutableStateOf(false) }
     if (openAppItemDialog) {
-        if (appsItem.currentIndex == appsItem.totalCount && appsItem.progress == 1.0f) {
-            AppCompleteDialog(appItemList = allItems) {
+        allItems.lastOrNull()?.also {
+            AppItemDialog(appItem = it) {
                 openAppItemDialog = false
-            }
-        } else {
-            allItems.lastOrNull()?.also {
-                AppItemDialog(appItem = it) {
-                    openAppItemDialog = false
-                }
             }
         }
     }
@@ -609,7 +519,13 @@ private fun ProcessAppsItem(viewModel: BackupProcessViewModel, showProgress: Boo
                 totalCount = appsItem.totalCount,
                 subtitle = statusOverride ?: appsItem.msg,
                 subtitleShimmer = appsItem.isLoading && statusOverride == null,
-                onIconBtnClick = { openAppItemDialog = true },
+                onIconBtnClick = {
+                    if (openDetailsPage) {
+                        navController.navigateSafely(BackupProcessDetailsRoute)
+                    } else {
+                        openAppItemDialog = true
+                    }
+                },
                 onClick = { }
             )
         }
@@ -726,4 +642,5 @@ private fun ProcessMessagesItem(messagesItem: ProcessItem, showProgress: Boolean
     }
 }
 
+private const val CANCELING_NOTICE_ALPHA = 0.4f
 private const val DisabledOpacity = 0.38f

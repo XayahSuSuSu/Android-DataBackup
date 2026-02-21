@@ -16,7 +16,7 @@ object ZstdHelper {
     const val TAG = "ZstdHelper"
 
     suspend fun packageAndCompress(outputPath: String, callback: ICallback? = null, vararg inputArgs: String): Pair<Int, String> {
-        val args = mutableListOf("tar", "--totals", "-cpf", "-")
+        val args = mutableListOf("tar", "-cpf", "-")
         var status = 0
         var info = ""
 
@@ -32,7 +32,7 @@ object ZstdHelper {
                     runCatching {
                         FileInputStream(stdErr).use { fileInputStream ->
                             fileInputStream.bufferedReader().use { bufferedReader ->
-                                info = bufferedReader.readText()
+                                info = normalizeTarStdErr(bufferedReader.readText())
                             }
                         }
                     }.onFailure {
@@ -104,5 +104,11 @@ object ZstdHelper {
         LogHelper.i(TAG, "packageAndCompress", "args:\n$args\nstatus: $status\ninfo:\n$info")
 
         return status to info
+    }
+
+    private fun normalizeTarStdErr(stderr: String): String {
+        if (stderr.isBlank()) return stderr
+        val prefixRegex = Regex("^${Regex.escape(App.application.packageName)}:root:\\d+:\\s*")
+        return stderr.lineSequence().joinToString(separator = "\n") { line -> line.replace(prefixRegex, "") }
     }
 }

@@ -15,6 +15,9 @@ data object BackupSetupRoute
 data object BackupProcessRoute
 
 @Serializable
+data object BackupProcessDetailsRoute
+
+@Serializable
 data class BackupConfigRoute(
     val index: Int
 )

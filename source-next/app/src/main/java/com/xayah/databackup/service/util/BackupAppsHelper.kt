@@ -6,8 +6,13 @@ import com.xayah.databackup.App.Companion.application
 import com.xayah.databackup.R
 import com.xayah.databackup.data.BackupProcessRepository
 import com.xayah.databackup.data.ProcessAppDataDetailItem
+import com.xayah.databackup.data.ProcessAppDataItem
 import com.xayah.databackup.data.ProcessAppItem
 import com.xayah.databackup.data.ProcessItem
+import com.xayah.databackup.data.STATUS_CANCEL
+import com.xayah.databackup.data.STATUS_ERROR
+import com.xayah.databackup.data.STATUS_SKIP
+import com.xayah.databackup.data.STATUS_SUCCESS
 import com.xayah.databackup.data.addlDataItem
 import com.xayah.databackup.data.apkItem
 import com.xayah.databackup.data.bytes
@@ -35,16 +40,13 @@ import kotlinx.coroutines.CancellationException
 class BackupAppsHelper(private val mBackupProcessRepo: BackupProcessRepository) {
     companion object {
         private const val TAG = "BackupAppsHelper"
-        private const val STATUS_SUCCESS = 0
-        private const val STATUS_ERROR = -1
-        private const val STATUS_SKIP = -100
-        private const val STATUS_CANCEL = -101
     }
 
     private fun getMsgByStatus(status: Int): String {
         return when (status) {
             STATUS_SUCCESS -> application.getString(R.string.succeed)
-            STATUS_SKIP, STATUS_CANCEL -> application.getString(R.string.skip)
+            STATUS_SKIP -> application.getString(R.string.skip)
+            STATUS_CANCEL -> application.getString(R.string.cancel)
             else -> application.getString(R.string.error)
         }
     }
@@ -244,6 +246,318 @@ class BackupAppsHelper(private val mBackupProcessRepo: BackupProcessRepository) 
         return result
     }
 
+    private fun getCanceledProcessAppItem(app: App): ProcessAppItem {
+        fun applyState(item: ProcessAppDataItem, selected: Boolean): ProcessAppDataItem {
+            return if (selected) {
+                item.copy {
+                    ProcessAppDataItem.enabled set getEnabledByStatus(STATUS_CANCEL)
+                    ProcessAppDataItem.subtitle set getSubtitleByStatus(STATUS_CANCEL, item.subtitle)
+                    ProcessAppDataItem.msg set getMsgByStatus(STATUS_CANCEL)
+                    item.details.indices.forEach { i ->
+                        inside(ProcessAppDataItem.details.index(i)) {
+                            ProcessAppDataDetailItem.status set STATUS_CANCEL
+                            ProcessAppDataDetailItem.info set application.getString(R.string.cancel)
+                        }
+                    }
+                }
+            } else {
+                item.copy {
+                    ProcessAppDataItem.enabled set false
+                    ProcessAppDataItem.subtitle set application.getString(R.string.not_selected)
+                    ProcessAppDataItem.msg set application.getString(R.string.skip)
+                }
+            }
+        }
+
+        val base = ProcessAppItem(
+            label = app.info.label,
+            packageName = app.packageName,
+            userId = app.userId,
+        )
+        return base.copy {
+            ProcessAppItem.apkItem set applyState(base.apkItem, app.option.apk)
+            ProcessAppItem.intDataItem set applyState(base.intDataItem, app.option.internalData)
+            ProcessAppItem.extDataItem set applyState(base.extDataItem, app.option.externalData)
+            ProcessAppItem.addlDataItem set applyState(base.addlDataItem, app.option.additionalData)
+            ProcessAppItem.progress set 0f
+        }
+    }
+
+    private data class AppStepState(
+        val totalStepCount: Int,
+        var completedStepCount: Int = 0,
+        var apkHandled: Boolean = false,
+        var intDataHandled: Boolean = false,
+        var extDataHandled: Boolean = false,
+        var addlDataHandled: Boolean = false,
+    ) {
+
+        fun completeStep() {
+            completedStepCount += 1
+        }
+
+        fun currentProgress(): Float {
+            return if (totalStepCount == 0) 1f else completedStepCount.toFloat() / totalStepCount.toFloat()
+        }
+    }
+
+    private fun updateCurrentProcessApp(onUpdate: ProcessAppItem.() -> ProcessAppItem) {
+        mBackupProcessRepo.updateProcessAppItem { onUpdate() }
+    }
+
+    private suspend fun processApkStep(app: App, state: AppStepState) {
+        if (app.option.apk) {
+            packageAndCompressApk(app) { bytesWritten, speed ->
+                updateCurrentProcessApp {
+                    val bytesWrittenFormatted = bytesWritten.formatToStorageSize
+                    val speedFormatted = speed.formatToStorageSizePerSecond
+                    copy {
+                        ProcessAppItem.apkItem.subtitle set bytesWrittenFormatted
+                        ProcessAppItem.apkItem.msg set speedFormatted
+                        inside(ProcessAppItem.apkItem.details.index(0)) {
+                            ProcessAppDataDetailItem.bytes set bytesWritten
+                            ProcessAppDataDetailItem.speed set speed
+                        }
+                    }
+                }
+            }.also { (status, info) ->
+                state.completeStep()
+                updateCurrentProcessApp {
+                    copy {
+                        ProcessAppItem.apkItem.enabled set getEnabledByStatus(status)
+                        ProcessAppItem.apkItem.subtitle set getSubtitleByStatus(status, apkItem.subtitle)
+                        ProcessAppItem.apkItem.msg set getMsgByStatus(status)
+                        ProcessAppItem.progress set state.currentProgress()
+                        inside(ProcessAppItem.apkItem.details.index(0)) {
+                            ProcessAppDataDetailItem.status set status
+                            ProcessAppDataDetailItem.info set info
+                        }
+                    }
+                }
+            }
+        } else {
+            state.completeStep()
+            updateCurrentProcessApp {
+                copy {
+                    ProcessAppItem.apkItem.enabled set false
+                    ProcessAppItem.apkItem.subtitle set application.getString(R.string.not_selected)
+                    ProcessAppItem.apkItem.msg set application.getString(R.string.skip)
+                    ProcessAppItem.progress set state.currentProgress()
+                }
+            }
+        }
+    }
+
+    private suspend fun processIntDataStep(app: App, state: AppStepState) {
+        if (app.option.internalData) {
+            packageAndCompressIntData(app) { index, bytesWritten, speed ->
+                updateCurrentProcessApp {
+                    val bytesWrittenFormatted = (intDataItem.details.withIndex().sumOf { (i, item) ->
+                        if (i < index) item.bytes else 0
+                    } + bytesWritten).formatToStorageSize
+                    val speedFormatted = speed.formatToStorageSizePerSecond
+                    copy {
+                        ProcessAppItem.intDataItem.subtitle set bytesWrittenFormatted
+                        ProcessAppItem.intDataItem.msg set speedFormatted
+                        inside(ProcessAppItem.intDataItem.details.index(index)) {
+                            ProcessAppDataDetailItem.bytes set bytesWritten
+                            ProcessAppDataDetailItem.speed set speed
+                        }
+                    }
+                }
+            }.also { result ->
+                val finalStatus = getFinalStatusByResult(result)
+                state.completeStep()
+                updateCurrentProcessApp {
+                    copy {
+                        ProcessAppItem.intDataItem.enabled set getEnabledByStatus(finalStatus)
+                        ProcessAppItem.intDataItem.subtitle set getSubtitleByStatus(finalStatus, intDataItem.subtitle)
+                        ProcessAppItem.intDataItem.msg set getMsgByStatus(finalStatus)
+                        ProcessAppItem.progress set state.currentProgress()
+                        result.forEachIndexed { index, (status, info) ->
+                            inside(ProcessAppItem.intDataItem.details.index(index)) {
+                                ProcessAppDataDetailItem.status set status
+                                ProcessAppDataDetailItem.info set info
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            state.completeStep()
+            updateCurrentProcessApp {
+                copy {
+                    ProcessAppItem.intDataItem.enabled set false
+                    ProcessAppItem.intDataItem.subtitle set application.getString(R.string.not_selected)
+                    ProcessAppItem.intDataItem.msg set application.getString(R.string.skip)
+                    ProcessAppItem.progress set state.currentProgress()
+                }
+            }
+        }
+    }
+
+    private suspend fun processExtDataStep(app: App, state: AppStepState) {
+        if (app.option.externalData) {
+            packageAndCompressExtData(app) { index, bytesWritten, speed ->
+                updateCurrentProcessApp {
+                    val bytesWrittenFormatted = (extDataItem.details.withIndex().sumOf { (i, item) ->
+                        if (i < index) item.bytes else 0
+                    } + bytesWritten).formatToStorageSize
+                    val speedFormatted = speed.formatToStorageSizePerSecond
+                    copy {
+                        ProcessAppItem.extDataItem.subtitle set bytesWrittenFormatted
+                        ProcessAppItem.extDataItem.msg set speedFormatted
+                        inside(ProcessAppItem.extDataItem.details.index(index)) {
+                            ProcessAppDataDetailItem.bytes set bytesWritten
+                            ProcessAppDataDetailItem.speed set speed
+                        }
+                    }
+                }
+            }.also { result ->
+                val finalStatus = getFinalStatusByResult(result)
+                state.completeStep()
+                updateCurrentProcessApp {
+                    copy {
+                        ProcessAppItem.extDataItem.enabled set getEnabledByStatus(finalStatus)
+                        ProcessAppItem.extDataItem.subtitle set getSubtitleByStatus(finalStatus, extDataItem.subtitle)
+                        ProcessAppItem.extDataItem.msg set getMsgByStatus(finalStatus)
+                        ProcessAppItem.progress set state.currentProgress()
+                        result.forEachIndexed { index, (status, info) ->
+                            inside(ProcessAppItem.extDataItem.details.index(index)) {
+                                ProcessAppDataDetailItem.status set status
+                                ProcessAppDataDetailItem.info set info
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            state.completeStep()
+            updateCurrentProcessApp {
+                copy {
+                    ProcessAppItem.extDataItem.enabled set false
+                    ProcessAppItem.extDataItem.subtitle set application.getString(R.string.not_selected)
+                    ProcessAppItem.extDataItem.msg set application.getString(R.string.skip)
+                    ProcessAppItem.progress set state.currentProgress()
+                }
+            }
+        }
+    }
+
+    private suspend fun processAddlDataStep(app: App, state: AppStepState) {
+        if (app.option.additionalData) {
+            packageAndCompressAddlData(app) { index, bytesWritten, speed ->
+                updateCurrentProcessApp {
+                    val bytesWrittenFormatted = (addlDataItem.details.withIndex().sumOf { (i, item) ->
+                        if (i < index) item.bytes else 0
+                    } + bytesWritten).formatToStorageSize
+                    val speedFormatted = speed.formatToStorageSizePerSecond
+                    copy {
+                        ProcessAppItem.addlDataItem.subtitle set bytesWrittenFormatted
+                        ProcessAppItem.addlDataItem.msg set speedFormatted
+                        inside(ProcessAppItem.addlDataItem.details.index(index)) {
+                            ProcessAppDataDetailItem.bytes set bytesWritten
+                            ProcessAppDataDetailItem.speed set speed
+                        }
+                    }
+                }
+            }.also { result ->
+                val finalStatus = getFinalStatusByResult(result)
+                state.completeStep()
+                updateCurrentProcessApp {
+                    copy {
+                        ProcessAppItem.addlDataItem.enabled set getEnabledByStatus(finalStatus)
+                        ProcessAppItem.addlDataItem.subtitle set getSubtitleByStatus(finalStatus, addlDataItem.subtitle)
+                        ProcessAppItem.addlDataItem.msg set getMsgByStatus(finalStatus)
+                        ProcessAppItem.progress set state.currentProgress()
+                        result.forEachIndexed { index, (status, info) ->
+                            inside(ProcessAppItem.addlDataItem.details.index(index)) {
+                                ProcessAppDataDetailItem.status set status
+                                ProcessAppDataDetailItem.info set info
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            state.completeStep()
+            updateCurrentProcessApp {
+                copy {
+                    ProcessAppItem.addlDataItem.enabled set false
+                    ProcessAppItem.addlDataItem.subtitle set application.getString(R.string.not_selected)
+                    ProcessAppItem.addlDataItem.msg set application.getString(R.string.skip)
+                    ProcessAppItem.progress set state.currentProgress()
+                }
+            }
+        }
+    }
+
+    private fun markCurrentAppRemainingStepsCanceled(app: App, state: AppStepState) {
+        if (app.option.apk && state.apkHandled.not()) {
+            updateCurrentProcessApp {
+                copy {
+                    ProcessAppItem.apkItem.enabled set getEnabledByStatus(STATUS_CANCEL)
+                    ProcessAppItem.apkItem.subtitle set getSubtitleByStatus(STATUS_CANCEL, apkItem.subtitle)
+                    ProcessAppItem.apkItem.msg set getMsgByStatus(STATUS_CANCEL)
+                    inside(ProcessAppItem.apkItem.details.index(0)) {
+                        ProcessAppDataDetailItem.status set STATUS_CANCEL
+                        ProcessAppDataDetailItem.info set application.getString(R.string.cancel)
+                    }
+                }
+            }
+        }
+
+        if (app.option.internalData && state.intDataHandled.not()) {
+            updateCurrentProcessApp {
+                copy {
+                    ProcessAppItem.intDataItem.enabled set getEnabledByStatus(STATUS_CANCEL)
+                    ProcessAppItem.intDataItem.subtitle set getSubtitleByStatus(STATUS_CANCEL, intDataItem.subtitle)
+                    ProcessAppItem.intDataItem.msg set getMsgByStatus(STATUS_CANCEL)
+                    inside(ProcessAppItem.intDataItem.details.index(0)) {
+                        ProcessAppDataDetailItem.status set STATUS_CANCEL
+                        ProcessAppDataDetailItem.info set application.getString(R.string.cancel)
+                    }
+                    inside(ProcessAppItem.intDataItem.details.index(1)) {
+                        ProcessAppDataDetailItem.status set STATUS_CANCEL
+                        ProcessAppDataDetailItem.info set application.getString(R.string.cancel)
+                    }
+                }
+            }
+        }
+
+        if (app.option.externalData && state.extDataHandled.not()) {
+            updateCurrentProcessApp {
+                copy {
+                    ProcessAppItem.extDataItem.enabled set getEnabledByStatus(STATUS_CANCEL)
+                    ProcessAppItem.extDataItem.subtitle set getSubtitleByStatus(STATUS_CANCEL, extDataItem.subtitle)
+                    ProcessAppItem.extDataItem.msg set getMsgByStatus(STATUS_CANCEL)
+                    inside(ProcessAppItem.extDataItem.details.index(0)) {
+                        ProcessAppDataDetailItem.status set STATUS_CANCEL
+                        ProcessAppDataDetailItem.info set application.getString(R.string.cancel)
+                    }
+                }
+            }
+        }
+
+        if (app.option.additionalData && state.addlDataHandled.not()) {
+            updateCurrentProcessApp {
+                copy {
+                    ProcessAppItem.addlDataItem.enabled set getEnabledByStatus(STATUS_CANCEL)
+                    ProcessAppItem.addlDataItem.subtitle set getSubtitleByStatus(STATUS_CANCEL, addlDataItem.subtitle)
+                    ProcessAppItem.addlDataItem.msg set getMsgByStatus(STATUS_CANCEL)
+                    inside(ProcessAppItem.addlDataItem.details.index(0)) {
+                        ProcessAppDataDetailItem.status set STATUS_CANCEL
+                        ProcessAppDataDetailItem.info set application.getString(R.string.cancel)
+                    }
+                    inside(ProcessAppItem.addlDataItem.details.index(1)) {
+                        ProcessAppDataDetailItem.status set STATUS_CANCEL
+                        ProcessAppDataDetailItem.info set application.getString(R.string.cancel)
+                    }
+                }
+            }
+        }
+    }
+
     suspend fun start() {
         val apps = mBackupProcessRepo.getApps()
         apps.forEachIndexed { index, app ->
@@ -256,168 +570,32 @@ class BackupAppsHelper(private val mBackupProcessRepo: BackupProcessRepository) 
                 }
             }
             mBackupProcessRepo.addProcessAppItem(ProcessAppItem(label = app.info.label, packageName = app.packageName, userId = app.userId))
+            val selectedStepCount = listOf(
+                app.option.apk,
+                app.option.internalData,
+                app.option.externalData,
+                app.option.additionalData,
+            ).count { it }
+            val state = AppStepState(totalStepCount = selectedStepCount)
 
-            if (app.option.apk) {
-                packageAndCompressApk(app) { bytesWritten, speed ->
-                    mBackupProcessRepo.updateProcessAppItem {
-                        val bytesWrittenFormatted = bytesWritten.formatToStorageSize
-                        val speedFormatted = speed.formatToStorageSizePerSecond
-                        copy {
-                            ProcessAppItem.apkItem.subtitle set bytesWrittenFormatted
-                            ProcessAppItem.apkItem.msg set speedFormatted
-                            inside(ProcessAppItem.apkItem.details.index(0)) {
-                                ProcessAppDataDetailItem.bytes set bytesWritten
-                                ProcessAppDataDetailItem.speed set speed
-                            }
-                        }
-                    }
-                }.also { (status, info) ->
-                    mBackupProcessRepo.updateProcessAppItem {
-                        copy {
-                            ProcessAppItem.apkItem.enabled set getEnabledByStatus(status)
-                            ProcessAppItem.apkItem.subtitle set getSubtitleByStatus(status, apkItem.subtitle)
-                            ProcessAppItem.apkItem.msg set getMsgByStatus(status)
-                            inside(ProcessAppItem.apkItem.details.index(0)) {
-                                ProcessAppDataDetailItem.status set status
-                                ProcessAppDataDetailItem.info set info
-                            }
-                        }
-                    }
-                }
-            } else {
-                mBackupProcessRepo.updateProcessAppItem {
-                    copy {
-                        ProcessAppItem.apkItem.enabled set false
-                        ProcessAppItem.apkItem.subtitle set application.getString(R.string.not_selected)
-                        ProcessAppItem.apkItem.msg set application.getString(R.string.skip)
-                    }
-                }
-            }
+            try {
+                processApkStep(app, state)
+                state.apkHandled = true
 
-            if (app.option.internalData) {
-                packageAndCompressIntData(app) { index, bytesWritten, speed ->
-                    mBackupProcessRepo.updateProcessAppItem {
-                        val bytesWrittenFormatted = (intDataItem.details.withIndex().sumOf { (i, item) ->
-                            if (i < index) item.bytes else 0
-                        } + bytesWritten).formatToStorageSize
-                        val speedFormatted = speed.formatToStorageSizePerSecond
-                        copy {
-                            ProcessAppItem.intDataItem.subtitle set bytesWrittenFormatted
-                            ProcessAppItem.intDataItem.msg set speedFormatted
-                            inside(ProcessAppItem.intDataItem.details.index(index)) {
-                                ProcessAppDataDetailItem.bytes set bytesWritten
-                                ProcessAppDataDetailItem.speed set speed
-                            }
-                        }
-                    }
-                }.also { result ->
-                    val finalStatus = getFinalStatusByResult(result)
-                    mBackupProcessRepo.updateProcessAppItem {
-                        copy {
-                            ProcessAppItem.intDataItem.enabled set getEnabledByStatus(finalStatus)
-                            ProcessAppItem.intDataItem.subtitle set getSubtitleByStatus(finalStatus, intDataItem.subtitle)
-                            ProcessAppItem.intDataItem.msg set getMsgByStatus(finalStatus)
-                            result.forEachIndexed { index, (status, info) ->
-                                inside(ProcessAppItem.intDataItem.details.index(index)) {
-                                    ProcessAppDataDetailItem.status set status
-                                    ProcessAppDataDetailItem.info set info
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                mBackupProcessRepo.updateProcessAppItem {
-                    copy {
-                        ProcessAppItem.intDataItem.enabled set false
-                        ProcessAppItem.intDataItem.subtitle set application.getString(R.string.not_selected)
-                        ProcessAppItem.intDataItem.msg set application.getString(R.string.skip)
-                    }
-                }
-            }
+                processIntDataStep(app, state)
+                state.intDataHandled = true
 
-            if (app.option.externalData) {
-                packageAndCompressExtData(app) { index, bytesWritten, speed ->
-                    mBackupProcessRepo.updateProcessAppItem {
-                        val bytesWrittenFormatted = (extDataItem.details.withIndex().sumOf { (i, item) ->
-                            if (i < index) item.bytes else 0
-                        } + bytesWritten).formatToStorageSize
-                        val speedFormatted = speed.formatToStorageSizePerSecond
-                        copy {
-                            ProcessAppItem.extDataItem.subtitle set bytesWrittenFormatted
-                            ProcessAppItem.extDataItem.msg set speedFormatted
-                            inside(ProcessAppItem.extDataItem.details.index(index)) {
-                                ProcessAppDataDetailItem.bytes set bytesWritten
-                                ProcessAppDataDetailItem.speed set speed
-                            }
-                        }
-                    }
-                }.also { result ->
-                    val finalStatus = getFinalStatusByResult(result)
-                    mBackupProcessRepo.updateProcessAppItem {
-                        copy {
-                            ProcessAppItem.extDataItem.enabled set getEnabledByStatus(finalStatus)
-                            ProcessAppItem.extDataItem.subtitle set getSubtitleByStatus(finalStatus, extDataItem.subtitle)
-                            ProcessAppItem.extDataItem.msg set getMsgByStatus(finalStatus)
-                            result.forEachIndexed { index, (status, info) ->
-                                inside(ProcessAppItem.extDataItem.details.index(index)) {
-                                    ProcessAppDataDetailItem.status set status
-                                    ProcessAppDataDetailItem.info set info
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                mBackupProcessRepo.updateProcessAppItem {
-                    copy {
-                        ProcessAppItem.extDataItem.enabled set false
-                        ProcessAppItem.extDataItem.subtitle set application.getString(R.string.not_selected)
-                        ProcessAppItem.extDataItem.msg set application.getString(R.string.skip)
-                    }
-                }
-            }
+                processExtDataStep(app, state)
+                state.extDataHandled = true
 
-            if (app.option.additionalData) {
-                packageAndCompressAddlData(app) { index, bytesWritten, speed ->
-                    mBackupProcessRepo.updateProcessAppItem {
-                        val bytesWrittenFormatted = (addlDataItem.details.withIndex().sumOf { (i, item) ->
-                            if (i < index) item.bytes else 0
-                        } + bytesWritten).formatToStorageSize
-                        val speedFormatted = speed.formatToStorageSizePerSecond
-                        copy {
-                            ProcessAppItem.addlDataItem.subtitle set bytesWrittenFormatted
-                            ProcessAppItem.addlDataItem.msg set speedFormatted
-                            inside(ProcessAppItem.addlDataItem.details.index(index)) {
-                                ProcessAppDataDetailItem.bytes set bytesWritten
-                                ProcessAppDataDetailItem.speed set speed
-                            }
-                        }
-                    }
-                }.also { result ->
-                    val finalStatus = getFinalStatusByResult(result)
-                    mBackupProcessRepo.updateProcessAppItem {
-                        copy {
-                            ProcessAppItem.addlDataItem.enabled set getEnabledByStatus(finalStatus)
-                            ProcessAppItem.addlDataItem.subtitle set getSubtitleByStatus(finalStatus, addlDataItem.subtitle)
-                            ProcessAppItem.addlDataItem.msg set getMsgByStatus(finalStatus)
-                            result.forEachIndexed { index, (status, info) ->
-                                inside(ProcessAppItem.addlDataItem.details.index(index)) {
-                                    ProcessAppDataDetailItem.status set status
-                                    ProcessAppDataDetailItem.info set info
-                                }
-                            }
-                        }
-                    }
+                processAddlDataStep(app, state)
+                state.addlDataHandled = true
+            } catch (e: CancellationException) {
+                markCurrentAppRemainingStepsCanceled(app, state)
+                apps.drop(index + 1).forEach { pendingApp ->
+                    mBackupProcessRepo.addProcessAppItem(getCanceledProcessAppItem(pendingApp))
                 }
-            } else {
-                mBackupProcessRepo.updateProcessAppItem {
-                    copy {
-                        ProcessAppItem.addlDataItem.enabled set false
-                        ProcessAppItem.addlDataItem.subtitle set application.getString(R.string.not_selected)
-                        ProcessAppItem.addlDataItem.msg set application.getString(R.string.skip)
-                    }
-                }
+                throw e
             }
         }
 
