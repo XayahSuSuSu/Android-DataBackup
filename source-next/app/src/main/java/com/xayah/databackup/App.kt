@@ -17,6 +17,7 @@ import com.xayah.databackup.feature.backup.call_logs.CallLogsViewModel
 import com.xayah.databackup.feature.backup.contacts.ContactsViewModel
 import com.xayah.databackup.feature.backup.messages.MessagesViewModel
 import com.xayah.databackup.feature.backup.networks.NetworksViewModel
+import com.xayah.databackup.feature.dashboard.DashboardViewModel
 import com.xayah.databackup.service.util.BackupAppsHelper
 import com.xayah.databackup.service.util.BackupCallLogsHelper
 import com.xayah.databackup.service.util.BackupContactsHelper
@@ -50,6 +51,7 @@ class App : Application() {
         singleOf(::BackupCallLogsHelper) bind BackupCallLogsHelper::class
         singleOf(::BackupMessagesHelper) bind BackupMessagesHelper::class
 
+        viewModelOf(::DashboardViewModel)
         viewModelOf(::BackupSetupViewModel)
         viewModelOf(::BackupProcessViewModel)
         viewModelOf(::BackupConfigViewModel)

@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
@@ -38,11 +39,20 @@ import com.xayah.databackup.feature.BackupRoute
 import com.xayah.databackup.ui.component.ActionButton
 import com.xayah.databackup.ui.component.SmallActionButton
 import com.xayah.databackup.ui.component.StorageCard
+import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.navigateSafely
+import kotlinx.coroutines.Dispatchers
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun DashboardScreen(navController: NavHostController) {
+fun DashboardScreen(navController: NavHostController, viewModel: DashboardViewModel = koinViewModel()) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    val storageUiState = viewModel.storageUiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(context = Dispatchers.IO, null) {
+        viewModel.initialize()
+    }
+
     Scaffold(
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection)
@@ -102,13 +112,17 @@ fun DashboardScreen(navController: NavHostController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight(),
-                    free = 0.25f,
-                    other = 0.5f,
-                    backups = 0.25f,
-                    title = "Internal storage",
-                    subtitle = "/data/media/0/DataBackup",
-                    progress = "28%",
-                    storage = "52 GB",
+                    free = storageUiState.value.free,
+                    other = storageUiState.value.other,
+                    backups = storageUiState.value.backups,
+                    freeBytes = storageUiState.value.freeBytes,
+                    otherBytes = storageUiState.value.otherBytes,
+                    backupsBytes = storageUiState.value.backupsBytes,
+                    totalBytes = storageUiState.value.totalBytes,
+                    isLoading = storageUiState.value.isLoading,
+                    title = stringResource(R.string.internal_storage),
+                    subtitle = storageUiState.value.subtitle,
+                    storage = storageUiState.value.storage,
                 ) {}
 
                 Text(stringResource(R.string.actions), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
