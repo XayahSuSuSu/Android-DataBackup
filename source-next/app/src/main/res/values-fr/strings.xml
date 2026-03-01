@@ -487,4 +487,8 @@
     <string name="created_at">Créé le</string>
     <string name="updated_at">Mis à jour le</string>
     <string name="edit_name">Modifier le nom</string>
+    <string name="canceled">Annulé</string>
+    <string name="advanced_settings">Paramètres avancés</string>
+    <string name="app_theme_settings">Paramètres du thème de l\'application</string>
+    <string name="model">Modèle</string>
 </resources>
