@@ -488,4 +488,7 @@
     <string name="updated_at">Diperbarui pada</string>
     <string name="edit_name">Edit nama</string>
     <string name="canceled">Dibatalkan</string>
+    <string name="advanced_settings">Pengaturan lanjutan</string>
+    <string name="app_theme_settings">Pengaturan tema aplikasi</string>
+    <string name="model">Model</string>
 </resources>
