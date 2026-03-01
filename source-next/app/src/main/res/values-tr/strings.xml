@@ -488,4 +488,7 @@
     <string name="updated_at">Güncellendi</string>
     <string name="edit_name">İsmi düzenle</string>
     <string name="canceled">İptal edildi</string>
+    <string name="advanced_settings">Ekstra seçenekler</string>
+    <string name="app_theme_settings">Uygulama teması ayarları</string>
+    <string name="model">Model</string>
 </resources>
