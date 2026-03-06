@@ -315,8 +315,8 @@
     <string name="no_backups_found_warning">Nisu pronađene sigurnosne kopije, vratite se i pokušajte ponovno učitati</string>
     <string name="enter_the_setup_page_again">Ponovo otvorite stranicu za postavljanje</string>
     <string name="reload_version_desc">Na kojoj verziji ste napravili sigurnosnu kopiju?</string>
-    <string name="dump_apk">Ispiši apk</string>
-    <string name="dump_apk_desc">Pokušajte ispisati apk kako biste dobili detaljnije informacije</string>
+    <string name="dump_apk">Ekstrahiraj apk</string>
+    <string name="dump_apk_desc">Pokušajte ekstrahirati apk datoteku kako biste dobili detaljnije informacije</string>
     <string name="third_party">Treća strana</string>
     <string name="no_root_directory">Nemoj odabrati glavni direktorij</string>
     <string name="about">O</string>
