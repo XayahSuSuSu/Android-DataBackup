@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="storage">Пам\'ять</string>
+    <string name="storage">Сховище</string>
     <string name="save">Зберегти</string>
     <string name="restoring">Відновлення</string>
     <string name="both">Обидва</string>
@@ -51,14 +51,14 @@
     <string name="backup_dir">Директорія бекапів</string>
     <string name="backing_up">Створення бекапу…</string>
     <string name="backup_list">Список бекапів</string>
-    <string name="remote_service_err_info">Будь ласка, спробуйте перезавантажити пристрій або перевстановити Magisk/KernelSU.</string>
+    <string name="remote_service_err_info">Будь ласка, спробуйте перезавантажити пристрій або перевстановити Magisk.</string>
     <string name="fetch_failed">Не вдалось отримати</string>
     <string name="directory_structure">Структура директорії</string>
     <string name="loading">Завантаження</string>
     <string name="integral">Цілісно</string>
     <string name="wait_for_remaining_data_processing">Обробка решти даних…</string>
     <string name="not_exist_and_skip">Не існує, пропуск</string>
-    <string name="app_name">DataBackup</string>
+    <string name="app_name">Резервне копіювання даних</string>
     <string name="environment_detection">Виявлення середовища</string>
     <string name="succeed">Успішно</string>
     <string name="word_return">Повернутися</string>
@@ -101,7 +101,7 @@
     <string name="backup_user_desc">Цільовий користувач під час завантаження списку або створення бекапу</string>
     <string name="create_account">Створити обліковий запис</string>
     <string name="confirm_delete_selected_restoring_items">Ви впевнені, що хочете видалити вибрані елементи з бази даних і локальних файлів?</string>
-    <string name="please_set_up_main_account">Налаштуйте основний обліковий запис</string>
+    <string name="please_set_up_main_account">Будь ласка налаштуйте основний обліковий запис</string>
     <string name="abi_validation">Перевірка АBI</string>
     <string name="not_installed">Не встановлено</string>
     <string name="uploading">Завантаження</string>
@@ -136,7 +136,7 @@
     <string name="supported_format">Підтримуваний формат</string>
     <string name="modify">Змінити</string>
     <string name="set_as_main_account">Встановити як основний обліковий запис</string>
-    <string name="please_set_up_backup_dir">Встановіть директорію бекапів</string>
+    <string name="please_set_up_backup_dir">Встановіть директорію резервних даних</string>
     <string name="compression_type_desc">Впливає на створення та відновлення бекапів. Слід змінювати лише досвідченим користувачам.</string>
     <string name="settings">Налаштування</string>
     <string name="reset_restore_list_desc">Зняти виділення після відновлення</string>
@@ -172,7 +172,7 @@
     <string name="shared_dir">Спільний каталог</string>
     <string name="allow_empty">Дозволити порожні</string>
     <string name="domain">Домен</string>
-    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Використовувати канал замість параметра для tar. Увімкнути інший метод стиснення tar, якщо виникає помилка \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"</string>
+    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Використайте канал замість параметра для tar. Увімкніть інший метод стиснення tar, якщо виникає помилка \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory\"</string>
     <string name="url">URL-адреса</string>
     <string name="search_bar_hint_medium">Пошук за назвою або шляхом…</string>
     <string name="home">Головна</string>
@@ -197,7 +197,7 @@
     <string name="custom_su_file">Користувацький файл SU</string>
     <string name="dump_apk_desc">Спробуйте створити дамп apk, щоб отримати детальну інформацію</string>
     <string name="specify_a_path">Вкажіть шлях</string>
-    <string name="protect">Захищено</string>
+    <string name="protect">Захищати</string>
     <string name="outdated_fs_warning">Файлова система на цьому пристрої не підтримує створення файлу більше 4 Gb.</string>
     <string name="root_permission">Root</string>
     <string name="abi_validation_desc">Перевірити чи ваш пристрій підтримується</string>
@@ -292,7 +292,7 @@
     <string name="delete_account">Видалити обліковий запис</string>
     <string name="delete_account_desc">Цей обліковий запис буде видалено</string>
     <string name="unknown">Невідомо</string>
-    <string name="dump_apk">Дамп АРК</string>
+    <string name="dump_apk">Дамп apk</string>
     <string name="it_is_empty">Порожньо</string>
     <string name="args_screen_off_in_seconds">Екран буде вимкнено через %1$s секунд</string>
     <string name="configurations">Конфігурація</string>
@@ -306,9 +306,9 @@
     <string name="files">Файли</string>
     <string name="anonymous">Анонім</string>
     <string name="guest">Гість</string>
-    <string name="about">Про додаток</string>
-    <string name="about_app">Про нас</string>
-    <string name="donate">Пожертвування</string>
+    <string name="about">Про</string>
+    <string name="about_app">Про додаток</string>
+    <string name="donate">Пожертвувати</string>
     <string name="contact">Контакт</string>
     <string name="docs">Документація</string>
     <string name="translators">Перекладачі</string>
@@ -487,4 +487,8 @@
     <string name="created_at">Створено в</string>
     <string name="updated_at">Оновлено о</string>
     <string name="edit_name">Редагувати ім\'я</string>
+    <string name="canceled">Відмінено</string>
+    <string name="advanced_settings">Просунуті налаштування</string>
+    <string name="app_theme_settings">Налаштування теми додатка</string>
+    <string name="model">Модель</string>
 </resources>
