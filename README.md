@@ -12,6 +12,7 @@
 [![License](https://img.shields.io/github/license/XayahSuSuSu/Android-DataBackup?color=ff69b4)](./LICENSE)
 [![Channel](https://img.shields.io/badge/channel-DataBackup-252850?color=blue&logo=telegram)](https://t.me/dabackupchannel)
 [![Chat](https://img.shields.io/badge/group-DataBackup-252850?color=blue&logo=telegram)](https://t.me/databackupchat)
+[![Translation](https://hosted.weblate.org/widget/databackup/svg-badge.svg)](https://hosted.weblate.org/engage/databackup/)
 
 Free and open-source data backup application
 
