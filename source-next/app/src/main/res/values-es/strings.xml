@@ -79,7 +79,7 @@
     <string name="user">Usuario</string>
     <string name="restore_completed">Restauración completada</string>
     <string name="compatible_mode">Modo de compatibilidad</string>
-    <string name="clean_restoring_desc">Borrar el directorio de destino antes de restaurar</string>
+    <string name="clean_restoring_desc">Borrar el contenido de la carpeta destino antes de restaurar</string>
     <string name="installed">Instalado</string>
     <string name="sooner_or_later">Tarde o temprano</string>
     <string name="delete">Borrar</string>
@@ -116,16 +116,16 @@
     <string name="compression_type_desc">Afecta tanto el respaldo como la restauración. Solo debe ser cambiado por usuarios avanzados.</string>
     <string name="backup">Copia de seguridad</string>
     <string name="restore_user">Usuario de la restauración</string>
-    <string name="compression_test">Test de compresión</string>
+    <string name="compression_test">Prueba de compresión</string>
     <string name="backup_itself">Copia de seguridad propia</string>
-    <string name="backup_itself_desc">Copie el APK a la carpeta de respaldo después de realizar la copia de seguridad</string>
-    <string name="compression_test_desc">Chequear si los archivos comprimidos funcionan después de creados</string>
+    <string name="backup_itself_desc">Copia el APK a la carpeta de respaldo después de hacer la copia de seguridad</string>
+    <string name="compression_test_desc">Comprueba si los archivos comprimidos funcionan después de ser creados</string>
     <string name="reset_backup_list">Restablecer lista de respaldo</string>
     <string name="reset_restore_list_desc">Anular la selección después de restaurar</string>
     <string name="reset_backup_list_desc">Deshacer selección después de respaldar</string>
     <string name="reset_restore_list">Restablecer lista de restauración</string>
-    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Utilice pipe en lugar de parámetro para la entrada de alquitrán. Cámbielo cuando diga \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: No se puede ejecutar: no existe tal archivo o directorio\"</string>
-    <string name="clean_restoring">Restauración limpia</string>
+    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Utilizar «|» en vez de un parámetro para la entrada de datos en «tar». Cámbialo cuando veas errores como «tar: zstd -r -T0 --ultra -1 -q --priority=rt: No se puede ejecutar: no existe el archivo o carpeta»</string>
+    <string name="clean_restoring">Limpiar antes de restaurar</string>
     <string name="confirm_delete_selected_restoring_items">¿Borrar los elementos seleccionados de la base de datos y de los archivos locales?</string>
     <string name="custom_storage">Almacenamiento personalizado</string>
     <string name="select_target_directory">Seleccione carpeta de destino</string>
