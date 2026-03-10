@@ -487,4 +487,8 @@
     <string name="created_at">Создано в</string>
     <string name="updated_at">Обновлено в</string>
     <string name="edit_name">Изменить название</string>
+    <string name="canceled">Отменено</string>
+    <string name="advanced_settings">Дополнительные настройки</string>
+    <string name="app_theme_settings">Настройка темы</string>
+    <string name="model">Модель</string>
 </resources>
