@@ -391,7 +391,7 @@
     <string name="restore_permissions">Obnovi dozvole</string>
     <string name="compression_level_desc">Manji broj omogućuje brže komprimiranje, veći broj omogućuje efikasnije komprimiranje</string>
     <string name="restore_permissions_desc">Obnovi dozvole aplikacija</string>
-    <string name="restore_ssaid_desc">Obnovi Android ID aplikacija, zahtijeva ponovno pokretanje nakon obnavljanja</string>
+    <string name="restore_ssaid_desc">Obnovi Android ID aplikacije, zahtijeva ponovno pokretanje nakon obnavljanja</string>
     <string name="restore_ssaid">Obnovi Android ID</string>
     <string name="compression_level">Razina komprimiranja</string>
     <string name="insecure_server_connection">Dopusti nesigurnu vezu sa serverom</string>
