@@ -36,7 +36,7 @@
     <string name="telephony">Historia połączeń</string>
     <string name="fetch_failed">Pobieranie nie powiodło się</string>
     <string name="unsupported_format">Nieobsługiwany format</string>
-    <string name="dump_apk_desc">Spróbuj wyrzucić plik APK, aby uzyskać szczegółowe informacje</string>
+    <string name="dump_apk_desc">Spróbuj zrzucić plik APK, aby uzyskać szczegółowe informacje</string>
     <string name="anonymous">Anonim</string>
     <string name="guest">Gość</string>
     <string name="protect">Chroń</string>
@@ -491,4 +491,13 @@
     <string name="advanced_settings">Ustawienia zaawansowane</string>
     <string name="app_theme_settings">Ustawienia motywu aplikacji</string>
     <string name="model">Model</string>
+    <string name="checking_updates">Sprawdzanie aktualizacji</string>
+    <string name="new_version_available">Dostępna jest nowa wersja</string>
+    <string name="version_up_to_date">Masz najnowszą wersję</string>
+    <string name="latest">Najnowsza</string>
+    <string name="check_updates">Sprawdź aktualizacje</string>
+    <string name="current">Bieżąca</string>
+    <string name="github_api_rate_limited">Osiągnięto limit przepustowości interfejsu API serwisu GitHub. Spróbuj ponownie za %1$s.</string>
+    <string name="retry_after">Ponów próbę po: %1$s</string>
+    <string name="update">Zaktualizuj</string>
 </resources>
