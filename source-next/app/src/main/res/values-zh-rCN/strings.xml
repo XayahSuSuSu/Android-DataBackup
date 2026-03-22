@@ -491,4 +491,13 @@
     <string name="advanced_settings">高级设置</string>
     <string name="app_theme_settings">应用主题设置</string>
     <string name="model">型号</string>
+    <string name="update">更新</string>
+    <string name="check_updates">检查更新</string>
+    <string name="checking_updates">正在检查更新</string>
+    <string name="new_version_available">有新版本可用</string>
+    <string name="version_up_to_date">当前已是最新版本</string>
+    <string name="latest">最新</string>
+    <string name="current">当前</string>
+    <string name="github_api_rate_limited">GitHub API 已达到速率限制，请在 %1$s 后重试。</string>
+    <string name="retry_after">重试时间：%1$s</string>
 </resources>

@@ -18,6 +18,7 @@ koinAndroidxCompose = "4.1.1"
 kotlin = "2.2.0"
 kotlin-ksp = "2.2.0-2.0.2" # https://github.com/google/ksp/releases
 kotlinxSerializationJson = "1.9.0"
+ktor = "3.4.1"
 libsu = "6.0.0"
 lifecycleRuntimeKtx = "2.9.1"
 material3 = "1.5.0-alpha07"
@@ -67,6 +68,9 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinAndroidxCompose" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 libsu-core = { module = "com.github.topjohnwu.libsu:core", version.ref = "libsu" }
 libsu-service = { module = "com.github.topjohnwu.libsu:service", version.ref = "libsu" }
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }

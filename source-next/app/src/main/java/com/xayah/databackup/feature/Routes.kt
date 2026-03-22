@@ -9,6 +9,9 @@ data object DashboardRoute
 data object SettingsRoute
 
 @Serializable
+data object UpdatesRoute
+
+@Serializable
 data object BackupRoute
 
 @Serializable

@@ -37,6 +37,7 @@ import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
 import com.xayah.databackup.feature.BackupRoute
 import com.xayah.databackup.feature.SettingsRoute
+import com.xayah.databackup.feature.UpdatesRoute
 import com.xayah.databackup.ui.component.ActionButton
 import com.xayah.databackup.ui.component.SmallActionButton
 import com.xayah.databackup.ui.component.StorageCard
@@ -77,7 +78,7 @@ fun DashboardScreen(navController: NavHostController, viewModel: DashboardViewMo
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* do something */ }) {
+                    IconButton(onClick = { navController.navigateSafely(UpdatesRoute) }) {
                         BadgedBox(
                             badge = {
                                 Badge()
@@ -85,7 +86,7 @@ fun DashboardScreen(navController: NavHostController, viewModel: DashboardViewMo
                         ) {
                             Icon(
                                 imageVector = ImageVector.vectorResource(R.drawable.ic_badge_info),
-                                contentDescription = "Localized description"
+                                contentDescription = stringResource(R.string.update)
                             )
                         }
                     }

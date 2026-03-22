@@ -504,4 +504,13 @@
     <string name="advanced_settings">Advanced settings</string>
     <string name="app_theme_settings">App theme settings</string>
     <string name="model">Model</string>
+    <string name="update">Update</string>
+    <string name="check_updates">Check updates</string>
+    <string name="checking_updates">Checking updates</string>
+    <string name="new_version_available">A new version is available</string>
+    <string name="version_up_to_date">You are on the latest version</string>
+    <string name="latest">Latest</string>
+    <string name="current">Current</string>
+    <string name="github_api_rate_limited">GitHub API rate limit reached. Please try again after %1$s.</string>
+    <string name="retry_after">Retry after: %1$s</string>
 </resources>
