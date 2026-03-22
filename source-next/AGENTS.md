@@ -1,5 +1,10 @@
 # Repository Guidelines
 
+## Jetpack Compose
+For all Compose/Android UI tasks, follow the instructions in
+`.codex/skills/jetpack-compose-expert-skill/SKILL.md` and consult the reference
+files in `.codex/skills/jetpack-compose-expert-skill/references/` before answering.
+
 ## Project Structure & Module Organization
 This repository is a multi-module Android project managed with Gradle Kotlin DSL.
 - `app/`: main Android application (Compose UI, services, AIDL, resources, translations).
