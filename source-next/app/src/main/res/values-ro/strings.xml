@@ -487,4 +487,8 @@
     <string name="created_at">Creat la</string>
     <string name="updated_at">Actualizat la</string>
     <string name="edit_name">Schimbați numele</string>
+    <string name="canceled">Anulată</string>
+    <string name="advanced_settings">Setări avansate</string>
+    <string name="app_theme_settings">Setări temă aplicație</string>
+    <string name="model">Model</string>
 </resources>
