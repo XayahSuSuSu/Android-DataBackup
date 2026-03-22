@@ -116,7 +116,7 @@
     <string name="utilities">Utilità</string>
     <string name="media_set_path">Imposta il percorso</string>
     <string name="this_version_only_supports_but_your_device_is_please_install_version">Questa versione supporta solo la versione %1$s, ma il tuo dispositivo ha %2$s. Installa %3$s o versione successiva.</string>
-    <string name="media_target_path_missing">Manca la cartella di destinazione. LSi prega di impostarlo manualmente.</string>
+    <string name="media_target_path_missing">Manca la cartella di destinazione. Si prega di impostarlo manualmente.</string>
     <string name="abi_validation">Convalidare l\'ABI</string>
     <string name="main_account">Profilo principale</string>
     <string name="set_as_main_account">Imposta come profilo principale</string>
@@ -491,4 +491,13 @@
     <string name="advanced_settings">Impostazioni avanzate</string>
     <string name="app_theme_settings">Impostazioni tema app</string>
     <string name="model">Modello</string>
+    <string name="update">Aggiorna</string>
+    <string name="check_updates">Controlla aggiornamenti</string>
+    <string name="checking_updates">Controllando gli aggiornamenti</string>
+    <string name="new_version_available">Una nuova versione è disponibile</string>
+    <string name="version_up_to_date">Hai l\'ultima versione</string>
+    <string name="latest">Più recenti</string>
+    <string name="current">Attuale</string>
+    <string name="github_api_rate_limited">Limite di richieste API di GitHub raggiunto. Riprova dopo %1$s.</string>
+    <string name="retry_after">Riprova dopo:%1$s</string>
 </resources>
