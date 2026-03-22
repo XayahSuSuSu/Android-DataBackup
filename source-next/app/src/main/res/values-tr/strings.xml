@@ -491,4 +491,13 @@
     <string name="advanced_settings">Ekstra seçenekler</string>
     <string name="app_theme_settings">Uygulama teması ayarları</string>
     <string name="model">Model</string>
+    <string name="update">Güncelle</string>
+    <string name="check_updates">Güncellemeleri kontrol et</string>
+    <string name="checking_updates">Güncellemeler kontrol ediliyor</string>
+    <string name="new_version_available">Yeni bir sürüm bulunmakta</string>
+    <string name="version_up_to_date">Şu an son sürümü kullanıyorsunuz</string>
+    <string name="latest">Güncel</string>
+    <string name="current">Şu anki</string>
+    <string name="github_api_rate_limited">Github API limiti dolmuş durumda, daha sonra yeniden deneyiniz %1$s.</string>
+    <string name="retry_after">Daha sonra yeniden dene: %1$s</string>
 </resources>
