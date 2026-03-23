@@ -499,5 +499,5 @@
     <string name="latest">Più recenti</string>
     <string name="current">Attuale</string>
     <string name="github_api_rate_limited">Limite di richieste API di GitHub raggiunto. Riprova dopo %1$s.</string>
-    <string name="retry_after">Riprova dopo:%1$s</string>
+    <string name="retry_after">Riprova dopo: %1$s</string>
 </resources>
