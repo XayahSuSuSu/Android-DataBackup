@@ -46,7 +46,7 @@
     <string name="media">Медіа</string>
     <string name="restore_list">Список відновлення</string>
     <string name="grant_root_access">Надання root-доступу</string>
-    <string name="update_records">Перелік змін</string>
+    <string name="update_records">Оновлення записів</string>
     <string name="backup_completed">Створення бекапу завершено</string>
     <string name="backup_dir">Директорія бекапів</string>
     <string name="backing_up">Створення бекапу…</string>
@@ -58,7 +58,7 @@
     <string name="integral">Цілісно</string>
     <string name="wait_for_remaining_data_processing">Обробка решти даних…</string>
     <string name="not_exist_and_skip">Не існує, пропуск</string>
-    <string name="app_name">Резервне копіювання даних</string>
+    <string name="app_name">DataBackup</string>
     <string name="environment_detection">Виявлення середовища</string>
     <string name="succeed">Успішно</string>
     <string name="word_return">Повернутися</string>
