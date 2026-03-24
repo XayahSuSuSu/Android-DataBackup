@@ -491,4 +491,13 @@
     <string name="advanced_settings">Configurações avançadas</string>
     <string name="app_theme_settings">Configurações de tema do app</string>
     <string name="model">Modelo</string>
+    <string name="update">Atualizar</string>
+    <string name="check_updates">Confira as atualizações</string>
+    <string name="checking_updates">Verificando atualizações</string>
+    <string name="new_version_available">Uma nova versão está disponível.</string>
+    <string name="version_up_to_date">Você está usando a versão mais recente.</string>
+    <string name="latest">Mais recente</string>
+    <string name="current">Atual</string>
+    <string name="github_api_rate_limited">O limite de requisições da API do GitHub foi atingido. Por favor, tente novamente, %1$s.</string>
+    <string name="retry_after">Tentar novamente após: %1$s</string>
 </resources>
