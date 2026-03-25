@@ -417,4 +417,7 @@
     <string name="users">Käyttäjät</string>
     <string name="ascending">Nouseva</string>
     <string name="descending">Laskeva</string>
+    <string name="canceled">Peruttu</string>
+    <string name="select_all_apk">Valitse kaikki: APK</string>
+    <string name="select_all_data">Valitse kaikki: Data</string>
 </resources>
