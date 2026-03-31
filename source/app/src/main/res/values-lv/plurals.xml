@@ -1,3 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <plurals name="num_seconds_ago">
+        <item quantity="zero"><xliff:g id="count">%d</xliff:g> sekundēm</item>
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> sekundes</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> sekundēm</item>
+    </plurals>
+    <plurals name="num_minutes_ago">
+        <item quantity="zero"><xliff:g id="count">%d</xliff:g> minūtēm</item>
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> minūtes</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> minūtēm</item>
+    </plurals>
+    <plurals name="num_hours_ago">
+        <item quantity="zero"><xliff:g id="count">%d</xliff:g> stundām</item>
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> stundas</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> stundām</item>
+    </plurals>
+    <plurals name="num_days_ago">
+        <item quantity="zero"><xliff:g id="count">%d</xliff:g> dienām</item>
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> dienas</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> dienām</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="zero"><xliff:g id="count">%d</xliff:g> vienumi</item>
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> vienums</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> vienumi</item>
+    </plurals>
 </resources>
