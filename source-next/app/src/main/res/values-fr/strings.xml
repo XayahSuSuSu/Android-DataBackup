@@ -72,7 +72,7 @@
     <string name="apk">APK</string>
     <string name="data">Données</string>
     <string name="remote_service_err_info">Veuillez essayer de réinstaller l\'appareil, ou réinstaller Magisk.</string>
-    <string name="updating">Mise à jour</string>
+    <string name="updating">Mise à jour en cours</string>
     <string name="app_name">DataBackup</string>
     <string name="start_subtitle">Conformément aux règles applicables, vous devez lire attentivement et accepter les Conditions d\'utilisation ainsi que la Politique de confidentialité suivantes avant de commencer à utiliser cette application</string>
     <string name="application_desc">Obtenir l\'information du paquet de l\'application, utilisé pour générer une liste de sauvegarde et obtenir la taille des données de l\'application</string>
@@ -491,4 +491,13 @@
     <string name="advanced_settings">Paramètres avancés</string>
     <string name="app_theme_settings">Paramètres du thème de l\'application</string>
     <string name="model">Modèle</string>
+    <string name="update">Mise à jour</string>
+    <string name="check_updates">Vérifier les mises à jour</string>
+    <string name="checking_updates">Vérification des mises à jour</string>
+    <string name="new_version_available">Une nouvelle version est disponible</string>
+    <string name="version_up_to_date">Vous disposez de la dernière version</string>
+    <string name="latest">Dernière</string>
+    <string name="current">Actuelle</string>
+    <string name="github_api_rate_limited">Limite de taux de l\'API GitHub atteinte. Veuillez réessayer après %1$s.</string>
+    <string name="retry_after">Réessayer après : %1$s</string>
 </resources>
