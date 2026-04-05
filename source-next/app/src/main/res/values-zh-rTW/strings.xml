@@ -498,4 +498,6 @@
     <string name="current">目前</string>
     <string name="github_api_rate_limited">GitHub API 已達到速率限制，請於 %1$s 後再試。</string>
     <string name="retry_after">重試時間：%1$s</string>
+    <string name="insecure_server_connection">允許不安全伺服器連線</string>
+    <string name="insecure_server_connection_desc">使用自簽憑證時開啟此選項</string>
 </resources>
