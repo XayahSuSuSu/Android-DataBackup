@@ -47,4 +47,5 @@ interface IRemoteRootService {
     void setOpsMode(int code, int uid, String packageName, int mode);
 
     String calculateMD5(String src);
+    ParcelFileDescriptor openFileForStreaming(String path); // New method for streaming
 }
