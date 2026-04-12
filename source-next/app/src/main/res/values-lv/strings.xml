@@ -109,4 +109,5 @@
     <string name="skip">Izlaist</string>
     <string name="model">Modelis</string>
     <string name="update">Atjauninājums</string>
+    <string name="label">Birka</string>
 </resources>
