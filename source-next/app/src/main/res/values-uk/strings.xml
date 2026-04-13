@@ -491,4 +491,13 @@
     <string name="advanced_settings">Просунуті налаштування</string>
     <string name="app_theme_settings">Налаштування теми додатка</string>
     <string name="model">Модель</string>
+    <string name="update">Оновити</string>
+    <string name="check_updates">Перевірити наявність оновлень</string>
+    <string name="checking_updates">Перевірка оновлень</string>
+    <string name="new_version_available">Нова версія є доступна</string>
+    <string name="version_up_to_date">Ви є на останній версії</string>
+    <string name="latest">Остання</string>
+    <string name="current">Поточна</string>
+    <string name="github_api_rate_limited">GitHub API досягла ліміту. Будь ласка, попробуйте знову через %1$s.</string>
+    <string name="retry_after">Попробуйте знову після: %1$s</string>
 </resources>
