@@ -465,7 +465,7 @@
     <string name="messages">Poruke</string>
     <string name="not_set_up">Nije postavljeno</string>
     <string name="new_backup">Nova sigurnosna kopija</string>
-    <string name="time_format_pattern">MMM dd, HH:mm</string>
+    <string name="time_format_pattern">DD-MM-YYYY, HH:mm</string>
     <string name="incremental_backup">Inkrementalna sigurnosna kopija</string>
     <string name="incremental_backup_desc">Radi na inkrementalnoj arhivi s dodatnim metapodacima pohranjenim u samostalnoj datoteci</string>
     <string name="clean_backup">Čista sigurnosna kopija</string>
