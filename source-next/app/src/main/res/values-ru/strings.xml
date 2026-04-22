@@ -492,11 +492,12 @@
     <string name="app_theme_settings">Настройка темы</string>
     <string name="model">Модель</string>
     <string name="update">Обновление</string>
-    <string name="checking_updates">Проверить обновления</string>
+    <string name="checking_updates">Проверка обновлений</string>
     <string name="new_version_available">Доступна новая версия</string>
     <string name="version_up_to_date">Вы используете последнюю версию</string>
     <string name="latest">Последний</string>
     <string name="current">Текущий</string>
     <string name="github_api_rate_limited">Достигнут лимит запросов к API GitHub. Повторите попытку через %1$s.</string>
     <string name="retry_after">Повторить попытку через: %1$s</string>
+    <string name="check_updates">Проверить обновления</string>
 </resources>
