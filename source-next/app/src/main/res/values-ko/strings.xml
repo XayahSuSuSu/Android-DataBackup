@@ -491,4 +491,13 @@
     <string name="advanced_settings">진보된 설정들</string>
     <string name="app_theme_settings">신청서 주제 설정들</string>
     <string name="model">형태주조자</string>
+    <string name="update">업데이트</string>
+    <string name="check_updates">업데이트 확인</string>
+    <string name="checking_updates">업데이트 확인 중</string>
+    <string name="new_version_available">새로운 버전이 있습니다</string>
+    <string name="version_up_to_date">최신 버전에 있습니다</string>
+    <string name="latest">최근의</string>
+    <string name="current">현재</string>
+    <string name="github_api_rate_limited">GitHub API 속도 제한 도달. %1$s 후 다시 시도하십시오.</string>
+    <string name="retry_after">%1$s 후 다시 시도 하세요</string>
 </resources>
