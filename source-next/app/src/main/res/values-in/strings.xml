@@ -491,4 +491,13 @@
     <string name="advanced_settings">Pengaturan lanjutan</string>
     <string name="app_theme_settings">Pengaturan tema aplikasi</string>
     <string name="model">Model</string>
+    <string name="update">Perbarui</string>
+    <string name="check_updates">Periksa pembaruan</string>
+    <string name="checking_updates">Memeriksa pembaruan</string>
+    <string name="new_version_available">Versi baru tersedia</string>
+    <string name="version_up_to_date">Anda menggunakan versi terbaru</string>
+    <string name="latest">Terbaru</string>
+    <string name="current">Saat ini</string>
+    <string name="github_api_rate_limited">Batas kecepatan API GitHub telah tercapai. Silakan coba lagi setelah %1$s.</string>
+    <string name="retry_after">Coba lagi setelah: %1$s</string>
 </resources>
