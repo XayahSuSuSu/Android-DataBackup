@@ -378,7 +378,7 @@
     <string name="args_restored_at">Obnovljeno %1$s</string>
     <string name="task_details">Detalji zadatka</string>
     <string name="visit_details">Pogledaj detalje</string>
-    <string name="refresh">Aktualiziraj</string>
+    <string name="refresh">Osvježi</string>
     <string name="initializing_app_list">Inicijaliziranje popisa aplikacija</string>
     <string name="no_labels_here">Ovdje nema oznaka.</string>
     <string name="backup_configs">Konfiguracije sigurnosnih kopija</string>
@@ -491,4 +491,13 @@
     <string name="advanced_settings">Napredne postavke</string>
     <string name="app_theme_settings">Postavke teme aplikacije</string>
     <string name="model">Model</string>
+    <string name="update">Aktualiziraj</string>
+    <string name="check_updates">Traži nove verzije</string>
+    <string name="checking_updates">Traženje novih verzija</string>
+    <string name="new_version_available">Dostupna je nova verzija</string>
+    <string name="version_up_to_date">Koristiš najnoviju verziju</string>
+    <string name="latest">Najnovija</string>
+    <string name="current">Trenutačna</string>
+    <string name="github_api_rate_limited">Dosegnuto je ograničenje brzine GitHub API-ja. Pokušaj ponovo nakon %1$s.</string>
+    <string name="retry_after">Pokušaj ponovo nakon: %1$s</string>
 </resources>
