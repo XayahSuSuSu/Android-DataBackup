@@ -500,4 +500,5 @@
     <string name="latest">Última</string>
     <string name="retry_after">Reintentar tras: %1$s</string>
     <string name="github_api_rate_limited">Se ha sobrepasado el límite de peticiones de la API de GitHub, inténtalo de nuevo tras %1$s.</string>
+    <string name="selected_first">Seleccionados primero</string>
 </resources>
