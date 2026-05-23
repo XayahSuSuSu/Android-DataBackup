@@ -15,16 +15,19 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -41,7 +44,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TriStateCheckbox
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -49,7 +51,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,7 +79,6 @@ import com.xayah.databackup.ui.component.SearchTextField
 import com.xayah.databackup.ui.component.SelectableChip
 import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
 import com.xayah.databackup.ui.component.filterButtonSecondaryColors
-import com.xayah.databackup.ui.component.horizontalFadingEdges
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.ui.material3.ModalDropdownMenu
 import com.xayah.databackup.ui.material3.ModalDropdownMenuItem
@@ -90,6 +90,7 @@ import com.xayah.databackup.util.KeyFiltersSystemAppsBackup
 import com.xayah.databackup.util.KeyFiltersUserAppsBackup
 import com.xayah.databackup.util.KeySortsTypeBackup
 import com.xayah.databackup.util.LaunchedEffect
+import com.xayah.databackup.util.SortsSelectedFirstBackup
 import com.xayah.databackup.util.SortsSequence
 import com.xayah.databackup.util.SortsSequenceBackup
 import com.xayah.databackup.util.SortsType
@@ -99,9 +100,13 @@ import com.xayah.databackup.util.popBackStackSafely
 import com.xayah.databackup.util.readBoolean
 import com.xayah.databackup.util.readEnum
 import com.xayah.databackup.util.readInt
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.compose.koinViewModel
+
+data class AppFilterUserOption(
+    val id: Int,
+    val name: String,
+)
 
 @Composable
 fun BackupAppsScreen(
@@ -114,34 +119,36 @@ fun BackupAppsScreen(
     val apps by viewModel.apps.collectAsStateWithLifecycle()
     val allSelected by viewModel.allSelected.collectAsStateWithLifecycle()
     val selectedBytes by viewModel.selectedBytes.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
     val filterSheetState = rememberModalBottomSheetState()
     var showFilterSheet by remember { mutableStateOf(false) }
     val searchText by viewModel.searchText.collectAsStateWithLifecycle()
     var onSearch by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
-    val lazyListState = rememberLazyListState()
+    val normalLazyListState = rememberLazyListState()
+    val searchLazyListState = rememberLazyListState()
+    val activeLazyListState = if (onSearch) searchLazyListState else normalLazyListState
 
     var showStartEdge by remember { mutableStateOf(false) }
     var showEndEdge by remember { mutableStateOf(false) }
     val startEdgeRange: Float by animateFloatAsState(if (showStartEdge) 1f else 0f, label = "alpha")
     val endEdgeRange: Float by animateFloatAsState(if (showEndEdge) 1f else 0f, label = "alpha")
-    LaunchedEffect(context = Dispatchers.Default, lazyListState.canScrollBackward) {
-        showStartEdge = lazyListState.canScrollBackward
+    LaunchedEffect(context = Dispatchers.Default, activeLazyListState.canScrollBackward) {
+        showStartEdge = activeLazyListState.canScrollBackward
     }
-    LaunchedEffect(context = Dispatchers.Default, lazyListState.canScrollForward) {
-        showEndEdge = lazyListState.canScrollForward
+    LaunchedEffect(context = Dispatchers.Default, activeLazyListState.canScrollForward) {
+        showEndEdge = activeLazyListState.canScrollForward
     }
 
     LaunchedEffect(onSearch) {
         if (onSearch) {
+            searchLazyListState.scrollToItem(0)
             focusRequester.requestFocus()
         }
     }
 
     Scaffold(
         modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .nestedScroll(if (onSearch) searchScrollBehavior.nestedScrollConnection else scrollBehavior.nestedScrollConnection)
             .fillMaxSize(),
         topBar = {
             AnimatedContent(onSearch) { target ->
@@ -245,13 +252,12 @@ fun BackupAppsScreen(
                 } else {
                     LazyColumn(
                         modifier = Modifier.verticalFadingEdges(startEdgeRange, endEdgeRange),
-                        state = lazyListState
+                        state = activeLazyListState
                     ) {
                         items(items = apps, key = { it.pkgUserKey }) { app ->
                             AppListItem(
                                 modifier = Modifier.animateItem(),
                                 context = context,
-                                scope = scope,
                                 app = app,
                                 viewModel = viewModel
                             )
@@ -279,158 +285,196 @@ fun BackupAppsScreen(
                     .collectAsStateWithLifecycle(initialValue = FiltersUserAppsBackup.second)
                 val filtersSystemApps by context.readBoolean(FiltersSystemAppsBackup)
                     .collectAsStateWithLifecycle(initialValue = FiltersSystemAppsBackup.second)
+                val selectedFirst by context.readBoolean(SortsSelectedFirstBackup)
+                    .collectAsStateWithLifecycle(initialValue = SortsSelectedFirstBackup.second)
                 var users by remember { mutableStateOf(listOf<UserInfo>()) }
+                val filterUsers = remember(users) {
+                    users.map { AppFilterUserOption(id = it.id, name = it.name) }
+                }
+
                 LaunchedEffect(context = Dispatchers.Default, null) {
                     users = RemoteRootService.getUsers()
                 }
 
-                Column {
-                    Text(
-                        modifier = Modifier.padding(start = 24.dp),
-                        text = stringResource(R.string.users),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    val usersScrollState = rememberScrollState()
-                    Row(
-                        modifier = Modifier
-                            .padding(vertical = 24.dp)
-                            .horizontalScroll(usersScrollState)
-                            .horizontalFadingEdges(usersScrollState),
-                        horizontalArrangement = Arrangement.spacedBy(24.dp)
-                    ) {
-                        Spacer(modifier = Modifier.size(0.dp))
-                        users.forEach {
-                            FilterButton(it.id == filterUser, it.name, "${it.id}", ImageVector.vectorResource(R.drawable.ic_book_user)) {
-                                viewModel.changeUser(filterUser, it)
-                            }
+                BackupAppsFilterSheetContent(
+                    modifier = Modifier.fillMaxWidth(),
+                    users = filterUsers,
+                    selectedUserId = filterUser,
+                    sortsType = sortsType,
+                    sequenceBackup = sequenceBackup,
+                    selectedFirst = selectedFirst,
+                    filtersUserApps = filtersUserApps,
+                    filtersSystemApps = filtersSystemApps,
+                    onUserClick = { user ->
+                        users.firstOrNull { it.id == user.id }?.let {
+                            viewModel.changeUser(filterUser, it)
                         }
-                        Spacer(modifier = Modifier.size(0.dp))
-                    }
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .padding(horizontal = 24.dp)
-                            .padding(bottom = 12.dp)
-                    )
-
-                    Text(
-                        modifier = Modifier.padding(start = 24.dp),
-                        text = stringResource(R.string.sorts),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    val sortsScrollState = rememberScrollState()
-
-                    Row(modifier = Modifier.height(IntrinsicSize.Min), verticalAlignment = Alignment.CenterVertically) {
-                        Spacer(modifier = Modifier.width(24.dp))
-
-                        val isAscending by remember(sequenceBackup) { mutableStateOf(sequenceBackup == SortsSequence.ASCENDING) }
-                        val animatedIcon = rememberAnimatedVectorPainter(
-                            animatedImageVector = AnimatedImageVector.animatedVectorResource(R.drawable.ic_animted_arrow_up_down_a_z),
-                            atEnd = isAscending
-                        )
-
-                        FilterButton(
-                            selected = true,
-                            title = if (isAscending) stringResource(R.string.ascending) else stringResource(R.string.descending),
-                            colors = filterButtonSecondaryColors(),
-                            icon = animatedIcon
-                        ) {
-                            viewModel.changeSequence(sequenceBackup)
+                    },
+                    onSequenceClick = { viewModel.changeSequence(sequenceBackup) },
+                    onSelectedFirstClick = { viewModel.changeSelectedFirst(selectedFirst.not()) },
+                    onSortTypeClick = { type ->
+                        viewModel.changeSort(sortsType == type, KeySortsTypeBackup, type)
+                    },
+                    onFilterUserAppsClick = {
+                        if (filtersUserApps.not() || filtersSystemApps) {
+                            viewModel.changeFilter(KeyFiltersUserAppsBackup, filtersUserApps.not())
                         }
-
-                        Spacer(modifier = Modifier.width(24.dp))
-
-                        VerticalDivider(modifier = Modifier.padding(vertical = 24.dp))
-
-                        Row(
-                            modifier = Modifier
-                                .padding(vertical = 24.dp)
-                                .horizontalScroll(sortsScrollState)
-                                .horizontalFadingEdges(sortsScrollState),
-                            horizontalArrangement = Arrangement.spacedBy(24.dp)
-                        ) {
-                            val a2zSelected by remember(sortsType) { mutableStateOf(sortsType == SortsType.A2Z) }
-                            val dataSizeSelected by remember(sortsType) { mutableStateOf(sortsType == SortsType.DATA_SIZE) }
-                            val installTimeSelected by remember(sortsType) { mutableStateOf(sortsType == SortsType.INSTALL_TIME) }
-                            val updateTimeSelected by remember(sortsType) { mutableStateOf(sortsType == SortsType.UPDATE_TIME) }
-
-                            Spacer(modifier = Modifier.size(0.dp))
-
-                            FilterButton(
-                                selected = a2zSelected,
-                                title = stringResource(R.string.a2z),
-                                icon = ImageVector.vectorResource(R.drawable.ic_book_a)
-                            ) {
-                                viewModel.changeSort(a2zSelected, KeySortsTypeBackup, SortsType.A2Z)
-                            }
-                            FilterButton(
-                                selected = dataSizeSelected,
-                                title = stringResource(R.string.data_size),
-                                icon = ImageVector.vectorResource(R.drawable.ic_book_text)
-                            ) {
-                                viewModel.changeSort(dataSizeSelected, KeySortsTypeBackup, SortsType.DATA_SIZE)
-                            }
-                            FilterButton(
-                                selected = installTimeSelected,
-                                title = stringResource(R.string.install_time),
-                                icon = ImageVector.vectorResource(R.drawable.ic_book_down)
-                            ) {
-                                viewModel.changeSort(installTimeSelected, KeySortsTypeBackup, SortsType.INSTALL_TIME)
-                            }
-                            FilterButton(
-                                selected = updateTimeSelected,
-                                title = stringResource(R.string.update_time),
-                                icon = ImageVector.vectorResource(R.drawable.ic_book_up)
-                            ) {
-                                viewModel.changeSort(updateTimeSelected, KeySortsTypeBackup, SortsType.UPDATE_TIME)
-                            }
-
-                            Spacer(modifier = Modifier.size(0.dp))
+                    },
+                    onFilterSystemAppsClick = {
+                        if (filtersSystemApps.not() || filtersUserApps) {
+                            viewModel.changeFilter(KeyFiltersSystemAppsBackup, filtersSystemApps.not())
                         }
-                    }
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .padding(horizontal = 24.dp)
-                            .padding(bottom = 12.dp)
-                    )
+                    },
+                )
+            }
+        }
+    }
+}
 
-                    Text(
-                        modifier = Modifier.padding(start = 24.dp),
-                        text = stringResource(R.string.filters),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    val filtersScrollState = rememberScrollState()
-                    Row(
-                        modifier = Modifier
-                            .padding(vertical = 24.dp)
-                            .horizontalScroll(filtersScrollState)
-                            .horizontalFadingEdges(filtersScrollState),
-                        horizontalArrangement = Arrangement.spacedBy(24.dp)
-                    ) {
-                        Spacer(modifier = Modifier.size(0.dp))
-                        FilterButton(
-                            selected = filtersUserApps,
-                            title = stringResource(R.string.user_apps),
-                            icon = ImageVector.vectorResource(R.drawable.ic_resource_package)
-                        ) {
-                            if (filtersUserApps.not() || filtersSystemApps) {
-                                viewModel.changeFilter(KeyFiltersUserAppsBackup, filtersUserApps.not())
-                            }
-                        }
-                        FilterButton(
-                            selected = filtersSystemApps,
-                            title = stringResource(R.string.system_apps),
-                            icon = ImageVector.vectorResource(R.drawable.ic_package_2)
-                        ) {
-                            if (filtersSystemApps.not() || filtersUserApps) {
-                                viewModel.changeFilter(KeyFiltersSystemAppsBackup, filtersSystemApps.not())
-                            }
-                        }
-                        Spacer(modifier = Modifier.size(0.dp))
-                    }
-                }
+@Composable
+fun BackupAppsFilterSheetContent(
+    modifier: Modifier = Modifier,
+    users: List<AppFilterUserOption>,
+    selectedUserId: Int,
+    sortsType: SortsType,
+    sequenceBackup: SortsSequence,
+    selectedFirst: Boolean,
+    filtersUserApps: Boolean,
+    filtersSystemApps: Boolean,
+    onUserClick: (AppFilterUserOption) -> Unit,
+    onSequenceClick: () -> Unit,
+    onSelectedFirstClick: () -> Unit,
+    onSortTypeClick: (SortsType) -> Unit,
+    onFilterUserAppsClick: () -> Unit,
+    onFilterSystemAppsClick: () -> Unit,
+) {
+    val isAscending = sequenceBackup == SortsSequence.ASCENDING
+    val animatedSequenceIcon = rememberAnimatedVectorPainter(
+        animatedImageVector = AnimatedImageVector.animatedVectorResource(R.drawable.ic_animted_arrow_up_down_a_z),
+        atEnd = isAscending
+    )
+
+    LazyVerticalGrid(
+        modifier = modifier,
+        columns = GridCells.Adaptive(minSize = 80.dp),
+        contentPadding = PaddingValues(start = 24.dp, top = 8.dp, end = 24.dp, bottom = 24.dp),
+        horizontalArrangement = Arrangement.spacedBy(24.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+    ) {
+        item(span = { GridItemSpan(maxLineSpan) }, key = "users_header") {
+            Text(
+                text = stringResource(R.string.users),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+        items(
+            items = users,
+            key = { "user_${it.id}" },
+        ) { user ->
+            FilterButton(
+                selected = user.id == selectedUserId,
+                title = user.name,
+                subtitle = "${user.id}",
+                icon = ImageVector.vectorResource(R.drawable.ic_book_user),
+            ) {
+                onUserClick(user)
+            }
+        }
+        item(span = { GridItemSpan(maxLineSpan) }, key = "users_divider") {
+            HorizontalDivider()
+        }
+
+        item(span = { GridItemSpan(maxLineSpan) }, key = "sorts_header") {
+            Text(
+                text = stringResource(R.string.sorts),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+        item(key = "sort_sequence") {
+            FilterButton(
+                selected = true,
+                title = if (isAscending) stringResource(R.string.ascending) else stringResource(R.string.descending),
+                colors = filterButtonSecondaryColors(),
+                icon = animatedSequenceIcon,
+            ) {
+                onSequenceClick()
+            }
+        }
+        item(key = "sort_selected_first") {
+            FilterButton(
+                selected = selectedFirst,
+                title = stringResource(R.string.selected_first),
+                colors = filterButtonSecondaryColors(),
+                icon = ImageVector.vectorResource(R.drawable.ic_square_check_big),
+            ) {
+                onSelectedFirstClick()
+            }
+        }
+        item(key = "sort_a2z") {
+            FilterButton(
+                selected = sortsType == SortsType.A2Z,
+                title = stringResource(R.string.a2z),
+                icon = ImageVector.vectorResource(R.drawable.ic_book_a),
+            ) {
+                onSortTypeClick(SortsType.A2Z)
+            }
+        }
+        item(key = "sort_data_size") {
+            FilterButton(
+                selected = sortsType == SortsType.DATA_SIZE,
+                title = stringResource(R.string.data_size),
+                icon = ImageVector.vectorResource(R.drawable.ic_book_text),
+            ) {
+                onSortTypeClick(SortsType.DATA_SIZE)
+            }
+        }
+        item(key = "sort_install_time") {
+            FilterButton(
+                selected = sortsType == SortsType.INSTALL_TIME,
+                title = stringResource(R.string.install_time),
+                icon = ImageVector.vectorResource(R.drawable.ic_book_down),
+            ) {
+                onSortTypeClick(SortsType.INSTALL_TIME)
+            }
+        }
+        item(key = "sort_update_time") {
+            FilterButton(
+                selected = sortsType == SortsType.UPDATE_TIME,
+                title = stringResource(R.string.update_time),
+                icon = ImageVector.vectorResource(R.drawable.ic_book_up),
+            ) {
+                onSortTypeClick(SortsType.UPDATE_TIME)
+            }
+        }
+        item(span = { GridItemSpan(maxLineSpan) }, key = "sorts_divider") {
+            HorizontalDivider()
+        }
+
+        item(span = { GridItemSpan(maxLineSpan) }, key = "filters_header") {
+            Text(
+                text = stringResource(R.string.filters),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+        item(key = "filter_user_apps") {
+            FilterButton(
+                selected = filtersUserApps,
+                title = stringResource(R.string.user_apps),
+                icon = ImageVector.vectorResource(R.drawable.ic_resource_package),
+            ) {
+                onFilterUserAppsClick()
+            }
+        }
+        item(key = "filter_system_apps") {
+            FilterButton(
+                selected = filtersSystemApps,
+                title = stringResource(R.string.system_apps),
+                icon = ImageVector.vectorResource(R.drawable.ic_package_2),
+            ) {
+                onFilterSystemAppsClick()
             }
         }
     }
@@ -440,7 +484,6 @@ fun BackupAppsScreen(
 fun AppListItem(
     modifier: Modifier,
     context: Context,
-    scope: CoroutineScope,
     app: App,
     viewModel: AppsViewModel,
 ) {

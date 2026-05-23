@@ -431,6 +431,7 @@
     <string name="users">Users</string>
     <string name="ascending">Ascending</string>
     <string name="descending">Descending</string>
+    <string name="selected_first">Selected first</string>
     <string name="items_selected_and_size">%1$s/%2$s items selected • %3$s</string>
     <string name="select_all_apk">Select all: APK</string>
     <string name="select_all_data">Select all: Data</string>

@@ -417,6 +417,7 @@
     <string name="users">用戶</string>
     <string name="ascending">升序</string>
     <string name="descending">降序</string>
+    <string name="selected_first">已選優先</string>
     <string name="items_selected_and_size">%1$s/%2$s 已選擇 • %3$s</string>
     <string name="select_all_apk">選擇全部：安裝套件</string>
     <string name="select_all_data">選擇全部：資料</string>

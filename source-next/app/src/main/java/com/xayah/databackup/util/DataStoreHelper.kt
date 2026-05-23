@@ -77,6 +77,10 @@ val KeyFiltersSystemAppsBackup = booleanPreferencesKey("filters_system_apps_back
 const val DefFiltersSystemAppsBackup = false
 val FiltersSystemAppsBackup = Pair(KeyFiltersSystemAppsBackup, DefFiltersSystemAppsBackup)
 
+val KeySortsSelectedFirstBackup = booleanPreferencesKey("sorts_selected_first_backup")
+const val DefSortsSelectedFirstBackup = false
+val SortsSelectedFirstBackup = Pair(KeySortsSelectedFirstBackup, DefSortsSelectedFirstBackup)
+
 // ----------------------------------------------------------------------------------------------------------------------------Settings
 
 val KeyDefaultAppsBackupStrategy = stringPreferencesKey("default_apps_backup_strategy")

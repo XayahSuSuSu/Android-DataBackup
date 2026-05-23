@@ -10,13 +10,16 @@ import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.DatabaseHelper
 import com.xayah.databackup.util.DefStorageSize
 import com.xayah.databackup.util.KeyFilterBackupUser
+import com.xayah.databackup.util.KeySortsSelectedFirstBackup
 import com.xayah.databackup.util.KeySortsSequenceBackup
+import com.xayah.databackup.util.SortsSelectedFirstBackup
 import com.xayah.databackup.util.SortsSequence
 import com.xayah.databackup.util.SortsSequenceBackup
 import com.xayah.databackup.util.SortsType
 import com.xayah.databackup.util.SortsTypeBackup
 import com.xayah.databackup.util.filterApp
 import com.xayah.databackup.util.formatToStorageSize
+import com.xayah.databackup.util.readBoolean
 import com.xayah.databackup.util.readEnum
 import com.xayah.databackup.util.saveBoolean
 import com.xayah.databackup.util.saveEnum
@@ -24,6 +27,7 @@ import com.xayah.databackup.util.saveInt
 import com.xayah.databackup.util.sortByA2Z
 import com.xayah.databackup.util.sortByDataSize
 import com.xayah.databackup.util.sortByInstallTime
+import com.xayah.databackup.util.sortBySelectedFirst
 import com.xayah.databackup.util.sortByUpdateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,13 +52,14 @@ open class AppsViewModel(
         _searchText,
         App.application.readEnum(SortsTypeBackup),
         App.application.readEnum(SortsSequenceBackup),
-    ) { apps, searchText, sortType, sortSequence ->
+        App.application.readBoolean(SortsSelectedFirstBackup),
+    ) { apps, searchText, sortType, sortSequence, selectedFirst ->
         when (sortType) {
             SortsType.A2Z -> apps.sortByA2Z(sortSequence)
             SortsType.DATA_SIZE -> apps.sortByDataSize(sortSequence)
             SortsType.INSTALL_TIME -> apps.sortByInstallTime(sortSequence)
             SortsType.UPDATE_TIME -> apps.sortByUpdateTime(sortSequence)
-        }.filterApp(searchText)
+        }.sortBySelectedFirst(selectedFirst).filterApp(searchText)
     }.stateIn(
         scope = viewModelScope,
         initialValue = listOf(),
@@ -212,6 +217,12 @@ open class AppsViewModel(
     fun changeFilter(key: Preferences.Key<Boolean>, value: Boolean) {
         withLock(Dispatchers.IO) {
             App.application.saveBoolean(key, value)
+        }
+    }
+
+    fun changeSelectedFirst(selectedFirst: Boolean) {
+        withLock(Dispatchers.IO) {
+            App.application.saveBoolean(KeySortsSelectedFirstBackup, selectedFirst)
         }
     }
 

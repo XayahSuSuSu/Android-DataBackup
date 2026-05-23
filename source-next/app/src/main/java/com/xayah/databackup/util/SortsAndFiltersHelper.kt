@@ -68,6 +68,9 @@ fun Iterable<App>.sortByUpdateTime(sortSequence: SortsSequence): List<App> =
         SortsSequence.DESCENDING -> sortedByDescending { app -> app.info.lastUpdateTime }
     }
 
+fun List<App>.sortBySelectedFirst(selectedFirst: Boolean): List<App> =
+    if (selectedFirst) sortedByDescending { it.isSelected } else this
+
 fun Iterable<NetworkUnmarshalled>.filterNetwork(searchText: String): List<NetworkUnmarshalled> = filter {
     filterSearchText(it, searchText)
 }
