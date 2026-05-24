@@ -423,12 +423,12 @@
     <string name="custom_selection">Пользовательский выбор</string>
     <string name="select_all_int_data">Выбрать все: Int. Данные</string>
     <string name="select_all_ext_data">Выбрать все: Расш. данные</string>
-    <string name="select_all_obb_and_media"><![CDATA[Select all: OBB & Media]]></string>
+    <string name="select_all_obb_and_media"><![CDATA[Выбрать всё ODB и медиа]]></string>
     <string name="unselect_all_apk">Снять выделение со всех: APK</string>
     <string name="unselect_all_data">Снять выделение со всех: Данных</string>
     <string name="unselect_all_int_data">Снять выделение со всех: Int. Данных</string>
     <string name="unselect_all_ext_data">Снять выделение со всех: Доп. данные</string>
-    <string name="unselect_all_obb_and_media"><![CDATA[Unselect all: OBB & Media]]></string>
+    <string name="unselect_all_obb_and_media"><![CDATA[Снять выделение со всех: ODB и Медиа]]></string>
     <string name="expand">Развернуть</string>
     <string name="collapsed">Разрушенный</string>
     <string name="internal_data">Инт. Данные</string>
