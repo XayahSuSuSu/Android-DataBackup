@@ -423,12 +423,12 @@
     <string name="custom_selection">Sélection personnalisée</string>
     <string name="select_all_int_data">Tout sélectionner : Données internes</string>
     <string name="select_all_ext_data">Tout sélectionner : Données externes</string>
-    <string name="select_all_obb_and_media"><![CDATA[Select all: OBB & Media]]></string>
+    <string name="select_all_obb_and_media"><![CDATA[Sélectionnez tout: OBB &amp; Media]]></string>
     <string name="unselect_all_apk">Tout déselectionner : APK</string>
     <string name="unselect_all_data">Tout déselectionner : Données</string>
     <string name="unselect_all_int_data">Tout déselectionner : Données internes</string>
     <string name="unselect_all_ext_data">Tout déselectionner : Données externes</string>
-    <string name="unselect_all_obb_and_media"><![CDATA[Unselect all: OBB & Media]]></string>
+    <string name="unselect_all_obb_and_media"><![CDATA[Déselectionner tout : OBB &amp; Media]]></string>
     <string name="expand">Déplier</string>
     <string name="collapsed">Plié</string>
     <string name="internal_data">Données internes</string>
@@ -500,4 +500,5 @@
     <string name="current">Actuelle</string>
     <string name="github_api_rate_limited">Limite de taux de l\'API GitHub atteinte. Veuillez réessayer après %1$s.</string>
     <string name="retry_after">Réessayer après : %1$s</string>
+    <string name="selected_first">Sélectionné en premier</string>
 </resources>
