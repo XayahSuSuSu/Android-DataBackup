@@ -500,4 +500,5 @@
     <string name="current">Поточна</string>
     <string name="github_api_rate_limited">GitHub API досягла ліміту. Будь ласка, попробуйте знову через %1$s.</string>
     <string name="retry_after">Спробуйте знову після: %1$s</string>
+    <string name="selected_first">Обрано першим</string>
 </resources>
