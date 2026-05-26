@@ -500,4 +500,5 @@
     <string name="current">Trenutačna</string>
     <string name="github_api_rate_limited">Dosegnuto je ograničenje brzine GitHub API-ja. Pokušaj ponovo nakon %1$s.</string>
     <string name="retry_after">Pokušaj ponovo nakon: %1$s</string>
+    <string name="selected_first">Najprije odabrane</string>
 </resources>
