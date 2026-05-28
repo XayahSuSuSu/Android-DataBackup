@@ -114,4 +114,8 @@
     <string name="app_crashed">Lỗi ứng dụng</string>
     <string name="no_browser">Không tìm thấy trình duyệt nào</string>
     <string name="clean_restoring">Đang dọn dẹp khôi phục</string>
+    <string name="canceled">Đã hủy</string>
+    <string name="clean_restoring_desc">Xóa sạch thư mục đích trước khi khôi phục</string>
+    <string name="sooner_or_later">Sớm hoặc muộn</string>
+    <string name="confirm_delete_selected_restoring_items">Xóa các mục đã chọn khỏi cơ sở dữ liệu và tệp cục bộ?</string>
 </resources>
