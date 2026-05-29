@@ -22,7 +22,7 @@
     <string name="not_exist">Non esiste</string>
     <string name="not_exist_and_skip">Non esiste e salta</string>
     <string name="backup_completed">Backup completato</string>
-    <string name="wait_for_remaining_data_processing">Processando I dati rimanenti…</string>
+    <string name="wait_for_remaining_data_processing">Sto elaborando i dati rimanenti…</string>
     <string name="last_restore">Ultimo ripristino</string>
     <string name="processing_exit_confirmation">Vuoi uscire dall\' app e interrompere le operazioni in corso?</string>
     <string name="reload">Ricarica</string>
@@ -500,4 +500,5 @@
     <string name="current">Attuale</string>
     <string name="github_api_rate_limited">Limite di richieste API di GitHub raggiunto. Riprova dopo %1$s.</string>
     <string name="retry_after">Riprova dopo: %1$s</string>
+    <string name="selected_first">Selezionati prima</string>
 </resources>
