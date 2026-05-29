@@ -33,6 +33,7 @@ class WifiConfigurationAdapter {
 
     @FromJson
     fun fromJson(json: String): WifiConfiguration {
-        return mGson.fromJson(json, mType)
+        val config: WifiConfiguration? = mGson.fromJson(json, mType)
+        return requireNotNull(config) { "Invalid WifiConfiguration JSON: $json" }
     }
 }
