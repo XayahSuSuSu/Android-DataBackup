@@ -500,4 +500,5 @@
     <string name="current">Atual</string>
     <string name="github_api_rate_limited">O limite de requisições da API do GitHub foi atingido. Por favor, tente novamente, %1$s.</string>
     <string name="retry_after">Tentar novamente após: %1$s</string>
+    <string name="selected_first">Selecione primeiro</string>
 </resources>
