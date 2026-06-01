@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">DataBackup</string>
     <string name="welcome_to_use">Bine ați venit la DataBackup</string>
-    <string name="update_records">Actualizați datele înregistrate</string>
+    <string name="update_records">Actualizare date</string>
     <string name="environment_detection">Detectarea mediului</string>
     <string name="start">Pornire</string>
     <string name="start_desc">Toate datele generate de această aplicație sunt folosite numai pentru backup/restaurare și sunt stocate doar local.</string>
@@ -47,7 +47,7 @@
     <string name="application">Aplicaţie</string>
     <string name="application_desc">Obțineți informații despre pachetul aplicației, utilizate pentru a genera o listă de rezervă și pentru a obține dimensiunea datelor aplicației</string>
     <string name="last_backup">Ultimul backup</string>
-    <string name="storage_desc">Folosit pentru configurarea backup-ului, citire și scriere în arhivă</string>
+    <string name="storage_desc">Folosit pentru configurația backupului, scriere și citire în arhiva</string>
     <string name="none">Nici unul</string>
     <string name="telephony">Istoricul apelurilor</string>
     <string name="internal_storage">Stocare internă</string>
@@ -491,4 +491,14 @@
     <string name="advanced_settings">Setări avansate</string>
     <string name="app_theme_settings">Setări temă aplicație</string>
     <string name="model">Model</string>
+    <string name="selected_first">Primul selectat</string>
+    <string name="update">Actualizare</string>
+    <string name="check_updates">Verifică actualizările</string>
+    <string name="checking_updates">Verific actualizările</string>
+    <string name="new_version_available">O nouă versiune este valabilă</string>
+    <string name="version_up_to_date">Ești la cea mai recentă versiune</string>
+    <string name="latest">Ultima</string>
+    <string name="current">Curentă</string>
+    <string name="github_api_rate_limited">Rata API-ului GitHub a atins limita. Te rog încearcă după %1$s.</string>
+    <string name="retry_after">Reîncearca după: %1$s</string>
 </resources>
