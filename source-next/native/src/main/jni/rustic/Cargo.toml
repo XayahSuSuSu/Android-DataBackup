@@ -1,0 +1,23 @@
+[package]
+name = "rustic"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "rustic"
+crate-type = ["staticlib", "rlib"]
+
+[dependencies]
+android_logger = "0.15.1"
+jni = "0.22.4"
+log = "0.4.29"
+rustic_backend = { path = "../external/rustic/rustic_core/crates/backend", default-features = false }
+rustic_core = { path = "../external/rustic/rustic_core/crates/core" }
+simplelog = "0.12.2"
+thiserror = "2.0.18"
+
+[profile.release]
+codegen-units = 1
+lto = true
+panic = "abort"
+strip = true

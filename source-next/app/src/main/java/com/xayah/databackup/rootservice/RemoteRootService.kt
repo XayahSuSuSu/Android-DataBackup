@@ -43,6 +43,7 @@ import com.xayah.databackup.util.PathHelper.TMP_PARCEL_PREFIX
 import com.xayah.databackup.util.PathHelper.TMP_SUFFIX
 import com.xayah.hiddenapi.castTo
 import com.xayah.libnative.NativeLib
+import com.xayah.libnative.Rustic
 import com.xayah.libnative.TarWrapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -100,6 +101,8 @@ object RemoteRootService {
         init {
             System.loadLibrary("nativelib")
             System.loadLibrary("tar-wrapper")
+            System.loadLibrary("rustic")
+            Rustic.initLogger()
         }
 
         override fun onBind(intent: Intent): IBinder = Impl(applicationContext).apply { onBind() }
@@ -298,6 +301,22 @@ object RemoteRootService {
 
         override fun copyRecursively(source: String, target: String, overwrite: Boolean): Boolean {
             return runCatching { File(source).copyRecursively(File(target), overwrite) }.getOrNull() ?: false
+        }
+
+        override fun initRusticRepository(repositoryPath: String, password: String) {
+            Rustic.initRepository(repositoryPath, password)
+        }
+
+        override fun createRusticSnapshot(repositoryPath: String, password: String, sourcePaths: List<String>, tags: List<String>): String {
+            return Rustic.createSnapshot(repositoryPath, password, sourcePaths, tags)
+        }
+
+        override fun restoreRusticSnapshot(repositoryPath: String, password: String, snapshotId: String, destinationPath: String) {
+            Rustic.restoreSnapshot(repositoryPath, password, snapshotId, destinationPath)
+        }
+
+        override fun checkRusticRepository(repositoryPath: String, password: String) {
+            Rustic.checkRepository(repositoryPath, password)
         }
     }
 
@@ -508,5 +527,21 @@ object RemoteRootService {
 
     suspend fun copyRecursively(source: String, target: String, overwrite: Boolean = false): Boolean {
         return getService()?.copyRecursively(source, target, overwrite) ?: false
+    }
+
+    suspend fun initRusticRepository(repositoryPath: String, password: String) {
+        getService()?.initRusticRepository(repositoryPath, password)
+    }
+
+    suspend fun createRusticSnapshot(repositoryPath: String, password: String, sourcePaths: List<String>, tags: List<String> = emptyList()): String {
+        return getService()?.createRusticSnapshot(repositoryPath, password, sourcePaths, tags) ?: ""
+    }
+
+    suspend fun restoreRusticSnapshot(repositoryPath: String, password: String, snapshotId: String, destinationPath: String) {
+        getService()?.restoreRusticSnapshot(repositoryPath, password, snapshotId, destinationPath)
+    }
+
+    suspend fun checkRusticRepository(repositoryPath: String, password: String) {
+        getService()?.checkRusticRepository(repositoryPath, password)
     }
 }
