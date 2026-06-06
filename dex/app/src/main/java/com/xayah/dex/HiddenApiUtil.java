@@ -50,13 +50,13 @@ public class HiddenApiUtil {
         System.out.println();
         System.out.println("  getInstalledPackagesAsUser USER_ID FILTER_FLAG(user|system|xposed) FORMAT(label|pkgName|flag)");
         System.out.println();
-        System.out.println("  getRuntimePermissions USER_ID PACKAGE");
+        System.out.println("  getRuntimePermissions USER_ID PACKAGE PACKAGE PACKAGE ...");
         System.out.println();
-        System.out.println("  grantRuntimePermission USER_ID PACKAGE PERM_NAME PERM_NAME PERM_NAME ...");
+        System.out.println("  grantRuntimePermission USER_ID [PACKAGE PERM_NAME PERM_NAME ...] [PACKAGE PERM_NAME ...]");
         System.out.println();
-        System.out.println("  revokeRuntimePermission USER_ID PACKAGE PERM_NAME PERM_NAME PERM_NAME ...");
+        System.out.println("  revokeRuntimePermission USER_ID [PACKAGE PERM_NAME PERM_NAME ...] [PACKAGE PERM_NAME ...]");
         System.out.println();
-        System.out.println("  setOpsMode USER_ID PACKAGE OP MODE OP MODE OP MODE ...");
+        System.out.println("  setOpsMode USER_ID [PACKAGE OP MODE OP MODE ...] [PACKAGE OP MODE ...]");
         System.out.println();
         System.out.println("  setDisplayPowerMode MODE(POWER_MODE_OFF: 0, POWER_MODE_NORMAL: 2)");
     }
@@ -274,7 +274,28 @@ public class HiddenApiUtil {
             PackageManagerHidden packageManagerHidden = Refine.unsafeCast(packageManager);
             AppOpsManagerHidden appOpsManager = (AppOpsManagerHidden) ctx.getSystemService(Context.APP_OPS_SERVICE);
             int userId = Integer.parseInt(args[1]);
-            String packageName = args[2];
+            List<String> packageNames = collectPackageNames(args, 2);
+            for (String packageName : packageNames) {
+                try {
+                    printRuntimePermissions(packageManager, packageManagerHidden, appOpsManager, userId, packageName);
+                } catch (Exception e) {
+                    System.out.println("Failed, skip: " + packageName);
+                }
+            }
+            System.exit(0);
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+            System.exit(1);
+        }
+    }
+
+    private static void printRuntimePermissions(
+            PackageManager packageManager,
+            PackageManagerHidden packageManagerHidden,
+            AppOpsManagerHidden appOpsManager,
+            int userId,
+            String packageName
+    ) {
             PackageInfo packageInfo = packageManagerHidden.getPackageInfoAsUser(packageName, PackageManager.GET_PERMISSIONS, userId);
             String[] requestedPermissions = packageInfo.requestedPermissions;
             int[] requestedPermissionsFlags = packageInfo.requestedPermissionsFlags;
@@ -301,7 +322,7 @@ public class HiddenApiUtil {
                         }
                         if ((op != AppOpsManagerHidden.OP_NONE)
                                 || (protection == PermissionInfo.PROTECTION_DANGEROUS || (protectionFlags & PermissionInfo.PROTECTION_FLAG_DEVELOPMENT) != 0)) {
-                            System.out.println(requestedPermissions[i] + " " + isGranted + " " + op + " " + mode);
+                            System.out.println(formatRuntimePermissionLine(packageName, requestedPermissions[i], isGranted, op, mode));
                         }
                     } catch (PackageManager.NameNotFoundException ignored) {
                     } catch (Exception e) {
@@ -309,11 +330,6 @@ public class HiddenApiUtil {
                     }
                 }
             }
-            System.exit(0);
-        } catch (Exception e) {
-            e.printStackTrace(System.out);
-            System.exit(1);
-        }
     }
 
     private static void grantRuntimePermission(String[] args) {
@@ -321,15 +337,13 @@ public class HiddenApiUtil {
             Context ctx = HiddenApiHelper.getContext();
             PackageManagerHidden pm = Refine.unsafeCast(ctx.getPackageManager());
             int userId = Integer.parseInt(args[1]);
-            String packageName = args[2];
             UserHandle user = UserHandleHidden.of(userId);
-            for (int i = 3; i < args.length; i++) {
-                String[] permNames = args[i].split(" ");
-                for (String permName : permNames) {
+            for (PackagePermissionSet permissionSet : parsePackagePermissionSets(args, 2)) {
+                for (String permName : permissionSet.permissionNames) {
                     try {
-                        pm.grantRuntimePermission(packageName, permName, user);
+                        pm.grantRuntimePermission(permissionSet.packageName, permName, user);
                     } catch (Exception e) {
-                        System.out.println("Failed, skip: " + permName);
+                        System.out.println("Failed, skip: " + permissionSet.packageName + " " + permName);
                     }
                 }
             }
@@ -345,15 +359,13 @@ public class HiddenApiUtil {
             Context ctx = HiddenApiHelper.getContext();
             PackageManagerHidden pm = Refine.unsafeCast(ctx.getPackageManager());
             int userId = Integer.parseInt(args[1]);
-            String packageName = args[2];
             UserHandle user = UserHandleHidden.of(userId);
-            for (int i = 3; i < args.length; i++) {
-                String[] permNames = args[i].split(" ");
-                for (String permName : permNames) {
+            for (PackagePermissionSet permissionSet : parsePackagePermissionSets(args, 2)) {
+                for (String permName : permissionSet.permissionNames) {
                     try {
-                        pm.revokeRuntimePermission(packageName, permName, user);
+                        pm.revokeRuntimePermission(permissionSet.packageName, permName, user);
                     } catch (Exception e) {
-                        System.out.println("Failed, skip: " + permName);
+                        System.out.println("Failed, skip: " + permissionSet.packageName + " " + permName);
                     }
                 }
             }
@@ -371,21 +383,18 @@ public class HiddenApiUtil {
             PackageManagerHidden packageManager = Refine.unsafeCast(ctx.getPackageManager());
             AppOpsManagerHidden appOpsManager = (AppOpsManagerHidden) ctx.getSystemService(Context.APP_OPS_SERVICE);
             int userId = Integer.parseInt(args[1]);
-            String packageName = args[2];
-            PackageInfo packageInfo = packageManager.getPackageInfoAsUser(packageName, PackageManager.GET_PERMISSIONS, userId);
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 3; i < args.length; i++) {
-                stringBuilder.append(args[i].trim());
-                stringBuilder.append(" ");
-            }
-            String[] opSet = stringBuilder.toString().trim().split(" ");
-            for (int i = 0; i < opSet.length; i += 2) {
+            for (PackageOpModeSet opModeSet : parsePackageOpModeSets(args, 2)) {
                 try {
-                    int op = Integer.parseInt(opSet[i]);
-                    int mode = Integer.parseInt(opSet[i + 1]);
-                    appOpsManager.setMode(op, packageInfo.applicationInfo.uid, packageName, mode);
+                    PackageInfo packageInfo = packageManager.getPackageInfoAsUser(opModeSet.packageName, PackageManager.GET_PERMISSIONS, userId);
+                    for (OpMode opMode : opModeSet.opModes) {
+                        try {
+                            appOpsManager.setMode(opMode.op, packageInfo.applicationInfo.uid, opModeSet.packageName, opMode.mode);
+                        } catch (Exception e) {
+                            System.out.println("Failed, skip: " + opModeSet.packageName + " " + e.getMessage());
+                        }
+                    }
                 } catch (Exception e) {
-                    System.out.println("Failed, skip: " + e.getMessage());
+                    System.out.println("Failed, skip: " + opModeSet.packageName + " " + e.getMessage());
                 }
             }
             System.exit(0);
@@ -446,5 +455,119 @@ public class HiddenApiUtil {
             }
         }
         return false;
+    }
+
+    private static List<String> collectPackageNames(String[] args, int start) {
+        return flattenArgs(args, start);
+    }
+
+    private static String formatRuntimePermissionLine(String packageName, String permissionName, boolean isGranted, int op, int mode) {
+        return packageName + " " + permissionName + " " + isGranted + " " + op + " " + mode;
+    }
+
+    private static List<PackagePermissionSet> parsePackagePermissionSets(String[] args, int start) {
+        List<PackagePermissionSet> sets = new ArrayList<>();
+        for (List<String> tokens : parseBracketGroups(args, start)) {
+            PackagePermissionSet set = new PackagePermissionSet(tokens.get(0));
+            set.permissionNames.addAll(tokens.subList(1, tokens.size()));
+            sets.add(set);
+        }
+        return sets;
+    }
+
+    private static List<PackageOpModeSet> parsePackageOpModeSets(String[] args, int start) {
+        List<PackageOpModeSet> sets = new ArrayList<>();
+        for (List<String> tokens : parseBracketGroups(args, start)) {
+            PackageOpModeSet set = new PackageOpModeSet(tokens.get(0));
+            for (int j = 1; j < tokens.size(); j += 2) {
+                if (j + 1 >= tokens.size()) {
+                    throw new IllegalArgumentException("Missing mode for op: " + tokens.get(j));
+                }
+                set.opModes.add(new OpMode(Integer.parseInt(tokens.get(j)), Integer.parseInt(tokens.get(j + 1))));
+            }
+            sets.add(set);
+        }
+        return sets;
+    }
+
+    private static List<String> flattenArgs(String[] args, int start) {
+        List<String> tokens = new ArrayList<>();
+        for (int i = start; i < args.length; i++) {
+            for (String token : args[i].trim().split("\\s+")) {
+                if (!token.isEmpty()) {
+                    tokens.add(token);
+                }
+            }
+        }
+        return tokens;
+    }
+
+    private static List<List<String>> parseBracketGroups(String[] args, int start) {
+        List<List<String>> groups = new ArrayList<>();
+        List<String> current = null;
+        for (int i = start; i < args.length; i++) {
+            for (String rawToken : args[i].trim().split("\\s+")) {
+                if (rawToken.isEmpty()) {
+                    continue;
+                }
+                boolean startsGroup = rawToken.startsWith("[");
+                boolean endsGroup = rawToken.endsWith("]");
+                if (startsGroup) {
+                    if (current != null) {
+                        throw new IllegalArgumentException("Nested group: " + rawToken);
+                    }
+                    current = new ArrayList<>();
+                    rawToken = rawToken.substring(1);
+                }
+                if (current == null) {
+                    throw new IllegalArgumentException("Missing group start: " + rawToken);
+                }
+                if (endsGroup) {
+                    rawToken = rawToken.substring(0, rawToken.length() - 1);
+                }
+                if (!rawToken.isEmpty()) {
+                    current.add(rawToken);
+                }
+                if (endsGroup) {
+                    if (current.isEmpty()) {
+                        throw new IllegalArgumentException("Empty group");
+                    }
+                    groups.add(current);
+                    current = null;
+                }
+            }
+        }
+        if (current != null) {
+            throw new IllegalArgumentException("Missing group end");
+        }
+        return groups;
+    }
+
+    private static final class PackagePermissionSet {
+        final String packageName;
+        final List<String> permissionNames = new ArrayList<>();
+
+        PackagePermissionSet(String packageName) {
+            this.packageName = packageName;
+        }
+    }
+
+    private static final class PackageOpModeSet {
+        final String packageName;
+        final List<OpMode> opModes = new ArrayList<>();
+
+        PackageOpModeSet(String packageName) {
+            this.packageName = packageName;
+        }
+    }
+
+    private static final class OpMode {
+        final int op;
+        final int mode;
+
+        OpMode(int op, int mode) {
+            this.op = op;
+            this.mode = mode;
+        }
     }
 }

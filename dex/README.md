@@ -35,13 +35,13 @@ HiddenApiUtil commands:
 
   getInstalledPackagesAsUser USER_ID FILTER_FLAG(user|system|xposed) FORMAT(label|pkgName|flag)
 
-  getRuntimePermissions USER_ID PACKAGE
+  getRuntimePermissions USER_ID PACKAGE PACKAGE PACKAGE ...
 
-  grantRuntimePermission USER_ID PACKAGE PERM_NAME PERM_NAME PERM_NAME ...
+  grantRuntimePermission USER_ID [PACKAGE PERM_NAME PERM_NAME ...] [PACKAGE PERM_NAME ...]
 
-  revokeRuntimePermission USER_ID PACKAGE PERM_NAME PERM_NAME PERM_NAME ...
+  revokeRuntimePermission USER_ID [PACKAGE PERM_NAME PERM_NAME ...] [PACKAGE PERM_NAME ...]
 
-  setOpsMode USER_ID PACKAGE OP MODE OP MODE OP MODE ...
+  setOpsMode USER_ID [PACKAGE OP MODE OP MODE ...] [PACKAGE OP MODE ...]
 
   setDisplayPowerMode MODE(POWER_MODE_OFF: 0, POWER_MODE_NORMAL: 2)
 ```
