@@ -409,4 +409,12 @@
     <string name="next">التالي</string>
     <string name="update_time">وقت التحديث</string>
     <string name="auto_screen_off_desc">إيقاف تشغيل الشاشة تلقائيا أثناء النسخ الاحتياطي أو الاستعادة، ثم تشغيلها بعد اكتمال العملية</string>
+    <string name="canceled">تم الإلغاء</string>
+    <string name="error">خطأ</string>
+    <string name="error_service_desc">لم يتم العثور على الروت ولا يمكن للتطبيق العمل بشكل صحيح بدون الروت يمكنك إعادة المحاولة أو إعادة تشغيل التطبيق.</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="search">البحث</string>
+    <string name="user_apps">تطبيقات المستخدم</string>
+    <string name="system_apps">تطبيقات النظام</string>
+    <string name="users">المستخدمون</string>
 </resources>
