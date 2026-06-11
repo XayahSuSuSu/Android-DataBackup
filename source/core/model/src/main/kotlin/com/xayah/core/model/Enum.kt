@@ -9,7 +9,8 @@ const val LZ4_SUFFIX = "tar.lz4"
 enum class CompressionType(val type: String, val suffix: String, val compressPara: String, val decompressPara: String) {
     TAR("tar", TAR_SUFFIX, "", ""),
     ZSTD("zstd", ZSTD_SUFFIX, "zstd -r -T0 --ultra -q --priority=rt", "zstd"),
-    LZ4("lz4", LZ4_SUFFIX, "zstd -r -T0 --ultra -q --priority=rt --format=lz4", "zstd");
+    LZ4("lz4", LZ4_SUFFIX, "zstd -r -T0 --ultra -q --priority=rt --format=lz4", "zstd"),
+    TWRP_ZIP("zip", "zip", "", ""); // Added for TWRP backup
 
     companion object
 }
