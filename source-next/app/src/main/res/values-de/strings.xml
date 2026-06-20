@@ -491,4 +491,11 @@
     <string name="advanced_settings">Erweiterte Einstellungen</string>
     <string name="app_theme_settings">App-Design Einstellungen</string>
     <string name="model">Modell</string>
+    <string name="selected_first">Zuerst ausgewählt</string>
+    <string name="update">Update</string>
+    <string name="check_updates">Auf Updates prüfen</string>
+    <string name="checking_updates">Suche nach Updates</string>
+    <string name="new_version_available">Eine neue Version ist verfügbar</string>
+    <string name="version_up_to_date">Sie verwenden bereits die neueste Version</string>
+    <string name="latest">Aktuellste Version</string>
 </resources>
