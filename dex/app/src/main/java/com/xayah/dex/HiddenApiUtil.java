@@ -23,6 +23,7 @@ import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.ZipFile;
@@ -113,7 +114,7 @@ public class HiddenApiUtil {
     private static void getPackageUid(String[] args) {
         try {
             Context ctx = HiddenApiHelper.getContext();
-            PackageManager pm = ctx.getPackageManager();
+            PackageManager pm = PackageManagerUtil.getPackageManager(ctx).packageManager();
             PackageManagerHidden pmHidden = Refine.unsafeCast(pm);
             int userId = Integer.parseInt(args[1]);
             for (int i = 2; i < args.length; i++) {
@@ -137,7 +138,7 @@ public class HiddenApiUtil {
     private static void getPackageLabel(String[] args) {
         try {
             Context ctx = HiddenApiHelper.getContext();
-            PackageManager pm = ctx.getPackageManager();
+            PackageManager pm = PackageManagerUtil.getPackageManager(ctx).packageManager();
             PackageManagerHidden pmHidden = Refine.unsafeCast(pm);
             int userId = Integer.parseInt(args[1]);
             for (int i = 2; i < args.length; i++) {
@@ -161,7 +162,7 @@ public class HiddenApiUtil {
     private static void getPackageArchiveInfo(String[] args) {
         try {
             Context ctx = HiddenApiHelper.getContext();
-            PackageManager pm = ctx.getPackageManager();
+            PackageManager pm = PackageManagerUtil.getPackageManager(ctx).packageManager();
             String file = args[1];
             PackageInfo packageInfo = pm.getPackageArchiveInfo(file, 0);
             if (packageInfo != null && packageInfo.applicationInfo != null) {
@@ -181,7 +182,9 @@ public class HiddenApiUtil {
     private static void getInstalledPackagesAsUser(String[] args) {
         try {
             Context ctx = HiddenApiHelper.getContext();
-            PackageManager pm = ctx.getPackageManager();
+            PackageManagerUtil.PackageManagerWithLocale packageManagerWithLocale = PackageManagerUtil.getPackageManager(ctx);
+            Locale locale = packageManagerWithLocale.locale();
+            PackageManager pm = packageManagerWithLocale.packageManager();
             PackageManagerHidden pmHidden = Refine.unsafeCast(pm);
             int userId = Integer.parseInt(args[1]);
             List<String> filterFlags = new ArrayList<>();
@@ -207,9 +210,9 @@ public class HiddenApiUtil {
             boolean systemFlag = filterFlags.contains(FLAG_SYSTEM);
             boolean xposedFlag = filterFlags.contains(FLAG_XPOSED);
             List<PackageInfo> packages = pmHidden.getInstalledPackagesAsUser(PackageManager.GET_META_DATA, userId);
+            Collator collator = Collator.getInstance(locale != null ? locale : ctx.getResources().getConfiguration().getLocales().get(0));
             packages.sort((p1, p2) -> {
                 if (p1 != null && p2 != null) {
-                    Collator collator = Collator.getInstance();
                     return collator.getCollationKey(p1.applicationInfo.loadLabel(pm).toString())
                             .compareTo(collator.getCollationKey(p2.applicationInfo.loadLabel(pm).toString()));
                 }
@@ -270,7 +273,7 @@ public class HiddenApiUtil {
     private static void getRuntimePermissions(String[] args) {
         try {
             Context ctx = HiddenApiHelper.getContext();
-            PackageManager packageManager = ctx.getPackageManager();
+            PackageManager packageManager = PackageManagerUtil.getPackageManager(ctx).packageManager();
             PackageManagerHidden packageManagerHidden = Refine.unsafeCast(packageManager);
             AppOpsManagerHidden appOpsManager = (AppOpsManagerHidden) ctx.getSystemService(Context.APP_OPS_SERVICE);
             int userId = Integer.parseInt(args[1]);
@@ -335,7 +338,7 @@ public class HiddenApiUtil {
     private static void grantRuntimePermission(String[] args) {
         try {
             Context ctx = HiddenApiHelper.getContext();
-            PackageManagerHidden pm = Refine.unsafeCast(ctx.getPackageManager());
+            PackageManagerHidden pm = Refine.unsafeCast(PackageManagerUtil.getPackageManager(ctx).packageManager());
             int userId = Integer.parseInt(args[1]);
             UserHandle user = UserHandleHidden.of(userId);
             for (PackagePermissionSet permissionSet : parsePackagePermissionSets(args, 2)) {
@@ -357,7 +360,7 @@ public class HiddenApiUtil {
     private static void revokeRuntimePermission(String[] args) {
         try {
             Context ctx = HiddenApiHelper.getContext();
-            PackageManagerHidden pm = Refine.unsafeCast(ctx.getPackageManager());
+            PackageManagerHidden pm = Refine.unsafeCast(PackageManagerUtil.getPackageManager(ctx).packageManager());
             int userId = Integer.parseInt(args[1]);
             UserHandle user = UserHandleHidden.of(userId);
             for (PackagePermissionSet permissionSet : parsePackagePermissionSets(args, 2)) {
@@ -380,7 +383,7 @@ public class HiddenApiUtil {
     private static void setOpsMode(String[] args) {
         try {
             Context ctx = HiddenApiHelper.getContext();
-            PackageManagerHidden packageManager = Refine.unsafeCast(ctx.getPackageManager());
+            PackageManagerHidden packageManager = Refine.unsafeCast(PackageManagerUtil.getPackageManager(ctx).packageManager());
             AppOpsManagerHidden appOpsManager = (AppOpsManagerHidden) ctx.getSystemService(Context.APP_OPS_SERVICE);
             int userId = Integer.parseInt(args[1]);
             for (PackageOpModeSet opModeSet : parsePackageOpModeSets(args, 2)) {

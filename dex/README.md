@@ -13,6 +13,13 @@ app_process /system/bin com.xayah.dex.SsaidUtil help
 app_process /system/bin com.xayah.dex.NotificationUtil help
 ```
 
+Set `APP_LABEL_LOCALE` to control the locale.
+It accepts `zh-CN` and `zh_CN` and so on; if it is unset, blank, or invalid, it falls back to the Android system locale.
+
+```
+APP_LABEL_LOCALE=zh-CN app_process /system/bin com.xayah.dex.HiddenApiUtil getInstalledPackagesAsUser 0 user label
+```
+
 # Commands
 ```
 CCUtil commands:

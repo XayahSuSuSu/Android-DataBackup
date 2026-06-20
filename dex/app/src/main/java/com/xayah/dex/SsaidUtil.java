@@ -62,7 +62,7 @@ public class SsaidUtil {
     private static void onGet(String[] args) {
         try {
             Context ctx = HiddenApiHelper.getContext();
-            PackageManager pm = ctx.getPackageManager();
+            PackageManager pm = PackageManagerUtil.getPackageManager(ctx).packageManager();
             PackageManagerHidden pmHidden = Refine.unsafeCast(pm);
             int userId = Integer.parseInt(args[1]);
             StringBuilder stringBuilder = new StringBuilder();
@@ -88,7 +88,7 @@ public class SsaidUtil {
     private static void onSet(String[] args) {
         try {
             Context ctx = HiddenApiHelper.getContext();
-            PackageManager pm = ctx.getPackageManager();
+            PackageManager pm = PackageManagerUtil.getPackageManager(ctx).packageManager();
             PackageManagerHidden pmHidden = Refine.unsafeCast(pm);
             int userId = Integer.parseInt(args[1]);
             StringBuilder stringBuilder = new StringBuilder();
