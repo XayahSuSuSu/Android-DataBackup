@@ -3,7 +3,6 @@ package com.xayah.dex;
 import android.annotation.SuppressLint;
 import android.app.AppOpsManagerHidden;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -23,9 +22,9 @@ import java.io.IOException;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,13 +33,7 @@ import java.util.zip.ZipFile;
 import dev.rikka.tools.refine.Refine;
 
 public class HiddenApiUtil {
-    private static final String HIDDEN_API_UTIL_VERSION = "v1.0";
-    private static final String HIDDEN_API_UTIL_BUILD = "20260621";
-    private static final String HIDDEN_API_UTIL_FEATURES = "runtime-permission,appops,notification-settings,battery-settings,deviceidle-api";
     private static final String XPOSED_METADATA = "xposedminversion";
-    // ActivityInfo.FLAG_SUPPORTS_PICTURE_IN_PICTURE is missing from some hiddenapi stubs.
-    // AOSP value: 0x00400000. Keep a local compat constant to avoid compile-SDK/stub mismatch.
-    private static final int FLAG_SUPPORTS_PICTURE_IN_PICTURE_COMPAT = 0x00400000;
     private static final String FLAG_USER = "user";
     private static final String FLAG_SYSTEM = "system";
     private static final String FLAG_XPOSED = "xposed";
@@ -50,20 +43,33 @@ public class HiddenApiUtil {
 
     private static void onHelp() {
         System.out.println("HiddenApiUtil commands:");
-        System.out.println("  help                         Show this help");
-        System.out.println("  version / --version / -v      Show version information");
-        System.out.println("  getRuntimePermissions USER_ID PACKAGE...");
-        System.out.println("  grantRuntimePermission USER_ID PACKAGE PERMISSION");
-        System.out.println("  revokeRuntimePermission USER_ID PACKAGE PERMISSION");
-        System.out.println("  setOpsMode USER_ID PACKAGE OP MODE");
-        System.out.println("  getNotificationSettings USER_ID PACKAGE...");
-        System.out.println("  setNotificationSettings USER_ID [PACKAGE KEY VALUE KEY VALUE ...] ...");
-        System.out.println("  getBatterySettings USER_ID PACKAGE...");
-        System.out.println("  setBatterySettings USER_ID [PACKAGE KEY VALUE KEY VALUE ...] ...");
-    }
-
-    private static void printVersion() {
-        System.out.println(HIDDEN_API_UTIL_VERSION + " build=" + HIDDEN_API_UTIL_BUILD);
+        System.out.println("  help");
+        System.out.println();
+        System.out.println("  getPackageUid USER_ID PACKAGE PACKAGE PACKAGE ...");
+        System.out.println();
+        System.out.println("  getPackageLabel USER_ID PACKAGE PACKAGE PACKAGE ...");
+        System.out.println();
+        System.out.println("  getPackageArchiveInfo APK_FILE");
+        System.out.println();
+        System.out.println("  getInstalledPackagesAsUser USER_ID FILTER_FLAG(user|system|xposed) FORMAT(label|pkgName|flag)");
+        System.out.println();
+        System.out.println("  getRuntimePermissions USER_ID PACKAGE PACKAGE PACKAGE ...");
+        System.out.println();
+        System.out.println("  grantRuntimePermission USER_ID [PACKAGE PERM_NAME PERM_NAME ...] [PACKAGE PERM_NAME ...] ...");
+        System.out.println();
+        System.out.println("  revokeRuntimePermission USER_ID [PACKAGE PERM_NAME PERM_NAME ...] [PACKAGE PERM_NAME ...] ...");
+        System.out.println();
+        System.out.println("  setOpsMode USER_ID [PACKAGE OP MODE OP MODE ...] [PACKAGE OP MODE ...] ...");
+        System.out.println();
+        System.out.println("  setDisplayPowerMode MODE(POWER_MODE_OFF: 0, POWER_MODE_NORMAL: 2)");
+        System.out.println();
+        System.out.println("  getNotificationSettings USER_ID PACKAGE PACKAGE PACKAGE ...");
+        System.out.println();
+        System.out.println("  setNotificationSettings USER_ID [PACKAGE KEY VALUE KEY VALUE ...] [PACKAGE KEY VALUE ...] ...");
+        System.out.println();
+        System.out.println("  getBatterySettings USER_ID PACKAGE PACKAGE PACKAGE ...");
+        System.out.println();
+        System.out.println("  setBatterySettings USER_ID [PACKAGE KEY VALUE KEY VALUE ...] [PACKAGE KEY VALUE ...] ...");
     }
 
     private static void onCommand(String cmd, String[] args) {
@@ -106,13 +112,6 @@ public class HiddenApiUtil {
                 break;
             case "setDisplayPowerMode":
                 setDisplayPowerMode(args);
-                break;
-            case "version":
-            case "--version":
-            case "--Version":
-            case "Version":
-            case "-v":
-                printVersion();
                 break;
             case "help":
                 onHelp();
@@ -193,7 +192,7 @@ public class HiddenApiUtil {
                 packageInfo.applicationInfo.publicSourceDir = file;
                 System.out.println(removeSpaces(packageInfo.applicationInfo.loadLabel(pm).toString()) + " " + packageInfo.packageName);
             } else {
-                throw new PackageManager.NameNotFoundException("parse APK informationfail!");
+                throw new PackageManager.NameNotFoundException("Failed to parse package info!");
             }
             System.exit(0);
         } catch (Exception e) {
@@ -254,28 +253,17 @@ public class HiddenApiUtil {
                                     out.append(" ").append(removeSpaces(pkg.applicationInfo.loadLabel(pm).toString().replaceAll("\n", "")));
                             case FORMAT_PKG_NAME -> out.append(" ").append(pkg.packageName);
                             case FORMAT_FLAG -> {
-                                if (filterFlags.size() == 2) {
-                                    if (systemFlag && xposedFlag) {
-                                        if (isXposedApp) {
-                                            out.append(" ").append(FLAG_XPOSED);
-                                        }
-                                    } else {
-                                        if (xposedFlag && isXposedApp) {
-                                            out.append(" ").append(FLAG_XPOSED);
-                                        } else if (systemFlag && isSystemApp) {
-                                            out.append(" ").append(FLAG_SYSTEM);
-                                        }
-                                    }
-                                } else if (filterFlags.size() == 3) {
-                                    List<String> flags = new ArrayList<>();
-                                    if (isXposedApp) {
-                                        flags.add(FLAG_XPOSED);
-                                    }
-                                    if (isSystemApp) {
-                                        flags.add(FLAG_SYSTEM);
-                                    }
-                                    out.append(" ").append(String.join("|", flags));
+                                List<String> flags = new ArrayList<>();
+                                if (isUserApp) {
+                                    flags.add(FLAG_USER);
                                 }
+                                if (isSystemApp) {
+                                    flags.add(FLAG_SYSTEM);
+                                }
+                                if (isXposedApp) {
+                                    flags.add(FLAG_XPOSED);
+                                }
+                                out.append(" ").append(String.join("|", flags));
                             }
                         }
                     }
@@ -322,66 +310,68 @@ public class HiddenApiUtil {
             int userId,
             String packageName
     ) {
-            PackageInfo packageInfo = packageManagerHidden.getPackageInfoAsUser(
-                    packageName,
-                    PackageManager.GET_PERMISSIONS | PackageManager.GET_ACTIVITIES,
-                    userId
-            );
-            String[] requestedPermissions = packageInfo.requestedPermissions;
-            int[] requestedPermissionsFlags = packageInfo.requestedPermissionsFlags;
-            Set<String> requestedPermissionSet = new HashSet<>();
-            if (requestedPermissions != null) {
-                requestedPermissionSet.addAll(Arrays.asList(requestedPermissions));
-            }
-
-            AppOpsManagerHidden.PackageOps ops = null;
-            try {
-                List<AppOpsManagerHidden.PackageOps> packageOps = appOpsManager.getOpsForPackage(packageInfo.applicationInfo.uid, packageName, null);
-                if (packageOps != null && !packageOps.isEmpty()) {
-                    ops = packageOps.get(0);
-                }
-            } catch (Exception ignored) {
-            }
-            Map<Integer, Integer> opsMap = null;
-            if (ops != null) {
-                opsMap = ops.getOps().stream().collect(Collectors.toMap(
-                        AppOpsManagerHidden.OpEntry::getOp,
-                        AppOpsManagerHidden.OpEntry::getMode,
-                        (oldMode, newMode) -> newMode
-                ));
-            }
-
-            Set<Integer> printedOps = new HashSet<>();
-            if (requestedPermissions != null && requestedPermissionsFlags != null) {
-                for (int i = 0; i < requestedPermissions.length; i++) {
-                    try {
-                        PermissionInfo permissionInfo = packageManager.getPermissionInfo(requestedPermissions[i], 0);
-                        int protection = PermissionInfoCompat.getProtection(permissionInfo);
-                        int protectionFlags = PermissionInfoCompat.getProtectionFlags(permissionInfo);
-                        boolean isGranted = (requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0;
-                        int op = AppOpsManagerHidden.permissionToOpCode(requestedPermissions[i]);
-                        int mode = queryOpMode(appOpsManager, opsMap, op, packageInfo.applicationInfo.uid, packageName);
-                        boolean effectiveGranted = isGranted;
-                        if (op != AppOpsManagerHidden.OP_NONE) {
-                            // Compatibility / fallback handling.
-                            // Compatibility / fallback handling.
-                            // Compatibility / fallback handling.
-                            effectiveGranted = mode == AppOpsManagerHidden.MODE_DEFAULT ? isGranted : isModeAllowed(mode);
-                            printedOps.add(op);
-                        }
-                        if ((op != AppOpsManagerHidden.OP_NONE)
-                                || (protection == PermissionInfo.PROTECTION_DANGEROUS || (protectionFlags & PermissionInfo.PROTECTION_FLAG_DEVELOPMENT) != 0)) {
-                            System.out.println(formatRuntimePermissionLine(packageName, requestedPermissions[i], effectiveGranted, op, mode));
-                        }
-                    } catch (PackageManager.NameNotFoundException ignored) {
-                    } catch (Exception e) {
-                        e.printStackTrace(System.out);
+        PackageInfo packageInfo = packageManagerHidden.getPackageInfoAsUser(packageName, PackageManager.GET_PERMISSIONS, userId);
+        String[] requestedPermissions = packageInfo.requestedPermissions;
+        int[] requestedPermissionsFlags = packageInfo.requestedPermissionsFlags;
+        AppOpsManagerHidden.PackageOps ops = null;
+        try {
+            ops = appOpsManager.getOpsForPackage(packageInfo.applicationInfo.uid, packageName, null).get(0);
+        } catch (Exception ignored) {
+        }
+        Map<Integer, Integer> opsMap = null;
+        if (ops != null) {
+            opsMap = ops.getOps().stream().collect(Collectors.toMap(AppOpsManagerHidden.OpEntry::getOp, AppOpsManagerHidden.OpEntry::getMode));
+        }
+        if (requestedPermissions != null && requestedPermissionsFlags != null) {
+            for (int i = 0; i < requestedPermissions.length; i++) {
+                try {
+                    PermissionInfo permissionInfo = packageManager.getPermissionInfo(requestedPermissions[i], 0);
+                    int protection = PermissionInfoCompat.getProtection(permissionInfo);
+                    int protectionFlags = PermissionInfoCompat.getProtectionFlags(permissionInfo);
+                    boolean isGranted = (requestedPermissionsFlags[i] & PackageInfo.REQUESTED_PERMISSION_GRANTED) != 0;
+                    int op = AppOpsManagerHidden.permissionToOpCode(requestedPermissions[i]);
+                    int mode = AppOpsManagerHidden.MODE_IGNORED;
+                    if (opsMap != null && opsMap.containsKey(op)) {
+                        mode = getOpMode(appOpsManager, op, packageInfo.applicationInfo.uid, packageName);
+                        opsMap.remove(op);
                     }
+                    if ((op != AppOpsManagerHidden.OP_NONE)
+                            || (protection == PermissionInfo.PROTECTION_DANGEROUS || (protectionFlags & PermissionInfo.PROTECTION_FLAG_DEVELOPMENT) != 0)) {
+                        System.out.println(formatRuntimePermissionLine(packageName, requestedPermissions[i], isGranted, op, mode));
+                    }
+                } catch (PackageManager.NameNotFoundException ignored) {
+                } catch (Exception e) {
+                    e.printStackTrace(System.out);
                 }
             }
+        }
+        if (opsMap == null) {
+            return;
+        }
+        for (Map.Entry<Integer, Integer> entry : opsMap.entrySet()) {
+            int op = entry.getKey();
+            int mode = entry.getValue();
+            String publicName = getPublicName(op);
+            System.out.println(formatRuntimePermissionLine(packageName, publicName, isModeAllowed(mode), op, mode));
+        }
+    }
 
-            printKnownSpecialAppOps(appOpsManager, packageInfo, packageName, requestedPermissionSet, opsMap, printedOps);
-            printRecordedExtraAppOps(packageName, opsMap, printedOps);
+    private static String getPublicName(int op) {
+        try {
+            String publicName = AppOpsManagerHidden.opToPublicName(op);
+            if (publicName != null && !publicName.isEmpty()) {
+                return publicName;
+            }
+        } catch (Throwable ignored) {
+        }
+        try {
+            String name = AppOpsManagerHidden.opToName(op);
+            if (name != null && !name.isEmpty()) {
+                return "android:" + name.toLowerCase(Locale.ROOT);
+            }
+        } catch (Throwable ignored) {
+        }
+        return "android:op_" + op;
     }
 
     @SuppressLint("ServiceCast")
@@ -389,26 +379,12 @@ public class HiddenApiUtil {
         try {
             Context ctx = HiddenApiHelper.getContext();
             PackageManagerHidden pm = Refine.unsafeCast(PackageManagerUtil.getPackageManager(ctx).packageManager());
-            AppOpsManagerHidden appOpsManager = (AppOpsManagerHidden) ctx.getSystemService(Context.APP_OPS_SERVICE);
             int userId = Integer.parseInt(args[1]);
             UserHandle user = UserHandleHidden.of(userId);
             for (PackagePermissionSet permissionSet : parsePackagePermissionSets(args, 2)) {
                 for (String permName : permissionSet.permissionNames) {
                     try {
-                        if (isAppOpOnlyToken(permName)) {
-                            if (!setAppOpModeIfPossible(pm, appOpsManager, userId, permissionSet.packageName, permName, AppOpsManagerHidden.MODE_ALLOWED)) {
-                                throw new IllegalArgumentException("Unknown AppOps permission: " + permName);
-                            }
-                        } else {
-                            try {
-                                pm.grantRuntimePermission(permissionSet.packageName, permName, user);
-                            } catch (Exception grantException) {
-                                if (!setAppOpModeIfPossible(pm, appOpsManager, userId, permissionSet.packageName, permName, AppOpsManagerHidden.MODE_ALLOWED)) {
-                                    throw grantException;
-                                }
-                            }
-                            setAppOpModeIfPossible(pm, appOpsManager, userId, permissionSet.packageName, permName, AppOpsManagerHidden.MODE_ALLOWED);
-                        }
+                        pm.grantRuntimePermission(permissionSet.packageName, permName, user);
                     } catch (Exception e) {
                         System.out.println("Failed, skipped: " + permissionSet.packageName + " " + permName);
                     }
@@ -426,26 +402,12 @@ public class HiddenApiUtil {
         try {
             Context ctx = HiddenApiHelper.getContext();
             PackageManagerHidden pm = Refine.unsafeCast(PackageManagerUtil.getPackageManager(ctx).packageManager());
-            AppOpsManagerHidden appOpsManager = (AppOpsManagerHidden) ctx.getSystemService(Context.APP_OPS_SERVICE);
             int userId = Integer.parseInt(args[1]);
             UserHandle user = UserHandleHidden.of(userId);
             for (PackagePermissionSet permissionSet : parsePackagePermissionSets(args, 2)) {
                 for (String permName : permissionSet.permissionNames) {
                     try {
-                        if (isAppOpOnlyToken(permName)) {
-                            if (!setAppOpModeIfPossible(pm, appOpsManager, userId, permissionSet.packageName, permName, AppOpsManagerHidden.MODE_IGNORED)) {
-                                throw new IllegalArgumentException("Unknown AppOps permission: " + permName);
-                            }
-                        } else {
-                            try {
-                                pm.revokeRuntimePermission(permissionSet.packageName, permName, user);
-                            } catch (Exception revokeException) {
-                                if (!setAppOpModeIfPossible(pm, appOpsManager, userId, permissionSet.packageName, permName, AppOpsManagerHidden.MODE_IGNORED)) {
-                                    throw revokeException;
-                                }
-                            }
-                            setAppOpModeIfPossible(pm, appOpsManager, userId, permissionSet.packageName, permName, AppOpsManagerHidden.MODE_IGNORED);
-                        }
+                        pm.revokeRuntimePermission(permissionSet.packageName, permName, user);
                     } catch (Exception e) {
                         System.out.println("Failed, skipped: " + permissionSet.packageName + " " + permName);
                     }
@@ -547,420 +509,11 @@ public class HiddenApiUtil {
         return packageName + " " + permissionName + " " + isGranted + " " + op + " " + mode;
     }
 
-    private static void printKnownSpecialAppOps(
-            AppOpsManagerHidden appOpsManager,
-            PackageInfo packageInfo,
-            String packageName,
-            Set<String> requestedPermissionSet,
-            Map<Integer, Integer> opsMap,
-            Set<Integer> printedOps
-    ) {
-        for (SpecialAppOp specialAppOp : getKnownSpecialAppOps()) {
-            int op = resolveOpCode(specialAppOp);
-            if (op == AppOpsManagerHidden.OP_NONE || printedOps.contains(op)) {
-                continue;
-            }
-            boolean declaredOrRelevant = false;
-            if (specialAppOp.permissionName != null && requestedPermissionSet.contains(specialAppOp.permissionName)) {
-                declaredOrRelevant = true;
-            }
-            if (specialAppOp.requirePictureInPictureActivity && hasPictureInPictureActivity(packageInfo)) {
-                declaredOrRelevant = true;
-            }
-            if (opsMap != null && opsMap.containsKey(op)) {
-                declaredOrRelevant = true;
-            }
-            if (!declaredOrRelevant) {
-                continue;
-            }
-            int mode = queryOpMode(appOpsManager, opsMap, op, packageInfo.applicationInfo.uid, packageName);
-            System.out.println(formatRuntimePermissionLine(packageName, specialAppOp.publicName, isModeAllowed(mode), op, mode));
-            printedOps.add(op);
-        }
-    }
-
-    private static void printRecordedExtraAppOps(
-            String packageName,
-            Map<Integer, Integer> opsMap,
-            Set<Integer> printedOps
-    ) {
-        if (opsMap == null) {
-            return;
-        }
-        for (Map.Entry<Integer, Integer> entry : opsMap.entrySet()) {
-            int op = entry.getKey();
-            if (printedOps.contains(op)) {
-                continue;
-            }
-            int mode = entry.getValue();
-            String publicName = opToPublicNameSafe(op);
-            System.out.println(formatRuntimePermissionLine(packageName, publicName, isModeAllowed(mode), op, mode));
-            printedOps.add(op);
-        }
-    }
-
-    private static int queryOpMode(
-            AppOpsManagerHidden appOpsManager,
-            Map<Integer, Integer> opsMap,
-            int op,
-            int uid,
-            String packageName
-    ) {
-        if (op == AppOpsManagerHidden.OP_NONE) {
-            return AppOpsManagerHidden.MODE_IGNORED;
-        }
-        try {
-            return appOpsManager.unsafeCheckOpRawNoThrow(op, uid, packageName);
-        } catch (Throwable ignored) {
-        }
-        try {
-            return appOpsManager.checkOpNoThrow(op, uid, packageName);
-        } catch (Throwable ignored) {
-        }
-        if (opsMap != null && opsMap.containsKey(op)) {
-            return opsMap.get(op);
-        }
-        return AppOpsManagerHidden.MODE_IGNORED;
-    }
-
     private static boolean isModeAllowed(int mode) {
         return mode == AppOpsManagerHidden.MODE_ALLOWED || mode == AppOpsManagerHidden.MODE_FOREGROUND;
     }
 
-    private static boolean isAppOpOnlyToken(String permissionOrOpName) {
-        if (permissionOrOpName == null) {
-            return false;
-        }
-        if (permissionOrOpName.startsWith("android:")) {
-            return true;
-        }
-        try {
-            Integer.parseInt(permissionOrOpName);
-            return true;
-        } catch (Throwable ignored) {
-            return false;
-        }
-    }
-
-    private static boolean setAppOpModeIfPossible(
-            PackageManagerHidden packageManager,
-            AppOpsManagerHidden appOpsManager,
-            int userId,
-            String packageName,
-            String permissionOrOpName,
-            int mode
-    ) {
-        int op = resolvePermissionOrOpCode(permissionOrOpName);
-        if (op == AppOpsManagerHidden.OP_NONE) {
-            return false;
-        }
-        try {
-            PackageInfo packageInfo = packageManager.getPackageInfoAsUser(packageName, PackageManager.GET_PERMISSIONS, userId);
-            appOpsManager.setMode(op, packageInfo.applicationInfo.uid, packageName, mode);
-            return true;
-        } catch (Throwable ignored) {
-            return false;
-        }
-    }
-
-    private static int resolvePermissionOrOpCode(String permissionOrOpName) {
-        if (permissionOrOpName == null || permissionOrOpName.isEmpty()) {
-            return AppOpsManagerHidden.OP_NONE;
-        }
-        try {
-            int op = AppOpsManagerHidden.permissionToOpCode(permissionOrOpName);
-            if (op != AppOpsManagerHidden.OP_NONE) {
-                return op;
-            }
-        } catch (Throwable ignored) {
-        }
-        try {
-            int op = AppOpsManagerHidden.strOpToOp(permissionOrOpName);
-            if (op != AppOpsManagerHidden.OP_NONE) {
-                return op;
-            }
-        } catch (Throwable ignored) {
-        }
-        if (permissionOrOpName.startsWith("android:op_")) {
-            try {
-                return Integer.parseInt(permissionOrOpName.substring("android:op_".length()));
-            } catch (Throwable ignored) {
-            }
-        }
-        try {
-            return Integer.parseInt(permissionOrOpName);
-        } catch (Throwable ignored) {
-        }
-        for (SpecialAppOp specialAppOp : getKnownSpecialAppOps()) {
-            if (permissionOrOpName.equals(specialAppOp.publicName)) {
-                return resolveOpCode(specialAppOp);
-            }
-        }
-        return AppOpsManagerHidden.OP_NONE;
-    }
-
-    private static boolean hasPictureInPictureActivity(PackageInfo packageInfo) {
-        if (packageInfo.activities == null) {
-            return false;
-        }
-        for (ActivityInfo activityInfo : packageInfo.activities) {
-            if (activityInfo != null && (activityInfo.flags & FLAG_SUPPORTS_PICTURE_IN_PICTURE_COMPAT) != 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static String opToPublicNameSafe(int op) {
-        try {
-            String publicName = AppOpsManagerHidden.opToPublicName(op);
-            if (publicName != null && !publicName.isEmpty()) {
-                return publicName;
-            }
-        } catch (Throwable ignored) {
-        }
-        try {
-            String name = AppOpsManagerHidden.opToName(op);
-            if (name != null && !name.isEmpty()) {
-                return "android:" + name.toLowerCase(Locale.ROOT);
-            }
-        } catch (Throwable ignored) {
-        }
-        String reflectedName = opToPublicNameByReflection(op);
-        if (reflectedName != null) {
-            return reflectedName;
-        }
-        String fallbackName = opToPublicNameByFallbackTable(op);
-        if (fallbackName != null) {
-            return fallbackName;
-        }
-        for (SpecialAppOp specialAppOp : getKnownSpecialAppOps()) {
-            int specialOp = resolveOpCode(specialAppOp);
-            if (specialOp == op) {
-                return specialAppOp.publicName;
-            }
-        }
-        return "android:op_" + op;
-    }
-
-    private static String opToPublicNameByReflection(int op) {
-        try {
-            Class<?> clazz = Class.forName("android.app.AppOpsManager");
-            java.lang.reflect.Field[] fields = clazz.getDeclaredFields();
-            for (java.lang.reflect.Field field : fields) {
-                String fieldName = field.getName();
-                if (!fieldName.startsWith("OP_") || fieldName.startsWith("OPSTR_") || "OP_NONE".equals(fieldName)) {
-                    continue;
-                }
-                if (field.getType() != int.class) {
-                    continue;
-                }
-                field.setAccessible(true);
-                if (field.getInt(null) != op) {
-                    continue;
-                }
-
-                String suffix = fieldName.substring(3);
-                try {
-                    java.lang.reflect.Field opstrField = clazz.getDeclaredField("OPSTR_" + suffix);
-                    if (opstrField.getType() == String.class) {
-                        opstrField.setAccessible(true);
-                        String publicName = (String) opstrField.get(null);
-                        if (publicName != null && publicName.startsWith("android:")) {
-                            return publicName;
-                        }
-                    }
-                } catch (Throwable ignored) {
-                }
-
-                if (!suffix.isEmpty()) {
-                    return "android:" + suffix.toLowerCase(Locale.ROOT);
-                }
-            }
-        } catch (Throwable ignored) {
-        }
-        return null;
-    }
-
-    private static String opToPublicNameByFallbackTable(int op) {
-        String[] names = getFallbackAppOpPublicNames();
-        if (op >= 0 && op < names.length) {
-            return names[op];
-        }
-        return null;
-    }
-
-    private static String[] getFallbackAppOpPublicNames() {
-        return new String[]{
-                "android:coarse_location",
-                "android:fine_location",
-                "android:gps",
-                "android:vibrate",
-                "android:read_contacts",
-                "android:write_contacts",
-                "android:read_call_log",
-                "android:write_call_log",
-                "android:read_calendar",
-                "android:write_calendar",
-                "android:wifi_scan",
-                "android:post_notification",
-                "android:neighboring_cells",
-                "android:call_phone",
-                "android:read_sms",
-                "android:write_sms",
-                "android:receive_sms",
-                "android:receive_emergency_broadcast",
-                "android:receive_mms",
-                "android:receive_wap_push",
-                "android:send_sms",
-                "android:read_icc_sms",
-                "android:write_icc_sms",
-                "android:write_settings",
-                "android:system_alert_window",
-                "android:access_notifications",
-                "android:camera",
-                "android:record_audio",
-                "android:play_audio",
-                "android:read_clipboard",
-                "android:write_clipboard",
-                "android:take_media_buttons",
-                "android:take_audio_focus",
-                "android:audio_master_volume",
-                "android:audio_voice_volume",
-                "android:audio_ring_volume",
-                "android:audio_media_volume",
-                "android:audio_alarm_volume",
-                "android:audio_notification_volume",
-                "android:audio_bluetooth_volume",
-                "android:wake_lock",
-                "android:monitor_location",
-                "android:monitor_high_power_location",
-                "android:get_usage_stats",
-                "android:mute_microphone",
-                "android:toast_window",
-                "android:project_media",
-                "android:activate_vpn",
-                "android:write_wallpaper",
-                "android:assist_structure",
-                "android:assist_screenshot",
-                "android:read_phone_state",
-                "android:add_voicemail",
-                "android:use_sip",
-                "android:process_outgoing_calls",
-                "android:use_fingerprint",
-                "android:body_sensors",
-                "android:read_cell_broadcasts",
-                "android:mock_location",
-                "android:read_external_storage",
-                "android:write_external_storage",
-                "android:turn_screen_on",
-                "android:get_accounts",
-                "android:run_in_background",
-                "android:audio_accessibility_volume",
-                "android:read_phone_numbers",
-                "android:request_install_packages",
-                "android:picture_in_picture",
-                "android:instant_app_start_foreground",
-                "android:answer_phone_calls",
-                "android:run_any_in_background",
-                "android:change_wifi_state",
-                "android:request_delete_packages",
-                "android:bind_accessibility_service",
-                "android:accept_handover",
-                "android:manage_ipsec_tunnels",
-                "android:start_foreground",
-                "android:bluetooth_scan",
-                "android:use_biometric",
-                "android:activity_recognition",
-                "android:sms_financial_transactions",
-                "android:read_media_audio",
-                "android:write_media_audio",
-                "android:read_media_video",
-                "android:write_media_video",
-                "android:read_media_images",
-                "android:write_media_images",
-                "android:legacy_storage",
-                "android:access_accessibility",
-                "android:read_device_identifiers",
-                "android:access_media_location",
-                "android:query_all_packages",
-                "android:manage_external_storage",
-                "android:interact_across_profiles",
-                "android:activate_platform_vpn",
-                "android:loader_usage_stats",
-                null,
-                "android:auto_revoke_permissions_if_unused",
-                "android:auto_revoke_managed_by_installer",
-                "android:no_isolated_storage",
-                "android:phone_call_microphone",
-                "android:phone_call_camera",
-                "android:record_audio_hotword",
-                "android:manage_ongoing_calls",
-                "android:manage_credentials",
-                "android:use_icc_auth_with_device_identifier",
-                "android:record_audio_output",
-                "android:schedule_exact_alarm",
-                "android:fine_location_source",
-                "android:coarse_location_source",
-                "android:manage_media",
-                "android:bluetooth_connect",
-                "android:uwb_ranging",
-                "android:activity_recognition_source",
-                "android:bluetooth_advertise",
-                "android:record_incoming_phone_audio",
-                "android:nearby_wifi_devices",
-                "android:establish_vpn_service",
-                "android:establish_vpn_manager",
-                "android:access_restricted_settings",
-                "android:receive_soundtrigger_audio",
-                "android:receive_explicit_user_interaction_audio",
-                "android:run_user_initiated_jobs",
-                "android:read_media_visual_user_selected",
-                "android:system_exempt_from_suspension",
-                "android:system_exempt_from_dismissible_notifications",
-                "android:read_write_health_data",
-                "android:foreground_service_special_use",
-                "android:use_full_screen_intent",
-                "android:camera_sandboxed",
-                "android:record_audio_sandboxed",
-                "android:receive_sandbox_trigger_audio",
-                "android:system_exempt_from_power_restrictions",
-                "android:system_exempt_from_hibernation",
-                "android:system_exempt_from_activity_bg_start_restriction",
-                "android:capture_consentless_bugreport_on_userdebug_build"
-        };
-    }
-
-    private static int resolveOpCode(SpecialAppOp specialAppOp) {
-        try {
-            return AppOpsManagerHidden.strOpToOp(specialAppOp.publicName);
-        } catch (Throwable ignored) {
-        }
-        try {
-            Class<?> clazz = Class.forName("android.app.AppOpsManager");
-            java.lang.reflect.Field field = clazz.getDeclaredField(specialAppOp.fieldName);
-            field.setAccessible(true);
-            return field.getInt(null);
-        } catch (Throwable ignored) {
-        }
-        return AppOpsManagerHidden.OP_NONE;
-    }
-
-    private static List<SpecialAppOp> getKnownSpecialAppOps() {
-        List<SpecialAppOp> list = new ArrayList<>();
-        list.add(new SpecialAppOp("android:system_alert_window", "OP_SYSTEM_ALERT_WINDOW", android.Manifest.permission.SYSTEM_ALERT_WINDOW, false));
-        list.add(new SpecialAppOp("android:picture_in_picture", "OP_PICTURE_IN_PICTURE", null, true));
-        list.add(new SpecialAppOp("android:use_full_screen_intent", "OP_USE_FULL_SCREEN_INTENT", android.Manifest.permission.USE_FULL_SCREEN_INTENT, false));
-        list.add(new SpecialAppOp("android:write_settings", "OP_WRITE_SETTINGS", android.Manifest.permission.WRITE_SETTINGS, false));
-        list.add(new SpecialAppOp("android:request_install_packages", "OP_REQUEST_INSTALL_PACKAGES", android.Manifest.permission.REQUEST_INSTALL_PACKAGES, false));
-        list.add(new SpecialAppOp("android:get_usage_stats", "OP_GET_USAGE_STATS", android.Manifest.permission.PACKAGE_USAGE_STATS, false));
-        list.add(new SpecialAppOp("android:manage_external_storage", "OP_MANAGE_EXTERNAL_STORAGE", android.Manifest.permission.MANAGE_EXTERNAL_STORAGE, false));
-        list.add(new SpecialAppOp("android:schedule_exact_alarm", "OP_SCHEDULE_EXACT_ALARM", android.Manifest.permission.SCHEDULE_EXACT_ALARM, false));
-        list.add(new SpecialAppOp("android:access_notification_policy", "OP_ACCESS_NOTIFICATION_POLICY", android.Manifest.permission.ACCESS_NOTIFICATION_POLICY, false));
-        return list;
-    }
-
-
+    @SuppressLint("ServiceCast")
     private static void getBatterySettings(String[] args) {
         try {
             Context ctx = HiddenApiHelper.getContext();
@@ -987,6 +540,7 @@ public class HiddenApiUtil {
         }
     }
 
+    @SuppressLint("ServiceCast")
     private static void setBatterySettings(String[] args) {
         try {
             Context ctx = HiddenApiHelper.getContext();
@@ -1021,14 +575,30 @@ public class HiddenApiUtil {
             System.out.println(packageName + " BATTERY:" + opName + " -1 " + AppOpsManagerHidden.MODE_IGNORED + " ignored");
             return;
         }
-        int mode = queryOpMode(appOpsManager, null, op, uid, packageName);
+        int mode = getOpMode(appOpsManager, op, uid, packageName);
         System.out.println(packageName + " BATTERY:" + opName + " " + op + " " + mode + " " + appOpsModeToName(mode));
+    }
+
+    private static int getOpMode(AppOpsManagerHidden appOpsManager, int op, int uid, String packageName) {
+        if (op == AppOpsManagerHidden.OP_NONE) {
+            return AppOpsManagerHidden.MODE_IGNORED;
+        }
+        try {
+            return appOpsManager.unsafeCheckOpRawNoThrow(op, uid, packageName);
+        } catch (Throwable ignored) {
+        }
+        try {
+            return appOpsManager.checkOpNoThrow(op, uid, packageName);
+        } catch (Throwable ignored) {
+        }
+        return AppOpsManagerHidden.MODE_IGNORED;
     }
 
     private static void applyBatterySetting(AppOpsManagerHidden appOpsManager, String packageName, int uid, String key, String value) throws Exception {
         if ("battery_opt".equals(key) || "BATTERY:RUN_ANY_IN_BACKGROUND".equals(key)) {
             int op = resolveBatteryOp("RUN_ANY_IN_BACKGROUND");
-            if (op == AppOpsManagerHidden.OP_NONE) throw new IllegalArgumentException("Not found RUN_ANY_IN_BACKGROUND AppOp");
+            if (op == AppOpsManagerHidden.OP_NONE)
+                throw new IllegalArgumentException("Not found RUN_ANY_IN_BACKGROUND AppOp");
             int mode = parseBatteryMode(value);
             appOpsManager.setMode(op, uid, packageName, mode);
             if (mode == AppOpsManagerHidden.MODE_ALLOWED) {
@@ -1038,7 +608,8 @@ public class HiddenApiUtil {
         }
         if ("BATTERY:RUN_IN_BACKGROUND".equals(key)) {
             int op = resolveBatteryOp("RUN_IN_BACKGROUND");
-            if (op == AppOpsManagerHidden.OP_NONE) throw new IllegalArgumentException("Not found RUN_IN_BACKGROUND AppOp");
+            if (op == AppOpsManagerHidden.OP_NONE)
+                throw new IllegalArgumentException("Not found RUN_IN_BACKGROUND AppOp");
             appOpsManager.setMode(op, uid, packageName, parseBatteryMode(value));
             return;
         }
@@ -1207,10 +778,12 @@ public class HiddenApiUtil {
         try {
             Process process = Runtime.getRuntime().exec(new String[]{"sh", "-c", cmd});
             try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(process.getInputStream()))) {
-                while (br.readLine() != null) { }
+                while (br.readLine() != null) {
+                }
             }
             try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(process.getErrorStream()))) {
-                while (br.readLine() != null) { }
+                while (br.readLine() != null) {
+                }
             }
             return process.waitFor() == 0;
         } catch (Throwable ignored) {
@@ -1228,7 +801,8 @@ public class HiddenApiUtil {
                 while ((line = br.readLine()) != null) sb.append(line).append('\n');
             }
             try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.InputStreamReader(process.getErrorStream()))) {
-                while (br.readLine() != null) { }
+                while (br.readLine() != null) {
+                }
             }
             process.waitFor();
         } catch (Throwable ignored) {

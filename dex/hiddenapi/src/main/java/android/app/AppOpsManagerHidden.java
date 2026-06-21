@@ -13,9 +13,13 @@ public class AppOpsManagerHidden {
     public static final int MODE_IGNORED = 1;
     public static final int MODE_ERRORED = 2;
     public static final int MODE_DEFAULT = 3;
+
+    /**
+     * @RequiresApi(api = Build.VERSION_CODES.P)
+     * @see <a href="https://cs.android.com/android/platform/superproject/+/android-9.0.0_r61:frameworks/base/core/java/android/app/AppOpsManager.java;l=119">AppOpsManager.java</a>
+     */
     public static final int MODE_FOREGROUND = 4;
     public static final int OP_NONE = -1;
-    public static final int _NUM_OP = 64;
 
     public List<PackageOps> getOpsForPackage(int uid, String packageName, int[] ops) {
         throw new RuntimeException("Stub!");
@@ -29,6 +33,10 @@ public class AppOpsManagerHidden {
         throw new RuntimeException("Stub!");
     }
 
+    /**
+     * @RequiresApi(api = Build.VERSION_CODES.Q)
+     * @see <a href="https://cs.android.com/android/platform/superproject/+/android-10.0.0_r47:frameworks/base/core/java/android/app/AppOpsManager.java;l=2048">AppOpsManager.java</a>
+     */
     public static String opToPublicName(int op) {
         throw new RuntimeException("Stub!");
     }
@@ -37,6 +45,10 @@ public class AppOpsManagerHidden {
         throw new RuntimeException("Stub!");
     }
 
+    /**
+     * @RequiresApi(api = Build.VERSION_CODES.Q)
+     * @see <a href="https://cs.android.com/android/platform/superproject/+/android-10.0.0_r47:frameworks/base/core/java/android/app/AppOpsManager.java;l=4995">AppOpsManager.java</a>
+     */
     public int unsafeCheckOpRawNoThrow(int op, int uid, String packageName) {
         throw new RuntimeException("Stub!");
     }
