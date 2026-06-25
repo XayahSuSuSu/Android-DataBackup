@@ -423,12 +423,12 @@
     <string name="custom_selection">Кастомізоване обрання</string>
     <string name="select_all_int_data">Обрати все: Внутрішні дані</string>
     <string name="select_all_ext_data">Обрати все: Зовнішні дані</string>
-    <string name="select_all_obb_and_media"><![CDATA[Select all: OBB & Media]]></string>
+    <string name="select_all_obb_and_media"><![CDATA[Обрати все: OBB та Медіа]]></string>
     <string name="unselect_all_apk">Зняти вибір всіх: APK</string>
     <string name="unselect_all_data">Зняти вибір всіх: Дані</string>
     <string name="unselect_all_int_data">Зняти вибір всіх: Внутрішні дані</string>
     <string name="unselect_all_ext_data">Зняти вибір всіх: Зовнішні дані</string>
-    <string name="unselect_all_obb_and_media"><![CDATA[Unselect all: OBB & Media]]></string>
+    <string name="unselect_all_obb_and_media"><![CDATA[Зняти вибір зі всього: OBB та Медіа]]></string>
     <string name="expand">Розгорнути</string>
     <string name="collapsed">Згорнуто</string>
     <string name="internal_data">Внутрішні дані</string>
