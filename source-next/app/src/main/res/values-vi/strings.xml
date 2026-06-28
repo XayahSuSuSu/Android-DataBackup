@@ -118,4 +118,5 @@
     <string name="clean_restoring_desc">Xóa sạch thư mục đích trước khi khôi phục</string>
     <string name="sooner_or_later">Sớm hoặc muộn</string>
     <string name="confirm_delete_selected_restoring_items">Xóa các mục đã chọn khỏi cơ sở dữ liệu và tệp cục bộ?</string>
+    <string name="confirm_delete">Điều này sẽ xóa mọi tệp tin liên quan mà bạn chọn</string>
 </resources>
