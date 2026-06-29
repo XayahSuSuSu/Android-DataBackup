@@ -48,4 +48,19 @@
     <string name="updating">Aan het updaten</string>
     <string name="both">Beide</string>
     <string name="manifest">Manifest</string>
+    <string name="selected_apks">Geselecteerde APK’s</string>
+    <string name="selected_data">Geselecteerde data</string>
+    <string name="not_exist">Bestaat niet</string>
+    <string name="not_exist_and_skip">Bestaat niet en overgeslagen</string>
+    <string name="backup_completed">Back-up voltooid</string>
+    <string name="restore">Herstel</string>
+    <string name="last_restore">Laatste restauratie</string>
+    <string name="reload">Herlaad</string>
+    <string name="databases_reload_failed">Kon databases niet herladen</string>
+    <string name="icon_reload_failed">Kon icoon niet herladen</string>
+    <string name="restart_failed">Kon de app niet herstarten. Herstart het a.u.b. handmatig.</string>
+    <string name="confirm_reload">Herlaad?</string>
+    <string name="version">Versie</string>
+    <string name="backup_user">Back-up gebruiker</string>
+    <string name="restore_user">Herstel gebruiker</string>
 </resources>
