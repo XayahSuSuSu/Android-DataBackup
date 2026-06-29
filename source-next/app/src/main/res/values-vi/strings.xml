@@ -119,4 +119,27 @@
     <string name="sooner_or_later">Sớm hoặc muộn</string>
     <string name="confirm_delete_selected_restoring_items">Xóa các mục đã chọn khỏi cơ sở dữ liệu và tệp cục bộ?</string>
     <string name="confirm_delete">Điều này sẽ xóa mọi tệp tin liên quan mà bạn chọn</string>
+    <string name="compatible_mode_desc" tools:ignore="TypographyDashes">Hãy sử dụng đường ống (pipe) thay vì tham số cho đầu vào của lệnh tar. Chuyển sang sử dụng đường ống khi gặp thông báo \"tar: zstd -r -T0 --ultra -1 -q --priority=rt: Cannot exec: No such file or directory</string>
+    <string name="backup_dir_as_media_error">Không thể thêm thư mục sao lưu làm phương tiện</string>
+    <string name="media_target_path_missing">Thư mục đích bị thiếu. Vui lòng thiết lập thủ công.</string>
+    <string name="update_available">Đã có bản cập nhật</string>
+    <string name="not_installed">Chưa được cài đặt</string>
+    <string name="selected_both">Đã chọn cả hai</string>
+    <string name="abi_validation">Xác thực ABI</string>
+    <string name="this_version_only_supports_but_your_device_is_please_install_version">Phiên bản này chỉ hỗ trợ phiên bản %1$s, nhưng thiết bị của bạn có phiên bản %2$s. Vui lòng cài đặt phiên bản %3$s trở lên.</string>
+    <string name="account">Tài khoản</string>
+    <string name="create_account">Tạo tài khoản</string>
+    <string name="name">Tên</string>
+    <string name="url">Đường dẫn(URL)</string>
+    <string name="username">Tên người dùng</string>
+    <string name="password">Mật khẩu</string>
+    <string name="public_key">Khóa công khai</string>
+    <string name="private_key">Khóa riêng tư</string>
+    <string name="port">Cổng</string>
+    <string name="mount">Gắn kết</string>
+    <string name="set_remote">Thiết lập từ xa</string>
+    <string name="set_local">Thiết lập nội bộ</string>
+    <string name="unmount">Tháo rời</string>
+    <string name="mounted">Đã gắn kết</string>
+    <string name="info_set_remote_or_local">Vui lòng thiết lập đường dẫn từ xa hoặc đường dẫn cục bộ</string>
 </resources>
