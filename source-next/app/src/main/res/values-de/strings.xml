@@ -498,4 +498,5 @@
     <string name="new_version_available">Eine neue Version ist verfügbar</string>
     <string name="version_up_to_date">Sie verwenden bereits die neueste Version</string>
     <string name="latest">Aktuellste Version</string>
+    <string name="github_api_rate_limited">GitHub-API-Ratenlimit erreicht. Bitte nach %1$s erneut versuchen.</string>
 </resources>
