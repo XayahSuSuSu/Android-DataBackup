@@ -501,4 +501,9 @@
     <string name="retry_after">Ponów próbę po: %1$s</string>
     <string name="update">Zaktualizuj</string>
     <string name="selected_first">Zaznaczone jako pierwsze</string>
+    <string name="rustic">Rustic</string>
+    <string name="rustic_backup_backend_desc">Użyj repozytorium Rustic do tej kopii zapasowej</string>
+    <string name="archive">Archiwum</string>
+    <string name="archive_backup_backend_desc">Użyj samodzielnych plików archiwum do tej kopii zapasowej</string>
+    <string name="backup_backend">Backend kopii zapasowych</string>
 </resources>
