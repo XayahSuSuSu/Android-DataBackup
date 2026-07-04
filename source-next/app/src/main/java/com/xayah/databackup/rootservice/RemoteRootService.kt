@@ -271,7 +271,7 @@ object RemoteRootService {
                     FileOutputStream(outputPath).use { fileOutputStream ->
                         CountingOutputStream(
                             source = fileOutputStream,
-                            onProgress = if (callback != null) { bytesWritten, speed -> callback.onProgress(bytesWritten, speed) } else null
+                            onProgress = if (callback != null) { bytesWritten, speed -> callback.onProgress(bytesWritten, speed, 0f) } else null
                         ).use { countingOutputStream ->
                             ZstdOutputStream(countingOutputStream, level).use { zstdOutputStream ->
                                 zstdOutputStream.setWorkers(Runtime.getRuntime().availableProcessors())
@@ -307,8 +307,14 @@ object RemoteRootService {
             Rustic.initRepository(repositoryPath, password)
         }
 
-        override fun createRusticSnapshot(repositoryPath: String, password: String, sourcePaths: List<String>, tags: List<String>): String {
-            return Rustic.createSnapshot(repositoryPath, password, sourcePaths, tags)
+        override fun createRusticSnapshot(
+            repositoryPath: String,
+            password: String,
+            sourcePaths: List<String>,
+            tags: List<String>,
+            callback: ICallback?
+        ): String {
+            return Rustic.createSnapshot(repositoryPath, password, sourcePaths, tags, callback)
         }
 
         override fun restoreRusticSnapshot(repositoryPath: String, password: String, snapshotId: String, destinationPath: String) {
@@ -533,8 +539,14 @@ object RemoteRootService {
         getService()?.initRusticRepository(repositoryPath, password)
     }
 
-    suspend fun createRusticSnapshot(repositoryPath: String, password: String, sourcePaths: List<String>, tags: List<String> = emptyList()): String {
-        return getService()?.createRusticSnapshot(repositoryPath, password, sourcePaths, tags) ?: ""
+    suspend fun createRusticSnapshot(
+        repositoryPath: String,
+        password: String,
+        sourcePaths: List<String>,
+        tags: List<String> = emptyList(),
+        callback: ICallback? = null,
+    ): String {
+        return getService()?.createRusticSnapshot(repositoryPath, password, sourcePaths, tags, callback) ?: ""
     }
 
     suspend fun restoreRusticSnapshot(repositoryPath: String, password: String, snapshotId: String, destinationPath: String) {

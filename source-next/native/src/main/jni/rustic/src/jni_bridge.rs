@@ -3,7 +3,11 @@ use jni::errors::ThrowRuntimeExAndDefault;
 use jni::objects::{JObject, JObjectArray, JString};
 
 use crate::error::NativeError;
-use crate::repository::{check_repository, create_snapshot, init_repository, restore_snapshot};
+use crate::jni_progress::JniProgressCallback;
+use crate::repository::{
+    check_repository, create_snapshot, create_snapshot_with_progress, init_repository,
+    restore_snapshot,
+};
 
 #[unsafe(no_mangle)]
 pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeInitLogger<'local>(
@@ -38,18 +42,31 @@ pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeCreateSnapshot<'loc
     password: JString<'local>,
     source_paths: JObjectArray<'local, JString<'local>>,
     tags: JObjectArray<'local, JString<'local>>,
+    callback: JObject<'local>,
 ) -> JString<'local> {
     unowned_env
         .with_env(|env| -> Result<JString<'local>, NativeError> {
             let source_paths = string_array_to_vec(env, &source_paths)?;
             let tags = string_array_to_vec(env, &tags)?;
-            let snapshot_id = create_snapshot(
-                &repository_path.to_string(),
-                &password.to_string(),
-                &source_paths,
-                &tags,
-            )
-            .map_err(NativeError::from)?;
+            let repository_path = repository_path.to_string();
+            let password = password.to_string();
+            let snapshot_id = if callback.as_raw().is_null() {
+                create_snapshot(&repository_path, &password, &source_paths, &tags)
+                    .map_err(NativeError::from)?
+            } else {
+                let vm = env.get_java_vm()?;
+                // Progress can be reported after this JNI frame returns to rustic internals.
+                let callback = env.new_global_ref(&callback)?;
+                let callback = JniProgressCallback::new(env, vm, callback)?;
+                create_snapshot_with_progress(
+                    &repository_path,
+                    &password,
+                    &source_paths,
+                    &tags,
+                    callback,
+                )
+                .map_err(NativeError::from)?
+            };
 
             env.new_string(snapshot_id).map_err(NativeError::from)
         })

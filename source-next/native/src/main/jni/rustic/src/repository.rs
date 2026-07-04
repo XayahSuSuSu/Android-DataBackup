@@ -6,6 +6,7 @@ use rustic_core::{
 };
 
 use crate::Result;
+use crate::progress::{AndroidProgressBars, RusticProgressCallback};
 
 pub fn init_repository(repository_path: &str, password: &str) -> Result<()> {
     let credentials = Credentials::password(password);
@@ -25,7 +26,33 @@ pub fn create_snapshot(
     source_paths: &[String],
     tags: &[String],
 ) -> Result<String> {
-    let repo = open_repository(repository_path, password)?.to_indexed_ids()?;
+    create_snapshot_from_repository(
+        open_repository(repository_path, password)?,
+        source_paths,
+        tags,
+    )
+}
+
+pub fn create_snapshot_with_progress<C: RusticProgressCallback>(
+    repository_path: &str,
+    password: &str,
+    source_paths: &[String],
+    tags: &[String],
+    callback: C,
+) -> Result<String> {
+    create_snapshot_from_repository(
+        open_repository_with_progress(repository_path, password, callback)?,
+        source_paths,
+        tags,
+    )
+}
+
+fn create_snapshot_from_repository(
+    repo: Repository<OpenStatus>,
+    source_paths: &[String],
+    tags: &[String],
+) -> Result<String> {
+    let repo = repo.to_indexed_ids()?;
     let source = source_paths
         .iter()
         .map(std::path::PathBuf::from)
@@ -78,6 +105,19 @@ fn open_repository(repository_path: &str, password: &str) -> Result<Repository<O
         Repository::new(&RepositoryOptions::default(), &backends(repository_path)?)?
             .open(&Credentials::password(password))?,
     )
+}
+
+fn open_repository_with_progress<C: RusticProgressCallback>(
+    repository_path: &str,
+    password: &str,
+    callback: C,
+) -> Result<Repository<OpenStatus>> {
+    Ok(Repository::new_with_progress(
+        &RepositoryOptions::default(),
+        &backends(repository_path)?,
+        AndroidProgressBars::new(callback),
+    )?
+    .open(&Credentials::password(password))?)
 }
 
 fn backends(repository_path: &str) -> Result<RepositoryBackends> {

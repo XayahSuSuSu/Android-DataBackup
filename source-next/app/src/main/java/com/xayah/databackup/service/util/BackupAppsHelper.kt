@@ -116,7 +116,7 @@ class BackupAppsHelper(private val mBackupProcessRepo: BackupProcessRepository) 
         ZstdHelper.packageAndCompress(
             outputPath = apkPath,
             callback = object : ICallback.Stub() {
-                override fun onProgress(bytesWritten: Long, speed: Long) {
+                override fun onProgress(bytesWritten: Long, speed: Long, progress: Float) {
                     onProgress(bytesWritten, speed)
                 }
             },
@@ -160,7 +160,7 @@ class BackupAppsHelper(private val mBackupProcessRepo: BackupProcessRepository) 
         ZstdHelper.packageAndCompress(
             outputPath = outputPath,
             callback = object : ICallback.Stub() {
-                override fun onProgress(bytesWritten: Long, speed: Long) {
+                override fun onProgress(bytesWritten: Long, speed: Long, progress: Float) {
                     onProgress(bytesWritten, speed)
                 }
             },

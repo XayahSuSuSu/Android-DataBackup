@@ -27,7 +27,7 @@ interface IRemoteRootService {
 
     // Rustic
     void initRusticRepository(String repositoryPath, String password);
-    String createRusticSnapshot(String repositoryPath, String password, in List<String> sourcePaths, in List<String> tags);
+    String createRusticSnapshot(String repositoryPath, String password, in List<String> sourcePaths, in List<String> tags, ICallback callback);
     void restoreRusticSnapshot(String repositoryPath, String password, String snapshotId, String destinationPath);
     void checkRusticRepository(String repositoryPath, String password);
 }

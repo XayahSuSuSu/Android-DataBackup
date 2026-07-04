@@ -1,7 +1,10 @@
 use std::error::Error;
 use std::fs;
 use std::path::Path;
+use std::sync::{Arc, Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
+
+use rustic::RusticProgressCallback;
 
 fn temp_path(name: &str) -> Result<std::path::PathBuf, Box<dyn Error>> {
     Ok(std::env::temp_dir().join(format!(
@@ -12,23 +15,87 @@ fn temp_path(name: &str) -> Result<std::path::PathBuf, Box<dyn Error>> {
 
 #[test]
 fn create_restore_and_check_snapshot_lifecycle() -> Result<(), Box<dyn Error>> {
-    let root = temp_path("snapshot-lifecycle")?;
+    run_snapshot_lifecycle(
+        "snapshot-lifecycle",
+        "note.txt",
+        b"Hello from rustic",
+        |repository, password, source_paths, tags| {
+            rustic::create_snapshot(repository.to_str().unwrap(), password, source_paths, tags)
+        },
+    )
+}
+
+#[derive(Debug)]
+struct RecordingProgress {
+    events: Arc<Mutex<Vec<(u64, u64, f32)>>>,
+}
+
+impl RusticProgressCallback for RecordingProgress {
+    fn on_progress(&self, bytes_done: u64, speed: u64, progress: f32) {
+        println!("progress: bytes_done={bytes_done}, speed={speed}, progress={progress}");
+        self.events
+            .lock()
+            .unwrap()
+            .push((bytes_done, speed, progress));
+    }
+}
+
+#[test]
+fn create_restore_and_check_snapshot_lifecycle_with_progress() -> Result<(), Box<dyn Error>> {
+    let content = vec![b'x'; 1024 * 1024];
+    let events = Arc::new(Mutex::new(Vec::new()));
+
+    run_snapshot_lifecycle(
+        "snapshot-lifecycle-progress",
+        "payload.bin",
+        &content,
+        |repository, password, source_paths, tags| {
+            rustic::create_snapshot_with_progress(
+                repository.to_str().unwrap(),
+                password,
+                source_paths,
+                tags,
+                RecordingProgress {
+                    events: events.clone(),
+                },
+            )
+        },
+    )?;
+
+    let events = events.lock().unwrap();
+    assert!(!events.is_empty());
+    assert!(
+        events
+            .iter()
+            .all(|(bytes_done, _speed, progress)| *bytes_done > 0
+                && *progress >= 0.0
+                && *progress <= 1.0)
+    );
+    assert!(events.windows(2).all(|window| window[0].0 <= window[1].0));
+    println!("progress events: {}", events.len());
+
+    Ok(())
+}
+
+fn run_snapshot_lifecycle(
+    temp_name: &str,
+    file_name: &str,
+    content: &[u8],
+    create_snapshot: impl FnOnce(&Path, &str, &[String], &[String]) -> Result<String, Box<dyn Error>>,
+) -> Result<(), Box<dyn Error>> {
+    let root = temp_path(temp_name)?;
     let repository = root.join("repo");
     let source = root.join("source");
     let restore = root.join("restore");
     let password = "password";
-    let content = "Hello from rustic";
+    let source_paths = [source.to_string_lossy().into_owned()];
+    let tags = ["instrumented".to_string()];
 
     fs::create_dir_all(source.join("nested"))?;
-    fs::write(source.join("nested").join("note.txt"), content)?;
+    fs::write(source.join("nested").join(file_name), content)?;
 
     rustic::init_repository(repository.to_str().unwrap(), password)?;
-    let snapshot_id = rustic::create_snapshot(
-        repository.to_str().unwrap(),
-        password,
-        &[source.to_string_lossy().into_owned()],
-        &["instrumented".to_string()],
-    )?;
+    let snapshot_id = create_snapshot(&repository, password, &source_paths, &tags)?;
 
     assert!(!snapshot_id.is_empty());
 
@@ -40,8 +107,8 @@ fn create_restore_and_check_snapshot_lifecycle() -> Result<(), Box<dyn Error>> {
     )?;
     rustic::check_repository(repository.to_str().unwrap(), password)?;
 
-    let restored = find_file(&restore, "note.txt")?;
-    assert_eq!(fs::read_to_string(restored)?, content);
+    let restored = find_file(&restore, file_name)?;
+    assert_eq!(fs::read(restored)?, content);
 
     fs::remove_dir_all(root)?;
     Ok(())
