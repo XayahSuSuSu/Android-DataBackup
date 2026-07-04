@@ -24,6 +24,7 @@ object PathHelper {
     private const val SUBDIR_CALL_LOGS = "call_logs"
     private const val SUBDIR_MESSAGES = "messages"
     private const val SUBDIR_APP_PARTS = "app_parts"
+    private const val SUBDIR_REPO = "repo"
 
     private const val CONFIG_FILE_SUFFIX = ".config"
 
@@ -72,6 +73,7 @@ object PathHelper {
     fun getBackupCallLogsDir(parent: String): String = "$parent/$SUBDIR_CALL_LOGS"
     fun getBackupMessagesDir(parent: String): String = "$parent/$SUBDIR_MESSAGES"
     fun getBackupAppPartsDir(parent: String): String = "$parent/$SUBDIR_APP_PARTS"
+    fun getBackupRepoDir(parent: String): String = "$parent/$SUBDIR_REPO"
 
     fun getBackupAppsApkFilePath(parent: String, packageName: String): String =
         "${getBackupAppsApkDir(parent, packageName)}/$APK_FILE_NAME"

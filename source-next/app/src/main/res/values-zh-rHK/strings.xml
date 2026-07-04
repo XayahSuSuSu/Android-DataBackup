@@ -468,6 +468,10 @@
     <string name="not_set_up">未設定</string>
     <string name="new_backup">新建備份</string>
     <string name="time_format_pattern">M月d日 HH:mm</string>
+    <string name="rustic">Rustic</string>
+    <string name="rustic_backup_backend_desc">為此備份使用 Rustic 倉庫</string>
+    <string name="archive">封存</string>
+    <string name="archive_backup_backend_desc">為此備份使用獨立的封存檔案</string>
     <string name="incremental_backup">增量備份</string>
     <string name="incremental_backup_desc">對增量存檔進行操作，並將附加元資料儲存在獨立檔案中</string>
     <string name="clean_backup">乾淨備份</string>
@@ -483,6 +487,7 @@
     <string name="no_permissions">無權限</string>
     <string name="error_no_space_left_desc">裝置空間不足，請確保您的裝置在執行此操作前有足夠的可用空間</string>
     <string name="prompt_cancel_operation">是否中斷正在進行的操作？</string>
+    <string name="backup_backend">備份後端</string>
     <string name="apps_backup_strategy">應用程式備份策略</string>
     <string name="unnamed">未命名</string>
     <string name="not_created_yet">未創建</string>

@@ -1,8 +1,10 @@
 package com.xayah.databackup.feature.backup
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,12 +48,15 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.xayah.databackup.R
+import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.BackupConfig
 import com.xayah.databackup.ui.component.Preference
 import com.xayah.databackup.ui.component.SelectablePreferenceGroup
@@ -71,7 +76,8 @@ fun BackupConfigScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val backupConfig by viewModel.backupConfig.collectAsStateWithLifecycle(null)
-    val appsBackupStrategySelectedIndex by viewModel.appsBackupStrategySelectedIndex.collectAsStateWithLifecycle(0)
+    val backupBackend by viewModel.backupBackend.collectAsStateWithLifecycle(BackupBackend.Archive())
+    val backupBackendSelectedIndex by viewModel.backupBackendSelectedIndex.collectAsStateWithLifecycle(1)
     var openEditNameDialog by remember { mutableStateOf(false) }
     var openDeleteDialog by remember { mutableStateOf(false) }
 
@@ -176,8 +182,20 @@ fun BackupConfigScreen(
             ) {
                 InfoRow(backupConfig = backupConfig)
 
-                StrategyRow(selectedIndex = appsBackupStrategySelectedIndex, backupConfig = backupConfig) {
-                    viewModel.selectAppsBackupStrategy(it)
+                BackendRow(enabled = backupConfig == null, selectedIndex = backupBackendSelectedIndex) {
+                    viewModel.selectBackupBackend(it)
+                }
+
+                AnimatedVisibility(
+                    visible = backupBackend is BackupBackend.Rustic,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut(),
+                ) {
+                    RusticPasswordRow(
+                        enabled = backupConfig == null,
+                        password = (backupBackend as? BackupBackend.Rustic)?.password ?: BackupBackend.DEFAULT_PASSWORD,
+                        onPasswordChanged = viewModel::changeRusticPassword,
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(0.dp))
@@ -231,8 +249,8 @@ private fun InfoRow(
 }
 
 @Composable
-private fun StrategyRow(
-    backupConfig: BackupConfig?,
+private fun BackendRow(
+    enabled: Boolean,
     selectedIndex: Int,
     onSelectedIndexChanged: (Int) -> Unit,
 ) {
@@ -240,7 +258,7 @@ private fun StrategyRow(
 
     Text(
         modifier = Modifier.padding(16.dp),
-        text = stringResource(R.string.apps_backup_strategy),
+        text = stringResource(R.string.backup_backend),
         color = MaterialTheme.colorScheme.primary,
         style = MaterialTheme.typography.labelLarge
     )
@@ -249,22 +267,62 @@ private fun StrategyRow(
         listOf(
             SelectablePreferenceItemInfo(
                 icon = ImageVector.vectorResource(null, context.resources, R.drawable.ic_chart_bar_stacked),
-                title = context.getString(R.string.incremental_backup),
-                subtitle = context.getString(R.string.incremental_backup_desc),
+                title = context.getString(R.string.rustic),
+                subtitle = context.getString(R.string.rustic_backup_backend_desc),
             ),
             SelectablePreferenceItemInfo(
-                icon = ImageVector.vectorResource(null, context.resources, R.drawable.ic_brush_cleaning),
-                title = context.getString(R.string.clean_backup),
-                subtitle = context.getString(R.string.clean_backup_desc),
+                icon = ImageVector.vectorResource(null, context.resources, R.drawable.ic_archive),
+                title = context.getString(R.string.archive),
+                subtitle = context.getString(R.string.archive_backup_backend_desc),
             )
         )
     }
 
     SelectablePreferenceGroup(
-        enabled = backupConfig == null,
+        enabled = enabled,
         items = items,
         selectedIndex = selectedIndex,
         onSelectedIndexChanged = onSelectedIndexChanged
+    )
+}
+
+@Composable
+private fun RusticPasswordRow(
+    enabled: Boolean,
+    password: String,
+    onPasswordChanged: (String) -> Unit,
+) {
+    var showPassword by rememberSaveable { mutableStateOf(false) }
+
+    OutlinedTextField(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        enabled = enabled,
+        value = password,
+        onValueChange = {
+            if (enabled) onPasswordChanged(it)
+        },
+        label = { Text(text = stringResource(R.string.password)) },
+        singleLine = true,
+        visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+        trailingIcon = {
+            val contentDescription = if (showPassword) {
+                stringResource(R.string.hide_password)
+            } else {
+                stringResource(R.string.show_password)
+            }
+            IconButton(onClick = { showPassword = showPassword.not() }) {
+                Icon(
+                    imageVector = if (showPassword) {
+                        ImageVector.vectorResource(R.drawable.ic_eye_off)
+                    } else {
+                        ImageVector.vectorResource(R.drawable.ic_eye)
+                    },
+                    contentDescription = contentDescription,
+                )
+            }
+        },
     )
 }
 

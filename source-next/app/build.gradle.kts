@@ -107,6 +107,7 @@ dependencies {
 
     // Moshi
     implementation(libs.moshi)
+    implementation(libs.moshi.adapters)
     ksp(libs.moshi.kotlin.codegen)
 
     // Gson

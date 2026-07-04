@@ -481,6 +481,10 @@
     <string name="not_set_up">Not set up</string>
     <string name="new_backup">New backup</string>
     <string name="time_format_pattern">MMM dd, HH:mm</string>
+    <string name="rustic">Rustic</string>
+    <string name="rustic_backup_backend_desc">Use a Rustic repository for this backup</string>
+    <string name="archive">Archive</string>
+    <string name="archive_backup_backend_desc">Use standalone archive files for this backup</string>
     <string name="incremental_backup">Incremental backup</string>
     <string name="incremental_backup_desc">Operate on an incremental archive with additional metadata stored in a standalone file</string>
     <string name="clean_backup">Clean backup</string>
@@ -496,6 +500,7 @@
     <string name="no_permissions">No permissions</string>
     <string name="error_no_space_left_desc">No space left on device. Please ensure your device has sufficient free space before this operation</string>
     <string name="prompt_cancel_operation">Interrupt the ongoing operation?</string>
+    <string name="backup_backend">Backup backend</string>
     <string name="apps_backup_strategy">Apps backup strategy</string>
     <string name="unnamed">Unnamed</string>
     <string name="not_created_yet">Not created yet</string>

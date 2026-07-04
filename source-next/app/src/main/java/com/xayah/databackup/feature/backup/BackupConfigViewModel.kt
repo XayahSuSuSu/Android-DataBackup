@@ -4,17 +4,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import arrow.optics.copy
-import com.xayah.databackup.App
 import com.xayah.databackup.data.BackupConfigRepository
-import com.xayah.databackup.entity.AppsBackupStrategy
 import com.xayah.databackup.entity.BackupConfig
+import com.xayah.databackup.entity.BackupBackend
+import com.xayah.databackup.entity.backupBackend
 import com.xayah.databackup.entity.name
 import com.xayah.databackup.feature.BackupConfigRoute
 import com.xayah.databackup.util.BaseViewModel
-import com.xayah.databackup.util.DefaultAppsBackupStrategy
-import com.xayah.databackup.util.KeyDefaultAppsBackupStrategy
-import com.xayah.databackup.util.readEnum
-import com.xayah.databackup.util.saveEnum
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,30 +46,43 @@ open class BackupConfigViewModel(
         started = SharingStarted.WhileSubscribed(5_000),
     )
 
-    val appsBackupStrategySelectedIndex: StateFlow<Int> = combine(
-        _backupConfig,
-        App.application.readEnum(DefaultAppsBackupStrategy)
-    ) { config, default ->
-        (config?.appsBackupStrategy ?: default).let {
-            when (it) {
-                AppsBackupStrategy.Incremental -> 0
-                AppsBackupStrategy.Standalone -> 1
-            }
+    val backupBackend: StateFlow<BackupBackend> = combine(backupConfigRepo.configs, backupConfigRepo.newConfig) { configs, newConfig ->
+        if (route.index == BackupConfigRepository.NEW_CONFIG_INDEX) {
+            newConfig.backupBackend
+        } else {
+            configs.getOrNull(route.index)?.backupBackend ?: newConfig.backupBackend
         }
     }.stateIn(
         scope = viewModelScope,
-        initialValue = 0,
+        initialValue = BackupBackend.Archive(),
         started = SharingStarted.WhileSubscribed(5_000),
     )
 
-    fun selectAppsBackupStrategy(index: Int) {
+    val backupBackendSelectedIndex: StateFlow<Int> = backupBackend.map {
+        when (it) {
+            is BackupBackend.Rustic -> 0
+            is BackupBackend.Archive -> 1
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        initialValue = 1,
+        started = SharingStarted.WhileSubscribed(5_000),
+    )
+
+    fun selectBackupBackend(index: Int) {
         viewModelScope.launch(Dispatchers.Default) {
-            val strategy = when (index) {
-                0 -> AppsBackupStrategy.Incremental
-                1 -> AppsBackupStrategy.Standalone
-                else -> AppsBackupStrategy.Standalone
+            val currentPassword = (backupBackend.value as? BackupBackend.Rustic)?.password ?: BackupBackend.DEFAULT_PASSWORD
+            val backend = when (index) {
+                0 -> BackupBackend.Rustic(password = currentPassword)
+                else -> BackupBackend.Archive()
             }
-            App.application.saveEnum(KeyDefaultAppsBackupStrategy, strategy)
+            updateBackupBackend(backend)
+        }
+    }
+
+    fun changeRusticPassword(password: String) {
+        viewModelScope.launch(Dispatchers.Default) {
+            updateBackupBackend(BackupBackend.Rustic(password = password))
         }
     }
 
@@ -95,6 +104,24 @@ open class BackupConfigViewModel(
                 backupConfigRepo.deleteConfig(it.uuidString)
             }
             onDeleted.invoke()
+        }
+    }
+
+    private suspend fun updateBackupBackend(backend: BackupBackend) {
+        if (route.index == BackupConfigRepository.NEW_CONFIG_INDEX) {
+            backupConfigRepo.updateNewConfig {
+                copy {
+                    BackupConfig.backupBackend set backend
+                }
+            }
+        } else {
+            backupConfig.value?.also {
+                backupConfigRepo.updateConfig(it.uuidString) {
+                    copy {
+                        BackupConfig.backupBackend set backend
+                    }
+                }
+            }
         }
     }
 }

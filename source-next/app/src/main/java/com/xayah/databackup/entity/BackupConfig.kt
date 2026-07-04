@@ -6,16 +6,23 @@ import com.squareup.moshi.JsonClass
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.util.TimeHelper
-import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
-enum class AppsBackupStrategy {
-    Incremental,
-    Standalone,
+sealed class BackupBackend {
+    @JsonClass(generateAdapter = true)
+    data class Rustic(
+        val password: String = DEFAULT_PASSWORD,
+    ) : BackupBackend()
+
+    companion object {
+        const val DEFAULT_PASSWORD = "anonymous"
+    }
+
+    @JsonClass(generateAdapter = true)
+    class Archive : BackupBackend()
 }
 
 @optics
-@Serializable
 @JsonClass(generateAdapter = true)
 data class BackupConfig(
     @Json(ignore = true) var source: Source = Source.LOCAL,
@@ -24,7 +31,7 @@ data class BackupConfig(
     @Json(name = "created_at") var createdAt: Long = 0,
     @Json(name = "updated_at") var updatedAt: Long = 0,
     @Json(name = "name") var name: String = "",
-    @Json(name = "apps_backup_strategy") var appsBackupStrategy: AppsBackupStrategy = AppsBackupStrategy.Incremental,
+    @Json(name = "backup_backend") var backupBackend: BackupBackend = BackupBackend.Archive(),
 ) {
     companion object
 
