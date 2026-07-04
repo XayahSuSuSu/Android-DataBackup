@@ -401,12 +401,12 @@
     <string name="dismiss">해제</string>
     <string name="next">다음</string>
     <string name="back">뒤로</string>
-    <string name="notification_desc">필수적인 알림을 표시하기 위해 필요합니다.</string>
-    <string name="permission_is_denied">권한이 거부됩니다.</string>
-    <string name="root_denied_msg">루트 관리자를 확인하고 앱을 다시 시작하세요.</string>
-    <string name="welcome_screen_app_desc">DataBackup으로 간편한 백업을 즐기세요. 사용하기 쉽고 완전한 FOSS입니다. 스트레스없이 데이터 안전을 유지하세요.</string>
-    <string name="permissions_screen_desc">DataBackup이 작동하려면 다음과 같은 권한이 필요합니다. 거부되는 경우에, 몇몇 기능은 제대로 작동하지 않을 것입니다.</string>
-    <string name="root_desc">이 앱을 통해 장치의 전체 백업을 수행 할 수 있으며, 일반적인 앱이 접근할 수 있는 시스템 파일과 설정에 접근하기 위해 루트(superuser) 권한이 필요합니다.</string>
+    <string name="notification_desc">필수적인 알림을 표시하기 위해 필요합니다</string>
+    <string name="permission_is_denied">권한이 거부됩니다</string>
+    <string name="root_denied_msg">루트 관리자를 확인하고 앱을 다시 시작하세요</string>
+    <string name="welcome_screen_app_desc">DataBackup으로 간편한 백업을 즐기세요. 사용하기 쉽고 완전한 FOSS입니다. 스트레스없이 데이터 안전을 유지하세요</string>
+    <string name="permissions_screen_desc">DataBackup이 작동하려면 다음과 같은 권한이 필요합니다. 거부되는 경우에, 몇몇 기능은 제대로 작동하지 않을 것입니다</string>
+    <string name="root_desc">이 앱을 통해 장치의 전체 백업을 수행 할 수 있으며, 일반적인 앱이 접근할 수 있는 시스템 파일과 설정에 접근하기 위해 루트(superuser) 권한이 필요합니다</string>
     <string name="update_time">시간 업데이트</string>
     <string name="error">Error</string>
     <string name="retry">재시도</string>
@@ -501,4 +501,5 @@
     <string name="github_api_rate_limited">GitHub API 속도 제한 도달. %1$s 후 다시 시도하십시오.</string>
     <string name="retry_after">%1$s 후 다시 시도 하세요</string>
     <string name="selected_first">우선 선택됨</string>
+    <string name="rustic">Rustic</string>
 </resources>
