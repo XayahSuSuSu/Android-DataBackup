@@ -501,4 +501,9 @@
     <string name="github_api_rate_limited">Batas kecepatan API GitHub telah tercapai. Silakan coba lagi setelah %1$s.</string>
     <string name="retry_after">Coba lagi setelah: %1$s</string>
     <string name="selected_first">Dipilih terlebih dahulu</string>
+    <string name="rustic">Rustic</string>
+    <string name="rustic_backup_backend_desc">Gunakan repositori Rustic untuk pencadangan ini</string>
+    <string name="archive">Arsip</string>
+    <string name="archive_backup_backend_desc">Gunakan berkas arsip tersendiri untuk pencadangan ini</string>
+    <string name="backup_backend">Backend cadangan</string>
 </resources>
