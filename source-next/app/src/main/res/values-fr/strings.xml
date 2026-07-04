@@ -501,4 +501,9 @@
     <string name="github_api_rate_limited">Limite de taux de l\'API GitHub atteinte. Veuillez réessayer après %1$s.</string>
     <string name="retry_after">Réessayer après : %1$s</string>
     <string name="selected_first">Sélectionné en premier</string>
+    <string name="rustic">Rustique</string>
+    <string name="rustic_backup_backend_desc">Utilisez un dépôt Rustique pour cette sauvegarde</string>
+    <string name="archive">Archive</string>
+    <string name="archive_backup_backend_desc">Utilisez des fichiers d\'archive autonomes pour cette sauvegarde</string>
+    <string name="backup_backend">Backend de la sauvegarde</string>
 </resources>
