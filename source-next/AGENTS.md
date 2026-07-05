@@ -1,9 +1,15 @@
 # Repository Guidelines
 
 ## Jetpack Compose
-For all Compose/Android UI tasks, follow the instructions in
-`.codex/skills/jetpack-compose-expert-skill/SKILL.md` and consult the reference
-files in `.codex/skills/jetpack-compose-expert-skill/references/` before answering.
+For all Compose/Android UI tasks, use the relevant instructions under
+`.codex/skills/jetpack-compose/` before answering or editing code. Current
+Compose skills include:
+- `.codex/skills/jetpack-compose/adaptive/SKILL.md`
+- `.codex/skills/jetpack-compose/migration/migrate-xml-views-to-jetpack-compose/SKILL.md`
+- `.codex/skills/jetpack-compose/theming/styles/SKILL.md`
+
+When a selected skill references files in its `references/` directory, consult
+the relevant reference files before acting.
 
 ## Project Structure & Module Organization
 This repository is a multi-module Android project managed with Gradle Kotlin DSL.
