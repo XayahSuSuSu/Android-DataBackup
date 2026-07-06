@@ -501,4 +501,9 @@
     <string name="retry_after">Reintentar tras: %1$s</string>
     <string name="github_api_rate_limited">Se ha sobrepasado el límite de peticiones de la API de GitHub, inténtalo de nuevo tras %1$s.</string>
     <string name="selected_first">Seleccionados primero</string>
+    <string name="rustic">Rustic</string>
+    <string name="rustic_backup_backend_desc">Usar un repositorio Rustic para esta copia de seguridad</string>
+    <string name="archive">Archivo</string>
+    <string name="archive_backup_backend_desc">Usar archivos independientes para esta copia de seguridad</string>
+    <string name="backup_backend">Backend de copia de seguridad</string>
 </resources>
