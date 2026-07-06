@@ -501,4 +501,9 @@
     <string name="github_api_rate_limited">GitHub API досягла ліміту. Будь ласка, попробуйте знову через %1$s.</string>
     <string name="retry_after">Спробуйте знову після: %1$s</string>
     <string name="selected_first">Обрано першим</string>
+    <string name="rustic">Rustic</string>
+    <string name="rustic_backup_backend_desc">Використовувати Rustic сховище для цієї резервної копії</string>
+    <string name="archive">Архів</string>
+    <string name="archive_backup_backend_desc">Використовувати окремі архівні файли для цієї резервної копії</string>
+    <string name="backup_backend">Зробити резервну копію бек-енду</string>
 </resources>
