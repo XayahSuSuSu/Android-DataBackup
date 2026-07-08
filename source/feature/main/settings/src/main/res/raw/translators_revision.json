@@ -144,5 +144,14 @@
       "Spanish": 0,
       "Castellano": 0
     }
+  },
+  "champinondev@gmail.com": {
+    "name": "Champiñon Traductor",
+    "avatar": "https://avatars.githubusercontent.com/champinondev-lab",
+    "link": "https://github.com/champinondev-lab",
+    "actions": {
+      "English": 0,
+      "Spanish": 0
+    }
   }
 }
