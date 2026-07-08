@@ -7,7 +7,7 @@
     <string name="start_subtitle">Lee atentamente y acepta tanto el acuerdo de usuario como la política de privacidad que aparecen a continuación antes de empezar a utilizar la aplicación</string>
     <string name="network">Red</string>
     <string name="application">Aplicación</string>
-    <string name="storage_desc">Se utilizan para configurar la ubicación de respaldo y para poder leer y escribir archivos</string>
+    <string name="storage_desc">Usado para configurar la ubicación de respaldo, para leer y escribir archivos</string>
     <string name="loading">Cargando</string>
     <string name="loading_failed">No se ha podido terminar de cargar</string>
     <string name="grant_root_access">Dar acceso de superusuario</string>
