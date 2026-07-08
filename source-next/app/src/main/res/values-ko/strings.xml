@@ -49,7 +49,7 @@
     <string name="backup_completed">백업 완료</string>
     <string name="word_return">복귀</string>
     <string name="time">시간</string>
-    <string name="manifest">Manifest</string>
+    <string name="manifest">매니페스트</string>
     <string name="simplify">단순화하다</string>
     <string name="integral">필수요소</string>
     <string name="wait_for_remaining_data_processing">남은 데이터 처리 중…</string>
@@ -278,7 +278,7 @@
     <string name="clear_all">모두 삭제</string>
     <string name="existing_files">기존 파일</string>
     <string name="overall_config">전체 구성</string>
-    <string name="keystore">Keystore</string>
+    <string name="keystore">키 저장소</string>
     <string name="details">세부사항</string>
     <string name="back_up_to_local">로컬로 백업</string>
     <string name="keystore_desc">이 응용 프로그램은 Android Keystore 제공자를 사용하며, 복원 시 예상치 못한 오류가 발생할 수 있습니다</string>
@@ -352,7 +352,7 @@
     <string name="granted">승인됨</string>
     <string name="restore_permissions">권한 복원</string>
     <string name="restore_permissions_desc">앱 권한 복원</string>
-    <string name="restore_ssaid">Android ID 복원</string>
+    <string name="restore_ssaid">안드로이드 ID 복원</string>
     <string name="freeze">프리즈</string>
     <string name="confirm_unfreeze">이 앱을 프리즈 해제하시겠습니까?</string>
     <string name="denied">거부됨</string>
@@ -388,7 +388,7 @@
     <string name="labels">라벨</string>
     <string name="app_is_frozen">앱이 프리즈되어 있습니다!</string>
     <string name="root_permission_desc">앱 데이터 백업 및 복원</string>
-    <string name="restore_ssaid_desc">앱 Android ID 복원. 복원 후 즉시 재시작해야 적용됩니다</string>
+    <string name="restore_ssaid_desc">앱의 안드로이드 ID 복원, 복원 후 즉시 리부팅이 필요합니다</string>
     <string name="delete_account">계정 삭제</string>
     <string name="custom_selected">사용자 정의 항목 선택됨</string>
     <string name="args_apps_backed_up_and_failed">%1$s개 앱 백업 완료, %2$s개 실패</string>
@@ -501,5 +501,9 @@
     <string name="github_api_rate_limited">GitHub API 속도 제한 도달. %1$s 후 다시 시도하십시오.</string>
     <string name="retry_after">%1$s 후 다시 시도 하세요</string>
     <string name="selected_first">우선 선택됨</string>
-    <string name="rustic">Rustic</string>
+    <string name="rustic">러스틱(Rustic)</string>
+    <string name="archive">아카이브</string>
+    <string name="archive_backup_backend_desc">이 백업에 독립형 아카이브 파일 사용</string>
+    <string name="backup_backend">백업 백엔드</string>
+    <string name="rustic_backup_backend_desc">이 백업에 Rustic 저장소 사용</string>
 </resources>
