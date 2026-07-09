@@ -388,7 +388,7 @@
     <string name="labels">라벨</string>
     <string name="app_is_frozen">앱이 프리즈되어 있습니다!</string>
     <string name="root_permission_desc">앱 데이터 백업 및 복원</string>
-    <string name="restore_ssaid_desc">앱의 안드로이드 ID 복원, 복원 후 즉시 리부팅이 필요합니다</string>
+    <string name="restore_ssaid_desc">앱의 안드로이드 ID 복원, 복원 후 즉시 재시작이 필요합니다</string>
     <string name="delete_account">계정 삭제</string>
     <string name="custom_selected">사용자 정의 항목 선택됨</string>
     <string name="args_apps_backed_up_and_failed">%1$s개 앱 백업 완료, %2$s개 실패</string>
