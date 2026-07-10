@@ -433,7 +433,7 @@
     <string name="external_data">Datos externos</string>
     <string name="close">Cerrar</string>
     <string name="select_networks">Elegir redes</string>
-    <string name="items_selected">%1$s de %2$s elem. selecc.</string>
+    <string name="items_selected">%1$s de %2$s elementos seleccionados</string>
     <string name="show_password">Ver contraseña</string>
     <string name="hide_password">Ocultar contraseña</string>
     <string name="public_network">Red pública</string>
