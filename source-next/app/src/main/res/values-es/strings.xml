@@ -433,7 +433,7 @@
     <string name="external_data">Datos externos</string>
     <string name="close">Cerrar</string>
     <string name="select_networks">Elegir redes</string>
-    <string name="items_selected">%1$s de %2$s elementos seleccionados</string>
+    <string name="items_selected">%1$s de %2$s elem. selecc.</string>
     <string name="show_password">Ver contraseña</string>
     <string name="hide_password">Ocultar contraseña</string>
     <string name="public_network">Red pública</string>
@@ -445,14 +445,14 @@
     <string name="auto_screen_off_desc">Apaga la pantalla durante la copia o restauración y la enciende al terminar</string>
     <string name="additional_data">Datos adicionales</string>
     <string name="sms">SMS</string>
-    <string name="select_messages">Seleccionar mensajes</string>
+    <string name="select_messages">Elige mensajes</string>
     <string name="actions">Acciones</string>
     <string name="backup_your_data">Copia de seguridad de tus datos</string>
     <string name="restore_your_data">Restaurar tus datos</string>
     <string name="see_your_previous_backups">Ver tus copias de seguridad anteriores</string>
     <string name="set_up_cloud_storage">Configurar almacenamiento en la nube</string>
-    <string name="schedule">Programar</string>
-    <string name="configure_automatic_backups">Configurar copias de seguridad automáticas</string>
+    <string name="schedule">Programar horario</string>
+    <string name="configure_automatic_backups">Configura copias de seguridad automáticas</string>
     <string name="backups">Copias de seguridad</string>
     <string name="other">Otros</string>
     <string name="free">Libre</string>
