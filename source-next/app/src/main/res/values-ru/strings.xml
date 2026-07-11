@@ -501,4 +501,9 @@
     <string name="retry_after">Повторить попытку через: %1$s</string>
     <string name="check_updates">Проверить обновления</string>
     <string name="selected_first">Выбрано первым</string>
+    <string name="rustic">Деревенский</string>
+    <string name="rustic_backup_backend_desc">Используйте репозиторий Rustic для этой резервной копии</string>
+    <string name="archive">Архив</string>
+    <string name="archive_backup_backend_desc">Использовать отдельные архивные файлы для этой резервной копии</string>
+    <string name="backup_backend">Резервное копирование бэкенда</string>
 </resources>
