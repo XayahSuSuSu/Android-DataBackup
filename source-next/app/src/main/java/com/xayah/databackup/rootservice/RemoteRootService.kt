@@ -261,7 +261,7 @@ object RemoteRootService {
             val packageInfo = mPackageManagerHidden.getPackageInfoAsUser(packageName, 0, userId)
             packageInfo.applicationInfo?.sourceDir?.also { sourceDirList.add(it) }
             val splitSourceDirs = packageInfo.applicationInfo?.splitSourceDirs
-            if (!splitSourceDirs.isNullOrEmpty()) for (i in splitSourceDirs) sourceDirList.add(i)
+            if (splitSourceDirs.isNullOrEmpty().not()) for (i in splitSourceDirs) sourceDirList.add(i)
             return sourceDirList
         }
 
@@ -305,6 +305,14 @@ object RemoteRootService {
 
         override fun initRusticRepository(repositoryPath: String, password: String) {
             Rustic.initRepository(repositoryPath, password)
+        }
+
+        override fun rusticRepositoryExists(repositoryPath: String): Boolean {
+            return Rustic.repositoryExists(repositoryPath)
+        }
+
+        override fun validateRusticRepository(repositoryPath: String, password: String) {
+            Rustic.validateRepository(repositoryPath, password)
         }
 
         override fun createRusticSnapshot(
@@ -537,6 +545,14 @@ object RemoteRootService {
 
     suspend fun initRusticRepository(repositoryPath: String, password: String) {
         getService()?.initRusticRepository(repositoryPath, password)
+    }
+
+    suspend fun rusticRepositoryExists(repositoryPath: String): Boolean {
+        return getService()?.rusticRepositoryExists(repositoryPath) ?: false
+    }
+
+    suspend fun validateRusticRepository(repositoryPath: String, password: String) {
+        getService()?.validateRusticRepository(repositoryPath, password)
     }
 
     suspend fun createRusticSnapshot(

@@ -74,7 +74,7 @@ impl RusticProgress for AndroidProgress {
 
     fn finish(&self) {
         let now = Instant::now();
-        // Send any unreported bytes, even if the throttle window has not elapsed.
+        // Always finish with the average speed across the complete transfer.
         let event = self.state.lock().unwrap().advance(0, now, true);
         if let Some(event) = event {
             self.emit(event.bytes_done, event.speed, event.progress);
@@ -98,6 +98,7 @@ struct ThrottledProgressState {
     started_at: Instant,
     last_emit_bytes: u64,
     last_emit_at: Option<Instant>,
+    finished: bool,
 }
 
 impl ThrottledProgressState {
@@ -108,6 +109,7 @@ impl ThrottledProgressState {
             started_at,
             last_emit_bytes: 0,
             last_emit_at: None,
+            finished: false,
         }
     }
 
@@ -115,24 +117,39 @@ impl ThrottledProgressState {
         self.length = (len > 0).then_some(len);
     }
 
-    fn advance(&mut self, bytes: u64, now: Instant, force: bool) -> Option<ProgressEvent> {
+    fn advance(&mut self, bytes: u64, now: Instant, finish: bool) -> Option<ProgressEvent> {
+        if self.finished {
+            return None;
+        }
+
         self.bytes_done = self.bytes_done.saturating_add(bytes);
+        if finish {
+            self.finished = true;
+        }
+
         // Rustic may call inc frequently; keep Java callbacks coarse-grained.
-        let should_emit = force
+        let should_emit = finish
             || self.last_emit_at.is_none_or(|last_emit_at| {
                 now.duration_since(last_emit_at) >= PROGRESS_CALLBACK_INTERVAL
             });
 
-        if !should_emit || self.bytes_done == 0 || self.bytes_done == self.last_emit_bytes {
+        if !should_emit
+            || self.bytes_done == 0
+            || (!finish && self.bytes_done == self.last_emit_bytes)
+        {
             return None;
         }
 
-        let (bytes_since_last_event, speed_since) = self
-            .last_emit_at
-            .map_or((self.bytes_done, self.started_at), |last_emit_at| {
-                (self.bytes_done - self.last_emit_bytes, last_emit_at)
-            });
-        let speed = bytes_per_second(bytes_since_last_event, now.duration_since(speed_since));
+        let speed = if finish {
+            bytes_per_second(self.bytes_done, now.duration_since(self.started_at))
+        } else {
+            let (bytes_since_last_event, speed_since) = self
+                .last_emit_at
+                .map_or((self.bytes_done, self.started_at), |last_emit_at| {
+                    (self.bytes_done - self.last_emit_bytes, last_emit_at)
+                });
+            bytes_per_second(bytes_since_last_event, now.duration_since(speed_since))
+        };
 
         self.last_emit_at = Some(now);
         self.last_emit_bytes = self.bytes_done;
@@ -185,7 +202,7 @@ mod tests {
     }
 
     #[test]
-    fn finish_forces_final_progress_event() {
+    fn finish_reports_average_speed_for_all_bytes() {
         let start = Instant::now();
         let mut state = ThrottledProgressState::new(start);
 
@@ -195,21 +212,21 @@ mod tests {
             .unwrap();
 
         assert_eq!(event.bytes_done, 2048);
-        assert_eq!(event.speed, 4096);
+        assert_eq!(event.speed, 8192);
     }
 
     #[test]
-    fn finish_does_not_emit_when_no_bytes_were_added_since_last_event() {
+    fn finish_reports_average_when_no_bytes_were_added_since_last_event() {
         let start = Instant::now();
         let mut state = ThrottledProgressState::new(start);
 
         assert!(state.advance(1024, start, false).is_some());
+        let event = state
+            .advance(0, start + Duration::from_millis(250), true)
+            .unwrap();
 
-        assert!(
-            state
-                .advance(0, start + Duration::from_millis(250), true)
-                .is_none()
-        );
+        assert_eq!(event.bytes_done, 1024);
+        assert_eq!(event.speed, 4096);
     }
 
     #[test]

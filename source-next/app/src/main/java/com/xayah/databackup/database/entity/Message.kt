@@ -29,7 +29,7 @@ data class Sms(
 
 data class SmsDeserialized(
     var id: Long,
-    var config: FiledMap,
+    var config: FieldMap,
     var selected: Boolean,
 ) {
     val address: String by lazy {
@@ -44,7 +44,7 @@ data class SmsDeserialized(
 fun Flow<List<Sms>>.deserializeSms(): Flow<List<SmsDeserialized>> = map { flow ->
     val moshi: Moshi = Moshi.Builder().build()
     flow.map {
-        val config = it.config?.let { json -> moshi.adapter<FiledMap>().fromJson(json) }
+        val config = it.config?.let { json -> moshi.adapter<FieldMap>().fromJson(json) }
         SmsDeserialized(
             id = it.id,
             config = config ?: mapOf(),
@@ -65,9 +65,9 @@ data class Mms(
 
 data class MmsDeserialized(
     var id: Long,
-    var pdu: FiledMap,
-    var addr: List<FiledMap>,
-    var part: List<FiledMap>,
+    var pdu: FieldMap,
+    var addr: List<FieldMap>,
+    var part: List<FieldMap>,
     var selected: Boolean,
 ) {
     val iconMod = "[ICON]"
@@ -100,9 +100,9 @@ data class MmsDeserialized(
 fun Flow<List<Mms>>.deserializeMms(): Flow<List<MmsDeserialized>> = map { flow ->
     val moshi: Moshi = Moshi.Builder().build()
     flow.map {
-        val pdu = it.pdu?.let { json -> moshi.adapter<FiledMap>().fromJson(json) }
-        val addr = it.addr?.let { json -> moshi.adapter<List<FiledMap>>().fromJson(json) }
-        val part = it.part?.let { json -> moshi.adapter<List<FiledMap>>().fromJson(json) }
+        val pdu = it.pdu?.let { json -> moshi.adapter<FieldMap>().fromJson(json) }
+        val addr = it.addr?.let { json -> moshi.adapter<List<FieldMap>>().fromJson(json) }
+        val part = it.part?.let { json -> moshi.adapter<List<FieldMap>>().fromJson(json) }
         MmsDeserialized(
             id = it.id,
             pdu = pdu ?: mapOf(),

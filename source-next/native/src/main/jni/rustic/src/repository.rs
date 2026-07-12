@@ -20,6 +20,18 @@ pub fn init_repository(repository_path: &str, password: &str) -> Result<()> {
     Ok(())
 }
 
+pub fn repository_exists(repository_path: &str) -> Result<bool> {
+    let repo = Repository::new(&RepositoryOptions::default(), &backends(repository_path)?)?;
+
+    Ok(repo.config_id()?.is_some())
+}
+
+pub fn validate_repository(repository_path: &str, password: &str) -> Result<()> {
+    open_repository(repository_path, password)?;
+
+    Ok(())
+}
+
 pub fn create_snapshot(
     repository_path: &str,
     password: &str,

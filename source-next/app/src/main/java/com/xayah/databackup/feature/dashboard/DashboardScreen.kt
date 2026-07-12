@@ -39,6 +39,7 @@ import com.xayah.databackup.feature.BackupRoute
 import com.xayah.databackup.feature.SettingsRoute
 import com.xayah.databackup.feature.UpdatesRoute
 import com.xayah.databackup.ui.component.ActionButton
+import com.xayah.databackup.ui.component.SectionHeader
 import com.xayah.databackup.ui.component.SmallActionButton
 import com.xayah.databackup.ui.component.StorageCard
 import com.xayah.databackup.util.LaunchedEffect
@@ -127,7 +128,7 @@ fun DashboardScreen(navController: NavHostController, viewModel: DashboardViewMo
                     storage = storageUiState.value.storage,
                 ) {}
 
-                Text(stringResource(R.string.actions), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+                SectionHeader(title = stringResource(R.string.actions))
 
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     SmallActionButton(

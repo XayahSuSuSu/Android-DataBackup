@@ -1,5 +1,6 @@
 package com.xayah.databackup.service.util
 
+import android.provider.Telephony
 import arrow.optics.copy
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
@@ -10,7 +11,7 @@ import com.xayah.databackup.data.ProcessItem
 import com.xayah.databackup.data.currentIndex
 import com.xayah.databackup.data.msg
 import com.xayah.databackup.data.progress
-import com.xayah.databackup.database.entity.FiledMap
+import com.xayah.databackup.database.entity.FieldMap
 import com.xayah.databackup.database.entity.Mms
 import com.xayah.databackup.database.entity.Sms
 import com.xayah.databackup.rootservice.RemoteRootService
@@ -26,7 +27,7 @@ class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessReposito
         val smsList = mBackupProcessRepo.getSmsList()
         val mmsList = mBackupProcessRepo.getMmsList()
         val totalCount = smsList.size + mmsList.size
-        
+
         // Process SMS
         smsList.forEachIndexed { index, sms ->
             mBackupProcessRepo.updateMessagesItem {
@@ -37,7 +38,7 @@ class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessReposito
                 }
             }
         }
-        
+
         // Process MMS
         mmsList.forEachIndexed { index, mms ->
             val currentIndex = smsList.size + index
@@ -49,7 +50,7 @@ class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessReposito
                 }
             }
         }
-        
+
         val moshi: Moshi = Moshi.Builder().build()
         val backupConfig = mBackupProcessRepo.getBackupConfig()
         val messagesPath = PathHelper.getBackupMessagesDir(backupConfig.path)
@@ -63,7 +64,7 @@ class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessReposito
         }.onFailure {
             LogHelper.e(TAG, "start", "Failed to serialize SMS to json.", it)
         }.getOrNull()
-        
+
         if (smsJson != null) {
             val smsConfigPath = PathHelper.getBackupMessagesSmsConfigFilePath(backupConfig.path)
             RemoteRootService.deleteRecursively(smsConfigPath)
@@ -71,14 +72,14 @@ class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessReposito
         } else {
             LogHelper.e(TAG, "start", "Failed to save SMS, json is null")
         }
-        
+
         // Backup MMS
         val mmsJson = runCatching {
             moshi.adapter<List<Mms>>().toJson(mmsList)
         }.onFailure {
             LogHelper.e(TAG, "start", "Failed to serialize MMS to json.", it)
         }.getOrNull()
-        
+
         if (mmsJson != null) {
             val mmsConfigPath = PathHelper.getBackupMessagesMmsConfigFilePath(backupConfig.path)
             RemoteRootService.deleteRecursively(mmsConfigPath)
@@ -86,7 +87,7 @@ class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessReposito
         } else {
             LogHelper.e(TAG, "start", "Failed to save MMS, json is null")
         }
-        
+
         // Backup MMS part files
         backupMmsPartFiles(mmsList, messagesPath, moshi)
 
@@ -98,25 +99,25 @@ class BackupMessagesHelper(private val mBackupProcessRepo: BackupProcessReposito
             }
         }
     }
-    
+
     private suspend fun backupMmsPartFiles(mmsList: List<Mms>, messagesPath: String, moshi: Moshi) {
         val appPartsPath = PathHelper.getBackupAppPartsDir(messagesPath)
         if (RemoteRootService.exists(appPartsPath).not() && RemoteRootService.mkdirs(appPartsPath).not()) {
             LogHelper.e(TAG, "backupMmsPartFiles", "Failed to mkdirs: $appPartsPath.")
             return
         }
-        
+
         mmsList.forEach { mms ->
             runCatching {
                 // Parse the part JSON
-                val partList = mms.part?.let { json -> 
-                    moshi.adapter<List<FiledMap>>().fromJson(json) 
+                val partList = mms.part?.let { json ->
+                    moshi.adapter<List<FieldMap>>().fromJson(json)
                 } ?: emptyList()
-                
+
                 // Process each part
                 partList.forEach { part ->
-                    val dataPath = part["_data"]?.toString()
-                    if (dataPath != null && dataPath.isNotEmpty()) {
+                    val dataPath = part[Telephony.Mms.Part._DATA]?.toString()
+                    if (dataPath.isNullOrEmpty().not()) {
                         // Check if file exists
                         if (RemoteRootService.exists(dataPath)) {
                             val fileName = PathHelper.getChildPath(dataPath)

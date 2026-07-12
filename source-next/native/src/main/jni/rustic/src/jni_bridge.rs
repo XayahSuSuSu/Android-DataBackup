@@ -1,12 +1,13 @@
 use jni::EnvUnowned;
 use jni::errors::ThrowRuntimeExAndDefault;
 use jni::objects::{JObject, JObjectArray, JString};
+use jni::sys::jboolean;
 
 use crate::error::NativeError;
 use crate::jni_progress::JniProgressCallback;
 use crate::repository::{
     check_repository, create_snapshot, create_snapshot_with_progress, init_repository,
-    restore_snapshot,
+    repository_exists, restore_snapshot, validate_repository,
 };
 
 #[unsafe(no_mangle)]
@@ -29,6 +30,36 @@ pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeInitRepository<'loc
     unowned_env
         .with_env(|_env| -> Result<(), NativeError> {
             init_repository(&repository_path.to_string(), &password.to_string())
+                .map_err(NativeError::from)
+        })
+        .resolve::<ThrowRuntimeExAndDefault>()
+}
+
+#[unsafe(no_mangle)]
+pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeRepositoryExists<'local>(
+    mut unowned_env: EnvUnowned<'local>,
+    _this: JObject<'local>,
+    repository_path: JString<'local>,
+) -> jboolean {
+    unowned_env
+        .with_env(|_env| -> Result<jboolean, NativeError> {
+            repository_exists(&repository_path.to_string())
+                .map(jboolean::from)
+                .map_err(NativeError::from)
+        })
+        .resolve::<ThrowRuntimeExAndDefault>()
+}
+
+#[unsafe(no_mangle)]
+pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeValidateRepository<'local>(
+    mut unowned_env: EnvUnowned<'local>,
+    _this: JObject<'local>,
+    repository_path: JString<'local>,
+    password: JString<'local>,
+) {
+    unowned_env
+        .with_env(|_env| -> Result<(), NativeError> {
+            validate_repository(&repository_path.to_string(), &password.to_string())
                 .map_err(NativeError::from)
         })
         .resolve::<ThrowRuntimeExAndDefault>()

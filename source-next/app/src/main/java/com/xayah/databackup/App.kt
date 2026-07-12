@@ -10,6 +10,12 @@ import com.xayah.databackup.data.FileRepository
 import com.xayah.databackup.data.GitHubReleaseRepository
 import com.xayah.databackup.data.MessageRepository
 import com.xayah.databackup.data.NetworkRepository
+import com.xayah.databackup.data.rustic.RusticAppSourcePlanner
+import com.xayah.databackup.data.rustic.RusticBackupCoordinator
+import com.xayah.databackup.data.rustic.RusticBackupGateway
+import com.xayah.databackup.data.rustic.RusticBackupSelectionProvider
+import com.xayah.databackup.data.rustic.RusticBackupSourceCollector
+import com.xayah.databackup.data.rustic.RusticStructuredDataSerializer
 import com.xayah.databackup.feature.backup.BackupConfigViewModel
 import com.xayah.databackup.feature.backup.BackupProcessViewModel
 import com.xayah.databackup.feature.backup.BackupSetupViewModel
@@ -18,6 +24,7 @@ import com.xayah.databackup.feature.backup.call_logs.CallLogsViewModel
 import com.xayah.databackup.feature.backup.contacts.ContactsViewModel
 import com.xayah.databackup.feature.backup.messages.MessagesViewModel
 import com.xayah.databackup.feature.backup.networks.NetworksViewModel
+import com.xayah.databackup.feature.backup.rustic.RusticBackupProcessViewModel
 import com.xayah.databackup.feature.dashboard.DashboardViewModel
 import com.xayah.databackup.feature.update.UpdatesViewModel
 import com.xayah.databackup.service.util.BackupAppsHelper
@@ -53,10 +60,17 @@ class App : Application() {
         singleOf(::BackupContactsHelper) bind BackupContactsHelper::class
         singleOf(::BackupCallLogsHelper) bind BackupCallLogsHelper::class
         singleOf(::BackupMessagesHelper) bind BackupMessagesHelper::class
+        singleOf(::RusticAppSourcePlanner)
+        singleOf(::RusticStructuredDataSerializer)
+        singleOf(::RusticBackupGateway)
+        singleOf(::RusticBackupSelectionProvider)
+        singleOf(::RusticBackupSourceCollector)
+        singleOf(::RusticBackupCoordinator)
 
         viewModelOf(::DashboardViewModel)
         viewModelOf(::BackupSetupViewModel)
         viewModelOf(::BackupProcessViewModel)
+        viewModelOf(::RusticBackupProcessViewModel)
         viewModelOf(::BackupConfigViewModel)
         viewModelOf(::AppsViewModel)
         viewModelOf(::NetworksViewModel)

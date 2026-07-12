@@ -625,7 +625,7 @@ private fun SelectIconButton(viewModel: AppsViewModel) {
 
     Box {
         IconButton(onClick = {
-            mainExpanded = !mainExpanded
+            mainExpanded = mainExpanded.not()
         }) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_list_checks),

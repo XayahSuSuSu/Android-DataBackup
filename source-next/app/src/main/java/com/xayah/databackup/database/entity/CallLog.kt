@@ -21,7 +21,7 @@ data class CallLog(
 
 data class CallLogDeserialized(
     var id: Long,
-    var call: FiledMap,
+    var call: FieldMap,
     var selected: Boolean,
 ) {
     val number: String by lazy {
@@ -65,7 +65,7 @@ data class CallLogDeserialized(
 fun Flow<List<CallLog>>.deserialize(): Flow<List<CallLogDeserialized>> = map { flow ->
     val moshi: Moshi = Moshi.Builder().build()
     flow.map {
-        val calls = it.call?.let { json -> moshi.adapter<FiledMap>().fromJson(json) }
+        val calls = it.call?.let { json -> moshi.adapter<FieldMap>().fromJson(json) }
         CallLogDeserialized(
             id = it.id,
             call = calls ?: mapOf(),

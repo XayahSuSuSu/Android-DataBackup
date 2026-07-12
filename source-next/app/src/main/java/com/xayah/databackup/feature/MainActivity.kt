@@ -39,11 +39,12 @@ import com.xayah.databackup.feature.backup.call_logs.BackupCallLogsScreen
 import com.xayah.databackup.feature.backup.contacts.BackupContactsScreen
 import com.xayah.databackup.feature.backup.messages.BackupMessagesScreen
 import com.xayah.databackup.feature.backup.networks.BackupNetworksScreen
+import com.xayah.databackup.feature.backup.rustic.RusticBackupProcessScreen
 import com.xayah.databackup.feature.dashboard.DashboardScreen
 import com.xayah.databackup.feature.settings.SettingsScreen
-import com.xayah.databackup.feature.update.UpdatesScreen
 import com.xayah.databackup.feature.setup.NoPermKey
 import com.xayah.databackup.feature.setup.SetupActivity
+import com.xayah.databackup.feature.update.UpdatesScreen
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.FirstLaunch
 import com.xayah.databackup.util.LogHelper
@@ -83,6 +84,7 @@ class MainActivity : ComponentActivity() {
     companion object {
         private const val TAG = "MainActivity"
     }
+
     private lateinit var mMainViewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -182,6 +184,10 @@ class MainActivity : ComponentActivity() {
 
                             composable<BackupProcessRoute> {
                                 BackupProcessScreen(navController)
+                            }
+
+                            composable<RusticBackupProcessRoute> {
+                                RusticBackupProcessScreen(navController)
                             }
 
                             composable<BackupProcessDetailsRoute> {

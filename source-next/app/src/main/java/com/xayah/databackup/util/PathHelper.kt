@@ -25,6 +25,7 @@ object PathHelper {
     private const val SUBDIR_MESSAGES = "messages"
     private const val SUBDIR_APP_PARTS = "app_parts"
     private const val SUBDIR_REPO = "repo"
+    private const val SUBDIR_RUSTIC = "rustic"
 
     private const val CONFIG_FILE_SUFFIX = ".config"
 
@@ -40,14 +41,13 @@ object PathHelper {
     private const val CALL_LOGS_FILE_NAME = "call_logs.json"
     private const val MESSAGES_SMS_FILE_NAME = "messages_sms.json"
     private const val MESSAGES_MMS_FILE_NAME = "messages_mms.json"
+    private const val RUSTIC_MANIFEST_FILE_NAME = "manifest.json"
 
     /**
      * Returns the parent path, or empty string if this path does not have a parent.
      */
-    fun getParentPath(path: String): String {
-        if (path.contains('/').not() || path == "/") return ""
-        return path.take(path.lastIndexOf('/'))
-    }
+    fun getParentPath(path: String): String =
+        path.substringBeforeLast('/', missingDelimiterValue = "")
 
     /**
      * Returns the child path, or empty string if this path does not have a child.
@@ -74,6 +74,8 @@ object PathHelper {
     fun getBackupMessagesDir(parent: String): String = "$parent/$SUBDIR_MESSAGES"
     fun getBackupAppPartsDir(parent: String): String = "$parent/$SUBDIR_APP_PARTS"
     fun getBackupRepoDir(parent: String): String = "$parent/$SUBDIR_REPO"
+    fun getRusticStagingDir(configUuid: String, createdAt: Long): String =
+        "${App.application.cacheDir.path}/$SUBDIR_RUSTIC/$configUuid/$createdAt"
 
     fun getBackupAppsApkFilePath(parent: String, packageName: String): String =
         "${getBackupAppsApkDir(parent, packageName)}/$APK_FILE_NAME"
@@ -93,20 +95,27 @@ object PathHelper {
     fun getBackupAppsMediaFilePath(parent: String, packageName: String): String =
         "${getBackupAppsAddlDataDir(parent, packageName)}/$MEDIA_FILE_NAME"
 
+    fun getBackupNetworksConfigFileRelativePath(): String = "$SUBDIR_NETWORKS/$NETWORKS_FILE_NAME"
+    fun getBackupContactsConfigFileRelativePath(): String = "$SUBDIR_CONTACTS/$CONTACTS_FILE_NAME"
+    fun getBackupCallLogsConfigFileRelativePath(): String = "$SUBDIR_CALL_LOGS/$CALL_LOGS_FILE_NAME"
+    fun getBackupMessagesSmsConfigFileRelativePath(): String = "$SUBDIR_MESSAGES/$MESSAGES_SMS_FILE_NAME"
+    fun getBackupMessagesMmsConfigFileRelativePath(): String = "$SUBDIR_MESSAGES/$MESSAGES_MMS_FILE_NAME"
+    fun getRusticManifestFileRelativePath(): String = RUSTIC_MANIFEST_FILE_NAME
+
     fun getBackupNetworksConfigFilePath(parent: String): String =
-        "${getBackupNetworksDir(parent)}/$NETWORKS_FILE_NAME"
+        "$parent/${getBackupNetworksConfigFileRelativePath()}"
 
     fun getBackupContactsConfigFilePath(parent: String): String =
-        "${getBackupContactsDir(parent)}/$CONTACTS_FILE_NAME"
+        "$parent/${getBackupContactsConfigFileRelativePath()}"
 
     fun getBackupCallLogsConfigFilePath(parent: String): String =
-        "${getBackupCallLogsDir(parent)}/$CALL_LOGS_FILE_NAME"
+        "$parent/${getBackupCallLogsConfigFileRelativePath()}"
 
     fun getBackupMessagesSmsConfigFilePath(parent: String): String =
-        "${getBackupMessagesDir(parent)}/$MESSAGES_SMS_FILE_NAME"
+        "$parent/${getBackupMessagesSmsConfigFileRelativePath()}"
 
     fun getBackupMessagesMmsConfigFilePath(parent: String): String =
-        "${getBackupMessagesDir(parent)}/$MESSAGES_MMS_FILE_NAME"
+        "$parent/${getBackupMessagesMmsConfigFileRelativePath()}"
 
     fun getBackupPath(): Flow<String> = App.application.readString(BackupPath)
     fun getBackupPathBackups(): Flow<String> = getBackupPath().map { "${it.trimEnd('/')}/$SUBDIR_BACKUPS" }

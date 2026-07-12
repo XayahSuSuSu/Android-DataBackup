@@ -50,9 +50,11 @@ import com.xayah.databackup.feature.BackupContactsRoute
 import com.xayah.databackup.feature.BackupMessagesRoute
 import com.xayah.databackup.feature.BackupNetworksRoute
 import com.xayah.databackup.feature.BackupProcessRoute
+import com.xayah.databackup.feature.RusticBackupProcessRoute
 import com.xayah.databackup.ui.component.ActionButtonState
 import com.xayah.databackup.ui.component.AutoScreenOffSwitch
 import com.xayah.databackup.ui.component.ResetBackupListSwitch
+import com.xayah.databackup.ui.component.SectionHeader
 import com.xayah.databackup.ui.component.SelectableCardButton
 import com.xayah.databackup.ui.component.SmallCheckActionButton
 import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
@@ -162,7 +164,11 @@ fun BackupSetupScreen(
                     enabled = nextBtnEnabled,
                     onClick = {
                         viewModel.resetProcessRepo()
-                        navController.navigateSafely(BackupProcessRoute)
+                        if (viewModel.isCurrentBackupRustic()) {
+                            navController.navigateSafely(RusticBackupProcessRoute)
+                        } else {
+                            navController.navigateSafely(BackupProcessRoute)
+                        }
                     }
                 ) {
                     Text(text = stringResource(R.string.next))
@@ -186,13 +192,12 @@ private fun TargetRow(
     val callLogsItem by viewModel.callLogsItem.collectAsStateWithLifecycle(null)
     val messagesItem by viewModel.messagesItem.collectAsStateWithLifecycle(null)
 
-    Text(
+    SectionHeader(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        text = stringResource(R.string.target),
+        title = stringResource(R.string.target),
         color = MaterialTheme.colorScheme.primary,
-        style = MaterialTheme.typography.labelLarge
     )
 
     Column(
@@ -362,13 +367,12 @@ private fun StorageRow(
 ) {
     val locationScrollState = rememberScrollState()
 
-    Text(
+    SectionHeader(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        text = stringResource(R.string.storage),
+        title = stringResource(R.string.storage),
         color = MaterialTheme.colorScheme.secondary,
-        style = MaterialTheme.typography.labelLarge
     )
     Row(
         modifier = Modifier
@@ -422,11 +426,10 @@ private fun BackupRow(
     val selectedConfigIndex by viewModel.selectedConfigIndex.collectAsStateWithLifecycle()
     val backupConfigs by viewModel.backupConfigs.collectAsStateWithLifecycle()
 
-    Text(
+    SectionHeader(
         modifier = Modifier.padding(16.dp),
-        text = stringResource(R.string.backup),
+        title = stringResource(R.string.backup),
         color = MaterialTheme.colorScheme.tertiary,
-        style = MaterialTheme.typography.labelLarge
     )
 
     val lazyListState = rememberLazyListState()
@@ -504,13 +507,12 @@ private fun BackupRow(
 
 @Composable
 private fun Settings() {
-    Text(
+    SectionHeader(
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .padding(top = 16.dp),
-        text = stringResource(R.string.settings),
+        title = stringResource(R.string.settings),
         color = MaterialTheme.colorScheme.primary,
-        style = MaterialTheme.typography.labelLarge
     )
 
     AutoScreenOffSwitch()

@@ -21,8 +21,8 @@ import com.xayah.databackup.R
 import com.xayah.databackup.adapter.WifiConfigurationAdapter
 import com.xayah.databackup.database.entity.CallLog
 import com.xayah.databackup.database.entity.Contact
-import com.xayah.databackup.database.entity.FiledMap
-import com.xayah.databackup.database.entity.FiledMutableMap
+import com.xayah.databackup.database.entity.FieldMap
+import com.xayah.databackup.database.entity.MutableFieldMap
 import com.xayah.databackup.database.entity.Mms
 import com.xayah.databackup.database.entity.Network
 import com.xayah.databackup.database.entity.Sms
@@ -46,8 +46,8 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
         }
     }
 
-    private fun getAllFields(cursor: Cursor): FiledMap {
-        val map: FiledMutableMap = mutableMapOf()
+    private fun getAllFields(cursor: Cursor): FieldMap {
+        val map: MutableFieldMap = mutableMapOf()
         cursor.columnNames.forEach { column ->
             runCatching {
                 val index = cursor.getColumnIndex(column)
@@ -119,7 +119,7 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                         runCatching {
                             val contact = Contact(0, "", "", true)
                             val rawContact = getAllFields(cursor = rawContactCursor)
-                            contact.rawContact = mMoshi.adapter<FiledMap>().toJson(rawContact)
+                            contact.rawContact = mMoshi.adapter<FieldMap>().toJson(rawContact)
                             contact.id = rawContact.getOrDefault(ContactsContract.RawContacts._ID, -1L) as Long
                             if (contact.id == -1L) {
                                 throw IllegalStateException("Unexpected id: ${contact.id}")
@@ -131,11 +131,11 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                                 arrayOf(contact.id.toString()),
                                 null
                             )?.also { dataCursor ->
-                                val data = mutableListOf<FiledMap>()
+                                val data = mutableListOf<FieldMap>()
                                 while (dataCursor.moveToNext()) {
                                     data.add(getAllFields(cursor = dataCursor))
                                 }
-                                contact.data = mMoshi.adapter<List<FiledMap>>().toJson(data)
+                                contact.data = mMoshi.adapter<List<FieldMap>>().toJson(data)
                             }
                             contacts.add(contact)
                         }.onFailure { e -> e.printStackTrace() }
@@ -160,7 +160,7 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                         runCatching {
                             val callLog = CallLog(0, "", true)
                             val call = getAllFields(cursor = callLogCursor)
-                            callLog.call = mMoshi.adapter<FiledMap>().toJson(call)
+                            callLog.call = mMoshi.adapter<FieldMap>().toJson(call)
                             callLog.id = call.getOrDefault(Calls._ID, -1L) as Long
                             if (callLog.id == -1L) {
                                 throw IllegalStateException("Unexpected id: ${callLog.id}")
@@ -189,7 +189,7 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                             runCatching {
                                 val sms = Sms(0, "", true)
                                 val config = getAllFields(cursor = smsCursor)
-                                sms.config = mMoshi.adapter<FiledMap>().toJson(config)
+                                sms.config = mMoshi.adapter<FieldMap>().toJson(config)
                                 sms.id = config.getOrDefault(Telephony.Sms._ID, -1L) as Long
                                 if (sms.id == -1L) {
                                     throw IllegalStateException("Unexpected id: ${sms.id}")
@@ -213,7 +213,7 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                             runCatching {
                                 val mms = Mms(0, "", "", "", true)
                                 val pdu = getAllFields(cursor = pduCursor)
-                                mms.pdu = mMoshi.adapter<FiledMap>().toJson(pdu)
+                                mms.pdu = mMoshi.adapter<FieldMap>().toJson(pdu)
                                 mms.id = pdu.getOrDefault(Telephony.Mms._ID, -1L) as Long
                                 if (mms.id == -1L) {
                                     throw IllegalStateException("Unexpected id: ${mms.id}")
@@ -227,11 +227,11 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                                     null,
                                     null
                                 )?.also { addrCursor ->
-                                    val addr = mutableListOf<FiledMap>()
+                                    val addr = mutableListOf<FieldMap>()
                                     while (addrCursor.moveToNext()) {
                                         addr.add(getAllFields(cursor = addrCursor))
                                     }
-                                    mms.addr = mMoshi.adapter<List<FiledMap>>().toJson(addr)
+                                    mms.addr = mMoshi.adapter<List<FieldMap>>().toJson(addr)
                                 }
 
                                 val tablePart = "part"
@@ -243,11 +243,11 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                                     arrayOf(mms.id.toString()),
                                     null
                                 )?.also { partCursor ->
-                                    val part = mutableListOf<FiledMap>()
+                                    val part = mutableListOf<FieldMap>()
                                     while (partCursor.moveToNext()) {
                                         part.add(getAllFields(cursor = partCursor))
                                     }
-                                    mms.part = mMoshi.adapter<List<FiledMap>>().toJson(part)
+                                    mms.part = mMoshi.adapter<List<FieldMap>>().toJson(part)
                                 }
 
                                 mmsList.add(mms)

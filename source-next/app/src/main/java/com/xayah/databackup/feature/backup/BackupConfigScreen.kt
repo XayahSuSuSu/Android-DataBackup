@@ -23,7 +23,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.LoadingIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
@@ -59,6 +58,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.BackupConfig
 import com.xayah.databackup.ui.component.Preference
+import com.xayah.databackup.ui.component.SectionHeader
 import com.xayah.databackup.ui.component.SelectablePreferenceGroup
 import com.xayah.databackup.ui.component.SelectablePreferenceItemInfo
 import com.xayah.databackup.ui.component.SmallActionButton
@@ -256,11 +256,9 @@ private fun BackendRow(
 ) {
     val context = LocalContext.current
 
-    Text(
+    SectionHeader(
         modifier = Modifier.padding(16.dp),
-        text = stringResource(R.string.backup_backend),
-        color = MaterialTheme.colorScheme.primary,
-        style = MaterialTheme.typography.labelLarge
+        title = stringResource(R.string.backup_backend),
     )
 
     val items = remember {

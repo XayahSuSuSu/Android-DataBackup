@@ -79,7 +79,7 @@ fun StorageCard(
     storage: String,
     onClick: () -> Unit
 ) {
-    val legendEnabled = remember(isLoading, totalBytes) { !isLoading && totalBytes > 0L }
+    val legendEnabled = remember(isLoading, totalBytes) { isLoading.not() && totalBytes > 0L }
     val backupsTooltip = remember(backupsBytes, backups, totalBytes) {
         formatLegendTooltip(backupsBytes, backups, totalBytes)
     }
@@ -153,7 +153,7 @@ fun StorageCard(
                             .height(8.dp)
                     )
                 } else {
-                    DistributionBar(
+                    StorageDistributionBar(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(8.dp),
@@ -196,7 +196,7 @@ fun StorageCard(
 }
 
 @Composable
-private fun DistributionBar(
+internal fun StorageDistributionBar(
     modifier: Modifier,
     backups: Float,
     other: Float,

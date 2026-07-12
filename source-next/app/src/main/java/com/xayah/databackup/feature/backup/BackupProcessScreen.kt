@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -25,7 +26,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -50,7 +50,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -62,13 +61,14 @@ import com.xayah.databackup.R
 import com.xayah.databackup.data.ProcessAppItem
 import com.xayah.databackup.data.ProcessItem
 import com.xayah.databackup.feature.BackupProcessDetailsRoute
+import com.xayah.databackup.ui.component.BackupProgressHeader
 import com.xayah.databackup.ui.component.FadeVisibility
+import com.xayah.databackup.ui.component.InlineNotice
 import com.xayah.databackup.ui.component.ProcessItemCard
 import com.xayah.databackup.ui.component.ProcessItemHolder
 import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.LaunchedEffect
-import com.xayah.databackup.util.SymbolHelper
 import com.xayah.databackup.util.navigateSafely
 import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.Dispatchers
@@ -155,53 +155,14 @@ fun BackupProcessScreen(
             )
         },
     ) { innerPadding ->
-        Column(modifier = Modifier) {
+        Column {
             Spacer(modifier = Modifier.size(innerPadding.calculateTopPadding()))
 
-            Row(
-                modifier = Modifier.padding(start = 16.dp, top = 40.dp, bottom = 12.dp, end = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Row(verticalAlignment = Alignment.Bottom) {
-                        Text(
-                            modifier = Modifier.alignByBaseline(),
-                            text = overallProgress,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.displayLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                        val percent by remember { mutableStateOf(SymbolHelper.PERCENT.toString()) }
-                        Text(
-                            modifier = Modifier.alignByBaseline(),
-                            text = percent,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    AnimatedContent(
-                        targetState = statusLabel,
-                        transitionSpec = { fadeIn() togetherWith fadeOut() },
-                        label = "statusLabelAnimation"
-                    ) { label ->
-                        Text(
-                            text = label,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.weight(1f))
-                FadeVisibility(visible = uiState.isProcessing) {
-                    ContainedLoadingIndicator(modifier = Modifier.size(64.dp))
-                }
-            }
+            BackupProgressHeader(
+                progress = overallProgress,
+                statusLabel = statusLabel,
+                showLoading = uiState.isProcessing,
+            )
 
             AnimatedVisibility(visible = uiState.isCanceling) {
                 CancelingNotice()
@@ -216,7 +177,7 @@ fun BackupProcessScreen(
                     .verticalFadingEdges(scrollState),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Spacer(modifier = Modifier.size(0.dp))
+                Spacer(modifier = Modifier.height(0.dp))
 
                 ProcessAppsItem(
                     navController = navController,
@@ -236,7 +197,7 @@ fun BackupProcessScreen(
 
                 ProcessMessagesItem(messagesItem = messagesItem, showProgress = showItemProgress, statusOverride = itemStatusOverride)
 
-                Spacer(modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
             Row(
@@ -272,32 +233,14 @@ fun BackupProcessScreen(
 
 @Composable
 private fun CancelingNotice() {
-    Surface(
+    InlineNotice(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.errorContainer.copy(alpha = CANCELING_NOTICE_ALPHA)
+        text = stringResource(R.string.wait_for_remaining_data_processing),
+        icon = ImageVector.vectorResource(R.drawable.ic_badge_info),
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_badge_info),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.error
-            )
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(
-                    text = stringResource(R.string.wait_for_remaining_data_processing),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.error
-                )
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            }
-        }
+        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
     }
 }
 
@@ -642,5 +585,4 @@ private fun ProcessMessagesItem(messagesItem: ProcessItem, showProgress: Boolean
     }
 }
 
-private const val CANCELING_NOTICE_ALPHA = 0.4f
 private const val DisabledOpacity = 0.38f

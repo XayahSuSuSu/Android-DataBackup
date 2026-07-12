@@ -14,6 +14,28 @@ fn temp_path(name: &str) -> Result<std::path::PathBuf, Box<dyn Error>> {
 }
 
 #[test]
+fn detects_and_validates_repository() -> Result<(), Box<dyn Error>> {
+    let root = temp_path("detect-repository")?;
+    let repository = root.join("repo");
+    let repository_path = repository.to_str().unwrap();
+    let password = "password";
+
+    assert!(!rustic::repository_exists(repository_path)?);
+    fs::create_dir_all(&repository)?;
+    fs::write(repository.join("unrelated"), b"data")?;
+    assert!(!rustic::repository_exists(repository_path)?);
+
+    fs::remove_dir_all(&repository)?;
+    rustic::init_repository(repository_path, password)?;
+    assert!(rustic::repository_exists(repository_path)?);
+    rustic::validate_repository(repository_path, password)?;
+    assert!(rustic::validate_repository(repository_path, "incorrect").is_err());
+
+    fs::remove_dir_all(root)?;
+    Ok(())
+}
+
+#[test]
 fn create_restore_and_check_snapshot_lifecycle() -> Result<(), Box<dyn Error>> {
     run_snapshot_lifecycle(
         "snapshot-lifecycle",
@@ -74,6 +96,51 @@ fn create_restore_and_check_snapshot_lifecycle_with_progress() -> Result<(), Box
     assert!(events.windows(2).all(|window| window[0].0 <= window[1].0));
     println!("progress events: {}", events.len());
 
+    Ok(())
+}
+
+#[test]
+fn create_and_restore_snapshot_with_multiple_direct_sources() -> Result<(), Box<dyn Error>> {
+    let root = temp_path("multi-source-snapshot")?;
+    let repository = root.join("repo");
+    let app = root.join("app");
+    let files = root.join("files");
+    let staging = root.join("staging");
+    let restore = root.join("restore");
+    let password = "password";
+
+    fs::create_dir_all(&app)?;
+    fs::create_dir_all(&files)?;
+    fs::create_dir_all(&staging)?;
+    fs::write(app.join("app-data.txt"), b"app")?;
+    fs::write(files.join("user-file.txt"), b"file")?;
+    fs::write(staging.join("manifest.json"), b"manifest")?;
+
+    rustic::init_repository(repository.to_str().unwrap(), password)?;
+    let source_paths = [app, files, staging].map(|path| path.to_string_lossy().into_owned());
+    let snapshot_id = rustic::create_snapshot(
+        repository.to_str().unwrap(),
+        password,
+        &source_paths,
+        &["databackup".to_string()],
+    )?;
+
+    assert!(!snapshot_id.is_empty());
+    rustic::restore_snapshot(
+        repository.to_str().unwrap(),
+        password,
+        &snapshot_id,
+        restore.to_str().unwrap(),
+    )?;
+    rustic::check_repository(repository.to_str().unwrap(), password)?;
+    assert_eq!(fs::read(find_file(&restore, "app-data.txt")?)?, b"app");
+    assert_eq!(fs::read(find_file(&restore, "user-file.txt")?)?, b"file");
+    assert_eq!(
+        fs::read(find_file(&restore, "manifest.json")?)?,
+        b"manifest"
+    );
+
+    fs::remove_dir_all(root)?;
     Ok(())
 }
 

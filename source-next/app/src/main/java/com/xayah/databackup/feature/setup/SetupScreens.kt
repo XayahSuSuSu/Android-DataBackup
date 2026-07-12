@@ -44,6 +44,7 @@ import com.xayah.databackup.ui.component.CustomSUFileDialog
 import com.xayah.databackup.ui.component.FadeVisibility
 import com.xayah.databackup.ui.component.OnResume
 import com.xayah.databackup.ui.component.PermissionCard
+import com.xayah.databackup.ui.component.SectionHeader
 import com.xayah.databackup.ui.component.rememberCallLogPermissionsState
 import com.xayah.databackup.ui.component.rememberContactPermissionsState
 import com.xayah.databackup.ui.component.rememberMessagePermissionsState
@@ -207,11 +208,9 @@ fun PermissionsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text(
+                    SectionHeader(
                         modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(R.string.required),
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.labelLarge
+                        title = stringResource(R.string.required),
                     )
 
                     PermissionCard(
@@ -243,11 +242,9 @@ fun PermissionsScreen(
                         },
                     )
 
-                    Text(
+                    SectionHeader(
                         modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(R.string.optional),
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.labelLarge
+                        title = stringResource(R.string.optional),
                     )
 
                     PermissionCard(

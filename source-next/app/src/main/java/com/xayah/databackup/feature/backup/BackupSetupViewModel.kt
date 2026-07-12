@@ -13,6 +13,7 @@ import com.xayah.databackup.data.ContactRepository
 import com.xayah.databackup.data.FileRepository
 import com.xayah.databackup.data.MessageRepository
 import com.xayah.databackup.data.NetworkRepository
+import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.BackupConfig
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.ui.component.CallLogPermissions
@@ -263,5 +264,9 @@ open class BackupSetupViewModel(
 
     fun resetProcessRepo() {
         backupProcessRepo.reset()
+    }
+
+    fun isCurrentBackupRustic(): Boolean {
+        return backupConfigRepo.getCurrentConfig().backupBackend is BackupBackend.Rustic
     }
 }

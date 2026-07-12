@@ -14,7 +14,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -37,6 +36,7 @@ import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.CustomSUFileDialog
 import com.xayah.databackup.ui.component.Preference
+import com.xayah.databackup.ui.component.SectionHeader
 import com.xayah.databackup.ui.component.SmallActionButton
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.ShellHelper
@@ -130,13 +130,11 @@ fun SettingsScreen(navController: NavHostController) {
                 }
             )
 
-            Text(
+            SectionHeader(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                text = stringResource(R.string.info),
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.labelLarge
+                title = stringResource(R.string.info),
             )
 
             SettingsEntry(

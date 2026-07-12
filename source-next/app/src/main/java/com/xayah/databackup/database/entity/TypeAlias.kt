@@ -1,4 +1,4 @@
 package com.xayah.databackup.database.entity
 
-typealias FiledMap = Map<String, Any>
-typealias FiledMutableMap = MutableMap<String, Any>
+typealias FieldMap = Map<String, Any>
+typealias MutableFieldMap = MutableMap<String, Any>

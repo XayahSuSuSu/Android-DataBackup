@@ -7,6 +7,14 @@ object Rustic {
         nativeInitRepository(repositoryPath, password)
     }
 
+    fun repositoryExists(repositoryPath: String): Boolean {
+        return nativeRepositoryExists(repositoryPath)
+    }
+
+    fun validateRepository(repositoryPath: String, password: String) {
+        nativeValidateRepository(repositoryPath, password)
+    }
+
     fun createSnapshot(
         repositoryPath: String,
         password: String,
@@ -27,6 +35,8 @@ object Rustic {
 
     private external fun nativeInitLogger()
     private external fun nativeInitRepository(repositoryPath: String, password: String)
+    private external fun nativeRepositoryExists(repositoryPath: String): Boolean
+    private external fun nativeValidateRepository(repositoryPath: String, password: String)
     private external fun nativeCreateSnapshot(
         repositoryPath: String,
         password: String,

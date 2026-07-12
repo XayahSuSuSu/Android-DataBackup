@@ -21,6 +21,9 @@ data object BackupSetupRoute
 data object BackupProcessRoute
 
 @Serializable
+data object RusticBackupProcessRoute
+
+@Serializable
 data object BackupProcessDetailsRoute
 
 @Serializable
