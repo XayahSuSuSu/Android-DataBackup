@@ -506,4 +506,27 @@
     <string name="archive">Archiwum</string>
     <string name="archive_backup_backend_desc">Użyj samodzielnych plików archiwum do tej kopii zapasowej</string>
     <string name="backup_backend">Backend kopii zapasowych</string>
+    <string name="repository">Repozytorium</string>
+    <string name="repository_path">Ścieżka repozytorium</string>
+    <string name="snapshot">Migawka</string>
+    <string name="snapshot_id">Identyfikator migawki</string>
+    <string name="rustic_backup">Kopia zapasowa Rustic</string>
+    <string name="bytes_written">Zapisane bajty</string>
+    <string name="transfer_speed">Prędkość transferu</string>
+    <string name="source_queue">Kolejka źródłowa</string>
+    <string name="current_stage">Obecny etap</string>
+    <string name="step_count">Krok %1$d z %2$d</string>
+    <string name="snapshot_steps">Kroki migawki</string>
+    <string name="prepare_repository">Przygotuj repozytorium</string>
+    <string name="collect_sources">Zbierz źródła</string>
+    <string name="create_snapshot">Utwórz migawkę</string>
+    <string name="finalize_snapshot">Zakończ migawkę</string>
+    <string name="backup_in_progress">Trwa tworzenie kopii zapasowej</string>
+    <string name="rustic_backup_leave_blocked">Poczekaj na zakończenie migawki Rustic przed opuszczeniem tego ekranu</string>
+    <string name="rustic_backup_failed">Nie udało się wykonać kopii zapasowej Rustic. Sprawdź dzienniki, aby uzyskać szczegóły</string>
+    <string name="pending">W toku</string>
+    <string name="password_protected">Zabezpieczone hasłem</string>
+    <string name="anonymous_repository">Anonimowe repozytorium</string>
+    <string name="waiting_to_start">Oczekiwanie na rozpoczęcie</string>
+    <string name="no_snapshot_yet">Brak jeszcze migawki</string>
 </resources>
