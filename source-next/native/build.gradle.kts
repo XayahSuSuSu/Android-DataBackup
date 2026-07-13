@@ -1,6 +1,7 @@
+import com.android.build.api.variant.BuildConfigField
+
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -12,16 +13,9 @@ android {
         buildConfig = true
     }
 
-    buildTypes {
-        all {
-            val zstdVersion = File("${projectDir}/src/main/jni/external/zstd/zstd-jni/version").readText().trim()
-            buildConfigField("String", "ZSTD_VERSION", "\"${zstdVersion}\"")
-        }
-    }
-
     sourceSets {
         getByName("main") {
-            java.srcDir("src/main/jni/external/zstd/zstd-jni/src/main/java")
+            java.directories += "src/main/jni/external/zstd/zstd-jni/src/main/java"
         }
     }
 
@@ -52,8 +46,20 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+}
+
+val zstdVersion = file("src/main/jni/external/zstd/zstd-jni/version").readText().trim()
+
+androidComponents {
+    onVariants { variant ->
+        variant.buildConfigFields?.put(
+            "ZSTD_VERSION",
+            BuildConfigField(
+                type = "String",
+                value = "\"$zstdVersion\"",
+                comment = "Zstandard version",
+            ),
+        )
     }
 }
 
