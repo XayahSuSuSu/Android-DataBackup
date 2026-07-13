@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,16 +17,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.LoadingIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
@@ -40,7 +38,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -57,6 +54,11 @@ import androidx.navigation.NavHostController
 import com.xayah.databackup.R
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.BackupConfig
+import com.xayah.databackup.ui.component.DataBackupDialog
+import com.xayah.databackup.ui.component.DialogActionButton
+import com.xayah.databackup.ui.component.DialogDestructiveButton
+import com.xayah.databackup.ui.component.DialogDismissButton
+import com.xayah.databackup.ui.component.DialogIcon
 import com.xayah.databackup.ui.component.Preference
 import com.xayah.databackup.ui.component.SectionHeader
 import com.xayah.databackup.ui.component.SelectablePreferenceGroup
@@ -94,7 +96,7 @@ fun BackupConfigScreen(
         )
     }
 
-    if (backupConfig != null && openDeleteDialog) {
+    if (openDeleteDialog) {
         DeleteDialog(
             onDismissRequest = {
                 openDeleteDialog = false
@@ -334,39 +336,43 @@ private fun EditNameDialog(
         mutableStateOf(TextFieldValue(text = name))
     }
     var isError by rememberSaveable { mutableStateOf(name.isBlank()) }
-    AlertDialog(
-        title = { Text(text = stringResource(R.string.edit_name)) },
-        text = {
+    DataBackupDialog(
+        title = stringResource(R.string.edit_name),
+        onDismissRequest = onDismissRequest,
+        icon = { DialogIcon(imageVector = ImageVector.vectorResource(R.drawable.ic_square_pen)) },
+        content = {
             OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
                 value = text,
                 onValueChange = {
                     isError = it.text.isBlank()
                     text = it
                 },
                 isError = isError,
+                singleLine = true,
+                shape = MaterialTheme.shapes.large,
                 label = { Text(text = stringResource(R.string.name)) },
+                supportingText = if (isError) {
+                    { Text(text = stringResource(R.string.required)) }
+                } else {
+                    null
+                },
             )
         },
-        onDismissRequest = {
-            onDismissRequest()
-        },
         confirmButton = {
-            TextButton(
-                enabled = isError.not(),
-                onClick = { onConfirm.invoke(text.text) }
-            ) {
-                Text(text = stringResource(R.string.confirm))
-            }
+            DialogActionButton(
+                text = stringResource(R.string.save),
+                enabled = isError.not() && text.text.isNotBlank(),
+                icon = ImageVector.vectorResource(R.drawable.ic_check),
+                onClick = { onConfirm.invoke(text.text) },
+            )
         },
         dismissButton = {
-            TextButton(
-                onClick = {
-                    onDismissRequest()
-                }
-            ) {
-                Text(text = stringResource(R.string.dismiss))
-            }
-        }
+            DialogDismissButton(
+                text = stringResource(R.string.cancel),
+                onClick = onDismissRequest,
+            )
+        },
     )
 }
 
@@ -376,43 +382,40 @@ private fun DeleteDialog(
     onConfirm: () -> Unit,
 ) {
     var isDeleting by remember { mutableStateOf(false) }
-    AlertDialog(
+    DataBackupDialog(
+        title = stringResource(R.string.delete),
+        onDismissRequest = onDismissRequest,
         icon = {
-            Box(contentAlignment = Alignment.Center) {
-                AnimatedVisibility(visible = isDeleting, enter = fadeIn(), exit = fadeOut()) {
-                    LoadingIndicator()
-                }
-                AnimatedVisibility(visible = isDeleting.not(), enter = fadeIn(), exit = fadeOut()) {
-                    Icon(imageVector = ImageVector.vectorResource(R.drawable.ic_badge_info), contentDescription = stringResource(R.string.delete))
-                }
+            AnimatedVisibility(visible = isDeleting, enter = fadeIn(), exit = fadeOut()) {
+                LoadingIndicator(
+                    modifier = Modifier.size(28.dp),
+                    color = MaterialTheme.colorScheme.onErrorContainer,
+                )
+            }
+            AnimatedVisibility(visible = isDeleting.not(), enter = fadeIn(), exit = fadeOut()) {
+                DialogIcon(imageVector = ImageVector.vectorResource(R.drawable.ic_trash))
             }
         },
-        title = { Text(text = stringResource(R.string.delete)) },
-        text = {
-            Text(text = stringResource(R.string.confirm_delete))
-        },
-        onDismissRequest = {
-            onDismissRequest()
-        },
+        iconContainerColor = MaterialTheme.colorScheme.errorContainer,
+        iconContentColor = MaterialTheme.colorScheme.onErrorContainer,
+        content = { Text(text = stringResource(R.string.confirm_delete)) },
         confirmButton = {
-            TextButton(
-                enabled = true,
+            DialogDestructiveButton(
+                text = stringResource(R.string.delete),
+                enabled = isDeleting.not(),
+                icon = ImageVector.vectorResource(R.drawable.ic_trash),
                 onClick = {
                     isDeleting = true
                     onConfirm.invoke()
-                }
-            ) {
-                Text(text = stringResource(R.string.confirm))
-            }
+                },
+            )
         },
         dismissButton = {
-            TextButton(
-                onClick = {
-                    onDismissRequest()
-                }
-            ) {
-                Text(text = stringResource(R.string.dismiss))
-            }
-        }
+            DialogDismissButton(
+                text = stringResource(R.string.cancel),
+                enabled = isDeleting.not(),
+                onClick = onDismissRequest,
+            )
+        },
     )
 }

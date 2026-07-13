@@ -9,11 +9,9 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -45,6 +43,10 @@ import com.xayah.databackup.feature.settings.SettingsScreen
 import com.xayah.databackup.feature.setup.NoPermKey
 import com.xayah.databackup.feature.setup.SetupActivity
 import com.xayah.databackup.feature.update.UpdatesScreen
+import com.xayah.databackup.ui.component.DataBackupDialog
+import com.xayah.databackup.ui.component.DialogDestructiveButton
+import com.xayah.databackup.ui.component.DialogDismissButton
+import com.xayah.databackup.ui.component.DialogIcon
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.FirstLaunch
 import com.xayah.databackup.util.LogHelper
@@ -59,24 +61,34 @@ import kotlinx.coroutines.runBlocking
 
 @Composable
 fun ErrorServiceDialog(onConfirm: () -> Unit, onRetry: () -> Unit) {
-    AlertDialog(
-        icon = { Icon(imageVector = ImageVector.vectorResource(R.drawable.ic_circle_x), contentDescription = stringResource(R.string.error)) },
-        title = { Text(text = stringResource(R.string.error)) },
-        text = { Text(text = stringResource(R.string.error_service_desc)) },
+    DataBackupDialog(
+        title = stringResource(R.string.error),
         onDismissRequest = {},
-        confirmButton = { TextButton(onClick = onConfirm) { Text(text = stringResource(R.string.confirm)) } },
-        dismissButton = { TextButton(onClick = onRetry) { Text(text = stringResource(R.string.retry)) } }
+        icon = { DialogIcon(imageVector = ImageVector.vectorResource(R.drawable.ic_circle_x)) },
+        iconContainerColor = MaterialTheme.colorScheme.errorContainer,
+        iconContentColor = MaterialTheme.colorScheme.onErrorContainer,
+        content = { Text(text = stringResource(R.string.error_service_desc)) },
+        confirmButton = {
+            DialogDestructiveButton(text = stringResource(R.string.confirm), onClick = onConfirm)
+        },
+        dismissButton = {
+            DialogDismissButton(text = stringResource(R.string.retry), onClick = onRetry)
+        },
     )
 }
 
 @Composable
 fun NoSpaceLeftDialog(onDismissRequest: () -> Unit) {
-    AlertDialog(
-        icon = { Icon(imageVector = ImageVector.vectorResource(R.drawable.ic_circle_x), contentDescription = stringResource(R.string.error)) },
-        title = { Text(text = stringResource(R.string.error)) },
-        text = { Text(text = stringResource(R.string.error_no_space_left_desc)) },
+    DataBackupDialog(
+        title = stringResource(R.string.error),
         onDismissRequest = onDismissRequest,
-        confirmButton = { TextButton(onClick = onDismissRequest) { Text(text = stringResource(R.string.confirm)) } },
+        icon = { DialogIcon(imageVector = ImageVector.vectorResource(R.drawable.ic_circle_x)) },
+        iconContainerColor = MaterialTheme.colorScheme.errorContainer,
+        iconContentColor = MaterialTheme.colorScheme.onErrorContainer,
+        content = { Text(text = stringResource(R.string.error_no_space_left_desc)) },
+        confirmButton = {
+            DialogDestructiveButton(text = stringResource(R.string.confirm), onClick = onDismissRequest)
+        },
     )
 }
 

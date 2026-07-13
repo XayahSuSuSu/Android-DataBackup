@@ -18,7 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -50,6 +48,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.xayah.databackup.R
+import com.xayah.databackup.ui.component.DataBackupDialog
+import com.xayah.databackup.ui.component.DialogActionButton
+import com.xayah.databackup.ui.component.DialogIcon
 import com.xayah.databackup.ui.component.StorageDistributionBar
 import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
@@ -97,14 +98,13 @@ fun RusticBackupProcessScreen(
     }
 
     if (showProcessingNotice) {
-        AlertDialog(
+        DataBackupDialog(
+            title = stringResource(R.string.backup_in_progress),
             onDismissRequest = { showProcessingNotice = false },
-            title = { Text(stringResource(R.string.backup_in_progress)) },
-            text = { Text(stringResource(R.string.rustic_backup_leave_blocked)) },
+            icon = { DialogIcon(imageVector = ImageVector.vectorResource(R.drawable.ic_clock)) },
+            content = { Text(stringResource(R.string.rustic_backup_leave_blocked)) },
             confirmButton = {
-                TextButton(onClick = { showProcessingNotice = false }) {
-                    Text(stringResource(R.string.confirm))
-                }
+                DialogActionButton(text = stringResource(R.string.confirm), onClick = { showProcessingNotice = false })
             },
         )
     }
@@ -164,34 +164,11 @@ internal fun RusticRepositoryInfoDialog(
     val scrollState = rememberScrollState()
     val protection = stringResource(if (uiState.isPasswordProtected) R.string.password_protected else R.string.anonymous_repository)
 
-    AlertDialog(
+    DataBackupDialog(
+        title = stringResource(R.string.repository),
         onDismissRequest = onDismissRequest,
-        title = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                Surface(
-                    modifier = Modifier.size(40.dp),
-                    shape = CircleShape,
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            modifier = Modifier.size(20.dp),
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_folder_archive),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                        )
-                    }
-                }
-                Text(
-                    text = stringResource(R.string.repository),
-                    style = MaterialTheme.typography.titleLarge,
-                )
-            }
-        },
-        text = {
+        icon = { DialogIcon(imageVector = ImageVector.vectorResource(R.drawable.ic_folder_archive)) },
+        content = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -216,9 +193,7 @@ internal fun RusticRepositoryInfoDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismissRequest) {
-                Text(stringResource(R.string.confirm))
-            }
+            DialogActionButton(text = stringResource(R.string.confirm), onClick = onDismissRequest)
         },
     )
 }

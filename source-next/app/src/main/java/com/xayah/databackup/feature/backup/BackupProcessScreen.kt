@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -34,7 +33,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -62,6 +60,11 @@ import com.xayah.databackup.data.ProcessAppItem
 import com.xayah.databackup.data.ProcessItem
 import com.xayah.databackup.feature.BackupProcessDetailsRoute
 import com.xayah.databackup.ui.component.BackupProgressHeader
+import com.xayah.databackup.ui.component.DataBackupDialog
+import com.xayah.databackup.ui.component.DialogActionButton
+import com.xayah.databackup.ui.component.DialogDestructiveButton
+import com.xayah.databackup.ui.component.DialogDismissButton
+import com.xayah.databackup.ui.component.DialogIcon
 import com.xayah.databackup.ui.component.FadeVisibility
 import com.xayah.databackup.ui.component.InlineNotice
 import com.xayah.databackup.ui.component.ProcessItemCard
@@ -327,13 +330,26 @@ private fun ConfirmExitDialog(
     onConfirm: () -> Unit,
     onDismissRequest: () -> Unit,
 ) {
-    AlertDialog(
-        icon = { Icon(imageVector = ImageVector.vectorResource(R.drawable.ic_badge_info), contentDescription = stringResource(R.string.prompt)) },
-        title = { Text(text = stringResource(R.string.prompt)) },
-        text = { Text(text = stringResource(R.string.prompt_cancel_operation)) },
+    DataBackupDialog(
+        title = stringResource(R.string.prompt),
         onDismissRequest = onDismissRequest,
-        confirmButton = { TextButton(onClick = onConfirm) { Text(text = stringResource(R.string.confirm)) } },
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text(text = stringResource(R.string.dismiss)) } }
+        icon = { DialogIcon(imageVector = ImageVector.vectorResource(R.drawable.ic_badge_info)) },
+        iconContainerColor = MaterialTheme.colorScheme.errorContainer,
+        iconContentColor = MaterialTheme.colorScheme.onErrorContainer,
+        content = { Text(text = stringResource(R.string.prompt_cancel_operation)) },
+        confirmButton = {
+            DialogDestructiveButton(
+                text = stringResource(R.string.confirm),
+                icon = ImageVector.vectorResource(R.drawable.ic_circle_x),
+                onClick = onConfirm,
+            )
+        },
+        dismissButton = {
+            DialogDismissButton(
+                text = stringResource(R.string.cancel),
+                onClick = onDismissRequest,
+            )
+        },
     )
 }
 
@@ -343,39 +359,35 @@ private fun AppItemDialog(
     onDismissRequest: () -> Unit,
 ) {
     val context = LocalContext.current
-    AlertDialog(
-        title = {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                var icon: Drawable? by remember { mutableStateOf(null) }
-                LaunchedEffect(context = Dispatchers.IO, appItem.packageName) {
-                    icon = runCatching { context.packageManager.getApplicationIcon(appItem.packageName) }.getOrNull()
-                    if (icon == null) {
-                        icon = AppCompatResources.getDrawable(context, android.R.drawable.sym_def_app_icon)
-                    }
-                }
-                AsyncImage(
-                    modifier = Modifier.size(32.dp),
-                    model = ImageRequest.Builder(context)
-                        .data(icon)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = null
-                )
-
-                Text(text = appItem.label)
-            }
-        },
-        text = {
-            AppItemDialogItem(appItem)
-        },
-        onDismissRequest = {
-            onDismissRequest()
-        },
-        confirmButton = {
-            TextButton(onClick = { onDismissRequest() }) {
-                Text(text = stringResource(R.string.confirm))
-            }
+    var icon: Drawable? by remember { mutableStateOf(null) }
+    LaunchedEffect(context = Dispatchers.IO, appItem.packageName) {
+        icon = runCatching { context.packageManager.getApplicationIcon(appItem.packageName) }.getOrNull()
+        if (icon == null) {
+            icon = AppCompatResources.getDrawable(context, android.R.drawable.sym_def_app_icon)
         }
+    }
+    DataBackupDialog(
+        title = appItem.label,
+        onDismissRequest = onDismissRequest,
+        icon = {
+            AsyncImage(
+                modifier = Modifier.size(36.dp),
+                model = ImageRequest.Builder(context)
+                    .data(icon)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+            )
+        },
+        iconContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+        iconContentColor = MaterialTheme.colorScheme.onSurface,
+        content = { AppItemDialogItem(appItem) },
+        confirmButton = {
+            DialogActionButton(
+                text = stringResource(R.string.confirm),
+                onClick = onDismissRequest,
+            )
+        },
     )
 }
 
