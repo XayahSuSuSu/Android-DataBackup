@@ -506,4 +506,27 @@
     <string name="archive_backup_backend_desc">이 백업에 독립형 아카이브 파일 사용</string>
     <string name="backup_backend">백업 백엔드</string>
     <string name="rustic_backup_backend_desc">이 백업에 Rustic 저장소 사용</string>
+    <string name="repository">저장소</string>
+    <string name="repository_path">저장소 경로</string>
+    <string name="snapshot">스냅샷</string>
+    <string name="snapshot_id">스냅샷 ID</string>
+    <string name="bytes_written">기록된 바이트 수</string>
+    <string name="transfer_speed">전송 속도</string>
+    <string name="source_queue">원본 대기열</string>
+    <string name="current_stage">현재 단계</string>
+    <string name="step_count">%2$d 중 %1$d 단계</string>
+    <string name="snapshot_steps">스냅샷 단계</string>
+    <string name="prepare_repository">저장소 준비</string>
+    <string name="collect_sources">원본 수집</string>
+    <string name="create_snapshot">스냅샷 만들기</string>
+    <string name="finalize_snapshot">스냅샷 마무리</string>
+    <string name="backup_in_progress">백업 작업 중</string>
+    <string name="rustic_backup_leave_blocked">이 화면을 나가기 전에 Rustic 스냅샷 작업이 완료될 때까지 기다려 주세요</string>
+    <string name="rustic_backup_failed">Rustic 백업에 실패했습니다. 자세한 내용은 로그를 확인하세요</string>
+    <string name="pending">대기 중</string>
+    <string name="password_protected">비밀번호 보호됨</string>
+    <string name="anonymous_repository">익명 저장소</string>
+    <string name="waiting_to_start">시작 대기 중</string>
+    <string name="no_snapshot_yet">아직 스냡샷 없음</string>
+    <string name="rustic_backup">Rustic 백업</string>
 </resources>
