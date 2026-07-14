@@ -9,11 +9,13 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -21,14 +23,16 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
-import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.feature.backup.BackupConfigScreen
+import com.xayah.databackup.feature.backup.BackupConfigViewModel
 import com.xayah.databackup.feature.backup.BackupProcessDetailsScreen
 import com.xayah.databackup.feature.backup.BackupProcessScreen
 import com.xayah.databackup.feature.backup.BackupSetupScreen
@@ -51,6 +55,7 @@ import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.FirstLaunch
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.NotificationHelper
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.ProcessHelper
 import com.xayah.databackup.util.ShellHelper
 import com.xayah.databackup.util.preloadingDataStore
@@ -58,6 +63,8 @@ import com.xayah.databackup.util.readBoolean
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun ErrorServiceDialog(onConfirm: () -> Unit, onRetry: () -> Unit) {
@@ -136,7 +143,8 @@ class MainActivity : ComponentActivity() {
 
             DataBackupTheme {
                 val uiState by mMainViewModel.uiState.collectAsStateWithLifecycle()
-                val navController = rememberNavController()
+                val backStack = rememberNavBackStack(DashboardRoute)
+                val navigator = remember(backStack) { Navigator(backStack) }
 
                 if (uiState.showErrorServiceDialog) {
                     ErrorServiceDialog(onConfirm = { ProcessHelper.killSelf(this) }, onRetry = { mMainViewModel.checkRootService() })
@@ -149,88 +157,97 @@ class MainActivity : ComponentActivity() {
                 }
 
                 Surface {
-                    NavHost(
-                        navController = navController,
-                        startDestination = DashboardRoute,
-                        enterTransition = {
+                    NavDisplay(
+                        backStack = backStack,
+                        onBack = navigator::goBack,
+                        entryDecorators = listOf(
+                            rememberSaveableStateHolderNavEntryDecorator(),
+                            rememberViewModelStoreNavEntryDecorator(),
+                        ),
+                        transitionSpec = {
                             slideInHorizontally(
                                 initialOffsetX = { it },
                                 animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
-                            )
-                        },
-                        exitTransition = {
-                            slideOutHorizontally(
+                            ) togetherWith slideOutHorizontally(
                                 targetOffsetX = { -it },
                                 animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
                             )
                         },
-                        popEnterTransition = {
+                        popTransitionSpec = {
                             slideInHorizontally(
                                 initialOffsetX = { -it },
                                 animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
-                            )
-                        },
-                        popExitTransition = {
-                            slideOutHorizontally(
+                            ) togetherWith slideOutHorizontally(
                                 targetOffsetX = { it },
                                 animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
                             )
                         },
-                    ) {
-                        composable<DashboardRoute> {
-                            DashboardScreen(navController)
+                        predictivePopTransitionSpec = {
+                            slideInHorizontally(
+                                initialOffsetX = { -it },
+                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
+                            ) togetherWith slideOutHorizontally(
+                                targetOffsetX = { it },
+                                animationSpec = spring(Spring.DampingRatioNoBouncy, Spring.StiffnessMediumLow)
+                            )
+                        },
+                        entryProvider = entryProvider {
+                            entry<DashboardRoute> {
+                                DashboardScreen(navigator)
+                            }
+
+                            entry<SettingsRoute> {
+                                SettingsScreen(navigator)
+                            }
+
+                            entry<UpdatesRoute> {
+                                UpdatesScreen(navigator)
+                            }
+
+                            entry<BackupSetupRoute> {
+                                BackupSetupScreen(navigator)
+                            }
+
+                            entry<BackupProcessRoute> {
+                                BackupProcessScreen(navigator)
+                            }
+
+                            entry<RusticBackupProcessRoute> {
+                                RusticBackupProcessScreen(navigator)
+                            }
+
+                            entry<BackupProcessDetailsRoute> {
+                                BackupProcessDetailsScreen(navigator)
+                            }
+
+                            entry<BackupConfigRoute> { route ->
+                                val viewModel = koinViewModel<BackupConfigViewModel> {
+                                    parametersOf(route)
+                                }
+                                BackupConfigScreen(navigator, viewModel)
+                            }
+
+                            entry<BackupAppsRoute> {
+                                BackupAppsScreen(navigator)
+                            }
+
+                            entry<BackupNetworksRoute> {
+                                BackupNetworksScreen(navigator)
+                            }
+
+                            entry<BackupContactsRoute> {
+                                BackupContactsScreen(navigator)
+                            }
+
+                            entry<BackupCallLogsRoute> {
+                                BackupCallLogsScreen(navigator)
+                            }
+
+                            entry<BackupMessagesRoute> {
+                                BackupMessagesScreen(navigator)
+                            }
                         }
-
-                        composable<SettingsRoute> {
-                            SettingsScreen(navController)
-                        }
-
-                        composable<UpdatesRoute> {
-                            UpdatesScreen(navController)
-                        }
-
-                        navigation<BackupRoute>(startDestination = BackupSetupRoute) {
-                            composable<BackupSetupRoute> {
-                                BackupSetupScreen(navController)
-                            }
-
-                            composable<BackupProcessRoute> {
-                                BackupProcessScreen(navController)
-                            }
-
-                            composable<RusticBackupProcessRoute> {
-                                RusticBackupProcessScreen(navController)
-                            }
-
-                            composable<BackupProcessDetailsRoute> {
-                                BackupProcessDetailsScreen(navController)
-                            }
-
-                            composable<BackupConfigRoute> {
-                                BackupConfigScreen(navController)
-                            }
-
-                            composable<BackupAppsRoute> {
-                                BackupAppsScreen(navController)
-                            }
-
-                            composable<BackupNetworksRoute> {
-                                BackupNetworksScreen(navController)
-                            }
-
-                            composable<BackupContactsRoute> {
-                                BackupContactsScreen(navController)
-                            }
-
-                            composable<BackupCallLogsRoute> {
-                                BackupCallLogsScreen(navController)
-                            }
-
-                            composable<BackupMessagesRoute> {
-                                BackupMessagesScreen(navController)
-                            }
-                        }
-                    }
+                    )
                 }
             }
         }

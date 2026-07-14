@@ -1,8 +1,6 @@
 package com.xayah.databackup.feature.backup
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import arrow.optics.copy
 import com.xayah.databackup.data.BackupConfigRepository
 import com.xayah.databackup.entity.BackupConfig
@@ -25,14 +23,12 @@ import kotlinx.coroutines.launch
 data object BackupConfigUiState
 
 open class BackupConfigViewModel(
-    savedStateHandle: SavedStateHandle,
+    private val route: BackupConfigRoute,
     private val backupConfigRepo: BackupConfigRepository,
 ) : BaseViewModel() {
     companion object {
         private const val TAG = "BackupConfigViewModel"
     }
-
-    private val route = savedStateHandle.toRoute<BackupConfigRoute>()
 
     private val _uiState: MutableStateFlow<BackupConfigUiState> = MutableStateFlow(BackupConfigUiState)
     val uiState: StateFlow<BackupConfigUiState> = _uiState.asStateFlow()

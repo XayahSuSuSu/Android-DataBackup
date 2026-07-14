@@ -66,7 +66,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
+import com.xayah.databackup.util.Navigator
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -110,7 +110,7 @@ data class AppFilterUserOption(
 
 @Composable
 fun BackupAppsScreen(
-    navController: NavHostController,
+    navigator: Navigator,
     viewModel: AppsViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
@@ -201,7 +201,7 @@ fun BackupAppsScreen(
                             }
                         },
                         navigationIcon = {
-                            IconButton(onClick = { navController.popBackStackSafely() }) {
+                            IconButton(onClick = { navigator.popBackStackSafely() }) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_left),
                                     contentDescription = stringResource(R.string.back)

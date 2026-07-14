@@ -48,7 +48,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.R
 import com.xayah.databackup.database.entity.CallLogDeserialized
 import com.xayah.databackup.ui.component.SearchTextField
@@ -61,7 +61,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BackupCallLogsScreen(
-    navController: NavHostController,
+    navigator: Navigator,
     viewModel: CallLogsViewModel = koinViewModel(),
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -142,7 +142,7 @@ fun BackupCallLogsScreen(
                             }
                         },
                         navigationIcon = {
-                            IconButton(onClick = { navController.popBackStackSafely() }) {
+                            IconButton(onClick = { navigator.popBackStackSafely() }) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_left),
                                     contentDescription = stringResource(R.string.back)

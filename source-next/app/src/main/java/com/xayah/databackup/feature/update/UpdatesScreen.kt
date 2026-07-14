@@ -63,7 +63,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.FadeVisibility
 import com.xayah.databackup.ui.component.MarkdownContent
@@ -74,7 +74,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun UpdatesScreen(
-    navController: NavHostController,
+    navigator: Navigator,
     viewModel: UpdatesViewModel = koinViewModel(),
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -98,7 +98,7 @@ fun UpdatesScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStackSafely() }) {
+                    IconButton(onClick = { navigator.popBackStackSafely() }) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_left),
                             contentDescription = stringResource(R.string.back)

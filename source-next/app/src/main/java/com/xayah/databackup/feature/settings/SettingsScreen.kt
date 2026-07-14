@@ -31,7 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.CustomSUFileDialog
@@ -44,7 +44,7 @@ import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.Dispatchers
 
 @Composable
-fun SettingsScreen(navController: NavHostController) {
+fun SettingsScreen(navigator: Navigator) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     var openCustomSUFileDialog by remember { mutableStateOf(false) }
     if (openCustomSUFileDialog) {
@@ -67,7 +67,7 @@ fun SettingsScreen(navController: NavHostController) {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStackSafely() }) {
+                    IconButton(onClick = { navigator.popBackStackSafely() }) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_left),
                             contentDescription = stringResource(R.string.back)

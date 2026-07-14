@@ -46,7 +46,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.DataBackupDialog
 import com.xayah.databackup.ui.component.DialogActionButton
@@ -62,7 +62,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun RusticBackupProcessScreen(
-    navController: NavHostController,
+    navigator: Navigator,
     viewModel: RusticBackupProcessViewModel = koinViewModel(),
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
@@ -73,7 +73,7 @@ fun RusticBackupProcessScreen(
     var showProcessingNotice by rememberSaveable { mutableStateOf(false) }
 
     val leave = {
-        if (uiState.isProcessing) showProcessingNotice = true else navController.popBackStackSafely()
+        if (uiState.isProcessing) showProcessingNotice = true else navigator.popBackStackSafely()
     }
     BackHandler(onBack = leave)
 
@@ -146,7 +146,7 @@ fun RusticBackupProcessScreen(
                 sources = sourceItems,
                 overallProgress = overallProgress,
                 statusLabel = statusLabel,
-                onFinish = { navController.popBackStackSafely() },
+                onFinish = { navigator.popBackStackSafely() },
             )
 
             Spacer(modifier = Modifier.size(innerPadding.calculateBottomPadding()))

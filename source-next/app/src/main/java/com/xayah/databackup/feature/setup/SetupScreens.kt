@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.CustomSUFileDialog
 import com.xayah.databackup.ui.component.FadeVisibility
@@ -54,7 +54,7 @@ import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.launch
 
 @Composable
-fun WelcomeScreen(navController: NavHostController) {
+fun WelcomeScreen(navigator: Navigator) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
     ) { innerPadding ->
@@ -112,7 +112,7 @@ fun WelcomeScreen(navController: NavHostController) {
                             .wrapContentSize(),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         onClick = {
-                            navController.navigateSafely(Permissions(true))
+                            navigator.navigateSafely(Permissions(true))
                         }
                     ) {
                         Text(text = stringResource(R.string.get_started))
@@ -129,7 +129,7 @@ fun WelcomeScreen(navController: NavHostController) {
 
 @Composable
 fun PermissionsScreen(
-    navController: NavHostController,
+    navigator: Navigator,
     viewModel: PermissionsViewModel = viewModel(),
     permissions: Permissions,
 ) {
@@ -300,7 +300,7 @@ fun PermissionsScreen(
                         .wrapContentSize(),
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.primary),
                     onClick = {
-                        navController.popBackStackSafely()
+                        navigator.popBackStackSafely()
                     }
                 ) {
                     Text(text = stringResource(R.string.back))

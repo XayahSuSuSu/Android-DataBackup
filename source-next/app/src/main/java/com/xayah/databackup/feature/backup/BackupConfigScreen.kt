@@ -50,7 +50,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.R
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.BackupConfig
@@ -69,12 +69,11 @@ import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BackupConfigScreen(
-    navController: NavHostController,
-    viewModel: BackupConfigViewModel = koinViewModel(),
+    navigator: Navigator,
+    viewModel: BackupConfigViewModel,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val backupConfig by viewModel.backupConfig.collectAsStateWithLifecycle(null)
@@ -105,7 +104,7 @@ fun BackupConfigScreen(
                 viewModel.deleteConfig {
                     withContext(Dispatchers.Main) {
                         openDeleteDialog = false
-                        navController.popBackStackSafely()
+                        navigator.popBackStackSafely()
                     }
                 }
             }
@@ -127,7 +126,7 @@ fun BackupConfigScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStackSafely() }) {
+                    IconButton(onClick = { navigator.popBackStackSafely() }) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_left),
                             contentDescription = stringResource(R.string.back)

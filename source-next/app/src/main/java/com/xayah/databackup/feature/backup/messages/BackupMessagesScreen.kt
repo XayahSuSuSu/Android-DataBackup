@@ -55,7 +55,7 @@ import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.R
 import com.xayah.databackup.database.entity.MmsDeserialized
 import com.xayah.databackup.database.entity.SmsDeserialized
@@ -69,7 +69,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BackupMessagesScreen(
-    navController: NavHostController,
+    navigator: Navigator,
     viewModel: MessagesViewModel = koinViewModel(),
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -156,7 +156,7 @@ fun BackupMessagesScreen(
                                 }
                             },
                             navigationIcon = {
-                                IconButton(onClick = { navController.popBackStackSafely() }) {
+                                IconButton(onClick = { navigator.popBackStackSafely() }) {
                                     Icon(
                                         imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_left),
                                         contentDescription = stringResource(R.string.back)

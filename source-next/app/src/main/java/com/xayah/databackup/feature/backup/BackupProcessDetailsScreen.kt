@@ -52,7 +52,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
+import com.xayah.databackup.util.Navigator
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -70,7 +70,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun BackupProcessDetailsScreen(
-    navController: NavHostController,
+    navigator: Navigator,
     viewModel: BackupProcessViewModel = koinViewModel(),
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -102,7 +102,7 @@ fun BackupProcessDetailsScreen(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStackSafely() }) {
+                    IconButton(onClick = { navigator.popBackStackSafely() }) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_left),
                             contentDescription = stringResource(R.string.back),

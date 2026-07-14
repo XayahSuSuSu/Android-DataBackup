@@ -50,7 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.R
 import com.xayah.databackup.database.entity.ContactDeserialized
 import com.xayah.databackup.ui.component.SearchTextField
@@ -63,7 +63,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BackupContactsScreen(
-    navController: NavHostController,
+    navigator: Navigator,
     viewModel: ContactsViewModel = koinViewModel(),
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -144,7 +144,7 @@ fun BackupContactsScreen(
                             }
                         },
                         navigationIcon = {
-                            IconButton(onClick = { navController.popBackStackSafely() }) {
+                            IconButton(onClick = { navigator.popBackStackSafely() }) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_left),
                                     contentDescription = stringResource(R.string.back)

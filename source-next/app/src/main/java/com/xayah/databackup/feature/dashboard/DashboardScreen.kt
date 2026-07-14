@@ -32,10 +32,10 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
-import com.xayah.databackup.feature.BackupRoute
+import com.xayah.databackup.feature.BackupSetupRoute
 import com.xayah.databackup.feature.SettingsRoute
 import com.xayah.databackup.feature.UpdatesRoute
 import com.xayah.databackup.ui.component.ActionButton
@@ -48,7 +48,7 @@ import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun DashboardScreen(navController: NavHostController, viewModel: DashboardViewModel = koinViewModel()) {
+fun DashboardScreen(navigator: Navigator, viewModel: DashboardViewModel = koinViewModel()) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val storageUiState = viewModel.storageUiState.collectAsStateWithLifecycle()
 
@@ -79,7 +79,7 @@ fun DashboardScreen(navController: NavHostController, viewModel: DashboardViewMo
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigateSafely(UpdatesRoute) }) {
+                    IconButton(onClick = { navigator.navigateSafely(UpdatesRoute) }) {
                         BadgedBox(
                             badge = {
                                 Badge()
@@ -93,7 +93,7 @@ fun DashboardScreen(navController: NavHostController, viewModel: DashboardViewMo
                     }
                 },
                 actions = {
-                    IconButton(onClick = { navController.navigateSafely(SettingsRoute) }) {
+                    IconButton(onClick = { navigator.navigateSafely(SettingsRoute) }) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_settings),
                             contentDescription = "Localized description"
@@ -139,7 +139,7 @@ fun DashboardScreen(navController: NavHostController, viewModel: DashboardViewMo
                         title = stringResource(R.string.backup),
                         subtitle = stringResource(R.string.backup_your_data)
                     ) {
-                        navController.navigateSafely(BackupRoute)
+                        navigator.navigateSafely(BackupSetupRoute)
                     }
 
                     SmallActionButton(

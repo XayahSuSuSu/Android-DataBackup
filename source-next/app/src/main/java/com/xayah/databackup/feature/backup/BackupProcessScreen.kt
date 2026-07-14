@@ -51,7 +51,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
+import com.xayah.databackup.util.Navigator
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -79,7 +79,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BackupProcessScreen(
-    navController: NavHostController,
+    navigator: Navigator,
     viewModel: BackupProcessViewModel = koinViewModel(),
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
@@ -101,7 +101,7 @@ fun BackupProcessScreen(
             if (uiState.canBeCanceled) {
                 openConfirmExitDialog = true
             } else {
-                navController.popBackStackSafely()
+                navigator.popBackStackSafely()
             }
         }
     }
@@ -183,7 +183,7 @@ fun BackupProcessScreen(
                 Spacer(modifier = Modifier.height(0.dp))
 
                 ProcessAppsItem(
-                    navController = navController,
+                    navigator = navigator,
                     viewModel = viewModel,
                     showProgress = showItemProgress,
                     statusOverride = itemStatusOverride,
@@ -443,7 +443,7 @@ private fun AppItemDialogItem(
 
 @Composable
 private fun ProcessAppsItem(
-    navController: NavHostController,
+    navigator: Navigator,
     viewModel: BackupProcessViewModel,
     showProgress: Boolean,
     statusOverride: String?,
@@ -476,7 +476,7 @@ private fun ProcessAppsItem(
                 subtitleShimmer = appsItem.isLoading && statusOverride == null,
                 onIconBtnClick = {
                     if (openDetailsPage) {
-                        navController.navigateSafely(BackupProcessDetailsRoute)
+                        navigator.navigateSafely(BackupProcessDetailsRoute)
                     } else {
                         openAppItemDialog = true
                     }

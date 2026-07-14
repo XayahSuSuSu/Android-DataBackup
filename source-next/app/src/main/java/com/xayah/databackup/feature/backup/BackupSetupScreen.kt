@@ -39,7 +39,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.BackupConfigRepository
@@ -81,7 +81,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BackupSetupScreen(
-    navController: NavHostController,
+    navigator: Navigator,
     viewModel: BackupSetupViewModel = koinViewModel(),
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -117,7 +117,7 @@ fun BackupSetupScreen(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStackSafely() }) {
+                    IconButton(onClick = { navigator.popBackStackSafely() }) {
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_left),
                             contentDescription = stringResource(R.string.back)
@@ -139,11 +139,11 @@ fun BackupSetupScreen(
                     .verticalScroll(scrollState)
                     .verticalFadingEdges(scrollState),
             ) {
-                TargetRow(navController = navController, viewModel = viewModel)
+                TargetRow(navigator = navigator, viewModel = viewModel)
 
                 StorageRow(viewModel = viewModel)
 
-                BackupRow(navController = navController, uiState = uiState, viewModel = viewModel)
+                BackupRow(navigator = navigator, uiState = uiState, viewModel = viewModel)
 
                 Settings()
 
@@ -165,9 +165,9 @@ fun BackupSetupScreen(
                     onClick = {
                         viewModel.resetProcessRepo()
                         if (viewModel.isCurrentBackupRustic()) {
-                            navController.navigateSafely(RusticBackupProcessRoute)
+                            navigator.navigateSafely(RusticBackupProcessRoute)
                         } else {
-                            navController.navigateSafely(BackupProcessRoute)
+                            navigator.navigateSafely(BackupProcessRoute)
                         }
                     }
                 ) {
@@ -182,7 +182,7 @@ fun BackupSetupScreen(
 
 @Composable
 private fun TargetRow(
-    navController: NavHostController,
+    navigator: Navigator,
     viewModel: BackupSetupViewModel,
 ) {
     val appsItem by viewModel.appsItem.collectAsStateWithLifecycle(null)
@@ -226,7 +226,7 @@ private fun TargetRow(
                     }
                 }
             ) {
-                navController.navigateSafely(BackupAppsRoute)
+                navigator.navigateSafely(BackupAppsRoute)
             }
 
             SmallCheckActionButton(
@@ -263,7 +263,7 @@ private fun TargetRow(
                     }
                 }
             ) {
-                navController.navigateSafely(BackupNetworksRoute)
+                navigator.navigateSafely(BackupNetworksRoute)
             }
 
             val contactsPermissionState = rememberContactPermissionsState()
@@ -289,7 +289,7 @@ private fun TargetRow(
                 }
             ) {
                 if (contactsPermissionState.allPermissionsGranted) {
-                    navController.navigateSafely(BackupContactsRoute)
+                    navigator.navigateSafely(BackupContactsRoute)
                 } else {
                     contactsPermissionState.launchMultiplePermissionRequest()
                 }
@@ -323,7 +323,7 @@ private fun TargetRow(
                 }
             ) {
                 if (callLogsPermissionState.allPermissionsGranted) {
-                    navController.navigateSafely(BackupCallLogsRoute)
+                    navigator.navigateSafely(BackupCallLogsRoute)
                 } else {
                     callLogsPermissionState.launchMultiplePermissionRequest()
                 }
@@ -352,7 +352,7 @@ private fun TargetRow(
                 }
             ) {
                 if (messagesPermissionState.allPermissionsGranted) {
-                    navController.navigateSafely(BackupMessagesRoute)
+                    navigator.navigateSafely(BackupMessagesRoute)
                 } else {
                     messagesPermissionState.launchMultiplePermissionRequest()
                 }
@@ -419,7 +419,7 @@ private fun StorageRow(
 
 @Composable
 private fun BackupRow(
-    navController: NavHostController,
+    navigator: Navigator,
     uiState: BackupSetupUiState,
     viewModel: BackupSetupViewModel,
 ) {
@@ -467,7 +467,7 @@ private fun BackupRow(
                 iconShimmer = uiState.isLoadingConfigs,
                 iconButton = ImageVector.vectorResource(R.drawable.ic_settings),
                 onIconButtonClick = {
-                    navController.navigateSafely(BackupConfigRoute(index = BackupConfigRepository.NEW_CONFIG_INDEX))
+                    navigator.navigateSafely(BackupConfigRoute(index = BackupConfigRepository.NEW_CONFIG_INDEX))
                 },
             ) {
                 viewModel.selectBackup(BackupConfigRepository.NEW_CONFIG_INDEX)
@@ -492,7 +492,7 @@ private fun BackupRow(
                 icon = ImageVector.vectorResource(R.drawable.ic_archive),
                 iconButton = ImageVector.vectorResource(R.drawable.ic_settings),
                 onIconButtonClick = {
-                    navController.navigateSafely(BackupConfigRoute(index = index))
+                    navigator.navigateSafely(BackupConfigRoute(index = index))
                 },
             ) {
                 viewModel.selectBackup(index)
