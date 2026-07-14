@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -50,7 +51,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.R
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.BackupConfig
@@ -60,12 +60,14 @@ import com.xayah.databackup.ui.component.DialogDestructiveButton
 import com.xayah.databackup.ui.component.DialogDismissButton
 import com.xayah.databackup.ui.component.DialogIcon
 import com.xayah.databackup.ui.component.Preference
+import com.xayah.databackup.ui.component.PreferenceGroup
 import com.xayah.databackup.ui.component.SectionHeader
 import com.xayah.databackup.ui.component.SelectablePreferenceGroup
 import com.xayah.databackup.ui.component.SelectablePreferenceItemInfo
 import com.xayah.databackup.ui.component.SmallActionButton
 import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -241,11 +243,13 @@ private fun InfoRow(
     }
 
     val uuid = remember(backupConfig?.uuid) { backupConfig?.uuidString }
-    Preference(
-        icon = ImageVector.vectorResource(R.drawable.ic_id_card),
-        title = stringResource(R.string.id),
-        subtitle = uuid ?: stringResource(R.string.not_created_yet)
-    ) {
+    PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Preference(
+            icon = ImageVector.vectorResource(R.drawable.ic_id_card),
+            title = stringResource(R.string.id),
+            subtitle = uuid ?: stringResource(R.string.not_created_yet),
+        ) {
+        }
     }
 }
 
@@ -278,6 +282,7 @@ private fun BackendRow(
     }
 
     SelectablePreferenceGroup(
+        modifier = Modifier.padding(horizontal = 16.dp),
         enabled = enabled,
         items = items,
         selectedIndex = selectedIndex,

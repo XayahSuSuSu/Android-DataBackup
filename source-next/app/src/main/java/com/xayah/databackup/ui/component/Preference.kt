@@ -3,12 +3,14 @@ package com.xayah.databackup.ui.component
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -20,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
@@ -43,6 +46,7 @@ fun Preference(
     title: String,
     subtitle: String,
     subtitleShimmer: Boolean = false,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
     slot: @Composable (RowScope.() -> Unit)? = null,
     onClick: (() -> Unit)? = null,
 ) {
@@ -62,7 +66,12 @@ fun Preference(
         label = "animatedColor"
     )
 
-    Surface(modifier = modifier.fillMaxWidth(), enabled = enabled, onClick = { onClick?.invoke() }) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        enabled = enabled,
+        color = containerColor,
+        onClick = { onClick?.invoke() },
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -101,6 +110,20 @@ fun Preference(
 }
 
 @Composable
+fun PreferenceGroup(
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        shape = RoundedCornerShape(28.dp),
+    ) {
+        Column(content = content)
+    }
+}
+
+@Composable
 fun SwitchablePreference(
     modifier: Modifier = Modifier,
     enabled: Boolean,
@@ -108,6 +131,7 @@ fun SwitchablePreference(
     icon: ImageVector,
     title: String,
     subtitle: String,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
     onCheckedChange: ((Boolean) -> Unit)?,
 ) {
     Preference(
@@ -116,6 +140,7 @@ fun SwitchablePreference(
         icon = icon,
         title = title,
         subtitle = subtitle,
+        containerColor = containerColor,
         slot = {
             Switch(
                 enabled = enabled,
@@ -142,6 +167,7 @@ fun SwitchablePreference(
     icon: ImageVector,
     title: String,
     subtitle: String,
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
     dataStorePair: Pair<Preferences.Key<Boolean>, Boolean>,
 ) {
     val context = LocalContext.current
@@ -155,6 +181,7 @@ fun SwitchablePreference(
         icon = icon,
         title = title,
         subtitle = subtitle,
+        containerColor = containerColor,
     ) {
         scope.launch(Dispatchers.Default) {
             context.saveBoolean(dataStorePair.first, option.not())

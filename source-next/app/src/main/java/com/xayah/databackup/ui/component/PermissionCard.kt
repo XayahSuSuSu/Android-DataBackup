@@ -63,10 +63,26 @@ fun PermissionCard(
     val animatedColor by animateColorAsState(
         targetValue = when (state) {
             is CardState.Idle, CardState.Waiting -> MaterialTheme.colorScheme.surfaceContainer
-            is CardState.Success -> DataBackupTheme.greenColorScheme.surfaceContainer
+            is CardState.Success -> DataBackupTheme.greenColorScheme.primaryContainer
             is CardState.Error -> MaterialTheme.colorScheme.errorContainer
         },
         label = "animatedColor"
+    )
+    val animatedContentColor by animateColorAsState(
+        targetValue = when (state) {
+            is CardState.Success -> DataBackupTheme.greenColorScheme.onPrimaryContainer
+            is CardState.Error -> MaterialTheme.colorScheme.onErrorContainer
+            else -> MaterialTheme.colorScheme.onSurface
+        },
+        label = "animatedContentColor"
+    )
+    val animatedSupportingColor by animateColorAsState(
+        targetValue = when (state) {
+            is CardState.Success -> DataBackupTheme.greenColorScheme.onPrimaryContainer.copy(alpha = 0.75f)
+            is CardState.Error -> MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.75f)
+            else -> MaterialTheme.colorScheme.onSurfaceVariant
+        },
+        label = "animatedSupportingColor"
     )
 
     Card(
@@ -100,14 +116,15 @@ fun PermissionCard(
                     Icon(
                         modifier = Modifier.size(20.dp),
                         imageVector = icon,
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = animatedContentColor,
                     )
                     Text(
                         text = title,
                         style = MaterialTheme.typography.bodyLarge,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        color = MaterialTheme.colorScheme.onSurface
+                        color = animatedContentColor
                     )
                 }
 
@@ -119,7 +136,7 @@ fun PermissionCard(
                         modifier = Modifier.padding(top = 16.dp),
                         text = targetContent,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = animatedSupportingColor
                     )
                 }
             }
@@ -128,7 +145,8 @@ fun PermissionCard(
                 IconButton(modifier = Modifier.align(Alignment.TopEnd), onClick = { onActionButtonClick?.invoke() }) {
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_settings),
-                        contentDescription = actionIconDescription
+                        contentDescription = actionIconDescription,
+                        tint = animatedContentColor,
                     )
                 }
             }

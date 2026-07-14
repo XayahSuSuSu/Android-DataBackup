@@ -31,14 +31,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.CustomSUFileDialog
 import com.xayah.databackup.ui.component.Preference
+import com.xayah.databackup.ui.component.PreferenceGroup
 import com.xayah.databackup.ui.component.SectionHeader
 import com.xayah.databackup.ui.component.SmallActionButton
+import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
 import com.xayah.databackup.util.LaunchedEffect
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.ShellHelper
 import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.Dispatchers
@@ -74,6 +76,7 @@ fun SettingsScreen(navigator: Navigator) {
                         )
                     }
                 },
+                colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
                 scrollBehavior = scrollBehavior,
             )
         },
@@ -114,21 +117,23 @@ fun SettingsScreen(navigator: Navigator) {
                 rootSummary = ShellHelper.getSuVersion() ?: context.getString(R.string.unknown)
                 rootSummaryLoading = false
             }
-            Preference(
-                icon = ImageVector.vectorResource(R.drawable.ic_hash),
-                title = stringResource(R.string.root),
-                subtitle = rootSummary,
-                subtitleShimmer = rootSummaryLoading,
-                onClick = { openCustomSUFileDialog = true },
-                slot = {
-                    IconButton(onClick = { openCustomSUFileDialog = true }) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_settings),
-                            contentDescription = stringResource(R.string.custom_su_file)
-                        )
+            PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp)) {
+                Preference(
+                    icon = ImageVector.vectorResource(R.drawable.ic_hash),
+                    title = stringResource(R.string.root),
+                    subtitle = rootSummary,
+                    subtitleShimmer = rootSummaryLoading,
+                    onClick = { openCustomSUFileDialog = true },
+                    slot = {
+                        IconButton(onClick = { openCustomSUFileDialog = true }) {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_settings),
+                                contentDescription = stringResource(R.string.custom_su_file)
+                            )
+                        }
                     }
-                }
-            )
+                )
+            }
 
             SectionHeader(
                 modifier = Modifier
@@ -137,35 +142,37 @@ fun SettingsScreen(navigator: Navigator) {
                 title = stringResource(R.string.info),
             )
 
-            SettingsEntry(
-                icon = ImageVector.vectorResource(R.drawable.ic_palette),
-                title = stringResource(R.string.appearance),
-                subtitle = stringResource(R.string.app_theme_settings)
-            )
+            PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp)) {
+                SettingsEntry(
+                    icon = ImageVector.vectorResource(R.drawable.ic_palette),
+                    title = stringResource(R.string.appearance),
+                    subtitle = stringResource(R.string.app_theme_settings)
+                )
 
-            SettingsEntry(
-                icon = ImageVector.vectorResource(R.drawable.ic_archive),
-                title = stringResource(R.string.backup),
-                subtitle = stringResource(R.string.backup_settings)
-            )
+                SettingsEntry(
+                    icon = ImageVector.vectorResource(R.drawable.ic_archive),
+                    title = stringResource(R.string.backup),
+                    subtitle = stringResource(R.string.backup_settings)
+                )
 
-            SettingsEntry(
-                icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
-                title = stringResource(R.string.restore),
-                subtitle = stringResource(R.string.restore_settings)
-            )
+                SettingsEntry(
+                    icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
+                    title = stringResource(R.string.restore),
+                    subtitle = stringResource(R.string.restore_settings)
+                )
 
-            SettingsEntry(
-                icon = ImageVector.vectorResource(R.drawable.ic_wrench),
-                title = stringResource(R.string.advanced),
-                subtitle = stringResource(R.string.advanced_settings)
-            )
+                SettingsEntry(
+                    icon = ImageVector.vectorResource(R.drawable.ic_wrench),
+                    title = stringResource(R.string.advanced),
+                    subtitle = stringResource(R.string.advanced_settings)
+                )
 
-            SettingsEntry(
-                icon = ImageVector.vectorResource(R.drawable.ic_layout_grid),
-                title = stringResource(R.string.about),
-                subtitle = BuildConfig.VERSION_NAME
-            )
+                SettingsEntry(
+                    icon = ImageVector.vectorResource(R.drawable.ic_layout_grid),
+                    title = stringResource(R.string.about),
+                    subtitle = BuildConfig.VERSION_NAME
+                )
+            }
 
             Spacer(modifier = Modifier.size(innerPadding.calculateBottomPadding()))
         }

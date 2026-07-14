@@ -6,7 +6,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 
 @Composable
-fun TopAppBarDefaults.defaultLargeTopAppBarColors(): TopAppBarColors = largeTopAppBarColors(
+fun TopAppBarDefaults.defaultLargeTopAppBarColors(): TopAppBarColors = topAppBarColors(
     containerColor = MaterialTheme.colorScheme.surface,
     scrolledContainerColor = MaterialTheme.colorScheme.surface
 )

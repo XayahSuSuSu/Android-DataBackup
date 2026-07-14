@@ -45,7 +45,7 @@ fun DataBackupTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
+    val materialColorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -54,6 +54,12 @@ fun DataBackupTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+
+    val colorScheme = materialColorScheme.copy(
+        background = materialColorScheme.surfaceContainer,
+        surface = materialColorScheme.surfaceContainer,
+        surfaceContainer = materialColorScheme.surfaceBright,
+    )
 
     MaterialTheme(
         colorScheme = colorScheme,
@@ -67,6 +73,7 @@ class CustomColorScheme(
     val primary: Color,
     val onPrimary: Color,
     val primaryContainer: Color,
+    val onPrimaryContainer: Color,
     val surfaceContainer: Color,
 )
 
@@ -79,6 +86,7 @@ private val GreenDarkColorScheme = SchemeContent(
         primary = Color(scheme.primary),
         onPrimary = Color(scheme.onPrimary),
         primaryContainer = Color(scheme.primaryContainer),
+        onPrimaryContainer = Color(scheme.onPrimaryContainer),
         surfaceContainer = Color(scheme.surfaceContainer),
     )
 }
@@ -92,6 +100,7 @@ private val GreenLightColorScheme = SchemeContent(
         primary = Color(scheme.primary),
         onPrimary = Color(scheme.onPrimary),
         primaryContainer = Color(scheme.primaryContainer),
+        onPrimaryContainer = Color(scheme.onPrimaryContainer),
         surfaceContainer = Color(scheme.surfaceContainer),
     )
 }

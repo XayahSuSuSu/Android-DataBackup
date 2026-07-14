@@ -63,11 +63,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.FadeVisibility
 import com.xayah.databackup.ui.component.MarkdownContent
+import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
 import com.xayah.databackup.util.LaunchedEffect
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.compose.koinViewModel
@@ -106,6 +107,7 @@ fun UpdatesScreen(
                     }
                 },
                 scrollBehavior = scrollBehavior,
+                colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
             )
         },
     ) { innerPadding ->

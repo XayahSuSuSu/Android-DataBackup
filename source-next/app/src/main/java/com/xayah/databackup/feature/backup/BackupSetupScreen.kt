@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -39,7 +40,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.BackupConfigRepository
@@ -53,6 +53,7 @@ import com.xayah.databackup.feature.BackupProcessRoute
 import com.xayah.databackup.feature.RusticBackupProcessRoute
 import com.xayah.databackup.ui.component.ActionButtonState
 import com.xayah.databackup.ui.component.AutoScreenOffSwitch
+import com.xayah.databackup.ui.component.PreferenceGroup
 import com.xayah.databackup.ui.component.ResetBackupListSwitch
 import com.xayah.databackup.ui.component.SectionHeader
 import com.xayah.databackup.ui.component.SelectableCardButton
@@ -71,6 +72,7 @@ import com.xayah.databackup.util.CallLogsOptionSelectedBackup
 import com.xayah.databackup.util.ContactsOptionSelectedBackup
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.MessagesOptionSelectedBackup
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.NetworksOptionSelectedBackup
 import com.xayah.databackup.util.items
 import com.xayah.databackup.util.navigateSafely
@@ -508,14 +510,13 @@ private fun BackupRow(
 @Composable
 private fun Settings() {
     SectionHeader(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(top = 16.dp),
+        modifier = Modifier.padding(16.dp),
         title = stringResource(R.string.settings),
         color = MaterialTheme.colorScheme.primary,
     )
 
-    AutoScreenOffSwitch()
-
-    ResetBackupListSwitch()
+    PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp)) {
+        AutoScreenOffSwitch()
+        ResetBackupListSwitch()
+    }
 }
