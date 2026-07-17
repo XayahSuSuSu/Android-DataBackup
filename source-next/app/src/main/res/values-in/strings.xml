@@ -506,4 +506,27 @@
     <string name="archive">Arsip</string>
     <string name="archive_backup_backend_desc">Gunakan berkas arsip tersendiri untuk pencadangan ini</string>
     <string name="backup_backend">Backend cadangan</string>
+    <string name="rustic_backup">Pencadangan Rustic</string>
+    <string name="repository">Repositori</string>
+    <string name="repository_path">Jalur repositori</string>
+    <string name="snapshot">Snapshot</string>
+    <string name="snapshot_id">ID snapshot</string>
+    <string name="bytes_written">Byte yang ditulis</string>
+    <string name="transfer_speed">Kecepatan transfer</string>
+    <string name="source_queue">Antrean sumber</string>
+    <string name="current_stage">Tahap saat ini</string>
+    <string name="step_count">Langkah %1$d dari %2$d</string>
+    <string name="snapshot_steps">Langkah snapshot</string>
+    <string name="prepare_repository">Menyiapkan repositori</string>
+    <string name="collect_sources">Mengumpulkan sumber</string>
+    <string name="create_snapshot">Membuat snapshot</string>
+    <string name="finalize_snapshot">Menyelesaikan snapshot</string>
+    <string name="backup_in_progress">Pencadangan sedang berlangsung</string>
+    <string name="rustic_backup_leave_blocked">Tunggu hingga snapshot Rustic selesai sebelum meninggalkan layar ini</string>
+    <string name="rustic_backup_failed">Pencadangan Rustic gagal. Periksa log untuk detail</string>
+    <string name="pending">Menunggu</string>
+    <string name="password_protected">Dilindungi kata sandi</string>
+    <string name="anonymous_repository">Repositori anonim</string>
+    <string name="waiting_to_start">Menunggu untuk dimulai</string>
+    <string name="no_snapshot_yet">Belum ada snapshot</string>
 </resources>
