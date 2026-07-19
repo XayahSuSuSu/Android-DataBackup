@@ -49,6 +49,12 @@ sealed class IndexUiIntent : UiIntent {
     data class ToAppList(val navController: NavHostController) : IndexUiIntent()
     data class ToFileList(val navController: NavHostController) : IndexUiIntent()
     data class ToReload(val navController: NavHostController) : IndexUiIntent()
+    data class ToVerifyBackup(
+        val navController: NavHostController,
+        val storageMode: StorageMode,
+        val cloudName: String?,
+        val backupDir: String?
+    ) : IndexUiIntent()
 }
 
 @ExperimentalMaterial3Api
@@ -192,6 +198,25 @@ class IndexViewModel @Inject constructor(
                             }
                         }
                     }
+                }
+            }
+
+            is IndexUiIntent.ToVerifyBackup -> {
+                // Navigate to a new screen/dialog for backup verification
+                // This will require a new route and potentially a new ViewModel/Page
+                // For now, let's assume a route like MainRoutes.VerifyBackup.getRoute(...)
+                // The actual implementation of VerifyBackup screen is out of scope for this change
+                // but this sets up the navigation.
+                if (intent.backupDir != null) {
+                    val route = MainRoutes.VerifyBackup.getRoute( // Assuming VerifyBackup route exists
+                        storageMode = intent.storageMode.name.encodeURL(),
+                        cloudName = intent.cloudName?.encodeURL() ?: encodedURLWithSpace,
+                        backupDir = intent.backupDir.encodeURL()
+                    )
+                    intent.navController.navigateSingle(route)
+                } else {
+                    // Handle error: backupDir is null
+                    emitEffect(IndexUiEffect.ShowToast("Backup directory not available for verification.")) // Example effect
                 }
             }
         }
