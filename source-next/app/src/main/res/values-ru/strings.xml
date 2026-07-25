@@ -506,4 +506,27 @@
     <string name="archive">Архив</string>
     <string name="archive_backup_backend_desc">Использовать отдельные архивные файлы для этой резервной копии</string>
     <string name="backup_backend">Резервное копирование бэкенда</string>
+    <string name="rustic_backup">Бэкап Rustic</string>
+    <string name="repository">Репозиторий</string>
+    <string name="repository_path">Путь репозитория</string>
+    <string name="snapshot">Снимок</string>
+    <string name="snapshot_id">ID снимка</string>
+    <string name="bytes_written">Записано байт</string>
+    <string name="transfer_speed">Скорость передачи</string>
+    <string name="source_queue">Очередь источника</string>
+    <string name="current_stage">Текущий этап</string>
+    <string name="step_count">Этап %1$d из %2$d</string>
+    <string name="snapshot_steps">Этапы создания снимка</string>
+    <string name="prepare_repository">Подготовить репозиторий</string>
+    <string name="collect_sources">Собрать источники</string>
+    <string name="create_snapshot">Создать снимок</string>
+    <string name="finalize_snapshot">Завершить снимок</string>
+    <string name="backup_in_progress">Бэкап выполняется</string>
+    <string name="rustic_backup_leave_blocked">Дождитесь завершения снимка Rustic перед выходом с экрана</string>
+    <string name="rustic_backup_failed">Сбой бэкапа Rustic. Проверьте логи для деталей</string>
+    <string name="pending">В ожидании</string>
+    <string name="password_protected">Защищено паролем</string>
+    <string name="anonymous_repository">Анонимный репозиторий</string>
+    <string name="waiting_to_start">Ожидание запуска</string>
+    <string name="no_snapshot_yet">Снимок ещё не создан</string>
 </resources>
