@@ -529,4 +529,13 @@
     <string name="anonymous_repository">Anonimowe repozytorium</string>
     <string name="waiting_to_start">Oczekiwanie na rozpoczęcie</string>
     <string name="no_snapshot_yet">Brak jeszcze migawki</string>
+    <string name="save_backup_failed">Nie udało się zapisać kopii zapasowej.</string>
+    <string name="no_backups">Brak kopii zapasowych</string>
+    <string name="no_backups_desc">Na początek utwórz swoją pierwszą kopię zapasową.</string>
+    <string name="last_backup_value">Ostatnia kopia zapasowa: %1$s</string>
+    <string name="back_up_now">Utwórz kopię zapasową teraz</string>
+    <string name="no_matching_backups">Brak pasujących kopii zapasowych</string>
+    <string name="no_matching_backups_desc">Spróbuj zmienić kryteria wyszukiwania lub filtry.</string>
+    <string name="clear_filters">Wyczyść filtry</string>
+    <string name="all">Wszystkie</string>
 </resources>
