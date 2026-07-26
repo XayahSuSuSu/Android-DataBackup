@@ -31,6 +31,7 @@ Use the Gradle wrapper from repository root:
 ## Coding Style & Naming Conventions
 - Language stack: Kotlin + Android (plus C/C++ in `native/src/main/jni`).
 - Follow Kotlin conventions: 4-space indentation, `PascalCase` for types, `camelCase` for functions/properties, package names lowercase.
+- Use a maximum line width of 150 characters.
 - Keep feature classes descriptive and domain-oriented (examples: `BackupService`, `BackupConfig`, `TarWrapper`).
 - Resource naming should stay Android-standard snake_case (examples: `ic_archive_restore.xml`, `values-zh-rCN/strings.xml`).
 
