@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -33,7 +34,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.dropShadow
@@ -41,16 +45,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.xayah.databackup.R
+import kotlin.math.hypot
 
-private val FloatingNavigationItemMaxWidth = 76.dp
+private val FloatingNavigationItemMaxWidth = 96.dp
 private val FloatingNavigationItemMinHeight = 56.dp
 private val FloatingNavigationBarPadding = 4.dp
 private val FloatingNavigationBarHorizontalInsets = FloatingNavigationBarPadding * 2
@@ -59,6 +67,8 @@ private val FloatingNavigationShadowRadius = 16.dp
 private val FloatingNavigationFocusBorderWidth = 2.dp
 private val FloatingNavigationItemSpacing = 1.dp
 
+val LocalFloatingNavigationBarBottomPadding = staticCompositionLocalOf { 0.dp }
+
 private const val DARK_BACKGROUND_LUMINANCE_THRESHOLD = 0.5f
 private const val DARK_SHADOW_ALPHA = 0.14f
 private const val LIGHT_SHADOW_ALPHA = 0.07f
@@ -66,41 +76,50 @@ private const val SELECTED_INDICATOR_ALPHA = 0.15f
 private const val HOVER_INDICATOR_ALPHA = 0.08f
 private const val INDICATOR_SPRING_STIFFNESS = 1_000f
 
-private data class FloatingNavigationItem(
-    @StringRes val labelRes: Int,
-    @DrawableRes val iconRes: Int,
-)
+enum class FloatingNavigationItem(@StringRes val labelRes: Int, @DrawableRes val iconRes: Int) {
+    HOME(R.string.home, R.drawable.ic_layout_grid),
+    BACKUP(R.string.backup, R.drawable.ic_archive),
+    SCHEDULE(R.string.schedule, R.drawable.ic_calendar_check),
+    SETTINGS(R.string.settings, R.drawable.ic_settings),
+}
 
-private val FloatingNavigationItems = listOf(
-    FloatingNavigationItem(R.string.home, R.drawable.ic_layout_grid),
-    FloatingNavigationItem(R.string.backup, R.drawable.ic_archive),
-    FloatingNavigationItem(R.string.schedule, R.drawable.ic_calendar_check),
-    FloatingNavigationItem(R.string.settings, R.drawable.ic_settings),
-)
+val FloatingNavigationItems = FloatingNavigationItem.entries
 private val FloatingNavigationBarMaxWidth = FloatingNavigationItemMaxWidth * FloatingNavigationItems.size + FloatingNavigationBarHorizontalInsets
-private val FloatingNavigationPressIndication = ripple(
-    bounded = false,
-    radius = FloatingNavigationBarMaxWidth,
-    enableFocusIndication = false,
-    enableHoverIndication = false,
-    enableDragIndication = false,
-)
 
 @Composable
 fun FloatingNavigationBar(
-    selectedIndex: Int,
-    onSelected: (Int) -> Unit,
+    selectedItem: FloatingNavigationItem,
+    onSelected: (FloatingNavigationItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    require(selectedIndex in FloatingNavigationItems.indices) {
-        "selectedIndex must be in ${FloatingNavigationItems.indices}, but was $selectedIndex"
-    }
+    val selectedIndex = FloatingNavigationItems.indexOf(selectedItem)
     val isDark = MaterialTheme.colorScheme.background.luminance() < DARK_BACKGROUND_LUMINANCE_THRESHOLD
+    val density = LocalDensity.current
+    var navigationBarSize by remember { mutableStateOf(IntSize.Zero) }
+    val rippleRadius = remember(navigationBarSize, density) {
+        if (navigationBarSize == IntSize.Zero) {
+            FloatingNavigationBarMaxWidth
+        } else {
+            with(density) {
+                hypot(navigationBarSize.width.toDouble(), navigationBarSize.height.toDouble()).toFloat().toDp()
+            }
+        }
+    }
+    val indication = remember(rippleRadius) {
+        ripple(
+            bounded = false,
+            radius = rippleRadius,
+            enableFocusIndication = false,
+            enableHoverIndication = false,
+            enableDragIndication = false,
+        )
+    }
 
     Surface(
         modifier = modifier
             .widthIn(max = FloatingNavigationBarMaxWidth)
             .fillMaxWidth()
+            .onSizeChanged { navigationBarSize = it }
             .dropShadow(
                 shape = CircleShape,
                 shadow = Shadow(
@@ -147,7 +166,8 @@ fun FloatingNavigationBar(
                     FloatingNavigationBarItem(
                         item = item,
                         selected = selectedIndex == index,
-                        onClick = { onSelected(index) },
+                        indication = indication,
+                        onClick = { onSelected(item) },
                     )
                 }
             }
@@ -159,6 +179,7 @@ fun FloatingNavigationBar(
 private fun RowScope.FloatingNavigationBarItem(
     item: FloatingNavigationItem,
     selected: Boolean,
+    indication: Indication,
     onClick: () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -190,7 +211,7 @@ private fun RowScope.FloatingNavigationBarItem(
             .selectable(
                 selected = selected,
                 interactionSource = interactionSource,
-                indication = FloatingNavigationPressIndication,
+                indication = indication,
                 role = Role.Tab,
                 onClick = { if (!selected) onClick() },
             ),

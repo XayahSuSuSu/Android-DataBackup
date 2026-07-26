@@ -1,9 +1,7 @@
 package com.xayah.databackup.feature.settings
 
 import android.os.Build
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,21 +31,30 @@ import androidx.compose.ui.unit.dp
 import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.CustomSUFileDialog
+import com.xayah.databackup.ui.component.LocalFloatingNavigationBarBottomPadding
 import com.xayah.databackup.ui.component.Preference
 import com.xayah.databackup.ui.component.PreferenceGroup
 import com.xayah.databackup.ui.component.SectionHeader
-import com.xayah.databackup.ui.component.SmallActionButton
 import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
 import com.xayah.databackup.util.LaunchedEffect
-import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.ShellHelper
-import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.Dispatchers
 
 @Composable
-fun SettingsScreen(navigator: Navigator) {
+fun SettingsScreen() {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    val floatingNavigationBarBottomPadding = LocalFloatingNavigationBarBottomPadding.current
     var openCustomSUFileDialog by remember { mutableStateOf(false) }
+    val unknown = stringResource(R.string.unknown)
+    var rootSummary by remember(unknown) { mutableStateOf(unknown) }
+    var rootSummaryLoading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(context = Dispatchers.IO, unknown) {
+        rootSummaryLoading = true
+        rootSummary = ShellHelper.getSuVersion() ?: unknown
+        rootSummaryLoading = false
+    }
+
     if (openCustomSUFileDialog) {
         CustomSUFileDialog {
             openCustomSUFileDialog = false
@@ -68,14 +74,6 @@ fun SettingsScreen(navigator: Navigator) {
                         overflow = TextOverflow.Ellipsis
                     )
                 },
-                navigationIcon = {
-                    IconButton(onClick = { navigator.popBackStackSafely() }) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_left),
-                            contentDescription = stringResource(R.string.back)
-                        )
-                    }
-                },
                 colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
                 scrollBehavior = scrollBehavior,
             )
@@ -87,112 +85,94 @@ fun SettingsScreen(navigator: Navigator) {
         ) {
             Spacer(modifier = Modifier.size(innerPadding.calculateTopPadding()))
 
-            Row(
+            SettingsOverviewCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                SettingsInfoCard(
-                    modifier = Modifier.weight(1f),
-                    icon = ImageVector.vectorResource(R.drawable.ic_archive),
-                    title = stringResource(R.string.model),
-                    subtitle = Build.MODEL
-                )
-
-                SettingsInfoCard(
-                    modifier = Modifier.weight(1f),
-                    icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
-                    title = stringResource(R.string.abi),
-                    subtitle = Build.SUPPORTED_ABIS.firstOrNull() ?: stringResource(R.string.unknown)
-                )
-            }
-
-            val context = LocalContext.current
-            var rootSummary by remember { mutableStateOf(context.getString(R.string.unknown)) }
-            var rootSummaryLoading by remember { mutableStateOf(true) }
-
-            LaunchedEffect(context = Dispatchers.IO, context) {
-                rootSummaryLoading = true
-                rootSummary = ShellHelper.getSuVersion() ?: context.getString(R.string.unknown)
-                rootSummaryLoading = false
-            }
-            PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp)) {
-                Preference(
-                    icon = ImageVector.vectorResource(R.drawable.ic_hash),
-                    title = stringResource(R.string.root),
-                    subtitle = rootSummary,
-                    subtitleShimmer = rootSummaryLoading,
-                    onClick = { openCustomSUFileDialog = true },
-                    slot = {
-                        IconButton(onClick = { openCustomSUFileDialog = true }) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(R.drawable.ic_settings),
-                                contentDescription = stringResource(R.string.custom_su_file)
-                            )
-                        }
-                    }
-                )
-            }
+                    .padding(horizontal = 16.dp),
+                rootSummary = rootSummary,
+                rootSummaryLoading = rootSummaryLoading,
+                onRootClick = { openCustomSUFileDialog = true },
+            )
 
             SectionHeader(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                title = stringResource(R.string.info),
+                title = stringResource(R.string.application),
             )
 
-            PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp)) {
-                SettingsEntry(
-                    icon = ImageVector.vectorResource(R.drawable.ic_palette),
-                    title = stringResource(R.string.appearance),
-                    subtitle = stringResource(R.string.app_theme_settings)
-                )
+            SettingsApplicationCard(modifier = Modifier.padding(horizontal = 16.dp))
 
-                SettingsEntry(
-                    icon = ImageVector.vectorResource(R.drawable.ic_archive),
-                    title = stringResource(R.string.backup),
-                    subtitle = stringResource(R.string.backup_settings)
-                )
-
-                SettingsEntry(
-                    icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
-                    title = stringResource(R.string.restore),
-                    subtitle = stringResource(R.string.restore_settings)
-                )
-
-                SettingsEntry(
-                    icon = ImageVector.vectorResource(R.drawable.ic_wrench),
-                    title = stringResource(R.string.advanced),
-                    subtitle = stringResource(R.string.advanced_settings)
-                )
-
-                SettingsEntry(
-                    icon = ImageVector.vectorResource(R.drawable.ic_layout_grid),
-                    title = stringResource(R.string.about),
-                    subtitle = BuildConfig.VERSION_NAME
-                )
-            }
-
-            Spacer(modifier = Modifier.size(innerPadding.calculateBottomPadding()))
+            Spacer(modifier = Modifier.size(innerPadding.calculateBottomPadding() + floatingNavigationBarBottomPadding))
         }
     }
 }
 
 @Composable
-private fun SettingsInfoCard(
+private fun SettingsOverviewCard(
     modifier: Modifier = Modifier,
-    icon: ImageVector,
-    title: String,
-    subtitle: String,
+    rootSummary: String,
+    rootSummaryLoading: Boolean,
+    onRootClick: () -> Unit,
 ) {
-    SmallActionButton(
-        modifier = modifier,
-        icon = icon,
-        title = title,
-        subtitle = subtitle,
-        onClick = {}
-    )
+    PreferenceGroup(modifier = modifier) {
+        Preference(
+            icon = ImageVector.vectorResource(R.drawable.ic_smartphone),
+            title = stringResource(R.string.model),
+            subtitle = Build.MODEL,
+        )
+        Preference(
+            icon = ImageVector.vectorResource(R.drawable.ic_cpu),
+            title = stringResource(R.string.abi),
+            subtitle = Build.SUPPORTED_ABIS.firstOrNull() ?: stringResource(R.string.unknown),
+        )
+        Preference(
+            icon = ImageVector.vectorResource(R.drawable.ic_hash),
+            title = stringResource(R.string.root),
+            subtitle = rootSummary,
+            subtitleShimmer = rootSummaryLoading,
+            onClick = onRootClick,
+            slot = {
+                IconButton(onClick = onRootClick) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_settings),
+                        contentDescription = stringResource(R.string.custom_su_file),
+                    )
+                }
+            },
+        )
+    }
+}
+
+@Composable
+private fun SettingsApplicationCard(modifier: Modifier = Modifier) {
+    PreferenceGroup(modifier = modifier) {
+        SettingsEntry(
+            icon = ImageVector.vectorResource(R.drawable.ic_palette),
+            title = stringResource(R.string.appearance),
+            subtitle = stringResource(R.string.app_theme_settings),
+        )
+        SettingsEntry(
+            icon = ImageVector.vectorResource(R.drawable.ic_archive),
+            title = stringResource(R.string.backup),
+            subtitle = stringResource(R.string.backup_settings),
+        )
+        SettingsEntry(
+            icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
+            title = stringResource(R.string.restore),
+            subtitle = stringResource(R.string.restore_settings),
+        )
+        SettingsEntry(
+            icon = ImageVector.vectorResource(R.drawable.ic_wrench),
+            title = stringResource(R.string.advanced),
+            subtitle = stringResource(R.string.advanced_settings),
+        )
+        SettingsEntry(
+            icon = ImageVector.vectorResource(R.drawable.ic_layout_grid),
+            title = stringResource(R.string.about),
+            subtitle = BuildConfig.VERSION_NAME,
+        )
+    }
 }
 
 @Composable

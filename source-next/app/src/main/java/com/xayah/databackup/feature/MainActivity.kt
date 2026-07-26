@@ -42,8 +42,6 @@ import com.xayah.databackup.feature.backup.contacts.BackupContactsScreen
 import com.xayah.databackup.feature.backup.messages.BackupMessagesScreen
 import com.xayah.databackup.feature.backup.networks.BackupNetworksScreen
 import com.xayah.databackup.feature.backup.rustic.RusticBackupProcessScreen
-import com.xayah.databackup.feature.dashboard.DashboardScreen
-import com.xayah.databackup.feature.settings.SettingsScreen
 import com.xayah.databackup.feature.setup.NoPermKey
 import com.xayah.databackup.feature.setup.SetupActivity
 import com.xayah.databackup.feature.update.UpdatesScreen
@@ -54,8 +52,8 @@ import com.xayah.databackup.ui.component.DialogIcon
 import com.xayah.databackup.ui.theme.DataBackupTheme
 import com.xayah.databackup.util.FirstLaunch
 import com.xayah.databackup.util.LogHelper
-import com.xayah.databackup.util.NotificationHelper
 import com.xayah.databackup.util.Navigator
+import com.xayah.databackup.util.NotificationHelper
 import com.xayah.databackup.util.ProcessHelper
 import com.xayah.databackup.util.ShellHelper
 import com.xayah.databackup.util.preloadingDataStore
@@ -143,7 +141,7 @@ class MainActivity : ComponentActivity() {
 
             DataBackupTheme {
                 val uiState by mMainViewModel.uiState.collectAsStateWithLifecycle()
-                val backStack = rememberNavBackStack(DashboardRoute)
+                val backStack = rememberNavBackStack(MainNavigationRoute)
                 val navigator = remember(backStack) { Navigator(backStack) }
 
                 if (uiState.showErrorServiceDialog) {
@@ -192,12 +190,8 @@ class MainActivity : ComponentActivity() {
                             )
                         },
                         entryProvider = entryProvider {
-                            entry<DashboardRoute> {
-                                DashboardScreen(navigator)
-                            }
-
-                            entry<SettingsRoute> {
-                                SettingsScreen(navigator)
+                            entry<MainNavigationRoute> {
+                                MainNavigationHost(navigator)
                             }
 
                             entry<UpdatesRoute> {

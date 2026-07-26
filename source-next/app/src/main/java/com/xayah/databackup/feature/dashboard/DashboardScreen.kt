@@ -32,17 +32,17 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
 import com.xayah.databackup.feature.BackupSetupRoute
-import com.xayah.databackup.feature.SettingsRoute
 import com.xayah.databackup.feature.UpdatesRoute
 import com.xayah.databackup.ui.component.ActionButton
+import com.xayah.databackup.ui.component.LocalFloatingNavigationBarBottomPadding
 import com.xayah.databackup.ui.component.SectionHeader
 import com.xayah.databackup.ui.component.SmallActionButton
 import com.xayah.databackup.ui.component.StorageCard
 import com.xayah.databackup.util.LaunchedEffect
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.navigateSafely
 import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.compose.koinViewModel
@@ -51,6 +51,7 @@ import org.koin.androidx.compose.koinViewModel
 fun DashboardScreen(navigator: Navigator, viewModel: DashboardViewModel = koinViewModel()) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val storageUiState = viewModel.storageUiState.collectAsStateWithLifecycle()
+    val floatingNavigationBarBottomPadding = LocalFloatingNavigationBarBottomPadding.current
 
     LaunchedEffect(context = Dispatchers.IO, null) {
         viewModel.initialize()
@@ -90,14 +91,6 @@ fun DashboardScreen(navigator: Navigator, viewModel: DashboardViewModel = koinVi
                                 contentDescription = stringResource(R.string.update)
                             )
                         }
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { navigator.navigateSafely(SettingsRoute) }) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_settings),
-                            contentDescription = "Localized description"
-                        )
                     }
                 },
                 scrollBehavior = scrollBehavior,
@@ -180,7 +173,7 @@ fun DashboardScreen(navigator: Navigator, viewModel: DashboardViewModel = koinVi
                 ) {}
             }
 
-            Spacer(modifier = Modifier.size(innerPadding.calculateBottomPadding()))
+            Spacer(modifier = Modifier.size(innerPadding.calculateBottomPadding() + floatingNavigationBarBottomPadding))
         }
     }
 }
