@@ -41,6 +41,9 @@ import com.xayah.databackup.ui.component.LocalFloatingNavigationBarBottomPadding
 import com.xayah.databackup.ui.component.SectionHeader
 import com.xayah.databackup.ui.component.SmallActionButton
 import com.xayah.databackup.ui.component.StorageCard
+import com.xayah.databackup.ui.component.rememberFadingEdgeState
+import com.xayah.databackup.ui.component.surfaceTopAppBarColors
+import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.navigateSafely
@@ -52,6 +55,8 @@ fun DashboardScreen(navigator: Navigator, viewModel: DashboardViewModel = koinVi
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val storageUiState = viewModel.storageUiState.collectAsStateWithLifecycle()
     val floatingNavigationBarBottomPadding = LocalFloatingNavigationBarBottomPadding.current
+    val scrollState = rememberScrollState()
+    val fadingEdgeState = rememberFadingEdgeState(scrollState, label = "dashboard")
 
     LaunchedEffect(context = Dispatchers.IO, null) {
         viewModel.initialize()
@@ -93,85 +98,87 @@ fun DashboardScreen(navigator: Navigator, viewModel: DashboardViewModel = koinVi
                         }
                     }
                 },
+                colors = TopAppBarDefaults.surfaceTopAppBarColors(),
                 scrollBehavior = scrollBehavior,
             )
         },
     ) { innerPadding ->
-        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            Spacer(modifier = Modifier.size(innerPadding.calculateTopPadding()))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = innerPadding.calculateTopPadding())
+                .verticalFadingEdges(fadingEdgeState)
+                .verticalScroll(scrollState)
+                .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            StorageCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                free = storageUiState.value.free,
+                other = storageUiState.value.other,
+                backups = storageUiState.value.backups,
+                freeBytes = storageUiState.value.freeBytes,
+                otherBytes = storageUiState.value.otherBytes,
+                backupsBytes = storageUiState.value.backupsBytes,
+                totalBytes = storageUiState.value.totalBytes,
+                isLoading = storageUiState.value.isLoading,
+                title = stringResource(R.string.internal_storage),
+                subtitle = storageUiState.value.subtitle,
+                storage = storageUiState.value.storage,
+            ) {}
 
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                StorageCard(
+            SectionHeader(title = stringResource(R.string.actions))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                SmallActionButton(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                    free = storageUiState.value.free,
-                    other = storageUiState.value.other,
-                    backups = storageUiState.value.backups,
-                    freeBytes = storageUiState.value.freeBytes,
-                    otherBytes = storageUiState.value.otherBytes,
-                    backupsBytes = storageUiState.value.backupsBytes,
-                    totalBytes = storageUiState.value.totalBytes,
-                    isLoading = storageUiState.value.isLoading,
-                    title = stringResource(R.string.internal_storage),
-                    subtitle = storageUiState.value.subtitle,
-                    storage = storageUiState.value.storage,
-                ) {}
-
-                SectionHeader(title = stringResource(R.string.actions))
-
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    SmallActionButton(
-                        modifier = Modifier
-                            .weight(1f)
-                            .wrapContentSize(),
-                        icon = ImageVector.vectorResource(R.drawable.ic_archive),
-                        title = stringResource(R.string.backup),
-                        subtitle = stringResource(R.string.backup_your_data)
-                    ) {
-                        navigator.navigateSafely(BackupSetupRoute)
-                    }
-
-                    SmallActionButton(
-                        modifier = Modifier
-                            .weight(1f)
-                            .wrapContentSize(),
-                        icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
-                        title = stringResource(R.string.restore),
-                        subtitle = stringResource(R.string.restore_your_data)
-                    ) {}
+                        .weight(1f)
+                        .wrapContentSize(),
+                    icon = ImageVector.vectorResource(R.drawable.ic_archive),
+                    title = stringResource(R.string.backup),
+                    subtitle = stringResource(R.string.backup_your_data)
+                ) {
+                    navigator.navigateSafely(BackupSetupRoute)
                 }
 
-                ActionButton(
+                SmallActionButton(
                     modifier = Modifier
-                        .fillMaxWidth(1f)
+                        .weight(1f)
                         .wrapContentSize(),
-                    icon = ImageVector.vectorResource(R.drawable.ic_clock),
-                    title = stringResource(R.string.history),
-                    subtitle = stringResource(R.string.see_your_previous_backups)
-                ) {}
-
-                ActionButton(
-                    modifier = Modifier
-                        .fillMaxWidth(1f)
-                        .wrapContentSize(),
-                    icon = ImageVector.vectorResource(R.drawable.ic_cloud_upload),
-                    title = stringResource(R.string.cloud),
-                    subtitle = stringResource(R.string.set_up_cloud_storage)
-                ) {}
-
-                ActionButton(
-                    modifier = Modifier
-                        .fillMaxWidth(1f)
-                        .wrapContentSize(),
-                    icon = ImageVector.vectorResource(R.drawable.ic_calendar_check),
-                    title = stringResource(R.string.schedule),
-                    subtitle = stringResource(R.string.configure_automatic_backups)
+                    icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
+                    title = stringResource(R.string.restore),
+                    subtitle = stringResource(R.string.restore_your_data)
                 ) {}
             }
+
+            ActionButton(
+                modifier = Modifier
+                    .fillMaxWidth(1f)
+                    .wrapContentSize(),
+                icon = ImageVector.vectorResource(R.drawable.ic_clock),
+                title = stringResource(R.string.history),
+                subtitle = stringResource(R.string.see_your_previous_backups)
+            ) {}
+
+            ActionButton(
+                modifier = Modifier
+                    .fillMaxWidth(1f)
+                    .wrapContentSize(),
+                icon = ImageVector.vectorResource(R.drawable.ic_cloud_upload),
+                title = stringResource(R.string.cloud),
+                subtitle = stringResource(R.string.set_up_cloud_storage)
+            ) {}
+
+            ActionButton(
+                modifier = Modifier
+                    .fillMaxWidth(1f)
+                    .wrapContentSize(),
+                icon = ImageVector.vectorResource(R.drawable.ic_calendar_check),
+                title = stringResource(R.string.schedule),
+                subtitle = stringResource(R.string.configure_automatic_backups)
+            ) {}
 
             Spacer(modifier = Modifier.size(innerPadding.calculateBottomPadding() + floatingNavigationBarBottomPadding))
         }

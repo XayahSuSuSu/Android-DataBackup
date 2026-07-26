@@ -4,7 +4,6 @@ import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
-import com.xayah.databackup.R
 import com.xayah.databackup.data.AppRepository
 import com.xayah.databackup.data.BackupConfigRepository
 import com.xayah.databackup.data.BackupProcessRepository
@@ -22,11 +21,8 @@ import com.xayah.databackup.ui.component.MessagePermissions
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.CallLogsOptionSelectedBackup
 import com.xayah.databackup.util.ContactsOptionSelectedBackup
-import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.MessagesOptionSelectedBackup
-import com.xayah.databackup.util.PathHelper
 import com.xayah.databackup.util.combine
-import com.xayah.databackup.util.formatToStorageSize
 import com.xayah.databackup.util.saveBoolean
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,13 +30,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
-
-data class BackupSetupUiState(
-    val isLoadingConfigs: Boolean = true,
-)
 
 data class TargetItem(
     val selected: Boolean,
@@ -59,15 +51,33 @@ open class BackupSetupViewModel(
     callLogRepo: CallLogRepository,
     messageRepo: MessageRepository,
 ) : BaseViewModel() {
-    companion object {
-        private const val TAG = "BackupSetupViewModel"
-    }
+    private val _isLoadingConfigs = MutableStateFlow(true)
+    val isLoadingConfigs: StateFlow<Boolean> = _isLoadingConfigs.asStateFlow()
 
-    private val _uiState: MutableStateFlow<BackupSetupUiState> = MutableStateFlow(BackupSetupUiState())
-    val uiState: StateFlow<BackupSetupUiState> = _uiState.asStateFlow()
+    val selectedBackup: StateFlow<BackupConfig?> = combine(
+        backupConfigRepo.configs,
+        backupConfigRepo.selectedIndex,
+    ) { configs, selectedIndex ->
+        configs.getOrNull(selectedIndex)
+    }.stateIn(
+        scope = viewModelScope,
+        initialValue = backupConfigRepo.configs.value.getOrNull(backupConfigRepo.selectedIndex.value),
+        started = SharingStarted.WhileSubscribed(5_000),
+    )
 
-    val selectedConfigIndex: StateFlow<Int> = backupConfigRepo.selectedIndex
-    val backupConfigs: StateFlow<List<BackupConfig>> = backupConfigRepo.configs
+    val selectedBackupSize: StateFlow<Long?> = selectedBackup
+        .map { backup ->
+            backup?.let {
+                withContext(Dispatchers.IO) {
+                    runCatching { RemoteRootService.calculateTreeSize(it.path) }.getOrNull()
+                }
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            initialValue = null,
+            started = SharingStarted.WhileSubscribed(5_000),
+        )
 
     val appsItem: StateFlow<TargetItem?> = combine(
         appRepo.isBackupAppsSelected,
@@ -180,35 +190,15 @@ open class BackupSetupViewModel(
         started = SharingStarted.WhileSubscribed(5_000),
     )
 
-    val nextBtnEnabled = combine(uiState, selectedItems) { uiState, selectedItems ->
-        uiState.isLoadingConfigs.not() && selectedItems?.first != 0
+    val nextBtnEnabled = combine(isLoadingConfigs, selectedItems, selectedBackup) { isLoading, selectedItems, selectedBackup ->
+        isLoading.not() &&
+                selectedItems?.first != 0 &&
+                selectedBackup != null
     }.stateIn(
         scope = viewModelScope,
         initialValue = false,
         started = SharingStarted.WhileSubscribed(5_000),
     )
-
-    suspend fun getLocalStorage(): String {
-        val backupPath = PathHelper.getBackupPath().first()
-        if (RemoteRootService.mkdirs(backupPath).not()) {
-            LogHelper.e(TAG, "getLocalStorage", "Failed to mkdirs: $backupPath.}")
-        }
-        val stat = RemoteRootService.readStatFs(PathHelper.getBackupPath().first())
-        return if (stat == null) {
-            App.application.getString(R.string.unknown)
-        } else {
-            "${stat.availableBytes.formatToStorageSize} / ${stat.totalBytes.formatToStorageSize}"
-        }
-    }
-
-    suspend fun getBackupStorage(path: String): String {
-        val size = RemoteRootService.calculateTreeSize(path)
-        return if (size == 0L) {
-            App.application.getString(R.string.unknown)
-        } else {
-            size.formatToStorageSize
-        }
-    }
 
     private suspend fun checkPermissions() {
         withContext(Dispatchers.Default) {
@@ -243,9 +233,9 @@ open class BackupSetupViewModel(
 
     private suspend fun initBackupConfigs() {
         withContext(Dispatchers.IO) {
-            _uiState.emit(uiState.value.copy(isLoadingConfigs = true))
+            _isLoadingConfigs.value = true
             backupConfigRepo.loadBackupConfigsFromLocal()
-            _uiState.emit(uiState.value.copy(isLoadingConfigs = false))
+            _isLoadingConfigs.value = false
         }
     }
 
@@ -256,17 +246,11 @@ open class BackupSetupViewModel(
         }
     }
 
-    fun selectBackup(index: Int) {
-        withLock(Dispatchers.Default) {
-            backupConfigRepo.selectBackup(index)
-        }
-    }
-
     fun resetProcessRepo() {
         backupProcessRepo.reset()
     }
 
     fun isCurrentBackupRustic(): Boolean {
-        return backupConfigRepo.getCurrentConfig().backupBackend is BackupBackend.Rustic
+        return selectedBackup.value?.backupBackend is BackupBackend.Rustic
     }
 }

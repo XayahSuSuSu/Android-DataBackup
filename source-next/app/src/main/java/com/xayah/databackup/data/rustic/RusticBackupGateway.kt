@@ -29,6 +29,24 @@ class RusticBackupGateway {
         RemoteRootService.validateRusticRepository(repositoryPath, password)
     }
 
+    suspend fun prepareRepository(repositoryPath: String, password: String) {
+        if (repositoryExists(repositoryPath)) {
+            // Validate the repository config and credentials without performing a full integrity check.
+            validateRepository(repositoryPath, password)
+            return
+        }
+        if (exists(repositoryPath) && isDirectoryEmpty(repositoryPath).not()) {
+            throw IllegalStateException("Rustic repository config is missing from a non-empty directory.")
+        }
+        if (createDirectory(repositoryPath).not()) {
+            throw IllegalStateException("Failed to create Rustic repository directory.")
+        }
+        initRepository(repositoryPath, password)
+        if (repositoryExists(repositoryPath).not()) {
+            throw IllegalStateException("Rustic repository initialization did not create a repository config.")
+        }
+    }
+
     suspend fun createSnapshot(
         repositoryPath: String,
         password: String,

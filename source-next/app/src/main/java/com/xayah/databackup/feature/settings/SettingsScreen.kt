@@ -35,7 +35,9 @@ import com.xayah.databackup.ui.component.LocalFloatingNavigationBarBottomPadding
 import com.xayah.databackup.ui.component.Preference
 import com.xayah.databackup.ui.component.PreferenceGroup
 import com.xayah.databackup.ui.component.SectionHeader
-import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
+import com.xayah.databackup.ui.component.rememberFadingEdgeState
+import com.xayah.databackup.ui.component.surfaceTopAppBarColors
+import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.ShellHelper
 import kotlinx.coroutines.Dispatchers
@@ -44,6 +46,8 @@ import kotlinx.coroutines.Dispatchers
 fun SettingsScreen() {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val floatingNavigationBarBottomPadding = LocalFloatingNavigationBarBottomPadding.current
+    val scrollState = rememberScrollState()
+    val fadingEdgeState = rememberFadingEdgeState(scrollState, label = "settings")
     var openCustomSUFileDialog by remember { mutableStateOf(false) }
     val unknown = stringResource(R.string.unknown)
     var rootSummary by remember(unknown) { mutableStateOf(unknown) }
@@ -74,17 +78,18 @@ fun SettingsScreen() {
                         overflow = TextOverflow.Ellipsis
                     )
                 },
-                colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
+                colors = TopAppBarDefaults.surfaceTopAppBarColors(),
                 scrollBehavior = scrollBehavior,
             )
         },
     ) { innerPadding ->
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
+                .fillMaxSize()
+                .padding(top = innerPadding.calculateTopPadding())
+                .verticalFadingEdges(fadingEdgeState)
+                .verticalScroll(scrollState),
         ) {
-            Spacer(modifier = Modifier.size(innerPadding.calculateTopPadding()))
-
             SettingsOverviewCard(
                 modifier = Modifier
                     .fillMaxWidth()

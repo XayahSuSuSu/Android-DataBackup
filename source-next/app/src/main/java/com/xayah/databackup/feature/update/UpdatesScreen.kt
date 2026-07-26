@@ -66,7 +66,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.FadeVisibility
 import com.xayah.databackup.ui.component.MarkdownContent
-import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
+import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.popBackStackSafely
@@ -107,7 +107,7 @@ fun UpdatesScreen(
                     }
                 },
                 scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
+                colors = TopAppBarDefaults.surfaceTopAppBarColors(),
             )
         },
     ) { innerPadding ->

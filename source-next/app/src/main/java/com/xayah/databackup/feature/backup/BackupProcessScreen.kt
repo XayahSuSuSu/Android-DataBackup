@@ -69,7 +69,7 @@ import com.xayah.databackup.ui.component.FadeVisibility
 import com.xayah.databackup.ui.component.InlineNotice
 import com.xayah.databackup.ui.component.ProcessItemCard
 import com.xayah.databackup.ui.component.ProcessItemHolder
-import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
+import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.navigateSafely
@@ -154,7 +154,7 @@ fun BackupProcessScreen(
                     }
                 },
                 scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
+                colors = TopAppBarDefaults.surfaceTopAppBarColors(),
             )
         },
     ) { innerPadding ->

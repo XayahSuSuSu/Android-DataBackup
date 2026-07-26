@@ -52,7 +52,7 @@ import com.xayah.databackup.ui.component.DataBackupDialog
 import com.xayah.databackup.ui.component.DialogActionButton
 import com.xayah.databackup.ui.component.DialogIcon
 import com.xayah.databackup.ui.component.StorageDistributionBar
-import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
+import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.formatToStorageSize
@@ -133,7 +133,7 @@ fun RusticBackupProcessScreen(
                     }
                 },
                 scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
+                colors = TopAppBarDefaults.surfaceTopAppBarColors(),
             )
         },
     ) { innerPadding ->

@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.xayah.databackup.feature.backup.BackupLibraryScreen
 import com.xayah.databackup.feature.dashboard.DashboardScreen
 import com.xayah.databackup.feature.settings.SettingsScreen
 import com.xayah.databackup.ui.component.FloatingNavigationBar
@@ -33,7 +34,7 @@ import kotlinx.coroutines.launch
 
 private const val PageAnimationDurationMillis = 400
 private val MainNavigationItems = FloatingNavigationItems.filter { item ->
-    item == FloatingNavigationItem.HOME || item == FloatingNavigationItem.SETTINGS
+    item != FloatingNavigationItem.SCHEDULE
 }
 
 @Composable
@@ -70,6 +71,7 @@ fun MainNavigationHost(navigator: Navigator) {
             ) { page ->
                 when (MainNavigationItems[page]) {
                     FloatingNavigationItem.HOME -> DashboardScreen(navigator)
+                    FloatingNavigationItem.BACKUP -> BackupLibraryScreen(navigator)
                     FloatingNavigationItem.SETTINGS -> SettingsScreen()
                     else -> Unit
                 }

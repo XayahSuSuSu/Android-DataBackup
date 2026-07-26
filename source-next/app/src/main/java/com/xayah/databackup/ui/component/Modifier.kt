@@ -1,9 +1,14 @@
 package com.xayah.databackup.ui.component
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithContent
@@ -20,6 +25,28 @@ import com.xayah.databackup.ui.material3.placeholder.fade
 import com.xayah.databackup.ui.material3.placeholder.placeholder
 import kotlin.math.min
 
+@Immutable
+data class FadingEdgeState(
+    val startRange: Float,
+    val endRange: Float,
+)
+
+@Composable
+fun rememberFadingEdgeState(
+    scrollableState: ScrollableState,
+    label: String = "fadingEdge",
+): FadingEdgeState {
+    val startRange by animateFloatAsState(
+        targetValue = if (scrollableState.canScrollBackward) 1f else 0f,
+        label = "${label}Start",
+    )
+    val endRange by animateFloatAsState(
+        targetValue = if (scrollableState.canScrollForward) 1f else 0f,
+        label = "${label}End",
+    )
+    return FadingEdgeState(startRange, endRange)
+}
+
 fun Modifier.horizontalFadingEdges(
     scrollState: ScrollState,
     fadingEdge: Dp = 48.dp,
@@ -29,6 +56,16 @@ fun Modifier.verticalFadingEdges(
     scrollState: ScrollState,
     fadingEdge: Dp = 48.dp,
 ): Modifier = fadingEdges(Direction.VERTICAL, scrollState, fadingEdge)
+
+fun Modifier.horizontalFadingEdges(
+    state: FadingEdgeState,
+    fadingEdge: Dp = 48.dp,
+): Modifier = fadingEdges(Direction.HORIZONTAL, state.startRange, state.endRange, fadingEdge)
+
+fun Modifier.verticalFadingEdges(
+    state: FadingEdgeState,
+    fadingEdge: Dp = 48.dp,
+): Modifier = fadingEdges(Direction.VERTICAL, state.startRange, state.endRange, fadingEdge)
 
 fun Modifier.horizontalFadingEdges(
     startRange: Float,

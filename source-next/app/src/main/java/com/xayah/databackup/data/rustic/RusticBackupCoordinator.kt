@@ -27,18 +27,7 @@ class RusticBackupCoordinator(
 
         try {
             onEvent(RusticBackupEvent.StageChanged(RusticBackupStage.PrepareRepository))
-            if (mGateway.repositoryExists(repositoryPath)) {
-                // Validate the repository config and credentials without performing a full integrity check.
-                mGateway.validateRepository(repositoryPath, backend.password)
-            } else {
-                if (mGateway.exists(repositoryPath) && mGateway.isDirectoryEmpty(repositoryPath).not()) {
-                    throw IllegalStateException("Rustic repository config is missing from a non-empty directory.")
-                }
-                if (mGateway.createDirectory(repositoryPath).not()) {
-                    throw IllegalStateException("Failed to create Rustic repository directory.")
-                }
-                mGateway.initRepository(repositoryPath, backend.password)
-            }
+            mGateway.prepareRepository(repositoryPath, backend.password)
 
             onEvent(RusticBackupEvent.StageChanged(RusticBackupStage.CollectSources))
             val collected = mSourceCollector.collect(selection, stagingPath, createdAt)

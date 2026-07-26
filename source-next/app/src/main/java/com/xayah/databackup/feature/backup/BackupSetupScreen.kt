@@ -1,8 +1,7 @@
 package com.xayah.databackup.feature.backup
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,14 +11,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -27,12 +25,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -42,10 +37,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.databackup.App
 import com.xayah.databackup.R
-import com.xayah.databackup.data.BackupConfigRepository
+import com.xayah.databackup.entity.BackupBackend
+import com.xayah.databackup.entity.BackupConfig
 import com.xayah.databackup.feature.BackupAppsRoute
 import com.xayah.databackup.feature.BackupCallLogsRoute
-import com.xayah.databackup.feature.BackupConfigRoute
 import com.xayah.databackup.feature.BackupContactsRoute
 import com.xayah.databackup.feature.BackupMessagesRoute
 import com.xayah.databackup.feature.BackupNetworksRoute
@@ -53,18 +48,15 @@ import com.xayah.databackup.feature.BackupProcessRoute
 import com.xayah.databackup.feature.RusticBackupProcessRoute
 import com.xayah.databackup.ui.component.ActionButtonState
 import com.xayah.databackup.ui.component.AutoScreenOffSwitch
+import com.xayah.databackup.ui.component.Preference
 import com.xayah.databackup.ui.component.PreferenceGroup
 import com.xayah.databackup.ui.component.ResetBackupListSwitch
 import com.xayah.databackup.ui.component.SectionHeader
-import com.xayah.databackup.ui.component.SelectableCardButton
 import com.xayah.databackup.ui.component.SmallCheckActionButton
-import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
-import com.xayah.databackup.ui.component.horizontalFadingEdges
+import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.ui.component.rememberCallLogPermissionsState
 import com.xayah.databackup.ui.component.rememberContactPermissionsState
 import com.xayah.databackup.ui.component.rememberMessagePermissionsState
-import com.xayah.databackup.ui.component.selectableCardButtonSecondaryColors
-import com.xayah.databackup.ui.component.selectableCardButtonTertiaryColors
 import com.xayah.databackup.ui.component.shimmer
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.AppsOptionSelectedBackup
@@ -74,7 +66,8 @@ import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.MessagesOptionSelectedBackup
 import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.NetworksOptionSelectedBackup
-import com.xayah.databackup.util.items
+import com.xayah.databackup.util.PathHelper
+import com.xayah.databackup.util.formatToStorageSize
 import com.xayah.databackup.util.navigateSafely
 import com.xayah.databackup.util.popBackStackSafely
 import com.xayah.databackup.util.saveBoolean
@@ -87,7 +80,9 @@ fun BackupSetupScreen(
     viewModel: BackupSetupViewModel = koinViewModel(),
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val selectedBackup by viewModel.selectedBackup.collectAsStateWithLifecycle()
+    val selectedBackupSize by viewModel.selectedBackupSize.collectAsStateWithLifecycle()
+    val isLoadingConfigs by viewModel.isLoadingConfigs.collectAsStateWithLifecycle()
     val selectedItems by viewModel.selectedItems.collectAsStateWithLifecycle(null)
     val nextBtnEnabled by viewModel.nextBtnEnabled.collectAsStateWithLifecycle()
 
@@ -127,7 +122,7 @@ fun BackupSetupScreen(
                     }
                 },
                 scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
+                colors = TopAppBarDefaults.surfaceTopAppBarColors(),
             )
         },
     ) { innerPadding ->
@@ -141,11 +136,13 @@ fun BackupSetupScreen(
                     .verticalScroll(scrollState)
                     .verticalFadingEdges(scrollState),
             ) {
+                SelectedBackupInfo(
+                    backup = selectedBackup,
+                    backupSize = selectedBackupSize,
+                    isLoading = isLoadingConfigs,
+                )
+
                 TargetRow(navigator = navigator, viewModel = viewModel)
-
-                StorageRow(viewModel = viewModel)
-
-                BackupRow(navigator = navigator, uiState = uiState, viewModel = viewModel)
 
                 Settings()
 
@@ -364,145 +361,54 @@ private fun TargetRow(
 }
 
 @Composable
-private fun StorageRow(
-    viewModel: BackupSetupViewModel,
+private fun SelectedBackupInfo(
+    backup: BackupConfig?,
+    backupSize: Long?,
+    isLoading: Boolean,
 ) {
-    val locationScrollState = rememberScrollState()
-
-    SectionHeader(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        title = stringResource(R.string.storage),
-        color = MaterialTheme.colorScheme.secondary,
-    )
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(locationScrollState)
-            .horizontalFadingEdges(locationScrollState),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Spacer(modifier = Modifier.size(0.dp, 148.dp))
-
-        var localStorage: String by remember { mutableStateOf("") }
-        LaunchedEffect(context = Dispatchers.IO, null) {
-            localStorage = viewModel.getLocalStorage()
+    backup?.let { selectedBackup ->
+        val rusticBackend = selectedBackup.backupBackend is BackupBackend.Rustic
+        val relativePath = remember(selectedBackup.path) {
+            PathHelper.getChildPath(selectedBackup.path).ifEmpty { selectedBackup.path }
         }
-        SelectableCardButton(
-            modifier = Modifier.size(148.dp),
-            selected = true,
-            title = stringResource(R.string.local),
-            subtitle = localStorage,
-            subtitleShimmer = localStorage.isEmpty(),
-            icon = ImageVector.vectorResource(R.drawable.ic_smartphone),
-            colors = selectableCardButtonSecondaryColors(),
+        PreferenceGroup(
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .padding(horizontal = 16.dp)
         ) {
+            Preference(
+                icon = ImageVector.vectorResource(
+                    if (rusticBackend) R.drawable.ic_database_backup else R.drawable.ic_archive
+                ),
+                title = selectedBackup.displayName,
+                subtitle = stringResource(if (rusticBackend) R.string.rustic else R.string.archive),
+            )
+            Preference(
+                icon = ImageVector.vectorResource(R.drawable.ic_map_pin),
+                title = stringResource(R.string.backup_dir),
+                subtitle = relativePath,
+                subtitleIcon = ImageVector.vectorResource(R.drawable.ic_folder),
+            )
+            Preference(
+                icon = ImageVector.vectorResource(R.drawable.ic_database),
+                title = stringResource(R.string.storage),
+                subtitle = backupSize?.formatToStorageSize.orEmpty(),
+                subtitleShimmer = backupSize == null,
+            )
         }
-
-        /**
-         * SelectableCardButton(
-         *     modifier = Modifier.size(148.dp),
-         *     selected = false,
-         *     title = stringResource(R.string.cloud),
-         *     subtitle = stringResource(R.string.not_set_up),
-         *     subtitleShimmer = false,
-         *     icon = ImageVector.vectorResource(R.drawable.ic_cloud_upload),
-         *     iconButton = ImageVector.vectorResource(R.drawable.ic_settings),
-         *     onIconButtonClick = {}
-         * ) {
-         * }
-         */
-
-        Spacer(modifier = Modifier.size(0.dp, 148.dp))
-    }
-}
-
-@Composable
-private fun BackupRow(
-    navigator: Navigator,
-    uiState: BackupSetupUiState,
-    viewModel: BackupSetupViewModel,
-) {
-    val selectedConfigIndex by viewModel.selectedConfigIndex.collectAsStateWithLifecycle()
-    val backupConfigs by viewModel.backupConfigs.collectAsStateWithLifecycle()
-
-    SectionHeader(
-        modifier = Modifier.padding(16.dp),
-        title = stringResource(R.string.backup),
-        color = MaterialTheme.colorScheme.tertiary,
-    )
-
-    val lazyListState = rememberLazyListState()
-    var showStartEdge by remember { mutableStateOf(false) }
-    var showEndEdge by remember { mutableStateOf(false) }
-    val startEdgeRange: Float by animateFloatAsState(if (showStartEdge) 1f else 0f, label = "alpha")
-    val endEdgeRange: Float by animateFloatAsState(if (showEndEdge) 1f else 0f, label = "alpha")
-    LaunchedEffect(context = Dispatchers.Default, lazyListState.canScrollBackward) {
-        showStartEdge = lazyListState.canScrollBackward
-    }
-    LaunchedEffect(context = Dispatchers.Default, lazyListState.canScrollForward) {
-        showEndEdge = lazyListState.canScrollForward
-    }
-    LazyRow(
+    } ?: Box(
         modifier = Modifier
             .fillMaxWidth()
-            .horizontalFadingEdges(startEdgeRange, endEdgeRange),
-        state = lazyListState,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(32.dp),
+        contentAlignment = Alignment.Center,
     ) {
-        item {
-            Spacer(modifier = Modifier.size(0.dp, 148.dp))
-        }
-
-        item(key = "-1") {
-            SelectableCardButton(
-                modifier = Modifier
-                    .size(148.dp)
-                    .animateItem(),
-                selected = selectedConfigIndex == BackupConfigRepository.NEW_CONFIG_INDEX,
-                title = stringResource(R.string.new_backup),
-                titleShimmer = uiState.isLoadingConfigs,
-                colors = selectableCardButtonTertiaryColors(),
-                icon = ImageVector.vectorResource(R.drawable.ic_plus),
-                iconShimmer = uiState.isLoadingConfigs,
-                iconButton = ImageVector.vectorResource(R.drawable.ic_settings),
-                onIconButtonClick = {
-                    navigator.navigateSafely(BackupConfigRoute(index = BackupConfigRepository.NEW_CONFIG_INDEX))
-                },
-            ) {
-                viewModel.selectBackup(BackupConfigRepository.NEW_CONFIG_INDEX)
-            }
-        }
-
-        items(items = backupConfigs, key = { _, item -> item.uuid }) { index, item ->
-            var backupStorage: String by remember { mutableStateOf("") }
-            LaunchedEffect(context = Dispatchers.IO, null) {
-                backupStorage = viewModel.getBackupStorage(item.path)
-            }
-            val title = remember(item.name, item.createdAt) { item.displayTitle }
-            SelectableCardButton(
-                modifier = Modifier
-                    .size(148.dp)
-                    .animateItem(),
-                selected = selectedConfigIndex == index,
-                title = title,
-                subtitle = backupStorage,
-                subtitleShimmer = backupStorage.isEmpty(),
-                colors = selectableCardButtonTertiaryColors(),
-                icon = ImageVector.vectorResource(R.drawable.ic_archive),
-                iconButton = ImageVector.vectorResource(R.drawable.ic_settings),
-                onIconButtonClick = {
-                    navigator.navigateSafely(BackupConfigRoute(index = index))
-                },
-            ) {
-                viewModel.selectBackup(index)
-            }
-        }
-
-        item {
-            Spacer(modifier = Modifier.size(0.dp, 148.dp))
+        if (isLoading) {
+            LoadingIndicator()
+        } else {
+            Text(
+                text = stringResource(R.string.no_item_selected),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }

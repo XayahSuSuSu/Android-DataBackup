@@ -60,7 +60,7 @@ import com.xayah.databackup.R
 import com.xayah.databackup.data.ProcessAppDataItem
 import com.xayah.databackup.data.ProcessAppItem
 import com.xayah.databackup.data.isFailedStatus
-import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
+import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.formatToStorageSizePerSecond
 import com.xayah.databackup.util.popBackStackSafely
@@ -110,7 +110,7 @@ fun BackupProcessDetailsScreen(
                     }
                 },
                 scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
+                colors = TopAppBarDefaults.surfaceTopAppBarColors(),
             )
         },
     ) { innerPadding ->

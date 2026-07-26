@@ -5,7 +5,6 @@ import android.content.pm.UserInfo
 import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.graphics.res.animatedVectorResource
 import androidx.compose.animation.graphics.res.rememberAnimatedVectorPainter
 import androidx.compose.animation.graphics.vector.AnimatedImageVector
@@ -77,8 +76,9 @@ import com.xayah.databackup.ui.component.FadeVisibility
 import com.xayah.databackup.ui.component.FilterButton
 import com.xayah.databackup.ui.component.SearchTextField
 import com.xayah.databackup.ui.component.SelectableChip
-import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
+import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.ui.component.filterButtonSecondaryColors
+import com.xayah.databackup.ui.component.rememberFadingEdgeState
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.ui.material3.ModalDropdownMenu
 import com.xayah.databackup.ui.material3.ModalDropdownMenuItem
@@ -128,16 +128,7 @@ fun BackupAppsScreen(
     val searchLazyListState = rememberLazyListState()
     val activeLazyListState = if (onSearch) searchLazyListState else normalLazyListState
 
-    var showStartEdge by remember { mutableStateOf(false) }
-    var showEndEdge by remember { mutableStateOf(false) }
-    val startEdgeRange: Float by animateFloatAsState(if (showStartEdge) 1f else 0f, label = "alpha")
-    val endEdgeRange: Float by animateFloatAsState(if (showEndEdge) 1f else 0f, label = "alpha")
-    LaunchedEffect(context = Dispatchers.Default, activeLazyListState.canScrollBackward) {
-        showStartEdge = activeLazyListState.canScrollBackward
-    }
-    LaunchedEffect(context = Dispatchers.Default, activeLazyListState.canScrollForward) {
-        showEndEdge = activeLazyListState.canScrollForward
-    }
+    val fadingEdgeState = rememberFadingEdgeState(activeLazyListState, label = "backupApps")
 
     LaunchedEffect(onSearch) {
         if (onSearch) {
@@ -224,7 +215,7 @@ fun BackupAppsScreen(
                             SelectIconButton(viewModel = viewModel)
                         },
                         scrollBehavior = scrollBehavior,
-                        colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
+                        colors = TopAppBarDefaults.surfaceTopAppBarColors(),
                     )
                 }
             }
@@ -251,7 +242,7 @@ fun BackupAppsScreen(
                     }
                 } else {
                     LazyColumn(
-                        modifier = Modifier.verticalFadingEdges(startEdgeRange, endEdgeRange),
+                        modifier = Modifier.verticalFadingEdges(fadingEdgeState),
                         state = activeLazyListState
                     ) {
                         items(items = apps, key = { it.pkgUserKey }) { app ->

@@ -46,6 +46,7 @@ fun Preference(
     title: String,
     subtitle: String,
     subtitleShimmer: Boolean = false,
+    subtitleIcon: ImageVector? = null,
     containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
     slot: @Composable (RowScope.() -> Unit)? = null,
     onClick: (() -> Unit)? = null,
@@ -97,12 +98,37 @@ fun Preference(
                     overflow = TextOverflow.Ellipsis,
                     color = animatedTitleColor
                 )
-                Text(
-                    modifier = Modifier.shimmer(subtitleShimmer),
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = animatedSubtitleColor
-                )
+                if (subtitleIcon == null) {
+                    Text(
+                        modifier = Modifier.shimmer(subtitleShimmer),
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = animatedSubtitleColor
+                    )
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .shimmer(subtitleShimmer),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(16.dp),
+                            imageVector = subtitleIcon,
+                            contentDescription = null,
+                            tint = animatedSubtitleColor,
+                        )
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            text = subtitle,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = animatedSubtitleColor,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
             }
             slot?.invoke(this)
         }

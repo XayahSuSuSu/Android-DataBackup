@@ -42,6 +42,7 @@
     <string name="directory_structure">Directory structure</string>
     <string name="copy">Copy</string>
     <string name="save">Save</string>
+    <string name="save_backup_failed">Failed to save the backup.</string>
     <string name="succeed">Success</string>
     <string name="failed">Failed</string>
     <string name="save_directory_structure">Save directory structure</string>
@@ -542,4 +543,12 @@
     <string name="current">Current</string>
     <string name="github_api_rate_limited">GitHub API rate limit reached. Please try again after %1$s.</string>
     <string name="retry_after">Retry after: %1$s</string>
+    <string name="all">All</string>
+    <string name="no_backups">No backups yet</string>
+    <string name="no_backups_desc">Create your first backup to get started.</string>
+    <string name="last_backup_value">Last backup: %1$s</string>
+    <string name="back_up_now">Back up now</string>
+    <string name="no_matching_backups">No matching backups</string>
+    <string name="no_matching_backups_desc">Try adjusting your search or filters.</string>
+    <string name="clear_filters">Clear filters</string>
 </resources>

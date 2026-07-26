@@ -17,8 +17,10 @@ import com.xayah.databackup.data.rustic.RusticBackupSelectionProvider
 import com.xayah.databackup.data.rustic.RusticBackupSourceCollector
 import com.xayah.databackup.data.rustic.RusticStructuredDataSerializer
 import com.xayah.databackup.feature.backup.BackupConfigViewModel
+import com.xayah.databackup.feature.backup.BackupLibraryViewModel
 import com.xayah.databackup.feature.backup.BackupProcessViewModel
 import com.xayah.databackup.feature.backup.BackupSetupViewModel
+import com.xayah.databackup.feature.backup.NewBackupViewModel
 import com.xayah.databackup.feature.backup.apps.AppsViewModel
 import com.xayah.databackup.feature.backup.call_logs.CallLogsViewModel
 import com.xayah.databackup.feature.backup.contacts.ContactsViewModel
@@ -69,6 +71,8 @@ class App : Application() {
 
         viewModelOf(::DashboardViewModel)
         viewModelOf(::BackupSetupViewModel)
+        viewModelOf(::BackupLibraryViewModel)
+        viewModelOf(::NewBackupViewModel)
         viewModelOf(::BackupProcessViewModel)
         viewModelOf(::RusticBackupProcessViewModel)
         viewModelOf(::BackupConfigViewModel)

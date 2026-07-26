@@ -1,22 +1,21 @@
 package com.xayah.databackup.feature.backup
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
@@ -38,22 +37,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.databackup.R
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.BackupConfig
+import com.xayah.databackup.feature.BackupSetupRoute
 import com.xayah.databackup.ui.component.DataBackupDialog
 import com.xayah.databackup.ui.component.DialogActionButton
 import com.xayah.databackup.ui.component.DialogDestructiveButton
@@ -62,15 +59,16 @@ import com.xayah.databackup.ui.component.DialogIcon
 import com.xayah.databackup.ui.component.Preference
 import com.xayah.databackup.ui.component.PreferenceGroup
 import com.xayah.databackup.ui.component.SectionHeader
-import com.xayah.databackup.ui.component.SelectablePreferenceGroup
-import com.xayah.databackup.ui.component.SelectablePreferenceItemInfo
-import com.xayah.databackup.ui.component.SmallActionButton
-import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
+import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.Navigator
+import com.xayah.databackup.util.navigateSafely
 import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+
+internal const val HIDDEN_PASSWORD = "••••••••"
+private val BackupConfigContainerShape = RoundedCornerShape(28.dp)
 
 @Composable
 fun BackupConfigScreen(
@@ -79,8 +77,6 @@ fun BackupConfigScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val backupConfig by viewModel.backupConfig.collectAsStateWithLifecycle(null)
-    val backupBackend by viewModel.backupBackend.collectAsStateWithLifecycle(BackupBackend.Archive())
-    val backupBackendSelectedIndex by viewModel.backupBackendSelectedIndex.collectAsStateWithLifecycle(1)
     var openEditNameDialog by remember { mutableStateOf(false) }
     var openDeleteDialog by remember { mutableStateOf(false) }
 
@@ -122,7 +118,7 @@ fun BackupConfigScreen(
                 title = {
                     val name = remember(backupConfig?.name) { backupConfig?.displayName }
                     Text(
-                        text = name ?: stringResource(R.string.new_backup),
+                        text = name ?: stringResource(R.string.backup),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -169,7 +165,7 @@ fun BackupConfigScreen(
                     }
                 },
                 scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
+                colors = TopAppBarDefaults.surfaceTopAppBarColors(),
             )
         },
     ) { innerPadding ->
@@ -183,22 +179,22 @@ fun BackupConfigScreen(
                     .verticalScroll(scrollState)
                     .verticalFadingEdges(scrollState),
             ) {
-                InfoRow(backupConfig = backupConfig)
-
-                BackendRow(enabled = backupConfig == null, selectedIndex = backupBackendSelectedIndex) {
-                    viewModel.selectBackupBackend(it)
-                }
-
-                AnimatedVisibility(
-                    visible = backupBackend is BackupBackend.Rustic,
-                    enter = expandVertically() + fadeIn(),
-                    exit = shrinkVertically() + fadeOut(),
-                ) {
-                    RusticPasswordRow(
-                        enabled = backupConfig == null,
-                        password = (backupBackend as? BackupBackend.Rustic)?.password ?: BackupBackend.DEFAULT_PASSWORD,
-                        onPasswordChanged = viewModel::changeRusticPassword,
+                backupConfig?.let { config ->
+                    BackupConfigContent(
+                        backupConfig = config,
+                        onBackUpNow = {
+                            viewModel.selectBackup {
+                                navigator.navigateSafely(BackupSetupRoute)
+                            }
+                        },
                     )
+                } ?: Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(64.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    LoadingIndicator()
                 }
 
                 Spacer(modifier = Modifier.height(0.dp))
@@ -210,120 +206,105 @@ fun BackupConfigScreen(
 }
 
 @Composable
-private fun InfoRow(
-    backupConfig: BackupConfig?,
+private fun BackupConfigContent(
+    backupConfig: BackupConfig,
+    onBackUpNow: () -> Unit,
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        val createdAt = remember(backupConfig?.createdAt) { backupConfig?.displayCreatedAt }
-        SmallActionButton(
-            modifier = Modifier
-                .weight(1f)
-                .wrapContentSize(),
+        BackupMetadataCard(backupConfig)
+
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            shape = BackupConfigContainerShape,
+            onClick = onBackUpNow,
+        ) {
+            Icon(
+                imageVector = ImageVector.vectorResource(R.drawable.ic_archive),
+                contentDescription = null,
+            )
+            Spacer(Modifier.size(8.dp))
+            Text(stringResource(R.string.back_up_now))
+        }
+
+        SectionHeader(
+            title = stringResource(R.string.backup_backend),
+        )
+        BackupBackendCard(backupConfig.backupBackend)
+    }
+}
+
+@Composable
+private fun BackupMetadataCard(backupConfig: BackupConfig) {
+    PreferenceGroup {
+        Preference(
             icon = ImageVector.vectorResource(R.drawable.ic_clock_plus),
             title = stringResource(R.string.created_at),
-            subtitle = createdAt ?: stringResource(R.string.not_created_yet)
-        ) {
-        }
-
-        val updatedAt = remember(backupConfig?.updatedAt) { backupConfig?.displayUpdatedAt }
-        SmallActionButton(
-            modifier = Modifier
-                .weight(1f)
-                .wrapContentSize(),
+            subtitle = backupConfig.displayCreatedAt,
+        )
+        Preference(
             icon = ImageVector.vectorResource(R.drawable.ic_clock_arrow_up),
             title = stringResource(R.string.updated_at),
-            subtitle = updatedAt ?: stringResource(R.string.not_created_yet)
-        ) {
-        }
-    }
-
-    val uuid = remember(backupConfig?.uuid) { backupConfig?.uuidString }
-    PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp)) {
+            subtitle = backupConfig.displayUpdatedAt,
+        )
         Preference(
             icon = ImageVector.vectorResource(R.drawable.ic_id_card),
             title = stringResource(R.string.id),
-            subtitle = uuid ?: stringResource(R.string.not_created_yet),
-        ) {
+            subtitle = backupConfig.uuidString,
+        )
+    }
+}
+
+@Composable
+private fun BackupBackendCard(
+    backupBackend: BackupBackend,
+) {
+    val rusticBackend = backupBackend as? BackupBackend.Rustic
+    val isRustic = rusticBackend != null
+    PreferenceGroup {
+        Preference(
+            icon = ImageVector.vectorResource(
+                if (isRustic) R.drawable.ic_database_backup else R.drawable.ic_archive
+            ),
+            title = stringResource(if (isRustic) R.string.rustic else R.string.archive),
+            subtitle = stringResource(
+                if (isRustic) R.string.rustic_backup_backend_desc else R.string.archive_backup_backend_desc
+            ),
+        )
+        rusticBackend?.let {
+            PasswordPreference(
+                password = it.password,
+            )
         }
     }
 }
 
 @Composable
-private fun BackendRow(
-    enabled: Boolean,
-    selectedIndex: Int,
-    onSelectedIndexChanged: (Int) -> Unit,
-) {
-    val context = LocalContext.current
-
-    SectionHeader(
-        modifier = Modifier.padding(16.dp),
-        title = stringResource(R.string.backup_backend),
-    )
-
-    val items = remember {
-        listOf(
-            SelectablePreferenceItemInfo(
-                icon = ImageVector.vectorResource(null, context.resources, R.drawable.ic_chart_bar_stacked),
-                title = context.getString(R.string.rustic),
-                subtitle = context.getString(R.string.rustic_backup_backend_desc),
-            ),
-            SelectablePreferenceItemInfo(
-                icon = ImageVector.vectorResource(null, context.resources, R.drawable.ic_archive),
-                title = context.getString(R.string.archive),
-                subtitle = context.getString(R.string.archive_backup_backend_desc),
-            )
-        )
-    }
-
-    SelectablePreferenceGroup(
-        modifier = Modifier.padding(horizontal = 16.dp),
-        enabled = enabled,
-        items = items,
-        selectedIndex = selectedIndex,
-        onSelectedIndexChanged = onSelectedIndexChanged
-    )
-}
-
-@Composable
-private fun RusticPasswordRow(
-    enabled: Boolean,
+private fun PasswordPreference(
     password: String,
-    onPasswordChanged: (String) -> Unit,
 ) {
-    var showPassword by rememberSaveable { mutableStateOf(false) }
+    var showPassword by rememberSaveable(password) { mutableStateOf(false) }
+    val togglePasswordDescription = stringResource(
+        if (showPassword) R.string.hide_password else R.string.show_password
+    )
 
-    OutlinedTextField(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        enabled = enabled,
-        value = password,
-        onValueChange = {
-            if (enabled) onPasswordChanged(it)
-        },
-        label = { Text(text = stringResource(R.string.password)) },
-        singleLine = true,
-        visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-        trailingIcon = {
-            val contentDescription = if (showPassword) {
-                stringResource(R.string.hide_password)
-            } else {
-                stringResource(R.string.show_password)
-            }
-            IconButton(onClick = { showPassword = showPassword.not() }) {
+    Preference(
+        icon = ImageVector.vectorResource(R.drawable.ic_key_round),
+        title = stringResource(R.string.password),
+        subtitle = password.takeIf { showPassword } ?: HIDDEN_PASSWORD,
+        slot = {
+            IconButton(
+                onClick = { showPassword = showPassword.not() },
+            ) {
                 Icon(
-                    imageVector = if (showPassword) {
-                        ImageVector.vectorResource(R.drawable.ic_eye_off)
-                    } else {
-                        ImageVector.vectorResource(R.drawable.ic_eye)
-                    },
-                    contentDescription = contentDescription,
+                    imageVector = ImageVector.vectorResource(
+                        if (showPassword) R.drawable.ic_eye_off else R.drawable.ic_eye
+                    ),
+                    contentDescription = togglePasswordDescription,
                 )
             }
         },

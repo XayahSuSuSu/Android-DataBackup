@@ -1,17 +1,14 @@
 package com.xayah.databackup.data
 
-import arrow.optics.copy
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import com.xayah.databackup.App
 import com.xayah.databackup.adapter.UuidJsonAdapter
+import com.xayah.databackup.data.rustic.RusticBackupGateway
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.BackupConfig
 import com.xayah.databackup.entity.Source
-import com.xayah.databackup.entity.createdAt
-import com.xayah.databackup.entity.path
-import com.xayah.databackup.entity.source
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.util.BackupConfigSelectedUuid
 import com.xayah.databackup.util.LogHelper
@@ -28,7 +25,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import kotlin.uuid.Uuid
 
-class BackupConfigRepository {
+class BackupConfigRepository(
+    private val rusticBackupGateway: RusticBackupGateway,
+) {
     companion object {
         private const val TAG = "BackupConfigRepository"
 
@@ -83,15 +82,61 @@ class BackupConfigRepository {
     }
 
     suspend fun createNewBackup(path: String) {
-        val newConfigTimestamp = System.currentTimeMillis()
-        _newConfig.update {
-            it.copy {
-                BackupConfig.source set Source.LOCAL
-                BackupConfig.path set "$path/${TimeHelper.formatTimestampInDetail(newConfigTimestamp)}"
-                BackupConfig.createdAt set newConfigTimestamp
-            }
-        }
+        _newConfig.value = createNewBackupDraft(path)
         LogHelper.i(TAG, "createNewBackup", "newConfig: ${_newConfig.value}")
+    }
+
+    private suspend fun createNewBackupDraft(path: String): BackupConfig {
+        val newConfigTimestamp = System.currentTimeMillis()
+        val pathPrefix = "$path/${TimeHelper.formatTimestampInDetail(newConfigTimestamp)}"
+        var newConfigPath = pathPrefix
+        var suffix = 2
+        while (RemoteRootService.exists(newConfigPath)) {
+            newConfigPath = "${pathPrefix}_${suffix++}"
+        }
+        return BackupConfig(
+            source = Source.LOCAL,
+            path = newConfigPath,
+            createdAt = newConfigTimestamp,
+        )
+    }
+
+    suspend fun saveNewBackup(): Int = withContext(Dispatchers.IO) {
+        val config = _newConfig.value.copy(updatedAt = System.currentTimeMillis())
+        check(config.path.isNotBlank()) { "Backup path is empty." }
+        check(RemoteRootService.exists(config.path).not()) { "Backup directory already exists." }
+
+        var directoryCreated = false
+        try {
+            check(RemoteRootService.mkdirs(config.path)) { "Failed to create backup directory." }
+            directoryCreated = true
+            check(saveBackupConfig(config)) { "Failed to write backup config." }
+
+            (config.backupBackend as? BackupBackend.Rustic)?.let { backend ->
+                rusticBackupGateway.prepareRepository(
+                    repositoryPath = PathHelper.getBackupRepoDir(config.path),
+                    password = backend.password,
+                )
+            }
+
+            val configs = (_configs.value + config).sortedByDescending { it.updatedAt }
+            val savedIndex = configs.indexOfFirst { it.uuid == config.uuid }
+            check(savedIndex >= 0) { "Saved backup is missing from the config list." }
+
+            App.application.saveString(BackupConfigSelectedUuid.first, config.uuidString)
+            _configs.emit(configs)
+            _selectedIndex.emit(savedIndex)
+            savedIndex
+        } catch (throwable: Throwable) {
+            if (directoryCreated && RemoteRootService.deleteRecursively(config.path).not()) {
+                LogHelper.w(TAG, "saveNewBackup", "Failed to clean incomplete backup directory: ${config.path}")
+            }
+            throw throwable
+        }
+    }
+
+    suspend fun resetNewBackup() {
+        createNewBackup(PathHelper.getParentPath(_newConfig.value.path))
     }
 
     suspend fun loadBackupConfigsFromLocal() {
@@ -119,11 +164,12 @@ class BackupConfigRepository {
         }
     }
 
-    suspend fun saveBackupConfig(config: BackupConfig) {
+    suspend fun saveBackupConfig(config: BackupConfig): Boolean {
         val configPath = PathHelper.getBackupConfigFile(config.path)
         val configParentPath = PathHelper.getParentPath(configPath)
         if (RemoteRootService.mkdirs(configParentPath).not()) {
             LogHelper.e(TAG, "saveBackupConfig", "Failed to mkdirs: $configParentPath.")
+            return false
         }
 
         val json = runCatching {
@@ -131,20 +177,25 @@ class BackupConfigRepository {
         }.onFailure {
             LogHelper.e(TAG, "saveBackupConfig", "Failed to serialize to json.", it)
         }.getOrNull()
-        if (json != null) {
-            RemoteRootService.writeText(configPath, json)
-        } else {
+        if (json == null) {
             LogHelper.e(TAG, "saveBackupConfig", "Failed to save backup config, json is null")
+            return false
         }
+        return runCatching {
+            RemoteRootService.writeText(configPath, json)
+            RemoteRootService.exists(configPath) && RemoteRootService.readText(configPath) == json
+        }.onFailure {
+            LogHelper.e(TAG, "saveBackupConfig", "Failed to write backup config.", it)
+        }.getOrDefault(false)
     }
 
     suspend fun setupBackupConfig() {
         val currentConfig = getCurrentConfig()
         currentConfig.updatedAt = System.currentTimeMillis()
+        check(saveBackupConfig(currentConfig)) { "Failed to save backup config." }
         if (_selectedIndex.value == NEW_CONFIG_INDEX) {
             App.application.saveString(BackupConfigSelectedUuid.first, currentConfig.uuidString)
         }
-        saveBackupConfig(currentConfig)
 
         // We don't need to update any flow here, 'cause loadBackupConfigsFromLocal() will be called once user return to setup page.
     }

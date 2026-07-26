@@ -1,7 +1,6 @@
 package com.xayah.databackup.feature.backup.contacts
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,7 +53,8 @@ import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.R
 import com.xayah.databackup.database.entity.ContactDeserialized
 import com.xayah.databackup.ui.component.SearchTextField
-import com.xayah.databackup.ui.component.defaultLargeTopAppBarColors
+import com.xayah.databackup.ui.component.surfaceTopAppBarColors
+import com.xayah.databackup.ui.component.rememberFadingEdgeState
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.popBackStackSafely
@@ -75,16 +75,7 @@ fun BackupContactsScreen(
     val focusRequester = remember { FocusRequester() }
     val lazyListState = rememberLazyListState()
 
-    var showStartEdge by remember { mutableStateOf(false) }
-    var showEndEdge by remember { mutableStateOf(false) }
-    val startEdgeRange: Float by animateFloatAsState(if (showStartEdge) 1f else 0f, label = "alpha")
-    val endEdgeRange: Float by animateFloatAsState(if (showEndEdge) 1f else 0f, label = "alpha")
-    LaunchedEffect(context = Dispatchers.Default, lazyListState.canScrollBackward) {
-        showStartEdge = lazyListState.canScrollBackward
-    }
-    LaunchedEffect(context = Dispatchers.Default, lazyListState.canScrollForward) {
-        showEndEdge = lazyListState.canScrollForward
-    }
+    val fadingEdgeState = rememberFadingEdgeState(lazyListState, label = "backupContacts")
 
     LaunchedEffect(onSearch) {
         if (onSearch) {
@@ -168,7 +159,7 @@ fun BackupContactsScreen(
                             }
                         },
                         scrollBehavior = scrollBehavior,
-                        colors = TopAppBarDefaults.defaultLargeTopAppBarColors(),
+                        colors = TopAppBarDefaults.surfaceTopAppBarColors(),
                     )
                 }
             }
@@ -195,7 +186,7 @@ fun BackupContactsScreen(
                     }
                 } else {
                     LazyColumn(
-                        modifier = Modifier.verticalFadingEdges(startEdgeRange, endEdgeRange),
+                        modifier = Modifier.verticalFadingEdges(fadingEdgeState),
                         state = lazyListState,
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {

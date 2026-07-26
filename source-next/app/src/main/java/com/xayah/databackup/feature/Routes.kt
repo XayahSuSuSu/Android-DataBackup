@@ -22,7 +22,11 @@ data object RusticBackupProcessRoute : NavKey
 data object BackupProcessDetailsRoute : NavKey
 
 @Serializable
-data class BackupConfigRoute(val index: Int) : NavKey
+data class BackupConfigRoute(val index: Int) : NavKey {
+    init {
+        require(index >= 0) { "BackupConfigRoute only accepts an existing backup index." }
+    }
+}
 
 @Serializable
 data object BackupAppsRoute : NavKey

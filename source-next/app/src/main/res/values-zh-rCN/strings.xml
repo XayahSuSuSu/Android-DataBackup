@@ -39,6 +39,7 @@
     <string name="directory_structure">目录结构</string>
     <string name="copy">复制</string>
     <string name="save">保存</string>
+    <string name="save_backup_failed">保存备份失败。</string>
     <string name="succeed">成功</string>
     <string name="failed">失败</string>
     <string name="save_directory_structure">保存目录结构</string>
@@ -529,4 +530,12 @@
     <string name="current">当前</string>
     <string name="github_api_rate_limited">GitHub API 已达到速率限制，请在 %1$s 后重试。</string>
     <string name="retry_after">重试时间：%1$s</string>
+    <string name="all">全部</string>
+    <string name="no_backups">还没有备份</string>
+    <string name="no_backups_desc">创建首个备份以开始使用。</string>
+    <string name="last_backup_value">最近备份：%1$s</string>
+    <string name="back_up_now">立即备份</string>
+    <string name="no_matching_backups">没有匹配的备份</string>
+    <string name="no_matching_backups_desc">请尝试调整搜索或筛选条件。</string>
+    <string name="clear_filters">清除筛选</string>
 </resources>
