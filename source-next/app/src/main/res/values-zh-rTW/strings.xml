@@ -39,6 +39,7 @@
     <string name="directory_structure">目錄結構</string>
     <string name="copy">複製</string>
     <string name="save">儲存</string>
+    <string name="save_backup_failed">儲存備份失敗。</string>
     <string name="succeed">成功</string>
     <string name="failed">失敗</string>
     <string name="save_directory_structure">儲存目錄結構</string>
@@ -527,6 +528,14 @@
     <string name="current">目前</string>
     <string name="github_api_rate_limited">GitHub API 已達到速率限制，請於 %1$s 後再試。</string>
     <string name="retry_after">重試時間：%1$s</string>
+    <string name="all">全部</string>
+    <string name="no_backups">尚無備份</string>
+    <string name="no_backups_desc">建立第一個備份即可開始使用。</string>
+    <string name="last_backup_value">上次備份：%1$s</string>
+    <string name="back_up_now">立即備份</string>
+    <string name="no_matching_backups">沒有符合的備份</string>
+    <string name="no_matching_backups_desc">請嘗試調整搜尋或篩選條件。</string>
+    <string name="clear_filters">清除篩選條件</string>
     <string name="insecure_server_connection">允許不安全伺服器連線</string>
     <string name="insecure_server_connection_desc">使用自簽憑證時開啟此選項</string>
 </resources>
