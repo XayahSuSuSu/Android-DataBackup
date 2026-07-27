@@ -529,4 +529,13 @@
     <string name="current">Aktuální</string>
     <string name="github_api_rate_limited">Byl dosažen limit požadavků rozhraní GitHub API. Zkuste to znovu po %1$s.</string>
     <string name="retry_after">Opakovat po: %1$s</string>
+    <string name="save_backup_failed">Zálohu se nepodařilo uložit.</string>
+    <string name="all">Vše</string>
+    <string name="no_backups">Zatím žádné zálohy</string>
+    <string name="no_backups_desc">Začněte vytvořením první zálohy.</string>
+    <string name="last_backup_value">Poslední záloha: %1$s</string>
+    <string name="back_up_now">Zálohovat nyní</string>
+    <string name="no_matching_backups">Žádné odpovídající zálohy</string>
+    <string name="no_matching_backups_desc">Zkuste upravit vyhledávání nebo filtry.</string>
+    <string name="clear_filters">Vymazat filtry</string>
 </resources>
