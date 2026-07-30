@@ -529,4 +529,13 @@
     <string name="current">Hiện tại</string>
     <string name="github_api_rate_limited">Mức GitHub API đã đến giới hạn. Vui lòng thử lại sau %1$s.</string>
     <string name="retry_after">Thử lại sau: %1$s</string>
+    <string name="save_backup_failed">Đã thất bại khi lưu bản sao lưu.</string>
+    <string name="all">Tất cả</string>
+    <string name="no_backups">Chưa có bản sao lưu nào</string>
+    <string name="no_backups_desc">Tạo bản sao lưu đầu tiên của bạn để bắt đầu.</string>
+    <string name="last_backup_value">Sao lưu lần cuối: %1$s</string>
+    <string name="back_up_now">Sao lưu ngay bây giờ</string>
+    <string name="no_matching_backups">Không có bản sao lưu trùng khớp</string>
+    <string name="no_matching_backups_desc">Vui lòng thử điều chỉnh tìm kiếm hoặc bộ lọc.</string>
+    <string name="clear_filters">Xóa bộ lọc</string>
 </resources>
