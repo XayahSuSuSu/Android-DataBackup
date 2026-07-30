@@ -529,4 +529,9 @@
     <string name="anonymous_repository">Repositorio anónimo</string>
     <string name="waiting_to_start">Esperando inicio</string>
     <string name="no_snapshot_yet">Todavía no hay instantáneas</string>
+    <string name="save_backup_failed">No se pudo guardar la copia de seguridad.</string>
+    <string name="all">Todo</string>
+    <string name="no_backups">Ninguna copia de seguridad todavía</string>
+    <string name="no_backups_desc">Crear tu primera copia de seguridad para empezar.</string>
+    <string name="last_backup_value">Última copia de seguridad: %1$s</string>
 </resources>
