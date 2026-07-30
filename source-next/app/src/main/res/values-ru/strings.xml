@@ -529,4 +529,7 @@
     <string name="anonymous_repository">Анонимный репозиторий</string>
     <string name="waiting_to_start">Ожидание запуска</string>
     <string name="no_snapshot_yet">Снимок ещё не создан</string>
+    <string name="save_backup_failed">Не удалось сохранить бекап</string>
+    <string name="all">Всё</string>
+    <string name="clear_filters">Очистить фильтры</string>
 </resources>
