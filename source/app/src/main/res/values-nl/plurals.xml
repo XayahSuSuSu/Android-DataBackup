@@ -1,3 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <plurals name="num_hours_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> uur</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> uren</item>
+    </plurals>
 </resources>
