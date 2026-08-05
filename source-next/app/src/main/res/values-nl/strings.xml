@@ -13,7 +13,7 @@
     <string name="application_desc">Toepassingspakketinformatie ophalen, gebruikt om de back-uplijst te genereren en de gegevensgrootte van de toepassing te verkrijgen</string>
     <string name="storage">Opslag</string>
     <string name="storage_desc">Gebruikt voor back-upconfiguratie, archief lezen en schrijven</string>
-    <string name="update_records">Records updaten</string>
+    <string name="update_records">Update gegevens</string>
     <string name="loading_failed">Laden mislukt</string>
     <string name="grant_root_access">Geef root toegang</string>
     <string name="confirm">Bevestig</string>
@@ -63,4 +63,5 @@
     <string name="version">Versie</string>
     <string name="backup_user">Back-up gebruiker</string>
     <string name="restore_user">Herstel gebruiker</string>
+    <string name="backup_dir">Back-up map</string>
 </resources>
