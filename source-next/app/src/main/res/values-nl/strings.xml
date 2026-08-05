@@ -63,5 +63,5 @@
     <string name="version">Versie</string>
     <string name="backup_user">Back-up gebruiker</string>
     <string name="restore_user">Herstel gebruiker</string>
-    <string name="backup_dir">Back-up map</string>
+    <string name="backup_dir">Backup map</string>
 </resources>
