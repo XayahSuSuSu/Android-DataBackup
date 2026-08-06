@@ -231,4 +231,22 @@
     <string name="enabled">Geactiveerd</string>
     <string name="not_enabled">Niet geactiveerd</string>
     <string name="skip_setup">Configuratie overslaan</string>
+    <string name="skip_setup_alert">U kunt geen backup- of hersteloperaties uitvoeren tot u een backupmap heeft geselecteerd.</string>
+    <string name="args_used">%1$s%% gebruikt</string>
+    <string name="args_used_by_backups">%1$s%% gebruikt door backups</string>
+    <string name="pick_custom_directory_desc">Tik om een gepersonaliseerde map te kiezen</string>
+    <string name="custom_directory">Gepersonaliseerde map</string>
+    <string name="never">Nooit</string>
+    <string name="args_finished_at">Afgelopen om %1$s</string>
+    <string name="setup_required">Configuratie nodig, tik om een map in te stellen</string>
+    <string name="quick_actions">Snelle acties</string>
+    <string name="backup_apps">Backup apps</string>
+    <string name="backup_contacts">Backup contacten</string>
+    <string name="backup_files">Backup bestanden</string>
+    <string name="backup_messages">Backup berichten</string>
+    <string name="sync_to_cloud">Synchronizeer naar cloud</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="select_apps">Selecteer apps</string>
+    <string name="pull_down_to_refresh">Trek naar beneden om te verversen</string>
+    <string name="select_all">Selecteer alles</string>
 </resources>
