@@ -377,4 +377,7 @@ class RemoteRootService(private val context: Context) {
         val bytes = readBytes(src = src)
         ProtoBuf.decodeFromByteArray<T>(bytes)
     }.onFailure(onFailure).getOrNull()
+
+    suspend fun openFileForStreaming(path: String): ParcelFileDescriptor? =
+        runCatching { getService().openFileForStreaming(path) }.onFailure(onFailure).getOrNull()
 }
