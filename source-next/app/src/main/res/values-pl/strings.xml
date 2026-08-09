@@ -124,7 +124,6 @@
     <string name="configurations_desc">Ustawienia, czarna lista, konfiguracja konta w chmurze</string>
     <string name="configurations">Konfiguracje</string>
     <string name="about">O nas</string>
-    <string name="afdian">AFDIAN</string>
     <string name="args_finished_at">Zakończono o %1$s</string>
     <string name="setup_required">Wymagana konfiguracja, dotknij, aby ustawić katalog</string>
     <string name="never">Nigdy</string>

@@ -18,6 +18,7 @@
     <string name="storage_desc">Used for backup configuration, archive read and write</string>
     <string name="loading">Loading</string>
     <string name="loading_failed">Loading failed</string>
+    <string name="http_status_code" translatable="false">HTTP %1$d</string>
     <string name="grant_root_access">Grant root access</string>
     <string name="release_prebuilt_binaries">Release prebuilt binaries</string>
     <string name="confirm">Confirm</string>
@@ -344,7 +345,7 @@
     <string name="donate">Donate</string>
     <string name="buymeacoffee" translatable="false">Buy me a coffee</string>
     <string name="paypal" translatable="false">PayPal</string>
-    <string name="afdian">AFDIAN</string>
+    <string name="afdian" translatable="false">AFDIAN</string>
     <string name="github" translatable="false">GitHub</string>
     <string name="contact">Contact</string>
     <string name="docs">Docs</string>

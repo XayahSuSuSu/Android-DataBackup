@@ -336,7 +336,6 @@
     <string name="disabled">Onemogućeno</string>
     <string name="kill_app_options">Opcije za gašenje aplikacije</string>
     <string name="kill_app_options_desc">Ponašanje prije sigurnosnog kopiranja</string>
-    <string name="afdian">AFDIAN</string>
     <string name="language">Jezik</string>
     <string name="download">Preuzmi</string>
     <string name="changelog">Zapisnik promjena</string>

@@ -347,7 +347,6 @@
     <string name="blacklist">Schwarze Liste</string>
     <string name="blacklist_desc">Gesperrte Einträge verwalten</string>
     <string name="confirm_add_to_blacklist">Zur Blacklist hinzufügen?</string>
-    <string name="afdian">AFDIAN</string>
     <string name="args_update_from">Sie können die Version %1$s zu Version %2$s Aktualisieren</string>
     <string name="no_item_selected">Nichts ausgewählt</string>
     <string name="apk_selected">APK ausgewählt</string>

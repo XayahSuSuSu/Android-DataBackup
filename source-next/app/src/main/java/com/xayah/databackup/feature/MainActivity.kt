@@ -31,6 +31,8 @@ import androidx.navigation3.ui.NavDisplay
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.R
+import com.xayah.databackup.feature.about.AboutScreen
+import com.xayah.databackup.feature.about.TranslatorsScreen
 import com.xayah.databackup.feature.backup.BackupConfigScreen
 import com.xayah.databackup.feature.backup.BackupConfigViewModel
 import com.xayah.databackup.feature.backup.BackupProcessDetailsScreen
@@ -196,6 +198,14 @@ class MainActivity : ComponentActivity() {
 
                             entry<UpdatesRoute> {
                                 UpdatesScreen(navigator)
+                            }
+
+                            entry<AboutRoute> {
+                                AboutScreen(navigator)
+                            }
+
+                            entry<TranslatorsRoute> {
+                                TranslatorsScreen(navigator)
                             }
 
                             entry<BackupSetupRoute> {

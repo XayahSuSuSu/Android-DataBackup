@@ -1,6 +1,11 @@
 package com.xayah.databackup
 
 import android.app.Application
+import android.content.Context
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
+import coil3.annotation.ExperimentalCoilApi
+import coil3.network.ktor3.KtorNetworkFetcherFactory
 import com.xayah.databackup.data.AppRepository
 import com.xayah.databackup.data.BackupConfigRepository
 import com.xayah.databackup.data.BackupProcessRepository
@@ -10,12 +15,14 @@ import com.xayah.databackup.data.FileRepository
 import com.xayah.databackup.data.GitHubReleaseRepository
 import com.xayah.databackup.data.MessageRepository
 import com.xayah.databackup.data.NetworkRepository
+import com.xayah.databackup.data.TranslatorRepository
 import com.xayah.databackup.data.rustic.RusticAppSourcePlanner
 import com.xayah.databackup.data.rustic.RusticBackupCoordinator
 import com.xayah.databackup.data.rustic.RusticBackupGateway
 import com.xayah.databackup.data.rustic.RusticBackupSelectionProvider
 import com.xayah.databackup.data.rustic.RusticBackupSourceCollector
 import com.xayah.databackup.data.rustic.RusticStructuredDataSerializer
+import com.xayah.databackup.feature.about.TranslatorsViewModel
 import com.xayah.databackup.feature.backup.BackupConfigViewModel
 import com.xayah.databackup.feature.backup.BackupLibraryViewModel
 import com.xayah.databackup.feature.backup.BackupProcessViewModel
@@ -34,6 +41,8 @@ import com.xayah.databackup.service.util.BackupCallLogsHelper
 import com.xayah.databackup.service.util.BackupContactsHelper
 import com.xayah.databackup.service.util.BackupMessagesHelper
 import com.xayah.databackup.service.util.BackupNetworksHelper
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
@@ -42,7 +51,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-class App : Application() {
+class App : Application(), SingletonImageLoader.Factory {
     companion object {
         lateinit var application: Application
     }
@@ -57,6 +66,7 @@ class App : Application() {
         singleOf(::MessageRepository) bind MessageRepository::class
         singleOf(::BackupProcessRepository) bind BackupProcessRepository::class
         singleOf(::GitHubReleaseRepository) bind GitHubReleaseRepository::class
+        singleOf(::TranslatorRepository) bind TranslatorRepository::class
         singleOf(::BackupAppsHelper) bind BackupAppsHelper::class
         singleOf(::BackupNetworksHelper) bind BackupNetworksHelper::class
         singleOf(::BackupContactsHelper) bind BackupContactsHelper::class
@@ -82,6 +92,7 @@ class App : Application() {
         viewModelOf(::CallLogsViewModel)
         viewModelOf(::MessagesViewModel)
         viewModelOf(::UpdatesViewModel)
+        viewModelOf(::TranslatorsViewModel)
     }
 
     override fun onCreate() {
@@ -93,5 +104,14 @@ class App : Application() {
             androidContext(application)
             modules(appModule)
         }
+    }
+
+    @OptIn(ExperimentalCoilApi::class)
+    override fun newImageLoader(context: Context): ImageLoader {
+        return ImageLoader.Builder(context)
+            .components {
+                add(KtorNetworkFetcherFactory(HttpClient(CIO)))
+            }
+            .build()
     }
 }

@@ -72,7 +72,7 @@ fun MainNavigationHost(navigator: Navigator) {
                 when (MainNavigationItems[page]) {
                     FloatingNavigationItem.HOME -> DashboardScreen(navigator)
                     FloatingNavigationItem.BACKUP -> BackupLibraryScreen(navigator)
-                    FloatingNavigationItem.SETTINGS -> SettingsScreen()
+                    FloatingNavigationItem.SETTINGS -> SettingsScreen(navigator)
                     else -> Unit
                 }
             }

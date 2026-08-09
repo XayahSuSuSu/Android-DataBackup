@@ -226,7 +226,6 @@
     <string name="select_files">파일 선택</string>
     <string name="choose_a_custom_path">사용자 정의 경로를 선택하십시오</string>
     <string name="guest">손님</string>
-    <string name="afdian">AFDIAN</string>
     <string name="no_root_directory">루트 디렉토리를 선택하지 마십시오</string>
     <string name="option_i">옵션 1</string>
     <string name="disabled">비활성화됨</string>

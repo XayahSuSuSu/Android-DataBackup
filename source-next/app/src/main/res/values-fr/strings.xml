@@ -395,7 +395,6 @@
     <string name="args_files_backed_up">%1$s fichiers sauvegardés</string>
     <string name="server">Serveur</string>
     <string name="ftp_setup">Configuration FTP</string>
-    <string name="afdian">AFDIAN</string>
     <string name="files">Fichiers</string>
     <string name="root_permission">Permission root</string>
     <string name="backup_settings">Sauvegarder les paramètres</string>

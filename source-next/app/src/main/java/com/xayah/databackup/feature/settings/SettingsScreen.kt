@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.xayah.databackup.BuildConfig
 import com.xayah.databackup.R
+import com.xayah.databackup.feature.AboutRoute
 import com.xayah.databackup.ui.component.CustomSUFileDialog
 import com.xayah.databackup.ui.component.LocalFloatingNavigationBarBottomPadding
 import com.xayah.databackup.ui.component.Preference
@@ -39,11 +40,13 @@ import com.xayah.databackup.ui.component.rememberFadingEdgeState
 import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.LaunchedEffect
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.ShellHelper
+import com.xayah.databackup.util.navigateSafely
 import kotlinx.coroutines.Dispatchers
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(navigator: Navigator) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val floatingNavigationBarBottomPadding = LocalFloatingNavigationBarBottomPadding.current
     val scrollState = rememberScrollState()
@@ -106,7 +109,10 @@ fun SettingsScreen() {
                 title = stringResource(R.string.application),
             )
 
-            SettingsApplicationCard(modifier = Modifier.padding(horizontal = 16.dp))
+            SettingsApplicationCard(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                onAboutClick = { navigator.navigateSafely(AboutRoute) },
+            )
 
             Spacer(modifier = Modifier.size(innerPadding.calculateBottomPadding() + floatingNavigationBarBottomPadding))
         }
@@ -150,7 +156,10 @@ private fun SettingsOverviewCard(
 }
 
 @Composable
-private fun SettingsApplicationCard(modifier: Modifier = Modifier) {
+private fun SettingsApplicationCard(
+    modifier: Modifier = Modifier,
+    onAboutClick: () -> Unit,
+) {
     PreferenceGroup(modifier = modifier) {
         SettingsEntry(
             icon = ImageVector.vectorResource(R.drawable.ic_palette),
@@ -176,12 +185,18 @@ private fun SettingsApplicationCard(modifier: Modifier = Modifier) {
             icon = ImageVector.vectorResource(R.drawable.ic_layout_grid),
             title = stringResource(R.string.about),
             subtitle = BuildConfig.VERSION_NAME,
+            onClick = onAboutClick,
         )
     }
 }
 
 @Composable
-private fun SettingsEntry(icon: ImageVector, title: String, subtitle: String) {
+private fun SettingsEntry(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit = {},
+) {
     Preference(
         icon = icon,
         title = title,
@@ -193,6 +208,6 @@ private fun SettingsEntry(icon: ImageVector, title: String, subtitle: String) {
                 contentDescription = null
             )
         },
-        onClick = {}
+        onClick = onClick,
     )
 }

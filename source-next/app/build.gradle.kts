@@ -84,11 +84,13 @@ dependencies {
 
     // Ktor
     implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
 
     // Coil
     implementation(libs.coil.compose)
+    implementation(libs.coil.network.ktor3)
 
     // Animated vector
     implementation(libs.androidx.animation.graphics)

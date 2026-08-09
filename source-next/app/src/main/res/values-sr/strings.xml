@@ -333,7 +333,6 @@
     <string name="public_key">Javni ključ</string>
     <string name="private_key">Privatni ključ</string>
     <string name="sftp_setup">SFTP podešavanja</string>
-    <string name="afdian">AFDIAN</string>
     <string name="option_i">Opcija 1</string>
     <string name="option_ii">Opcija 2</string>
     <string name="disabled">Onemogućeno</string>

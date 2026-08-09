@@ -10,6 +10,12 @@ data object MainNavigationRoute : NavKey
 data object UpdatesRoute : NavKey
 
 @Serializable
+data object AboutRoute : NavKey
+
+@Serializable
+data object TranslatorsRoute : NavKey
+
+@Serializable
 data object BackupSetupRoute : NavKey
 
 @Serializable

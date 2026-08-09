@@ -1,8 +1,5 @@
 package com.xayah.databackup.feature.update
 
-import android.content.Context
-import android.content.Intent
-import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -61,7 +58,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.FadeVisibility
@@ -69,6 +65,7 @@ import com.xayah.databackup.ui.component.MarkdownContent
 import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.Navigator
+import com.xayah.databackup.util.openUrl
 import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.compose.koinViewModel
@@ -446,7 +443,7 @@ private fun ErrorCard(
             )
             if (rateLimitResetLabel != null) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    TextButton(onClick = { openReleasePage(context = context) }) {
+                    TextButton(onClick = { context.openUrl(GITHUB_RELEASES_URL) }) {
                         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Text(text = stringResource(R.string.github))
                             Icon(
@@ -495,14 +492,3 @@ private fun ReleaseNotesCard(notes: String) {
 }
 
 private const val GITHUB_RELEASES_URL = "https://github.com/XayahSuSuSu/Android-DataBackup/releases"
-
-private fun openReleasePage(context: Context) {
-    runCatching {
-        context.startActivity(
-            Intent(Intent.ACTION_VIEW, GITHUB_RELEASES_URL.toUri())
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        )
-    }.onFailure {
-        Toast.makeText(context, context.getString(R.string.no_browser), Toast.LENGTH_SHORT).show()
-    }
-}
