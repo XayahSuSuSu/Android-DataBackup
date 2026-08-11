@@ -4,4 +4,20 @@
         <item quantity="one"><xliff:g id="count">%d</xliff:g> uur</item>
         <item quantity="other"><xliff:g id="count">%d</xliff:g> uren</item>
     </plurals>
+    <plurals name="num_seconds_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> seconde</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> secondes</item>
+    </plurals>
+    <plurals name="num_minutes_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> minuut</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> minuten</item>
+    </plurals>
+    <plurals name="num_days_ago">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> dag</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> dagen</item>
+    </plurals>
+    <plurals name="items">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> element</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> elementen</item>
+    </plurals>
 </resources>
