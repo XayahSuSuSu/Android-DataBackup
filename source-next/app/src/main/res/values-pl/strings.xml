@@ -537,4 +537,6 @@
     <string name="no_matching_backups_desc">Spróbuj zmienić kryteria wyszukiwania lub filtry.</string>
     <string name="clear_filters">Wyczyść filtry</string>
     <string name="all">Wszystkie</string>
+    <string name="recent_backups">Ostatnie kopie zapasowe</string>
+    <string name="view_all">Zobacz wszystko</string>
 </resources>
