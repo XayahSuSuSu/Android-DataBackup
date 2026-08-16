@@ -70,7 +70,10 @@ fun MainNavigationHost(navigator: Navigator) {
                 userScrollEnabled = true,
             ) { page ->
                 when (MainNavigationItems[page]) {
-                    FloatingNavigationItem.HOME -> DashboardScreen(navigator)
+                    FloatingNavigationItem.HOME -> DashboardScreen(
+                        navigator = navigator,
+                        onShowBackups = { animateToItem(FloatingNavigationItem.BACKUP) },
+                    )
                     FloatingNavigationItem.BACKUP -> BackupLibraryScreen(navigator)
                     FloatingNavigationItem.SETTINGS -> SettingsScreen(navigator)
                     else -> Unit

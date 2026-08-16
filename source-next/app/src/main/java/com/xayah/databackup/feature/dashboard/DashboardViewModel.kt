@@ -4,6 +4,7 @@ import arrow.optics.copy
 import arrow.optics.optics
 import com.xayah.databackup.App
 import com.xayah.databackup.R
+import com.xayah.databackup.data.BackupConfigRepository
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.LogHelper
@@ -32,16 +33,31 @@ data class DashboardStorageUiState(
     companion object
 }
 
-class DashboardViewModel : BaseViewModel() {
+enum class DashboardBackupsLoadState {
+    Loading,
+    Loaded,
+    Error,
+}
+
+class DashboardViewModel(
+    private val backupConfigRepository: BackupConfigRepository,
+) : BaseViewModel() {
     companion object {
         private const val TAG = "DashboardViewModel"
     }
 
     private val _storageUiState = MutableStateFlow(DashboardStorageUiState())
     val storageUiState: StateFlow<DashboardStorageUiState> = _storageUiState.asStateFlow()
+    private val _backupsLoadState = MutableStateFlow(
+        if (backupConfigRepository.isLoaded.value) DashboardBackupsLoadState.Loaded else DashboardBackupsLoadState.Loading
+    )
+    val backupsLoadState: StateFlow<DashboardBackupsLoadState> = _backupsLoadState.asStateFlow()
+    val backupConfigs = backupConfigRepository.configs
 
     fun initialize() {
         withLock(Dispatchers.IO) {
+            loadBackupConfigs()
+
             val backupPath = PathHelper.getBackupPath().first()
             if (RemoteRootService.mkdirs(backupPath).not()) {
                 LogHelper.e(TAG, "initialize", "Failed to mkdirs: $backupPath.")
@@ -92,6 +108,24 @@ class DashboardViewModel : BaseViewModel() {
                     DashboardStorageUiState.totalBytes set totalBytes
                 }
             }
+        }
+    }
+
+    fun retryLoadBackupConfigs() {
+        withLock(Dispatchers.IO) {
+            loadBackupConfigs()
+        }
+    }
+
+    private suspend fun loadBackupConfigs() {
+        _backupsLoadState.value = DashboardBackupsLoadState.Loading
+        runCatching {
+            backupConfigRepository.loadBackupConfigsFromLocal()
+        }.onSuccess {
+            _backupsLoadState.value = DashboardBackupsLoadState.Loaded
+        }.onFailure {
+            _backupsLoadState.value = DashboardBackupsLoadState.Error
+            LogHelper.e(TAG, "loadBackupConfigs", "Failed to load backup configs.", it)
         }
     }
 }

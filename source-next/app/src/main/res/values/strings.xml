@@ -546,6 +546,8 @@
     <string name="retry_after">Retry after: %1$s</string>
     <string name="all">All</string>
     <string name="no_backups">No backups yet</string>
+    <string name="recent_backups">Recent backups</string>
+    <string name="view_all">View all</string>
     <string name="no_backups_desc">Create your first backup to get started.</string>
     <string name="last_backup_value">Last backup: %1$s</string>
     <string name="back_up_now">Back up now</string>

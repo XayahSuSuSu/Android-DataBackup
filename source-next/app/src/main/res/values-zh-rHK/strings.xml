@@ -531,6 +531,8 @@
     <string name="retry_after">重試時間：%1$s</string>
     <string name="all">全部</string>
     <string name="no_backups">尚無備份</string>
+    <string name="recent_backups">最近備份</string>
+    <string name="view_all">查看全部</string>
     <string name="no_backups_desc">建立第一個備份即可開始使用。</string>
     <string name="last_backup_value">上次備份：%1$s</string>
     <string name="back_up_now">立即備份</string>

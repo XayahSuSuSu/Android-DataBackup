@@ -22,6 +22,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlin.uuid.Uuid
 
@@ -34,7 +36,9 @@ class BackupConfigRepository(
         const val NEW_CONFIG_INDEX = -1
     }
 
-    private val moshi: Moshi = Moshi.Builder()
+    private val mMutex = Mutex()
+
+    private val mMoshi: Moshi = Moshi.Builder()
         .add(
             PolymorphicJsonAdapterFactory.of(BackupBackend::class.java, "type")
                 .withSubtype(BackupBackend.Rustic::class.java, "rustic")
@@ -46,10 +50,11 @@ class BackupConfigRepository(
     private var _selectedIndex: MutableStateFlow<Int> = MutableStateFlow(NEW_CONFIG_INDEX)
     private val _configs: MutableStateFlow<List<BackupConfig>> = MutableStateFlow(listOf())
     private val _newConfig: MutableStateFlow<BackupConfig> = MutableStateFlow(BackupConfig())
+    private val _isLoaded = MutableStateFlow(false)
 
     val selectedIndex: StateFlow<Int> = _selectedIndex.asStateFlow()
     val configs: StateFlow<List<BackupConfig>> = _configs.asStateFlow()
-    val newConfig: StateFlow<BackupConfig> = _newConfig.asStateFlow()
+    val isLoaded: StateFlow<Boolean> = _isLoaded.asStateFlow()
 
     fun getCurrentConfig(): BackupConfig {
         return if (_selectedIndex.value == NEW_CONFIG_INDEX) {
@@ -141,26 +146,29 @@ class BackupConfigRepository(
 
     suspend fun loadBackupConfigsFromLocal() {
         withContext(Dispatchers.IO) {
-            val localBackupPath = PathHelper.getBackupPathBackups().first()
-            createNewBackup(localBackupPath)
-            val localConfigs = mutableListOf<BackupConfig>()
-            RemoteRootService.listFilePaths(path = localBackupPath, listFiles = false, listDirs = true).forEach {
-                val config = RemoteRootService.readText(PathHelper.getBackupConfigFile(it.path))
-                if (it.isDirectory) {
-                    val backupConfig = runCatching { moshi.adapter<BackupConfig>().fromJson(config) }.getOrNull()
-                    (backupConfig ?: BackupConfig()).also { config ->
-                        config.source = Source.LOCAL
-                        config.path = it.path
-                        localConfigs.add(config)
+            mMutex.withLock {
+                val localBackupPath = PathHelper.getBackupPathBackups().first()
+                createNewBackup(localBackupPath)
+                val localConfigs = mutableListOf<BackupConfig>()
+                RemoteRootService.listFilePaths(path = localBackupPath, listFiles = false, listDirs = true).forEach {
+                    val config = RemoteRootService.readText(PathHelper.getBackupConfigFile(it.path))
+                    if (it.isDirectory) {
+                        val backupConfig = runCatching { mMoshi.adapter<BackupConfig>().fromJson(config) }.getOrNull()
+                        (backupConfig ?: BackupConfig()).also { config ->
+                            config.source = Source.LOCAL
+                            config.path = it.path
+                            localConfigs.add(config)
+                        }
                     }
                 }
+                deduplicateConfigs(localConfigs)
+                localConfigs.sortByDescending { it.updatedAt }
+                _configs.emit(localConfigs)
+                val selectedUuid = App.application.readString(BackupConfigSelectedUuid).first()
+                _selectedIndex.emit(_configs.value.indexOfFirst { it.uuidString == selectedUuid })
+                _isLoaded.value = true
+                LogHelper.i(TAG, "loadBackupConfigsFromLocal", "configs: ${_configs.value}")
             }
-            deduplicateConfigs(localConfigs)
-            localConfigs.sortByDescending { it.updatedAt }
-            _configs.emit(localConfigs)
-            val selectedUuid = App.application.readString(BackupConfigSelectedUuid).first()
-            _selectedIndex.emit(_configs.value.indexOfFirst { it.uuidString == selectedUuid })
-            LogHelper.i(TAG, "loadBackupConfigsFromLocal", "configs: ${_configs.value}")
         }
     }
 
@@ -173,7 +181,7 @@ class BackupConfigRepository(
         }
 
         val json = runCatching {
-            moshi.adapter<BackupConfig>().toJson(config)
+            mMoshi.adapter<BackupConfig>().toJson(config)
         }.onFailure {
             LogHelper.e(TAG, "saveBackupConfig", "Failed to serialize to json.", it)
         }.getOrNull()
