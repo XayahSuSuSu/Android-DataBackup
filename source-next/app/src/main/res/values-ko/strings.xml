@@ -537,4 +537,6 @@
     <string name="no_matching_backups">일치하는 백업이 없음</string>
     <string name="no_matching_backups_desc">검색어나 필터를 변경해 보세요.</string>
     <string name="clear_filters">필터 해제</string>
+    <string name="recent_backups">최근 백업</string>
+    <string name="view_all">모두 보기</string>
 </resources>
