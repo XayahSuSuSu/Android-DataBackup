@@ -528,4 +528,15 @@
     <string name="anonymous_repository">Repositori anonim</string>
     <string name="waiting_to_start">Menunggu untuk dimulai</string>
     <string name="no_snapshot_yet">Belum ada snapshot</string>
+    <string name="save_backup_failed">Gagal menyimpan backup.</string>
+    <string name="all">Semua</string>
+    <string name="no_backups">Belum ada backup</string>
+    <string name="recent_backups">Backup terbaru</string>
+    <string name="view_all">Lihat semua</string>
+    <string name="no_backups_desc">Buat backup pertama untuk memulai.</string>
+    <string name="last_backup_value">Backup terakhir: %1$s</string>
+    <string name="back_up_now">Backup sekarang.</string>
+    <string name="no_matching_backups">Tidak ada backup yang cocok</string>
+    <string name="no_matching_backups_desc">Coba sesuaikan pencarian atau filter Anda.</string>
+    <string name="clear_filters">Bersihkan filter</string>
 </resources>
