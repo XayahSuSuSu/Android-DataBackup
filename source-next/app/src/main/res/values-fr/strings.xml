@@ -537,4 +537,6 @@
     <string name="no_matching_backups">Pas de sauvegardes correspondantes</string>
     <string name="no_matching_backups_desc">Essayez d\'ajuster vos recherches ou filtres.</string>
     <string name="clear_filters">Effacer les filtres</string>
+    <string name="recent_backups">Sauvegardes récentes</string>
+    <string name="view_all">Voir tout</string>
 </resources>
