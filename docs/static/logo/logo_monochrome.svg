@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+    width="108"
+    height="108"
+    viewBox="0 0 1024 1024"
+    role="img"
+    aria-labelledby="title desc">
+  <title id="title">DataBackup monochrome adaptive icon</title>
+  <desc id="desc">A single solid open-loop D silhouette for Android themed icons.</desc>
+  <path
+      d="M760 600 C780 560 790 520 786 480 C774 348 670 264 520 264 H440 C394 264 356 302 356 348 V676 C356 722 394 760 440 760 H520 C568 760 610 750 646 730"
+      transform="translate(-24 12)"
+      fill="none"
+      stroke="#000000"
+      stroke-width="116"
+      stroke-linecap="round"
+      stroke-linejoin="round"/>
+</svg>

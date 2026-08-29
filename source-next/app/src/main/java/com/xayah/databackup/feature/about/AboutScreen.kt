@@ -25,6 +25,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -126,22 +127,18 @@ private fun AboutAppCard(modifier: Modifier = Modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 28.dp),
+                .padding(horizontal = 24.dp, vertical = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Surface(
-                modifier = Modifier.size(88.dp),
-                color = MaterialTheme.colorScheme.primaryContainer,
-                shape = CircleShape,
-            ) {
-                Icon(
-                    modifier = Modifier.fillMaxSize(),
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_launcher_foreground),
-                    contentDescription = null,
-                    tint = Color.Unspecified,
-                )
-            }
+            Icon(
+                modifier = Modifier
+                    .size(72.dp)
+                    .scale(1.67f),
+                imageVector = ImageVector.vectorResource(R.drawable.ic_launcher_foreground),
+                contentDescription = null,
+                tint = Color.Unspecified,
+            )
 
             Text(
                 text = stringResource(R.string.app_name),

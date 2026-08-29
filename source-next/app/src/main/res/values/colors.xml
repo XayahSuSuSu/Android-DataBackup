@@ -8,9 +8,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="ic_launcher_background">#C1E8FF</color>
-    <color name="ic_launcher_foreground_main">#219BCC</color>
-    <color name="ic_launcher_foreground_sub">@color/colorPrimary</color>
-    <color name="colorPrimary">#00668B</color>
-    <color name="colorOnPrimary">#ffffff</color>
+    <color name="splash_screen_background">#F3EDF7</color>
 </resources>

@@ -79,7 +79,10 @@ object NotificationHelper {
     }
 
     fun getNotificationBuilder(context: Context) =
-        NotificationCompat.Builder(context, FOREGROUND_SERVICE_CHANNEL_ID).setSmallIcon(R.mipmap.ic_launcher).setOnlyAlertOnce(true).setSilent(true)
+        NotificationCompat.Builder(context, FOREGROUND_SERVICE_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_launcher_monochrome)
+            .setOnlyAlertOnce(true)
+            .setSilent(true)
 
     fun getNotificationManager(context: Context) = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 }
