@@ -420,4 +420,13 @@
     <string name="notification_desc">This is needed to post necessary notifications</string>
     <string name="permission_is_denied">Permission is denied</string>
     <string name="root_denied_msg">Please check your root manager and restart app</string>
+    <string name="compression_type_title">Compression Type</string> <!-- Used in code as R.string.compression_type -->
+    <string name="compression_type_description">Select the compression type for backups. TWRP ZIP is compatible with TWRP recovery.</string> <!-- Used in code as R.string.compression_type_desc -->
+    <string name="verify_backup">Verify Backup</string>
+    <string name="verify_backup_desc">Check integrity of selected backup</string>
+    <string name="verify_backup_title">Verify Backup</string>
+    <string name="verifying_backup_in_progress">Verifying backup...</string>
+    <string name="verification_results">Verification Results</string>
+    <string name="verification_success">Backup verification successful. All files are intact.</string>
+    <string name="verification_failed">Backup verification failed. Some files may be corrupted.</string>
 </resources>

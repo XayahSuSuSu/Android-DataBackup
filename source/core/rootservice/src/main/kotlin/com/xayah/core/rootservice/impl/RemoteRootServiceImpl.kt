@@ -516,4 +516,9 @@ internal class RemoteRootServiceImpl(private val context: Context) : IRemoteRoot
     }
 
     override fun calculateMD5(src: String): String = synchronized(lock) { HashUtil.calculateMD5(src) }
+
+    override fun openFileForStreaming(path: String): ParcelFileDescriptor = synchronized(lock) {
+        val file = File(path)
+        return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
+    }
 }
