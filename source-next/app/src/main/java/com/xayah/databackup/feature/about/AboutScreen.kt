@@ -44,6 +44,7 @@ import com.xayah.databackup.ui.component.SectionHeader
 import com.xayah.databackup.ui.component.rememberFadingEdgeState
 import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
+import com.xayah.databackup.ui.theme.primaryContainerLow
 import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.navigateSafely
 import com.xayah.databackup.util.openUrl
@@ -157,8 +158,8 @@ private fun AboutAppCard(modifier: Modifier = Modifier) {
                 },
                 shape = CircleShape,
                 colors = AssistChipDefaults.assistChipColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    containerColor = MaterialTheme.colorScheme.primaryContainerLow,
+                    labelColor = MaterialTheme.colorScheme.onSurface,
                 ),
                 border = null,
             )

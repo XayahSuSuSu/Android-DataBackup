@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.xayah.databackup.R
+import com.xayah.databackup.ui.theme.primaryContainerLow
 import kotlin.math.hypot
 
 private val FloatingNavigationItemMaxWidth = 96.dp
@@ -72,7 +73,6 @@ val LocalFloatingNavigationBarBottomPadding = staticCompositionLocalOf { 0.dp }
 private const val DARK_BACKGROUND_LUMINANCE_THRESHOLD = 0.5f
 private const val DARK_SHADOW_ALPHA = 0.14f
 private const val LIGHT_SHADOW_ALPHA = 0.07f
-private const val SELECTED_INDICATOR_ALPHA = 0.15f
 private const val HOVER_INDICATOR_ALPHA = 0.08f
 private const val INDICATOR_SPRING_STIFFNESS = 1_000f
 
@@ -152,7 +152,7 @@ fun FloatingNavigationBar(
                         .width(itemWidth)
                         .fillMaxHeight()
                         .padding(vertical = FloatingNavigationBarPadding)
-                        .background(color = MaterialTheme.colorScheme.primary.copy(alpha = SELECTED_INDICATOR_ALPHA), shape = CircleShape),
+                        .background(color = MaterialTheme.colorScheme.primaryContainerLow, shape = CircleShape),
                 )
             }
 
@@ -185,6 +185,7 @@ private fun RowScope.FloatingNavigationBarItem(
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
     val isHovered by interactionSource.collectIsHoveredAsState()
+    val contentColor = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
 
     Column(
         modifier = Modifier
@@ -223,6 +224,7 @@ private fun RowScope.FloatingNavigationBarItem(
     ) {
         Icon(
             imageVector = ImageVector.vectorResource(item.iconRes),
+            tint = contentColor,
             contentDescription = null,
         )
         Text(
@@ -230,6 +232,7 @@ private fun RowScope.FloatingNavigationBarItem(
                 .fillMaxWidth()
                 .padding(horizontal = FloatingNavigationLabelHorizontalPadding),
             text = stringResource(item.labelRes),
+            color = contentColor,
             style = MaterialTheme.typography.labelSmall,
             textAlign = TextAlign.Center,
             maxLines = 1,

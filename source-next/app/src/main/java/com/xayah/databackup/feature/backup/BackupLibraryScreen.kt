@@ -27,6 +27,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
@@ -49,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -65,6 +67,7 @@ import com.xayah.databackup.ui.component.SearchTextField
 import com.xayah.databackup.ui.component.rememberFadingEdgeState
 import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
+import com.xayah.databackup.ui.theme.primaryContainerLow
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.PathHelper
@@ -261,6 +264,11 @@ private fun BackupLibraryFilters(
         BackupLibraryFilter.entries.forEach { filter ->
             FilterChip(
                 selected = selectedFilter == filter,
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.20f)
+                        .compositeOver(MaterialTheme.colorScheme.surfaceContainer),
+                    selectedLabelColor = MaterialTheme.colorScheme.onSurface,
+                ),
                 onClick = { onFilterChanged(filter) },
                 label = {
                     Text(
@@ -322,8 +330,8 @@ private fun BackupConfigCard(
             }
 
             Surface(
-                color = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                color = MaterialTheme.colorScheme.primaryContainerLow,
+                contentColor = MaterialTheme.colorScheme.onSurface,
                 shape = MaterialTheme.shapes.small,
             ) {
                 Text(

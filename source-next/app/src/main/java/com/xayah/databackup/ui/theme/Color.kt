@@ -1,6 +1,8 @@
 package com.xayah.databackup.ui.theme
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.toArgb
 import com.xayah.databackup.ui.theme.color.palettes.TonalPalette
 
@@ -17,3 +19,7 @@ val GreenSource = Color(0xFF266A4A)
 fun Color.tone(tone: Int): Color {
     return Color(TonalPalette.fromInt(this.toArgb()).tone(tone))
 }
+
+/** A low-emphasis primary tint for labels and selection indicators, paired with onSurface. */
+val ColorScheme.primaryContainerLow: Color
+    get() = primary.copy(alpha = 0.12f).compositeOver(surfaceContainer)

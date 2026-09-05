@@ -58,6 +58,7 @@ import com.xayah.databackup.ui.component.fadeContentTransitionSpec
 import com.xayah.databackup.ui.component.rememberFadingEdgeState
 import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
+import com.xayah.databackup.ui.theme.primaryContainerLow
 import com.xayah.databackup.util.LaunchedEffect
 import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.navigateSafely
@@ -351,8 +352,8 @@ private fun DashboardBackupCard(
 @Composable
 private fun DashboardBackupChip(
     text: String,
-    containerColor: Color = MaterialTheme.colorScheme.secondaryContainer,
-    labelColor: Color = MaterialTheme.colorScheme.onSecondaryContainer,
+    containerColor: Color = MaterialTheme.colorScheme.primaryContainerLow,
+    labelColor: Color = MaterialTheme.colorScheme.onSurface,
     onClick: () -> Unit,
 ) {
     AssistChip(
@@ -374,8 +375,8 @@ private fun DashboardBackupChip(
 @Composable
 private fun DashboardBackupIcon(
     icon: ImageVector,
-    containerColor: Color = MaterialTheme.colorScheme.primaryContainer,
-    contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+    containerColor: Color = MaterialTheme.colorScheme.primaryContainerLow,
+    contentColor: Color = MaterialTheme.colorScheme.primary,
 ) {
     Surface(
         modifier = Modifier.size(44.dp),
