@@ -539,4 +539,13 @@
     <string name="clear_filters">Effacer les filtres</string>
     <string name="recent_backups">Sauvegardes récentes</string>
     <string name="view_all">Voir tout</string>
+    <string name="snapshots">Snapshots</string>
+    <string name="snapshot_summary">%1$s · %2$s</string>
+    <string name="delete_snapshot">Supprimer snapshot</string>
+    <string name="delete_snapshot_description">Supprimer snapshot %1$s (%2$s)</string>
+    <string name="confirm_delete_snapshot">Vous ne serez plus en mesure de restaurer depuis cette snapshot.</string>
+    <string name="delete_snapshot_failed">Impossible de supprimer cette snapshot. Vérifiez l\'accès au dépôt et essayez à nouveau.</string>
+    <string name="restore_snapshot">Restaurer la snapshot</string>
+    <string name="restore_snapshot_description">Restaurer la snapshot %1$s (%2$s)</string>
+    <string name="restore_snapshot_load_failed">Impossible de charger la snapshot</string>
 </resources>
