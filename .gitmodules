@@ -1,6 +1,9 @@
 [submodule "source/native/src/main/jni/external/tar/tar"]
 	path = source/native/src/main/jni/external/tar/tar
 	url = https://github.com/XayahSuSuSu/tar
+[submodule "source-next/.codex/skills"]
+	path = source-next/.codex/skills
+	url = https://github.com/android/skills
 [submodule "source-next/native/src/main/jni/external/tar/tar"]
 	path = source-next/native/src/main/jni/external/tar/tar
 	url = https://github.com/XayahSuSuSu/tar
@@ -10,6 +13,6 @@
 [submodule "source-next/native/src/main/jni/external/rustic/rustic_core"]
 	path = source-next/native/src/main/jni/external/rustic/rustic_core
 	url = https://github.com/rustic-rs/rustic_core
-[submodule "source-next/.codex/skills"]
-	path = source-next/.codex/skills
-	url = https://github.com/android/skills
+[submodule "source-next/native/src/main/jni/external/xdl/xdl"]
+	path = source-next/native/src/main/jni/external/xdl/xdl
+	url = https://github.com/hexhacking/xDL
