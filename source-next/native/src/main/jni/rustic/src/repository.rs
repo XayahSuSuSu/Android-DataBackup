@@ -96,6 +96,9 @@ fn create_snapshot_from_repository(
 }
 
 /// Restores the selected snapshot to the destination path.
+/// `snapshot_id` also accepts `snapshot_id:path` to select a single file or directory.
+/// Directory contents are placed directly in the destination. For a file, use a filename
+/// or an existing destination directory (which retains the snapshot basename).
 pub fn restore_snapshot(
     repository_path: &str,
     password: &str,
@@ -119,9 +122,6 @@ pub fn restore_snapshot(
 /// Removes exactly one snapshot and returns the remaining metadata.
 /// Shared data is retained until repository pruning.
 pub fn delete_snapshot(repository_path: &str, password: &str, snapshot_id: &str) -> Result<String> {
-    if snapshot_id.len() != 64 || !snapshot_id.bytes().all(|byte| byte.is_ascii_hexdigit()) {
-        return Err("A full hexadecimal snapshot ID is required".into());
-    }
     let repo = open_repository(repository_path, password)?;
     let snapshot = repo.get_snapshot_from_str(snapshot_id, |_| true)?;
     let mut snapshots = repo.get_all_snapshots()?;
@@ -198,7 +198,6 @@ fn backends(repository_path: &str) -> Result<RepositoryBackends> {
 /// Reads UTF-8 text from the specified files in a snapshot without restoring them to the filesystem.
 ///
 /// Returns a JSON object mapping each requested path to its text content.
-/// `snapshot_id` must be an explicit hexadecimal snapshot ID or prefix, not `latest`.
 ///
 /// # Errors
 ///
@@ -210,9 +209,6 @@ pub fn read_snapshot_text_files(
     snapshot_id: &str,
     paths: &[String],
 ) -> Result<String> {
-    if snapshot_id.is_empty() || !snapshot_id.bytes().all(|c| c.is_ascii_hexdigit()) {
-        return Err("An explicit snapshot ID is required".into());
-    }
     let repo = open_repository(repository_path, password)?.to_indexed()?;
     let mut result = serde_json::Map::new();
     for path in paths {

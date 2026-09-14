@@ -35,4 +35,5 @@ interface IRemoteRootService {
     ParcelFileDescriptor listRusticSnapshots(String repositoryPath, String password);
     void restoreRusticSnapshot(String repositoryPath, String password, String snapshotId, String destinationPath);
     void checkRusticRepository(String repositoryPath, String password);
+    void restoreRusticAppApk(String repositoryPath, String password, String snapshotId, String packageName, int userId, in List<String> apkPaths);
 }

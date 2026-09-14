@@ -69,7 +69,8 @@ object RemoteRootService {
         val parcel = Parcel.obtain()
         parcel.setDataPosition(0)
         block(parcel)
-        val tmpFile = File.createTempFile(TMP_PARCEL_PREFIX, TMP_SUFFIX, context.cacheDir)
+        val cacheDir = PathHelper.getCacheDir(PathHelper.CACHE_SUBDIR_PARCEL, context.cacheDir)
+        val tmpFile = File.createTempFile(TMP_PARCEL_PREFIX, TMP_SUFFIX, cacheDir)
         tmpFile.delete()
         tmpFile.createNewFile()
         tmpFile.writeBytes(parcel.marshall())
@@ -351,6 +352,29 @@ object RemoteRootService {
             Rustic.restoreSnapshot(repositoryPath, password, snapshotId, destinationPath)
         }
 
+        override fun restoreRusticAppApk(
+            repositoryPath: String,
+            password: String,
+            snapshotId: String,
+            packageName: String,
+            userId: Int,
+            apkPaths: List<String>,
+        ) {
+            require(packageName != context.packageName) { "Cannot restore DataBackup while it is running" }
+            require(mUserManager.users.any { it.id == userId }) { "Target user does not exist: $userId" }
+            val installer = ApkInstaller(mSystemContext, userId)
+            RusticApkRestorer(context.cacheDir, installer).restore(
+                repositoryPath = repositoryPath,
+                password = password,
+                snapshotId = snapshotId,
+                packageName = packageName,
+                apkPaths = apkPaths,
+            )
+            check(mPackageManagerHidden.getPackageInfoAsUser(packageName, 0, userId).applicationInfo != null) {
+                "Package is not installed for user $userId: $packageName"
+            }
+        }
+
         override fun checkRusticRepository(repositoryPath: String, password: String) {
             Rustic.checkRepository(repositoryPath, password)
         }
@@ -616,6 +640,18 @@ object RemoteRootService {
 
     suspend fun restoreRusticSnapshot(repositoryPath: String, password: String, snapshotId: String, destinationPath: String) {
         getService()?.restoreRusticSnapshot(repositoryPath, password, snapshotId, destinationPath)
+    }
+
+    suspend fun restoreRusticAppApk(
+        repositoryPath: String,
+        password: String,
+        snapshotId: String,
+        packageName: String,
+        userId: Int,
+        apkPaths: List<String>,
+    ) = withContext(Dispatchers.IO) {
+        val service = checkNotNull(getService()) { "Root service is unavailable" }
+        service.restoreRusticAppApk(repositoryPath, password, snapshotId, packageName, userId, apkPaths)
     }
 
     suspend fun checkRusticRepository(repositoryPath: String, password: String) {

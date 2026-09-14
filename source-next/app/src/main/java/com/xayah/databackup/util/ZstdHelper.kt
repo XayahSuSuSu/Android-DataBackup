@@ -20,10 +20,11 @@ object ZstdHelper {
         var status = 0
         var info = ""
 
-        val stdOut = File.createTempFile(TMP_FIFO_PREFIX, TMP_SUFFIX, App.application.cacheDir)
+        val cacheDir = PathHelper.getCacheDir(PathHelper.CACHE_SUBDIR_FIFO)
+        val stdOut = File.createTempFile(TMP_FIFO_PREFIX, TMP_SUFFIX, cacheDir)
         stdOut.delete()
         Os.mkfifo(stdOut.path, 420)
-        val stdErr = File.createTempFile(TMP_FIFO_PREFIX, TMP_SUFFIX, App.application.cacheDir)
+        val stdErr = File.createTempFile(TMP_FIFO_PREFIX, TMP_SUFFIX, cacheDir)
         stdErr.delete()
         Os.mkfifo(stdErr.path, 420)
         runCatching {

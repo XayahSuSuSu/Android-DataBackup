@@ -33,6 +33,7 @@ object Rustic {
         )
     }
 
+    /** [snapshotId] accepts a snapshot ID or `snapshotId:path` to restore a single file or directory. */
     fun restoreSnapshot(repositoryPath: String, password: String, snapshotId: String, destinationPath: String) {
         nativeRestoreSnapshot(repositoryPath, password, snapshotId, destinationPath)
     }

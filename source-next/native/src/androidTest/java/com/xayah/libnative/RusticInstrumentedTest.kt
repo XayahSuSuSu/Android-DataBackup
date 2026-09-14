@@ -59,6 +59,21 @@ class RusticInstrumentedTest {
         assertFalse(File(workspace.restore, workspace.sourcePath.removePrefix("/") + "/cache/rustic/config/123").exists())
     }
 
+    @Test
+    fun restoresSelectedFileAndDirectoryThroughJni() {
+        workspace.writeSourceFile(SOURCE_FILE, SOURCE_CONTENT)
+        Rustic.initRepository(workspace.repositoryPath, PASSWORD)
+        val snapshotId = createSnapshot()
+        val apk = File(workspace.restore, "staging/base.apk")
+        Rustic.restoreSnapshot(workspace.repositoryPath, PASSWORD, "$snapshotId:custom/renamed.txt", apk.absolutePath)
+        assertEquals("mapped file", apk.readText())
+        val metadata = File(workspace.restore, "metadata")
+        Rustic.restoreSnapshot(workspace.repositoryPath, PASSWORD, "$snapshotId:$METADATA_DIRECTORY", metadata.absolutePath)
+        assertEquals("metadata", File(metadata, "manifest.json").readText())
+        assertEquals(setOf("staging", "metadata"), workspace.restore.list()!!.toSet())
+        assertEquals(setOf("manifest.json"), metadata.list()!!.toSet())
+    }
+
     private fun createSnapshot(): String {
         logStep("Creating snapshot from source: ${workspace.sourcePath}")
         val staging = File(workspace.source, "cache/rustic/config/123").apply { mkdirs() }

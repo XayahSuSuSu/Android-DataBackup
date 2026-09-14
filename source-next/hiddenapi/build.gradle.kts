@@ -6,6 +6,10 @@ android {
     namespace = "com.xayah.hiddenapi"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
+    buildFeatures {
+        aidl = true
+    }
+
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
 

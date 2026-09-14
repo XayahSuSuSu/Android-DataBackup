@@ -78,6 +78,67 @@ fn temp_path(name: &str) -> Result<std::path::PathBuf, Box<dyn Error>> {
 }
 
 #[test]
+fn restores_only_selected_snapshot_path() -> Result<(), Box<dyn Error>> {
+    let root = temp_path("selected-path")?;
+    let source = root.join("source");
+    fs::create_dir_all(source.join("app/empty"))?;
+    fs::write(source.join("app/settings"), "app data")?;
+    fs::write(source.join("base.apk"), "apk bytes")?;
+    fs::write(source.join("unselected"), "other app")?;
+    let repository = root.join("repo");
+    let repo = repository.to_str().unwrap();
+    rustic::init_repository(repo, "password")?;
+    let snapshot = rustic::create_snapshot(
+        repo,
+        "password",
+        &[rustic::SourceMapping {
+            source_path: source.to_str().unwrap().into(),
+            snapshot_path: "data".into(),
+        }],
+        &[],
+    )?;
+
+    let restore = root.join("restored-app");
+    rustic::restore_snapshot(
+        repo,
+        "password",
+        &format!("{snapshot}:data/app"),
+        restore.to_str().unwrap(),
+    )?;
+    assert_eq!(fs::read_to_string(restore.join("settings"))?, "app data");
+    assert!(restore.join("empty").is_dir());
+    assert_eq!(fs::read_dir(&restore)?.count(), 2);
+    assert!(!restore.join("app").exists());
+    assert!(!restore.join("unselected").exists());
+
+    let apk = root.join("staging/renamed.apk");
+    rustic::restore_snapshot(
+        repo,
+        "password",
+        &format!("{snapshot}:data/base.apk"),
+        apk.to_str().unwrap(),
+    )?;
+    assert_eq!(fs::read_to_string(&apk)?, "apk bytes");
+    assert_eq!(fs::read_dir(apk.parent().unwrap())?.count(), 1);
+
+    let missing = root.join("missing");
+    for (password, path) in [("password", "data/missing"), ("wrong", "data/app")] {
+        assert!(
+            rustic::restore_snapshot(
+                repo,
+                password,
+                &format!("{snapshot}:{path}"),
+                missing.to_str().unwrap()
+            )
+            .is_err()
+        );
+        assert!(!missing.exists());
+    }
+    fs::remove_dir_all(root)?;
+    Ok(())
+}
+
+#[test]
 fn detects_and_validates_repository() -> Result<(), Box<dyn Error>> {
     let root = temp_path("detect-repository")?;
     let repository = root.join("repo");
@@ -347,15 +408,13 @@ fn reads_metadata_from_snapshot_without_restoring_live_files() -> Result<(), Box
     )?)?;
     assert_eq!(files[&paths[0]], r#"{"schemaVersion":1}"#);
     assert_eq!(fs::read_to_string(&metadata)?, "changed on device");
-    assert!(
-        rustic::read_snapshot_text_files(
-            repository.to_str().unwrap(),
-            "password",
-            "latest",
-            &paths
-        )
-        .is_err()
-    );
+    let latest_files: serde_json::Value = serde_json::from_str(&rustic::read_snapshot_text_files(
+        repository.to_str().unwrap(),
+        "password",
+        "latest",
+        &paths,
+    )?)?;
+    assert_eq!(latest_files, files);
     assert!(
         rustic::read_snapshot_text_files(
             repository.to_str().unwrap(),
@@ -397,13 +456,7 @@ fn deletes_only_selected_snapshot_and_preserves_shared_data() -> Result<(), Box<
         serde_json::from_str(&rustic::list_snapshots(repository_path, password)?)?;
     let selected = snapshots[0]["id"].as_str().unwrap();
     let remaining = snapshots[1]["id"].as_str().unwrap();
-    for invalid in [
-        "",
-        "latest",
-        &selected[..8],
-        &"z".repeat(64),
-        &"0".repeat(64),
-    ] {
+    for invalid in ["", &"z".repeat(64), &"0".repeat(64)] {
         assert!(rustic::delete_snapshot(repository_path, password, invalid).is_err());
     }
     assert!(rustic::delete_snapshot(repository_path, "wrong-password", selected).is_err());

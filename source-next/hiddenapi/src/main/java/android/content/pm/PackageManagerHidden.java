@@ -28,6 +28,31 @@ import dev.rikka.tools.refine.RefineAs;
  */
 @RefineAs(PackageManager.class)
 public class PackageManagerHidden {
+    /**
+     * Flag parameter for {@link #installPackage} to indicate that you want to
+     * replace an already installed package, if one exists.
+     *
+     * @hide
+     */
+    public static final int INSTALL_REPLACE_EXISTING = 0x00000002;
+
+    /**
+     * Flag parameter for {@link #installPackage} to indicate that you want to
+     * allow test packages (those that have set android:testOnly in their
+     * manifest) to be installed.
+     *
+     * @hide
+     */
+    public static final int INSTALL_ALLOW_TEST = 0x00000004;
+
+    /**
+     * Flag parameter for {@link #installPackage} to bypass the low targer sdk version block
+     * for this install.
+     *
+     * @hide See <a href="https://cs.android.com/android/platform/superproject/+/android-14.0.0_r75:frameworks/base/core/java/android/content/pm/PackageManager.java;l=1777">PackageManager.java</a>
+     */
+    public static final int INSTALL_BYPASS_LOW_TARGET_SDK_BLOCK = 0x01000000;
+
     public List<PackageInfo> getInstalledPackagesAsUser(int flags, int userId) {
         throw new RuntimeException("Stub!");
     }
