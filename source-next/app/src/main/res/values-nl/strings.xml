@@ -545,4 +545,7 @@
     <string name="delete_snapshot_description">Verwijder opname %1$s (%2$s)</string>
     <string name="confirm_delete_snapshot">U zal niet meer kunnen herstellen vanaf deze opname.</string>
     <string name="delete_snapshot_failed">Kon de opname niet verwijderen. Controleer de toegang tot de opslagruimte en probeer het opnieuw.</string>
+    <string name="restore_snapshot">Opname herstellen</string>
+    <string name="restore_snapshot_description">Herstel opname %1$s (%2$s)</string>
+    <string name="restore_snapshot_load_failed">Kon opname niet laden</string>
 </resources>
