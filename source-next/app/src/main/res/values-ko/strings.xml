@@ -541,4 +541,11 @@
     <string name="view_all">모두 보기</string>
     <string name="snapshots">스냅샷</string>
     <string name="snapshot_summary">%1$s · %2$s</string>
+    <string name="delete_snapshot">스냅샷 지우기</string>
+    <string name="delete_snapshot_description">스냅샷 %1$s (%2$s) 지우기</string>
+    <string name="confirm_delete_snapshot">이 스냅샷에서는 더 이상 복원할 수 없습니다.</string>
+    <string name="delete_snapshot_failed">스냅샷을 삭제할 수 없습니다. 저장소에 대한 접근 권한을 확인한 후 다시 시도하세요.</string>
+    <string name="restore_snapshot">스낸샷 복원</string>
+    <string name="restore_snapshot_description">스냅샷 %1$s (%2$s) 복원</string>
+    <string name="restore_snapshot_load_failed">스냅샷을 불러올 수 없습니다</string>
 </resources>
