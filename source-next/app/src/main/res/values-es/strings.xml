@@ -439,15 +439,15 @@
     <string name="hidden_password">Contraseña oculta</string>
     <string name="error">Error</string>
     <string name="retry">Reintentar</string>
-    <string name="select_contacts">Elige contactos</string>
-    <string name="select_call_logs">Elige registros de llamadas</string>
+    <string name="select_contacts">Seleccionar contactos</string>
+    <string name="select_call_logs">Seleccionar registros de llamadas</string>
     <string name="auto_screen_off_desc">Apaga la pantalla durante la copia o restauración y la enciende al terminar</string>
     <string name="additional_data">Datos adicionales</string>
     <string name="sms">SMS</string>
     <string name="select_messages">Elige mensajes</string>
     <string name="actions">Acciones</string>
     <string name="backup_your_data">Copia de seguridad de tus datos</string>
-    <string name="restore_your_data">Restaurar tus datos</string>
+    <string name="restore_your_data">Restaurar sus datos</string>
     <string name="see_your_previous_backups">Ver tus copias de seguridad anteriores</string>
     <string name="set_up_cloud_storage">Configurar almacenamiento en la nube</string>
     <string name="schedule">Programar horario</string>
@@ -533,4 +533,14 @@
     <string name="no_backups">Ninguna copia de seguridad todavía</string>
     <string name="no_backups_desc">Crear tu primera copia de seguridad para empezar.</string>
     <string name="last_backup_value">Última copia de seguridad: %1$s</string>
+    <string name="view_all">Ver todo</string>
+    <string name="no_matching_backups_desc">Pruebe a ajustar su búsqueda o sus filtros.</string>
+    <string name="snapshots">Instantáneas</string>
+    <string name="delete_snapshot">Eliminar instantánea</string>
+    <string name="delete_snapshot_description">Eliminar instantánea %1$s (%2$s)</string>
+    <string name="confirm_delete_snapshot">Ya no será capaz de efectuar una restauración a partir de esta instantánea.</string>
+    <string name="delete_snapshot_failed">No se pudo eliminar la instantánea. Compruebe que puede acceder al repositorio y vuelva a intentarlo.</string>
+    <string name="restore_snapshot">Restaurar instantánea</string>
+    <string name="restore_snapshot_description">Restaurar instantánea %1$s (%2$s)</string>
+    <string name="restore_snapshot_load_failed">No se pudo cargar la instantánea</string>
 </resources>
