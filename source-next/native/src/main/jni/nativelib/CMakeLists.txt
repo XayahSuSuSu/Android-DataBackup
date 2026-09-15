@@ -18,6 +18,7 @@ add_link_options(
 # libnativelib.so
 add_library(nativelib SHARED
         nativelib.cpp
+        owner.cpp
         selinux.cpp
 )
 

@@ -5,6 +5,16 @@ object NativeLib {
     external fun getUidGid(path: String): IntArray
 
     /**
+     * Restores app data ownership, including cache, per-SDK and PCC GID rules.
+     * Requires root, a stopped app and stable paths. Pass per-SDK roots, not SDK package containers.
+     *
+     * @param uid Full destination app, sandbox or PCC UID, including the Android user ID.
+     * @param previousUid UID on restored files; pass uid for GID-only repair.
+     * @return 0 on success, -1 on failure; partial changes may remain.
+     */
+    external fun chownAppDir(path: String, uid: Int, previousUid: Int): Int
+
+    /**
      * Restores the SELinux context of the given path.
      *
      * @param flags Bitwise OR of SELINUX_ANDROID_RESTORECON_* flags.
