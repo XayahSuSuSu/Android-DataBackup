@@ -30,6 +30,11 @@ corrosion_import_crate(
         LOCKED
 )
 
+corrosion_set_env_vars(rustic
+        "TARGET_CFLAGS=--target=${CMAKE_C_COMPILER_TARGET}"
+        "TARGET_CXXFLAGS=--target=${CMAKE_CXX_COMPILER_TARGET}"
+)
+
 # librustic.so is produced by linking the Rust staticlib into this JNI anchor.
 add_library(rustic-jni SHARED
         rustic.cpp

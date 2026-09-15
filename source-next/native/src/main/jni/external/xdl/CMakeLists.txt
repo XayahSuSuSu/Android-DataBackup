@@ -4,7 +4,7 @@ set(XDL_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/xdl/xdl/src/main/cpp")
 file(GLOB XDL_SRC "${XDL_SOURCE_DIR}/*.c")
 add_library(xdl STATIC ${XDL_SRC})
 target_compile_features(xdl PRIVATE c_std_17)
-target_compile_options(xdl PRIVATE -std=c17 -Weverything -Werror)
+target_compile_options(xdl PRIVATE -std=c17 -Wall -Wextra -Werror)
 target_include_directories(xdl PUBLIC "${XDL_SOURCE_DIR}/include" PRIVATE "${XDL_SOURCE_DIR}")
 
 if (USEASAN)

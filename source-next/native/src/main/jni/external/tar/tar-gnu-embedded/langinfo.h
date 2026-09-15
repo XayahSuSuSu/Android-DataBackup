@@ -695,7 +695,7 @@ _GL_WARN_EXTERN_C int _gl_warn_on_use
 _GL_FUNCDECL_RPL (nl_langinfo, char *, (nl_item item));
 _GL_CXXALIAS_RPL (nl_langinfo, char *, (nl_item item));
 # else
-#  if !1
+#  if !0
 _GL_FUNCDECL_SYS (nl_langinfo, char *, (nl_item item));
 #  endif
 _GL_CXXALIAS_SYS (nl_langinfo, char *, (nl_item item));

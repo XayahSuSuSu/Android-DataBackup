@@ -16,3 +16,6 @@
 [submodule "source-next/native/src/main/jni/external/xdl/xdl"]
 	path = source-next/native/src/main/jni/external/xdl/xdl
 	url = https://github.com/hexhacking/xDL
+[submodule "source-next/native/src/main/jni/external/termux-packages/termux-packages"]
+	path = source-next/native/src/main/jni/external/termux-packages/termux-packages
+	url = https://github.com/termux/termux-packages

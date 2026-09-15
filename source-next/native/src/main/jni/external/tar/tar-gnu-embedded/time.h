@@ -914,9 +914,10 @@ _GL_CXXALIASWARN (strftime);
 
 /* Represents a time zone.
    (timezone_t) NULL stands for UTC.  */
+#define timezone_t rpl_timezone_t
 typedef struct tm_zone *timezone_t;
 
-/* tzalloc (name)
+/* tzalloc_gnu (name)
    Returns a time zone object for the given time zone NAME.  This object
    represents the time zone that other functions would use it the TZ
    environment variable was set to NAME.
@@ -924,43 +925,43 @@ typedef struct tm_zone *timezone_t;
    would use it the TZ environment variable was unset.
    May return NULL if NAME is invalid (this is platform dependent) or
    upon memory allocation failure.  */
-_GL_FUNCDECL_SYS (tzalloc, timezone_t, (char const *__name));
-_GL_CXXALIAS_SYS (tzalloc, timezone_t, (char const *__name));
+_GL_FUNCDECL_SYS (tzalloc_gnu, timezone_t, (char const *__name));
+_GL_CXXALIAS_SYS (tzalloc_gnu, timezone_t, (char const *__name));
 
-/* tzfree (tz)
+/* tzfree_gnu (tz)
    Frees a time zone object.
-   The argument must have been returned by tzalloc().  */
-_GL_FUNCDECL_SYS (tzfree, void, (timezone_t __tz));
-_GL_CXXALIAS_SYS (tzfree, void, (timezone_t __tz));
+   The argument must have been returned by tzalloc_gnu().  */
+_GL_FUNCDECL_SYS (tzfree_gnu, void, (timezone_t __tz));
+_GL_CXXALIAS_SYS (tzfree_gnu, void, (timezone_t __tz));
 
-/* localtime_rz (tz, &t, &result)
+/* localtime_rz_gnu (tz, &t, &result)
    Converts an absolute time T to a broken-down time RESULT, assuming the
    time zone TZ.
    This function is like 'localtime_r', but relies on the argument TZ instead
    of an implicit global time zone.  */
-_GL_FUNCDECL_SYS (localtime_rz, struct tm *,
+_GL_FUNCDECL_SYS (localtime_rz_gnu, struct tm *,
                   (timezone_t __tz, time_t const *restrict __timer,
                    struct tm *restrict __result) _GL_ARG_NONNULL ((2, 3)));
-_GL_CXXALIAS_SYS (localtime_rz, struct tm *,
+_GL_CXXALIAS_SYS (localtime_rz_gnu, struct tm *,
                   (timezone_t __tz, time_t const *restrict __timer,
                    struct tm *restrict __result));
 
-/* mktime_z (tz, &tm)
+/* mktime_z_gnu (tz, &tm)
    Normalizes the broken-down time TM and converts it to an absolute time,
    assuming the time zone TZ.  Returns the absolute time.
    This function is like 'mktime', but relies on the argument TZ instead
    of an implicit global time zone.  */
-_GL_FUNCDECL_SYS (mktime_z, time_t,
+_GL_FUNCDECL_SYS (mktime_z_gnu, time_t,
                   (timezone_t __tz, struct tm *restrict __tm)
                   _GL_ARG_NONNULL ((2)));
-_GL_CXXALIAS_SYS (mktime_z, time_t,
+_GL_CXXALIAS_SYS (mktime_z_gnu, time_t,
                   (timezone_t __tz, struct tm *restrict __tm));
 
-/* Time zone abbreviation strings (returned by 'localtime_rz' or 'mktime_z'
+/* Time zone abbreviation strings (returned by 'localtime_rz_gnu' or 'mktime_z_gnu'
    in the 'tm_zone' member of 'struct tm') are valid as long as
      - the 'struct tm' argument is not destroyed or overwritten,
    and
-     - the 'timezone_t' argument is not freed through tzfree().  */
+     - the 'timezone_t' argument is not freed through tzfree_gnu().  */
 
 # endif
 

@@ -34,7 +34,7 @@ minSdk = "24"
 targetSdk = "37"
 versionCode = "3501150" # __(API)____(version)_(abi)
 versionName = "3.0.0"
-ndkVersion = "25.2.9519653"
+ndkVersion = "30.0.16248370"
 cmakeVersion = "3.22.1"
 
 [libraries]

@@ -583,7 +583,7 @@ _GL_WARN_EXTERN_C int _gl_warn_on_use
 
 #if 1
 /* Fill a buffer with random bytes.  */
-# if 0
+# if 1
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef getrandom
 #   define getrandom rpl_getrandom
@@ -594,7 +594,7 @@ _GL_FUNCDECL_RPL (getrandom, ssize_t,
 _GL_CXXALIAS_RPL (getrandom, ssize_t,
                   (void *buffer, size_t length, unsigned int flags));
 # else
-#  if !1
+#  if !0
 _GL_FUNCDECL_SYS (getrandom, ssize_t,
                   (void *buffer, size_t length, unsigned int flags)
                   _GL_ARG_NONNULL ((1)));

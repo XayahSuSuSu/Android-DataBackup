@@ -26,7 +26,7 @@ android {
 
         externalNativeBuild {
             cmake {
-                arguments.addAll(listOf("-DANDROID_PLATFORM=28"))
+                arguments.addAll(listOf("-DANDROID_PLATFORM=24"))
             }
         }
     }

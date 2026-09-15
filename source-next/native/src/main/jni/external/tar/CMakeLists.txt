@@ -6,6 +6,7 @@ add_compile_options(
         -fPIC
         -ffunction-sections
         -fdata-sections
+        -U_FORTIFY_SOURCE
         -D_FORTIFY_SOURCE=0
         -ffile-prefix-map=${CMAKE_CURRENT_SOURCE_DIR}=/src
 )
@@ -23,6 +24,20 @@ add_link_options(
         -Wl,-Bsymbolic
         -Wl,--exclude-libs,ALL
         -Wl,-soname,ld-android.so
+)
+
+# Android API 24 needs the glob implementation
+set(ANDROID_GLOB_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../termux-packages/termux-packages/packages/libandroid-glob)
+add_library(android-glob STATIC ${ANDROID_GLOB_SOURCE_DIR}/glob.c)
+target_include_directories(android-glob PUBLIC ${ANDROID_GLOB_SOURCE_DIR})
+
+# Match the symbol patching and the embedded gnulib headers
+add_compile_definitions(
+        tzalloc=tzalloc_gnu
+        tzfree=tzfree_gnu
+        localtime_rz=localtime_rz_gnu
+        mktime_z=mktime_z_gnu
+        copy_file_range=copy_file_range_gnu
 )
 
 # libgnu.a
@@ -268,6 +283,7 @@ target_include_directories(libtar
         tar/gnu
         tar/lib
 )
+target_link_libraries(libtar PRIVATE android-glob)
 
 # tar.a
 add_library(tar STATIC
