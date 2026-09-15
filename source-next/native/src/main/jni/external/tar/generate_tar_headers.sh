@@ -5,22 +5,24 @@ set -eo pipefail
 # Tested on Ubuntu26.04 (WSL2)
 
 # Config
-# $abis: all or abis(armeabi-v7a, arm64-v8a, x86, x86_64) split by `,`
-# `bash build_bin.sh $abis`
-# e.g. `bash build_bin.sh x86,x86_64`
+# $abis: all (default) or abis(armeabi-v7a, arm64-v8a, x86, x86_64) split by `,`
+# `bash generate_tar_headers.sh $abis`
+# e.g. `bash generate_tar_headers.sh x86,x86_64`
+# Generated headers: tar-headers-build/embedded/<abi>/{tar-config,tar-gnu,tar-lib}
+# Header archive: tar-headers-build/embedded/<abi>.zip
 
 API=24
 NDK_VERSION=r30
 TERMUX_PACKAGES_VERSION=bootstrap-2026.09.13-r1+apt.android-7       # https://github.com/termux/termux-packages/releases
-TAR_VERSION=1.35                                                    # https://ftp.gnu.org/gnu/tar/?C=M;O=D
+TAR_VERSION=1.35                                                    # https://github.com/XayahSuSuSu/tar/tags
 ##################################################
 # Functions
 set_up_utils() {
     sudo apt-get update
     sudo apt-get install wget zip unzip bzip2 -q make gcc g++ clang meson golang-go cmake bison strip-nondeterminism -y
     # Create build directory
-    mkdir -p build_bin
-    cd build_bin
+    mkdir -p tar-headers-build
+    cd tar-headers-build
     export LOCAL_PATH=$(pwd)
 }
 
@@ -44,6 +46,10 @@ set_up_environment() {
         ;;
     x86_64)
         export TARGET=x86_64-linux-android
+        ;;
+    *)
+        echo "Unsupported ABI: $TARGET_ARCH" >&2
+        exit 1
         ;;
     esac
 
@@ -71,7 +77,6 @@ set_up_environment() {
     export BUILD_CFLAGS="-O3 -ffunction-sections -fdata-sections -ffile-prefix-map=$LOCAL_PATH=$FILE_PREFIX_MAP"
     export BUILD_LDFLAGS="-s -flto -Wl,--gc-sections -Wl,--build-id=none -Wl,--hash-style=both"
     export BUILD_LDFLAGS_STATIC="-static $BUILD_LDFLAGS"
-     
 }
 
 patch_gnu_symbols() {
@@ -121,25 +126,78 @@ build_libandroid_glob() {
     install -Dm644 libandroid-glob.a "$SYSROOT/usr/lib/$lib_target/libandroid-glob.a"
 
     cd "$LOCAL_PATH"
+    rm -rf -- "android-glob/${TARGET_ARCH:?}"
+    rmdir --ignore-fail-on-non-empty android-glob
 }
 
-build_tar() {
-    if [ ! -f $LOCAL_PATH/tar-$TAR_VERSION.tar.xz ]; then
-        wget -nv https://ftp.gnu.org/gnu/tar/tar-$TAR_VERSION.tar.xz
+export_tar_headers() {
+    # Run from the configured tar source directory
+    local output="$LOCAL_PATH/embedded/$TARGET_ARCH"
+    local archive="$output.zip"
+    local staging
+    local subdir headers header
+
+    # Prepare headers in a temporary directory for the current ABI
+    staging=$(mktemp -d "$LOCAL_PATH/embedded/.${TARGET_ARCH}.XXXXXX")
+    mkdir -p "$staging/tar-config" "$staging/tar-gnu" "$staging/tar-lib"
+    install -m644 config.h "$staging/tar-config/config.h"
+
+    # Read generated file names from each configured Makefile
+    for subdir in gnu lib; do
+        headers=$(
+            make --no-print-directory -s -C "$subdir" \
+                --eval='.PHONY: print-export-headers' \
+                --eval='print-export-headers: ; @printf "%s\n" $(BUILT_SOURCES)' \
+                print-export-headers
+        )
+
+        # Preserve nested paths; optional wrappers such as stdint.h may be absent
+        while IFS= read -r header; do
+            case "$header" in
+            *.h)
+                if [ -f "$subdir/$header" ]; then
+                    install -Dm644 "$subdir/$header" "$staging/tar-$subdir/$header"
+                fi
+                ;;
+            esac
+        done <<< "$headers"
+    done
+
+    # Replace the previous export to remove headers no longer generated
+    rm -rf -- "$output"
+    mv -- "$staging" "$output"
+    echo "Exported tar headers to $output"
+
+    # Create a fresh ZIP so removed headers cannot remain in the archive
+    rm -f -- "$archive"
+    (
+        cd "$output"
+        zip -qr "$archive" tar-config tar-gnu tar-lib
+    )
+    echo "Packaged tar headers to $archive"
+}
+
+build_and_export_tar() {
+    local archive="tar-$TAR_VERSION.tar.gz"
+
+    if [ ! -s "$LOCAL_PATH/$archive" ]; then
+        wget -nv -O "$LOCAL_PATH/$archive.tmp" "https://github.com/XayahSuSuSu/tar/archive/refs/tags/v$TAR_VERSION.tar.gz"
+        mv "$LOCAL_PATH/$archive.tmp" "$LOCAL_PATH/$archive"
     fi
     if [ -d $LOCAL_PATH/tar-$TAR_VERSION ]; then
         rm -rf tar-$TAR_VERSION
     fi
-    tar xf tar-$TAR_VERSION.tar.xz
+    tar xf "$LOCAL_PATH/$archive"
     cd tar-$TAR_VERSION
 
     # Patch duplicate symbols
     patch_gnu_symbols "gnu"
 
     # Force use of the time zone functions provided by gnulib.
+    # The mirror archive does not preserve configure's executable permission.
     ac_cv_type_timezone_t=no \
     ac_cv_func_lchmod=no \
-    ./configure \
+    bash ./configure \
         --host="$TARGET" \
         LIBS="-landroid-glob" \
         LDFLAGS="$BUILD_LDFLAGS_STATIC" \
@@ -148,7 +206,11 @@ build_tar() {
         $DISABLE_YEAR2038_PARA
     make -j8
     make install prefix= DESTDIR=$LOCAL_PATH/tar
+    $STRIP $LOCAL_PATH/tar/bin/tar
+    mkdir -p "$LOCAL_PATH/embedded"
+    export_tar_headers
     cd "$LOCAL_PATH"
+    rm -rf -- "tar-${TAR_VERSION:?}"
 }
 
 ##################################################
@@ -156,7 +218,7 @@ build_tar() {
 # Start to build
 set_up_utils
 
-if [[ $1 == all ]]; then
+if [[ ${1:-all} == all ]]; then
     abis=("armeabi-v7a" "arm64-v8a" "x86" "x86_64")
 else
     PRESERVED_IFS="$IFS"
@@ -169,5 +231,5 @@ for abi in ${abis[@]}; do
     TARGET_ARCH=$abi
     set_up_environment
     build_libandroid_glob
-    build_tar
+    build_and_export_tar
 done

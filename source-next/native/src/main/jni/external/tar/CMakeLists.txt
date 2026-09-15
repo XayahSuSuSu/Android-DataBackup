@@ -1,5 +1,13 @@
 set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_SOURCE_DIR})
 
+# Select and validate the embedded headers for the target ABI
+set(TAR_EMBEDDED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/embedded/${ANDROID_ABI}")
+foreach (TAR_HEADER_DIR tar-config tar-gnu tar-lib)
+    if (NOT IS_DIRECTORY "${TAR_EMBEDDED_DIR}/${TAR_HEADER_DIR}")
+        message(FATAL_ERROR "Missing tar headers for ANDROID_ABI='${ANDROID_ABI}': ${TAR_EMBEDDED_DIR}/${TAR_HEADER_DIR}")
+    endif ()
+endforeach ()
+
 add_compile_options(
         -DHAVE_CONFIG_H
         -O3
@@ -257,8 +265,8 @@ target_compile_definitions(libgnu
 )
 target_include_directories(libgnu
         PRIVATE
-        tar-config
-        tar-gnu-embedded
+        "${TAR_EMBEDDED_DIR}/tar-config"
+        "${TAR_EMBEDDED_DIR}/tar-gnu"
         tar/gnu
 )
 
@@ -277,9 +285,9 @@ target_compile_definitions(libtar
 )
 target_include_directories(libtar
         PRIVATE
-        tar-config
-        tar-gnu-embedded
-        tar-lib-embedded
+        "${TAR_EMBEDDED_DIR}/tar-config"
+        "${TAR_EMBEDDED_DIR}/tar-gnu"
+        "${TAR_EMBEDDED_DIR}/tar-lib"
         tar/gnu
         tar/lib
 )
@@ -318,9 +326,9 @@ target_compile_definitions(tar
 )
 target_include_directories(tar
         PRIVATE
-        tar-config
-        tar-gnu-embedded
-        tar-lib-embedded
+        "${TAR_EMBEDDED_DIR}/tar-config"
+        "${TAR_EMBEDDED_DIR}/tar-gnu"
+        "${TAR_EMBEDDED_DIR}/tar-lib"
         tar/gnu
         tar/lib
         tar/src
