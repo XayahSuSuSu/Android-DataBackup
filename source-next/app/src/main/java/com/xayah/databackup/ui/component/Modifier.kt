@@ -98,23 +98,26 @@ private fun Modifier.fadingEdges(
             drawContent()
             val startColors = listOf(Color.Transparent, Color.Black)
             var start = scrollState.value.toFloat()
-            var end = start + min(fadingEdge.toPx(), start)
-            drawRect(
-                brush = when (direction) {
-                    Direction.HORIZONTAL -> Brush.horizontalGradient(
-                        colors = startColors,
-                        startX = start,
-                        endX = end
-                    )
+            val startEdgeSize = min(fadingEdge.toPx(), start)
+            var end = start + startEdgeSize
+            if (startEdgeSize > 0f) {
+                drawRect(
+                    brush = when (direction) {
+                        Direction.HORIZONTAL -> Brush.horizontalGradient(
+                            colors = startColors,
+                            startX = start,
+                            endX = end
+                        )
 
-                    Direction.VERTICAL -> Brush.verticalGradient(
-                        colors = startColors,
-                        startY = start,
-                        endY = end
-                    )
-                },
-                blendMode = BlendMode.DstIn
-            )
+                        Direction.VERTICAL -> Brush.verticalGradient(
+                            colors = startColors,
+                            startY = start,
+                            endY = end
+                        )
+                    },
+                    blendMode = BlendMode.DstIn
+                )
+            }
 
             val endColors = listOf(Color.Black, Color.Transparent)
             val edgeSize = min(fadingEdge.toPx(), scrollState.maxValue.toFloat() - scrollState.value)
