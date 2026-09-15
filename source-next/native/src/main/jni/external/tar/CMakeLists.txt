@@ -150,7 +150,6 @@ add_library(libgnu STATIC
         tar/gnu/lchmod.c
         tar/gnu/lchown.c
         tar/gnu/localcharset.c
-        tar/gnu/localeconv.c
         tar/gnu/malloc.c
         tar/gnu/malloc/dynarray_at_failure.c
         tar/gnu/malloc/dynarray_emplace_enlarge.c
@@ -259,6 +258,13 @@ add_library(libgnu STATIC
         tar/gnu/xstrtoumax.c
         tar/gnu/xvasprintf.c
 )
+# x86_64 needs gnulib's futimens replacement; the other ABIs need its localeconv replacement.
+if (ANDROID_ABI STREQUAL "x86_64")
+    target_sources(libgnu PRIVATE tar/gnu/futimens.c)
+else ()
+    target_sources(libgnu PRIVATE tar/gnu/localeconv.c)
+endif ()
+
 target_compile_definitions(libgnu
         PRIVATE
         HAVE_CONFIG_H
