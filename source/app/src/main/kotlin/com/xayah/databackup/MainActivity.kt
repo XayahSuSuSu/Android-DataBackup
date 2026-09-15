@@ -152,6 +152,12 @@ class MainActivity : AppCompatActivity() {
                         composable(route = MainRoutes.Directory.route) {
                             PageDirectory()
                         }
+                        composable(MainRoutes.VerifyBackup.route) { navBackStackEntry ->
+                            val storageMode = navBackStackEntry.arguments?.getString(MainRoutes.ARG_STORAGE_MODE) ?: "Local"
+                            val cloudName = navBackStackEntry.arguments?.getString(MainRoutes.ARG_ACCOUNT_NAME)
+                            val backupDir = navBackStackEntry.arguments?.getString(MainRoutes.ARG_ACCOUNT_REMOTE) ?: ""
+                            com.xayah.feature.main.verify.VerifyBackupPage(storageMode = storageMode, cloudName = cloudName, backupDir = backupDir)
+                        }
                     }
                 }
             }

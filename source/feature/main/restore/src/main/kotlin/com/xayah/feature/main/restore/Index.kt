@@ -189,6 +189,14 @@ fun PageRestore() {
                 ) {
                     viewModel.emitIntentOnIO(IndexUiIntent.ToReload(navController))
                 }
+                // Add Verify Backup Button
+                Clickable(
+                    title = stringResource(id = R.string.verify_backup), // Add this string resource
+                    value = stringResource(id = R.string.verify_backup_desc), // Add this string resource
+                    leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_rounded_verified), // Add a suitable icon
+                ) {
+                    viewModel.emitIntentOnIO(IndexUiIntent.ToVerifyBackup(navController, uiState.storageType, uiState.cloudEntity?.name, if (uiState.storageType == StorageMode.Local) context.localBackupSaveDir() else uiState.cloudEntity?.remote))
+                }
             }
         }
     }

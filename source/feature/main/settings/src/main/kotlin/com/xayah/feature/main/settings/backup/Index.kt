@@ -28,9 +28,12 @@ import com.xayah.core.datastore.KeyCheckKeystore
 import com.xayah.core.datastore.KeyCompressionTest
 import com.xayah.core.datastore.KeyFollowSymlinks
 import com.xayah.core.datastore.readCompressionLevel
+import com.xayah.core.datastore.readCompressionType // Added import
 import com.xayah.core.datastore.readKillAppOption
 import com.xayah.core.datastore.saveCompressionLevel
+import com.xayah.core.datastore.saveCompressionType // Added import
 import com.xayah.core.datastore.saveKillAppOption
+import com.xayah.core.model.CompressionType // Added import
 import com.xayah.core.model.KillAppOption
 import com.xayah.core.model.util.indexOf
 import com.xayah.core.ui.component.InnerBottomSpacer
@@ -79,6 +82,24 @@ fun PageBackupSettings() {
                 ) {
                     scope.launch {
                         context.saveCompressionLevel(it.roundToInt())
+                    }
+                }
+
+                val compressionTypeItems = CompressionType.values().map { DialogRadioItem(enum = it, title = it.type.uppercase(), desc = null) }
+                val currentCompressionType by context.readCompressionType().collectAsStateWithLifecycle(initialValue = CompressionType.ZSTD)
+                val currentCompressionTypeIndex by remember(currentCompressionType) { mutableIntStateOf(compressionTypeItems.indexOfFirst { it.enum == currentCompressionType }) }
+                Selectable(
+                    title = stringResource(id = com.xayah.app.R.string.compression_type_title),
+                    value = stringResource(id = com.xayah.app.R.string.compression_type_description),
+                    current = compressionTypeItems[currentCompressionTypeIndex].title
+                ) {
+                    val (state, selectedIndex) = dialogState.select(
+                        title = context.getString(com.xayah.app.R.string.compression_type_title),
+                        defIndex = currentCompressionTypeIndex,
+                        items = compressionTypeItems
+                    )
+                    if (state.isConfirm) {
+                        context.saveCompressionType(compressionTypeItems[selectedIndex].enum!!)
                     }
                 }
 
