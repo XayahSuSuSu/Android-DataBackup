@@ -8,7 +8,6 @@ import java.io.File
 
 @SuppressLint("SdCardPath")
 object PathHelper {
-    const val CACHE_SUBDIR_PARCEL = "parcel"
     const val CACHE_SUBDIR_FIFO = "fifo"
     const val CACHE_SUBDIR_RESTORE_APK = "restore-apk"
     private const val CACHE_SUBDIR_RUSTIC = "rustic"
