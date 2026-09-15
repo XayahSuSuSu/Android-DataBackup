@@ -541,4 +541,11 @@
     <string name="view_all">Переглянути всі</string>
     <string name="snapshots">Снепшоти</string>
     <string name="snapshot_summary">%1$s · %2$s</string>
+    <string name="delete_snapshot">Видалити снепшот</string>
+    <string name="delete_snapshot_description">Видалити снепшот %1$s (%2$s)</string>
+    <string name="confirm_delete_snapshot">Ви вже не зможете зробити відновлення з цього снепшоту.</string>
+    <string name="delete_snapshot_failed">Неможливо видалити снепшот. Перевірте доступ до сховища та спробуйте ще раз.</string>
+    <string name="restore_snapshot">Відновити снепшот</string>
+    <string name="restore_snapshot_description">Відновити снепшот %1$s (%2$s)</string>
+    <string name="restore_snapshot_load_failed">Неможливо завантажити снепшот</string>
 </resources>
