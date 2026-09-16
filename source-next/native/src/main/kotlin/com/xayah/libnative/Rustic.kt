@@ -55,6 +55,21 @@ object Rustic {
         nativeRestoreSnapshot(repositoryPath, password, snapshotId, destinationPath, options)
     }
 
+    /** Validates snapshot paths and entry types before the caller clears external destination contents. */
+    fun validateExternalSnapshot(repositoryPath: String, password: String, snapshotId: String) {
+        nativeValidateExternalSnapshot(repositoryPath, password, snapshotId)
+    }
+
+    /**
+     * Restores external data without importing source ownership, modes, xattrs or hardlink relationships.
+     * The caller must validate the snapshot and prepare the destination before calling,
+     * then repair ownership, permissions, ACLs, quota project IDs and SELinux labels
+     * according to the destination Android system, even if restoration fails.
+     */
+    fun restoreExternalSnapshot(repositoryPath: String, password: String, snapshotId: String, destinationPath: String) {
+        nativeRestoreExternalSnapshot(repositoryPath, password, snapshotId, destinationPath)
+    }
+
     /** Returns the snapshot directory's original numeric UID; fails if the selected node is not a directory. */
     fun readSnapshotDirectoryUid(repositoryPath: String, password: String, snapshotId: String): Int =
         nativeReadSnapshotDirectoryUid(repositoryPath, password, snapshotId)
@@ -94,6 +109,14 @@ object Rustic {
         snapshotId: String,
         destinationPath: String,
         options: RestoreOptions,
+    )
+
+    private external fun nativeValidateExternalSnapshot(repositoryPath: String, password: String, snapshotId: String)
+    private external fun nativeRestoreExternalSnapshot(
+        repositoryPath: String,
+        password: String,
+        snapshotId: String,
+        destinationPath: String,
     )
 
     private external fun nativeReadSnapshotDirectoryUid(repositoryPath: String, password: String, snapshotId: String): Int

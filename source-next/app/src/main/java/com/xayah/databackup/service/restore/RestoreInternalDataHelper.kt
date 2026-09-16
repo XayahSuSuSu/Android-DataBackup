@@ -7,15 +7,22 @@ import android.system.Os
 import android.system.OsConstants
 import androidx.annotation.WorkerThread
 import com.xayah.libnative.NativeLib
+import com.xayah.libnative.NativeLib.SELINUX_ANDROID_RESTORECON_FORCE
+import com.xayah.libnative.NativeLib.SELINUX_ANDROID_RESTORECON_RECURSE
 import com.xayah.libnative.Rustic
 import com.xayah.hiddenapi.castTo
 import java.io.File
 
 /**
- * Direct, non-transactional restore; the caller serializes operations and supplies force-stop.
- * Follows createAppDataDirs/createAppDataLocked in AOSP installd:
- * https://android.googlesource.com/platform/frameworks/native/+/android16-release/cmds/installd/InstalldNativeService.cpp
- * Installed roots retain their inode, encryption policy and project quota assignment.
+ * Restores internal app data in place without rollback.
+ * The caller must serialize restores and provide a callback to stop the app.
+ * Keeps system-created data roots and repairs directory metadata after restoration,
+ * including when extraction fails.
+ *
+ * Directory metadata handling references AOSP installd's
+ * createAppDataDirs/createAppDataLocked:
+ *
+ * see [InstalldNativeService.cpp](https://cs.android.com/android/platform/superproject/+/android-17.0.0_r1:frameworks/native/cmds/installd/InstalldNativeService.cpp)
  */
 internal class RestoreInternalDataHelper {
     private data class RestoreEntry(
@@ -104,7 +111,11 @@ internal class RestoreInternalDataHelper {
                 } else if (statOrNull(lib)?.let { OsConstants.S_ISLNK(it.st_mode) } == true) {
                     check(lib.delete()) { "Failed to remove obsolete library link: $lib" }
                 }
-                check(NativeLib.selinuxAndroidRestoreconPkgdir(target.path, seInfo, app.uid, 4 or 8) == 0) {
+                check(
+                    NativeLib.selinuxAndroidRestoreconPkgdir(
+                        target.path, seInfo, app.uid, SELINUX_ANDROID_RESTORECON_RECURSE or SELINUX_ANDROID_RESTORECON_FORCE
+                    ) == 0
+                ) {
                     "Failed to restore data SELinux labels: $target"
                 }
             }.onFailure { repair -> result.exceptionOrNull()?.addSuppressed(repair) ?: throw repair }

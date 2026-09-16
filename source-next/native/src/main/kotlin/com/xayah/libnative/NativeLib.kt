@@ -1,6 +1,16 @@
 package com.xayah.libnative
 
 object NativeLib {
+    /**
+     * see [android.h](https://cs.android.com/android/platform/superproject/+/android-17.0.0_r1:external/selinux/libselinux/include/selinux/android.h;l=72)
+     */
+    const val SELINUX_ANDROID_RESTORECON_RECURSE = 4
+
+    /**
+     * see [android.h](https://cs.android.com/android/platform/superproject/+/android-17.0.0_r1:external/selinux/libselinux/include/selinux/android.h;l=73)
+     */
+    const val SELINUX_ANDROID_RESTORECON_FORCE = 8
+
     external fun calculateTreeSize(path: String): Long
     external fun getUidGid(path: String): IntArray
 

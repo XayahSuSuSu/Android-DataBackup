@@ -39,6 +39,7 @@ import com.xayah.databackup.parcelables.StatFsParcelable
 import com.xayah.databackup.service.restore.InstallApkHelper
 import com.xayah.databackup.service.restore.RestoreApkHelper
 import com.xayah.databackup.service.restore.RestoreInternalDataHelper
+import com.xayah.databackup.service.restore.RestoreExternalDataHelper
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.NotificationHelper
 import com.xayah.databackup.util.NotificationHelper.NOTIFICATION_ID_APPS_UPDATE_WORKER
@@ -387,6 +388,42 @@ object RemoteRootService {
             Rustic.checkRepository(repositoryPath, password)
         }
 
+        override fun restoreRusticAppExternalData(
+            repositoryPath: String,
+            password: String,
+            snapshotId: String,
+            packageName: String,
+            userId: Int,
+            sourceUserId: Int,
+            externalDataPaths: List<String>,
+        ) = synchronized(mLock) {
+            runCatching {
+                require(packageName != context.packageName) { "Cannot restore DataBackup while it is running" }
+                require(mUserManager.users.any { it.id == userId }) { "Target user does not exist: $userId" }
+                require(sourceUserId >= 0) { "Invalid source user" }
+                // Map backed-up external data paths to their storage kind (data, obb, media).
+                val sources = mapOf(
+                    "data" to PathHelper.getAppDataDir(sourceUserId, packageName),
+                    "obb" to PathHelper.getAppObbDir(sourceUserId, packageName),
+                    "media" to PathHelper.getAppMediaDir(sourceUserId, packageName),
+                ).filterValues { it in externalDataPaths }
+                require(externalDataPaths.isNotEmpty() && externalDataPaths.size == externalDataPaths.toSet().size && sources.values.toSet() == externalDataPaths.toSet()) {
+                    "External data paths do not match the source app and user"
+                }
+                val app = checkNotNull(mPackageManagerHidden.getPackageInfoAsUser(packageName, 0, userId).applicationInfo) {
+                    "Package is not installed for user $userId: $packageName"
+                }
+                check(app.flags and ApplicationInfo.FLAG_PERSISTENT == 0) { "Cannot safely stop persistent package: $packageName" }
+                check(mUserManager.isUserUnlocked(userId)) { "Target user external storage is locked: $userId" }
+                RestoreExternalDataHelper().restore(repositoryPath, password, snapshotId, app, sources) {
+                    mActivityManager.forceStopPackageAsUser(packageName, userId)
+                }
+            }.getOrElse { e ->
+                if (e !is Exception) throw e
+                throw IllegalStateException(e.message ?: "External data restore failed", e)
+            }
+        }
+
         override fun restoreRusticAppInternalData(
             repositoryPath: String,
             password: String,
@@ -399,6 +436,7 @@ object RemoteRootService {
             runCatching {
                 require(packageName != context.packageName) { "Cannot restore DataBackup while it is running" }
                 require(mUserManager.users.any { it.id == userId }) { "Target user does not exist: $userId" }
+                require(sourceUserId >= 0) { "Invalid source user" }
                 // Map backed-up internal data paths to their storage kind (true = CE, false = DE).
                 val sources = mapOf(
                     true to PathHelper.getAppUserDir(sourceUserId, packageName),
@@ -726,5 +764,23 @@ object RemoteRootService {
     ) = withContext(Dispatchers.IO) {
         val service = checkNotNull(getService()) { "Root service is unavailable" }
         service.restoreRusticAppInternalData(repositoryPath, password, snapshotId, packageName, userId, sourceUserId, internalDataPaths)
+    }
+
+    /**
+     * Replaces selected primary-storage Android/data, Android/obb and Android/media contents.
+     * Requires an installed, non-persistent app and unlocked target user. Leaves the app stopped.
+     * Uses source-user paths from the snapshot; failures can leave partial data (no rollback).
+     */
+    suspend fun restoreRusticAppExternalData(
+        repositoryPath: String,
+        password: String,
+        snapshotId: String,
+        packageName: String,
+        userId: Int,
+        sourceUserId: Int,
+        externalDataPaths: List<String>,
+    ) = withContext(Dispatchers.IO) {
+        val service = checkNotNull(getService()) { "Root service is unavailable" }
+        service.restoreRusticAppExternalData(repositoryPath, password, snapshotId, packageName, userId, sourceUserId, externalDataPaths)
     }
 }

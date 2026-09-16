@@ -30,6 +30,15 @@ public class UserHandleHidden {
     public int getIdentifier() {
         throw new RuntimeException("Stub!");
     }
+
+    /**
+     * Returns the user id for a given uid.
+     *
+     * @hide
+     */
+    public static int getUserId(int uid) {
+        throw new RuntimeException("Stub!");
+    }
 }
 
 // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/base/core/java/android/os/UserHandle.java

@@ -152,6 +152,48 @@ pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeRestoreSnapshot<'lo
 }
 
 #[unsafe(no_mangle)]
+pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeValidateExternalSnapshot<'local>(
+    mut unowned_env: EnvUnowned<'local>,
+    _this: JObject<'local>,
+    repository_path: JString<'local>,
+    password: JString<'local>,
+    snapshot_id: JString<'local>,
+) {
+    unowned_env
+        .with_env(|_env| -> Result<(), NativeError> {
+            crate::repository::validate_external_snapshot(
+                &repository_path.to_string(),
+                &password.to_string(),
+                &snapshot_id.to_string(),
+            )
+            .map_err(NativeError::from)
+        })
+        .resolve::<ThrowRuntimeExAndDefault>()
+}
+
+#[unsafe(no_mangle)]
+pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeRestoreExternalSnapshot<'local>(
+    mut unowned_env: EnvUnowned<'local>,
+    _this: JObject<'local>,
+    repository_path: JString<'local>,
+    password: JString<'local>,
+    snapshot_id: JString<'local>,
+    destination_path: JString<'local>,
+) {
+    unowned_env
+        .with_env(|_env| -> Result<(), NativeError> {
+            crate::repository::restore_external_snapshot(
+                &repository_path.to_string(),
+                &password.to_string(),
+                &snapshot_id.to_string(),
+                &destination_path.to_string(),
+            )
+            .map_err(NativeError::from)
+        })
+        .resolve::<ThrowRuntimeExAndDefault>()
+}
+
+#[unsafe(no_mangle)]
 pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeReadSnapshotDirectoryUid<'local>(
     mut unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
