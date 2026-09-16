@@ -19,6 +19,7 @@ add_link_options(
 add_library(nativelib SHARED
         nativelib.cpp
         owner.cpp
+        inode.cpp
         selinux.cpp
 )
 

@@ -42,6 +42,10 @@ public class UserManagerHidden {
     public List<UserInfo> getUsers() {
         throw new RuntimeException("Stub!");
     }
+
+    public boolean isUserUnlocked(int userId) {
+        throw new RuntimeException("Stub!");
+    }
 }
 
 // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/base/core/java/android/os/UserManager.java

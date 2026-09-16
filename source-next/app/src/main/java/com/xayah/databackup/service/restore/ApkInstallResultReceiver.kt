@@ -1,4 +1,4 @@
-package com.xayah.databackup.rootservice
+package com.xayah.databackup.service.restore
 
 import android.content.Intent
 import android.content.IIntentReceiver
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit
  *
  * The framework Stub handles Parcel decoding, so no broadcast receiver is needed.
  */
-internal class InstallResultReceiver : IIntentSender.Stub() {
+internal class ApkInstallResultReceiver : IIntentSender.Stub() {
     private val mResults = ArrayBlockingQueue<Intent>(1)
     val sender: IntentSender = IntentSenderHidden(this).castTo()
 

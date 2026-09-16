@@ -3,6 +3,9 @@
 package com.xayah.databackup.rootservice
 
 import android.app.ActivityThread
+import android.app.ActivityManagerHidden
+import android.content.pm.ApplicationInfo
+import android.content.pm.ApplicationInfoHidden
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -33,6 +36,9 @@ import com.xayah.databackup.database.entity.Storage
 import com.xayah.databackup.parcelables.BytesParcelable
 import com.xayah.databackup.parcelables.FilePathParcelable
 import com.xayah.databackup.parcelables.StatFsParcelable
+import com.xayah.databackup.service.restore.InstallApkHelper
+import com.xayah.databackup.service.restore.RestoreApkHelper
+import com.xayah.databackup.service.restore.RestoreInternalDataHelper
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.NotificationHelper
 import com.xayah.databackup.util.NotificationHelper.NOTIFICATION_ID_APPS_UPDATE_WORKER
@@ -115,6 +121,8 @@ object RemoteRootService {
         private lateinit var mPackageManagerHidden: PackageManagerHidden
         private lateinit var mUserManager: UserManagerHidden
         private lateinit var mWifiManager: WifiManagerHidden
+        private lateinit var mActivityManager: ActivityManagerHidden
+        private val mLock = Any()
 
         fun onBind() {
             mSystemContext = ActivityThread.systemMain().systemContext
@@ -122,6 +130,7 @@ object RemoteRootService {
             mPackageManagerHidden = mPackageManager.castTo()
             mUserManager = UserManagerHidden.get(mSystemContext).castTo()
             mWifiManager = mSystemContext.getSystemService(Context.WIFI_SERVICE).castTo()
+            mActivityManager = mSystemContext.getSystemService(Context.ACTIVITY_SERVICE).castTo()
         }
 
         override fun testConnection() {}
@@ -358,11 +367,11 @@ object RemoteRootService {
             packageName: String,
             userId: Int,
             apkPaths: List<String>,
-        ) {
+        ) = synchronized(mLock) {
             require(packageName != context.packageName) { "Cannot restore DataBackup while it is running" }
             require(mUserManager.users.any { it.id == userId }) { "Target user does not exist: $userId" }
-            val installer = ApkInstaller(mSystemContext, userId)
-            RusticApkRestorer(context.cacheDir, installer).restore(
+            val installer = InstallApkHelper(mSystemContext, userId)
+            RestoreApkHelper(context.cacheDir, installer).restore(
                 repositoryPath = repositoryPath,
                 password = password,
                 snapshotId = snapshotId,
@@ -376,6 +385,48 @@ object RemoteRootService {
 
         override fun checkRusticRepository(repositoryPath: String, password: String) {
             Rustic.checkRepository(repositoryPath, password)
+        }
+
+        override fun restoreRusticAppInternalData(
+            repositoryPath: String,
+            password: String,
+            snapshotId: String,
+            packageName: String,
+            userId: Int,
+            sourceUserId: Int,
+            internalDataPaths: List<String>,
+        ) = synchronized(mLock) {
+            runCatching {
+                require(packageName != context.packageName) { "Cannot restore DataBackup while it is running" }
+                require(mUserManager.users.any { it.id == userId }) { "Target user does not exist: $userId" }
+                // Map backed-up internal data paths to their storage kind (true = CE, false = DE).
+                val sources = mapOf(
+                    true to PathHelper.getAppUserDir(sourceUserId, packageName),
+                    false to PathHelper.getAppUserDeDir(sourceUserId, packageName),
+                ).filterValues { it in internalDataPaths }
+                require(internalDataPaths.isNotEmpty() && sources.values.toSet() == internalDataPaths.toSet()) {
+                    "Internal data paths do not match the source app and user"
+                }
+                val app = checkNotNull(mPackageManagerHidden.getPackageInfoAsUser(packageName, 0, userId).applicationInfo) {
+                    "Package is not installed for user $userId: $packageName"
+                }
+                check(app.flags and ApplicationInfo.FLAG_PERSISTENT == 0) { "Cannot safely stop persistent package: $packageName" }
+                check(true !in sources || mUserManager.isUserUnlocked(userId)) { "Target user CE storage is locked: $userId" }
+                val applicationInfoHidden: ApplicationInfoHidden = app.castTo()
+                val seInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    checkNotNull(applicationInfoHidden.seInfo) + applicationInfoHidden.seInfoUser.orEmpty()
+                } else {
+                    checkNotNull(applicationInfoHidden.seinfo)
+                }
+                check(seInfo.isNotBlank()) { "Missing app SELinux information" }
+                RestoreInternalDataHelper().restore(repositoryPath, password, snapshotId, app, seInfo, sources) {
+                    mActivityManager.forceStopPackageAsUser(packageName, userId)
+                }
+            }.getOrElse { e ->
+                if (e !is Exception) throw e
+                // Wrap failures in a supported exception type so Binder can report them to the caller.
+                throw IllegalStateException(e.message ?: "Internal data restore failed", e)
+            }
         }
     }
 
@@ -655,5 +706,25 @@ object RemoteRootService {
 
     suspend fun checkRusticRepository(repositoryPath: String, password: String) {
         getService()?.checkRusticRepository(repositoryPath, password)
+    }
+
+    /**
+     * Replaces selected CE/DE internal data directly in an installed app's system-created directories.
+     * sourceUserId and internalDataPaths come from the manifest's app userId and included internal data paths.
+     * userId identifies the destination user; source paths follow the same PathHelper rules as backup.
+     * Requires a full snapshot ID; CE storage must be unlocked when selected.
+     * Leaves the app stopped. Failure may leave partial data; there is no staging or rollback.
+     */
+    suspend fun restoreRusticAppInternalData(
+        repositoryPath: String,
+        password: String,
+        snapshotId: String,
+        packageName: String,
+        userId: Int,
+        sourceUserId: Int,
+        internalDataPaths: List<String>,
+    ) = withContext(Dispatchers.IO) {
+        val service = checkNotNull(getService()) { "Root service is unavailable" }
+        service.restoreRusticAppInternalData(repositoryPath, password, snapshotId, packageName, userId, sourceUserId, internalDataPaths)
     }
 }

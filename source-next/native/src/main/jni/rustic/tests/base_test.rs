@@ -111,6 +111,45 @@ fn restores_only_selected_snapshot_path() -> Result<(), Box<dyn Error>> {
     assert!(!restore.join("app").exists());
     assert!(!restore.join("unselected").exists());
 
+    // Directory preflight rejects files, while generic restoration accepts them with options.
+    assert!(
+        rustic::read_snapshot_directory_uid(repo, "password", &format!("{snapshot}:data/base.apk"))
+            .is_err()
+    );
+    let numeric_file = root.join("numeric.apk");
+    rustic::restore_snapshot_with_options(
+        repo,
+        "password",
+        &format!("{snapshot}:data/base.apk"),
+        numeric_file.to_str().unwrap(),
+        &rustic_core::RestoreOptions::default().numeric_id(true).verify_existing(true),
+    )?;
+    assert_eq!(fs::read_to_string(numeric_file)?, "apk bytes");
+    assert_eq!(fs::read_to_string(restore.join("settings"))?, "app data");
+    fs::write(restore.join("settings"), "bad data")?;
+    #[cfg(unix)]
+    let inode = {
+        use std::os::unix::fs::MetadataExt;
+        assert_eq!(
+            rustic::read_snapshot_directory_uid(repo, "password", &format!("{snapshot}:data/app"))?,
+            fs::metadata(source.join("app"))?.uid() as i32,
+        );
+        fs::metadata(&restore)?.ino()
+    };
+    rustic::restore_snapshot_with_options(
+        repo,
+        "password",
+        &format!("{snapshot}:data/app"),
+        restore.to_str().unwrap(),
+        &rustic_core::RestoreOptions::default().numeric_id(true).verify_existing(true),
+    )?;
+    assert_eq!(fs::read_to_string(restore.join("settings"))?, "app data");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        assert_eq!(fs::metadata(&restore)?.ino(), inode);
+    }
+
     let apk = root.join("staging/renamed.apk");
     rustic::restore_snapshot(
         repo,
@@ -170,7 +209,7 @@ fn create_restore_and_check_snapshot_lifecycle() -> Result<(), Box<dyn Error>> {
             rustic::create_snapshot(
                 repository.to_str().unwrap(),
                 password,
-                &identity_paths(source_paths),
+                &mapped_paths(&[], &source_paths[0], "/source"),
                 tags,
             )
         },
@@ -205,7 +244,7 @@ fn create_restore_and_check_snapshot_lifecycle_with_progress() -> Result<(), Box
             rustic::create_snapshot_with_progress(
                 repository.to_str().unwrap(),
                 password,
-                &identity_paths(source_paths),
+                &mapped_paths(&[], &source_paths[0], "/source"),
                 tags,
                 RecordingProgress {
                     events: events.clone(),
@@ -255,7 +294,8 @@ fn create_and_restore_snapshot_with_multiple_direct_sources() -> Result<(), Box<
         &["databackup".to_string()],
     )?;
 
-    assert!(!snapshot_id.is_empty());
+    assert_eq!(snapshot_id.len(), 64);
+    assert!(snapshot_id.bytes().all(|byte| byte.is_ascii_hexdigit()));
     rustic::restore_snapshot(
         repository.to_str().unwrap(),
         password,
@@ -295,7 +335,7 @@ fn lists_all_snapshots_with_complete_metadata() -> Result<(), Box<dyn Error>> {
     let first_snapshot = rustic::create_snapshot(
         repository.to_str().unwrap(),
         password,
-        &identity_paths(&source_paths),
+        &mapped_paths(&[], &source_paths[0], "/source"),
         &["databackup".to_string(), first_tag.to_string()],
     )?;
 
@@ -303,7 +343,7 @@ fn lists_all_snapshots_with_complete_metadata() -> Result<(), Box<dyn Error>> {
     let second_snapshot = rustic::create_snapshot(
         repository.to_str().unwrap(),
         password,
-        &identity_paths(&source_paths),
+        &mapped_paths(&[], &source_paths[0], "/source"),
         &["databackup".to_string(), second_tag.to_string()],
     )?;
 
@@ -315,8 +355,8 @@ fn lists_all_snapshots_with_complete_metadata() -> Result<(), Box<dyn Error>> {
         .iter()
         .map(|snapshot| snapshot["id"].as_str().unwrap())
         .collect::<Vec<_>>();
-    assert!(listed_ids.iter().any(|id| id.starts_with(&first_snapshot)));
-    assert!(listed_ids.iter().any(|id| id.starts_with(&second_snapshot)));
+    assert!(listed_ids.contains(&first_snapshot.as_str()));
+    assert!(listed_ids.contains(&second_snapshot.as_str()));
     assert!(snapshots[0]["created_at"].is_i64() || snapshots[0]["created_at"].is_u64());
     assert!(
         snapshots[0]["created_at"].as_i64().unwrap()
@@ -351,7 +391,8 @@ fn run_snapshot_lifecycle(
     rustic::init_repository(repository.to_str().unwrap(), password)?;
     let snapshot_id = create_snapshot(&repository, password, &source_paths, &tags)?;
 
-    assert!(!snapshot_id.is_empty());
+    assert_eq!(snapshot_id.len(), 64);
+    assert!(snapshot_id.bytes().all(|byte| byte.is_ascii_hexdigit()));
 
     rustic::restore_snapshot(
         repository.to_str().unwrap(),

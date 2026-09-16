@@ -1,6 +1,16 @@
 package com.xayah.libnative
 
+import androidx.annotation.Keep
+
 object Rustic {
+    @Keep
+    data class RestoreOptions(
+        val delete: Boolean = false,
+        val numericId: Boolean = false,
+        val noOwnership: Boolean = false,
+        val verifyExisting: Boolean = false,
+    )
+
     fun initLogger() = nativeInitLogger()
 
     fun initRepository(repositoryPath: String, password: String) {
@@ -15,6 +25,7 @@ object Rustic {
         nativeValidateRepository(repositoryPath, password)
     }
 
+    /** Creates a snapshot and returns its full 64-character hexadecimal ID. */
     fun createSnapshot(
         repositoryPath: String,
         password: String,
@@ -34,9 +45,19 @@ object Rustic {
     }
 
     /** [snapshotId] accepts a snapshot ID or `snapshotId:path` to restore a single file or directory. */
-    fun restoreSnapshot(repositoryPath: String, password: String, snapshotId: String, destinationPath: String) {
-        nativeRestoreSnapshot(repositoryPath, password, snapshotId, destinationPath)
+    fun restoreSnapshot(
+        repositoryPath: String,
+        password: String,
+        snapshotId: String,
+        destinationPath: String,
+        options: RestoreOptions = RestoreOptions(),
+    ) {
+        nativeRestoreSnapshot(repositoryPath, password, snapshotId, destinationPath, options)
     }
+
+    /** Returns the snapshot directory's original numeric UID; fails if the selected node is not a directory. */
+    fun readSnapshotDirectoryUid(repositoryPath: String, password: String, snapshotId: String): Int =
+        nativeReadSnapshotDirectoryUid(repositoryPath, password, snapshotId)
 
     fun deleteSnapshot(repositoryPath: String, password: String, snapshotId: String): String {
         return nativeDeleteSnapshot(repositoryPath, password, snapshotId)
@@ -66,12 +87,16 @@ object Rustic {
         tags: Array<String>,
         callback: Any?,
     ): String
+
     private external fun nativeRestoreSnapshot(
         repositoryPath: String,
         password: String,
         snapshotId: String,
         destinationPath: String,
+        options: RestoreOptions,
     )
+
+    private external fun nativeReadSnapshotDirectoryUid(repositoryPath: String, password: String, snapshotId: String): Int
     private external fun nativeListSnapshots(repositoryPath: String, password: String): String
     private external fun nativeCheckRepository(repositoryPath: String, password: String)
     private external fun nativeDeleteSnapshot(repositoryPath: String, password: String, snapshotId: String): String

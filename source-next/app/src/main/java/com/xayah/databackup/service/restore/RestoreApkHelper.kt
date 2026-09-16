@@ -1,4 +1,4 @@
-package com.xayah.databackup.rootservice
+package com.xayah.databackup.service.restore
 
 import android.system.Os
 import android.system.OsConstants
@@ -12,12 +12,12 @@ import java.util.UUID
  * Restores an application's APKs from a Rustic snapshot.
  *
  * Extracts all selected APKs into a temporary directory unique to each invocation,
- * then delegates installation to [ApkInstaller]. Attempts to remove that directory
+ * then delegates installation to [InstallApkHelper]. Attempts to remove that directory
  * after either success or failure, without following symbolic links during cleanup.
  */
-internal class RusticApkRestorer(
+internal class RestoreApkHelper(
     private val mCacheDir: File,
-    private val mInstaller: ApkInstaller,
+    private val mInstaller: InstallApkHelper,
 ) {
     @WorkerThread
     fun restore(repositoryPath: String, password: String, snapshotId: String, packageName: String, apkPaths: List<String>) {

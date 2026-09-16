@@ -15,8 +15,8 @@ pub type Result<T> = std::result::Result<T, Box<dyn Error>>;
 pub use progress::RusticProgressCallback;
 pub use repository::{
     check_repository, create_snapshot, create_snapshot_with_progress, delete_snapshot,
-    init_repository, list_snapshots, read_snapshot_text_files, repository_exists, restore_snapshot,
-    validate_repository,
+    init_repository, list_snapshots, read_snapshot_directory_uid, read_snapshot_text_files,
+    repository_exists, restore_snapshot, restore_snapshot_with_options, validate_repository,
 };
 
 pub use mapped_source::SourceMapping;

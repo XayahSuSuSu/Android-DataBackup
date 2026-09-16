@@ -92,7 +92,7 @@ fn create_snapshot_from_repository(
         &source.snapshot_paths(),
     )?;
 
-    Ok(snapshot.id.to_string())
+    Ok(snapshot.id.to_hex().to_string())
 }
 
 /// Restores the selected snapshot to the destination path.
@@ -105,18 +105,50 @@ pub fn restore_snapshot(
     snapshot_id: &str,
     destination_path: &str,
 ) -> Result<()> {
+    restore_snapshot_with_options(
+        repository_path,
+        password,
+        snapshot_id,
+        destination_path,
+        &RestoreOptions::default(),
+    )
+}
+
+pub fn restore_snapshot_with_options(
+    repository_path: &str,
+    password: &str,
+    snapshot_id: &str,
+    destination_path: &str,
+    options: &RestoreOptions,
+) -> Result<()> {
     let repo = open_repository(repository_path, password)?.to_indexed()?;
     let node = repo.node_from_snapshot_path(snapshot_id, |_| true)?;
     let ls_options = LsOptions::default();
     let nodes = repo.ls(&node, &ls_options)?;
     let destination = LocalDestination::new(destination_path, true, !node.is_dir())?;
-    let restore_options = RestoreOptions::default();
-    let restore_plan =
-        repo.prepare_restore(&restore_options, nodes.clone(), &destination, false)?;
+    let restore_plan = repo.prepare_restore(options, nodes.clone(), &destination, false)?;
 
-    repo.restore(restore_plan, &restore_options, nodes, &destination)?;
+    repo.restore(restore_plan, options, nodes, &destination)?;
 
     Ok(())
+}
+
+/// Reads the original numeric UID of a snapshot directory.
+pub fn read_snapshot_directory_uid(
+    repository_path: &str,
+    password: &str,
+    snapshot_id: &str,
+) -> Result<i32> {
+    let repo = open_repository(repository_path, password)?.to_indexed()?;
+    let node = repo.node_from_snapshot_path(snapshot_id, |_| true)?;
+    if !node.is_dir() {
+        return Err("Snapshot source is not a directory".into());
+    }
+    Ok(node
+        .meta
+        .uid
+        .ok_or("Snapshot directory has no UID")?
+        .try_into()?)
 }
 
 /// Removes exactly one snapshot and returns the remaining metadata.

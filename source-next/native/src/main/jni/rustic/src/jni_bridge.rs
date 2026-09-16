@@ -1,14 +1,14 @@
-use jni::EnvUnowned;
 use jni::errors::ThrowRuntimeExAndDefault;
 use jni::objects::{JObject, JObjectArray, JString};
 use jni::sys::jboolean;
+use jni::{EnvUnowned, jni_sig, jni_str};
 
 use crate::SourceMapping;
 use crate::error::NativeError;
 use crate::jni_progress::JniProgressCallback;
 use crate::repository::{
     check_repository, create_snapshot, create_snapshot_with_progress, delete_snapshot,
-    init_repository, list_snapshots, read_snapshot_text_files, repository_exists, restore_snapshot,
+    init_repository, list_snapshots, read_snapshot_text_files, repository_exists,
     validate_repository,
 };
 
@@ -129,14 +129,42 @@ pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeRestoreSnapshot<'lo
     password: JString<'local>,
     snapshot_id: JString<'local>,
     destination_path: JString<'local>,
+    options: JObject<'local>,
 ) {
     unowned_env
-        .with_env(|_env| -> Result<(), NativeError> {
-            restore_snapshot(
+        .with_env(|env| -> Result<(), NativeError> {
+            let mut read_bool = |name| env.get_field(&options, name, jni_sig!("Z"))?.z();
+            let restore_options = rustic_core::RestoreOptions::default()
+                .delete(read_bool(jni_str!("delete"))?)
+                .numeric_id(read_bool(jni_str!("numericId"))?)
+                .no_ownership(read_bool(jni_str!("noOwnership"))?)
+                .verify_existing(read_bool(jni_str!("verifyExisting"))?);
+            crate::repository::restore_snapshot_with_options(
                 &repository_path.to_string(),
                 &password.to_string(),
                 &snapshot_id.to_string(),
                 &destination_path.to_string(),
+                &restore_options,
+            )
+            .map_err(NativeError::from)
+        })
+        .resolve::<ThrowRuntimeExAndDefault>()
+}
+
+#[unsafe(no_mangle)]
+pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeReadSnapshotDirectoryUid<'local>(
+    mut unowned_env: EnvUnowned<'local>,
+    _this: JObject<'local>,
+    repository_path: JString<'local>,
+    password: JString<'local>,
+    snapshot_id: JString<'local>,
+) -> jni::sys::jint {
+    unowned_env
+        .with_env(|_env| -> Result<i32, NativeError> {
+            crate::repository::read_snapshot_directory_uid(
+                &repository_path.to_string(),
+                &password.to_string(),
+                &snapshot_id.to_string(),
             )
             .map_err(NativeError::from)
         })

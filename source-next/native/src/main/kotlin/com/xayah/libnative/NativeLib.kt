@@ -15,6 +15,13 @@ object NativeLib {
     external fun chownAppDir(path: String, uid: Int, previousUid: Int): Int
 
     /**
+     * Write the inode of a specific child file into the given xattr on the
+     * parent directory. This allows you to find the child later, even if its
+     * name is encrypted.
+     */
+    external fun writePathInode(parent: String, name: String, inodeXattr: String): Int
+
+    /**
      * Restores the SELinux context of the given path.
      *
      * @param flags Bitwise OR of SELINUX_ANDROID_RESTORECON_* flags.

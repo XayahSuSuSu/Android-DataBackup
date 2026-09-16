@@ -43,6 +43,7 @@ class RusticInstrumentedTest {
         Rustic.initRepository(workspace.repositoryPath, PASSWORD)
 
         val snapshotId = createSnapshot()
+        assertTrue(snapshotId.matches(Regex("[0-9a-f]{64}")))
 
         logStep("Restoring snapshot $snapshotId to ${workspace.restorePath}")
         Rustic.restoreSnapshot(workspace.repositoryPath, PASSWORD, snapshotId, workspace.restorePath)
@@ -65,10 +66,18 @@ class RusticInstrumentedTest {
         Rustic.initRepository(workspace.repositoryPath, PASSWORD)
         val snapshotId = createSnapshot()
         val apk = File(workspace.restore, "staging/base.apk")
-        Rustic.restoreSnapshot(workspace.repositoryPath, PASSWORD, "$snapshotId:custom/renamed.txt", apk.absolutePath)
+        Rustic.restoreSnapshot(
+            workspace.repositoryPath, PASSWORD, "$snapshotId:custom/renamed.txt", apk.absolutePath,
+            Rustic.RestoreOptions(numericId = true, verifyExisting = true),
+        )
         assertEquals("mapped file", apk.readText())
         val metadata = File(workspace.restore, "metadata")
-        Rustic.restoreSnapshot(workspace.repositoryPath, PASSWORD, "$snapshotId:$METADATA_DIRECTORY", metadata.absolutePath)
+        metadata.mkdirs()
+        File(metadata, "stale").writeText("remove me")
+        Rustic.restoreSnapshot(
+            workspace.repositoryPath, PASSWORD, "$snapshotId:$METADATA_DIRECTORY", metadata.absolutePath,
+            Rustic.RestoreOptions(delete = true, noOwnership = true, verifyExisting = true),
+        )
         assertEquals("metadata", File(metadata, "manifest.json").readText())
         assertEquals(setOf("staging", "metadata"), workspace.restore.list()!!.toSet())
         assertEquals(setOf("manifest.json"), metadata.list()!!.toSet())

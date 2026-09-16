@@ -1,4 +1,4 @@
-package com.xayah.databackup.rootservice
+package com.xayah.databackup.service.restore
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -16,7 +16,7 @@ import java.io.File
  * Installs base and split APKs in a single session.
  * Blocks until installation completes or times out
  */
-internal class ApkInstaller(systemContext: Context, userId: Int) {
+internal class InstallApkHelper(systemContext: Context, userId: Int) {
     companion object {
         private const val GOOGLE_PLAY_PACKAGE_NAME = "com.android.vending"
         private const val SHELL_PACKAGE_NAME = "com.android.shell"
@@ -62,7 +62,7 @@ internal class ApkInstaller(systemContext: Context, userId: Int) {
                         session.fsync(output)
                     }
                 }
-                val receiver = InstallResultReceiver()
+                val receiver = ApkInstallResultReceiver()
                 session.commit(receiver.sender)
                 val result = receiver.await()
                 val status = result.getIntExtra(PackageInstaller.EXTRA_STATUS, PackageInstaller.STATUS_FAILURE)
