@@ -40,6 +40,7 @@ import com.xayah.databackup.service.restore.InstallApkHelper
 import com.xayah.databackup.service.restore.RestoreApkHelper
 import com.xayah.databackup.service.restore.RestoreInternalDataHelper
 import com.xayah.databackup.service.restore.RestoreExternalDataHelper
+import com.xayah.databackup.service.restore.RestoreNetworksHelper
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.NotificationHelper
 import com.xayah.databackup.util.NotificationHelper.NOTIFICATION_ID_APPS_UPDATE_WORKER
@@ -386,6 +387,21 @@ object RemoteRootService {
 
         override fun checkRusticRepository(repositoryPath: String, password: String) {
             Rustic.checkRepository(repositoryPath, password)
+        }
+
+        override fun restoreRusticNetworks(
+            repositoryPath: String,
+            password: String,
+            snapshotId: String,
+            networkIds: List<String>,
+        ): List<String> = synchronized(mLock) {
+            runCatching {
+                RestoreNetworksHelper(mWifiManager).restore(repositoryPath, password, snapshotId, networkIds)
+            }.getOrElse { e ->
+                LogHelper.e(TAG, "restoreRusticNetworks", "", e)
+                // JSON/parser exceptions may contain credentials and are not all supported by Binder.
+                throw IllegalStateException("Wi-Fi restore failed; some networks may already have been restored")
+            }
         }
 
         override fun restoreRusticAppExternalData(
@@ -744,6 +760,34 @@ object RemoteRootService {
 
     suspend fun checkRusticRepository(repositoryPath: String, password: String) {
         getService()?.checkRusticRepository(repositoryPath, password)
+    }
+
+    /**
+     * Restores selected Wi-Fi records from a Rustic snapshot.
+     *
+     * Skips configuration variants with key-management types unknown to the current framework.
+     * Records with no compatible variant are skipped without changing their security types.
+     * Adds or updates matching networks and enables them without disabling other networks.
+     * Restores auto-join preferences where supported, but does not explicitly request a connection.
+     * Changes already applied are not rolled back if restoration fails.
+     *
+     * @param repositoryPath Path to the Rustic repository on the device.
+     * @param password Password used to access the repository.
+     * @param snapshotId Full 64-character hexadecimal snapshot ID.
+     * @param networkIds Non-empty list of restore inventory keys in the form `network:<index>`,
+     * where `index` is the zero-based record position in the snapshot, not a source-device network ID.
+     * @return Distinct inventory keys of skipped records in selection order. Empty if no records were
+     * skipped, or all selected keys if no records have a compatible configuration.
+     * @throws IllegalStateException If the root service is unavailable or restoration fails.
+     */
+    suspend fun restoreRusticNetworks(
+        repositoryPath: String,
+        password: String,
+        snapshotId: String,
+        networkIds: List<String>,
+    ): List<String> = withContext(Dispatchers.IO) {
+        val service = checkNotNull(getService()) { "Root service is unavailable" }
+        service.restoreRusticNetworks(repositoryPath, password, snapshotId, networkIds)
     }
 
     /**
