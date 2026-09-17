@@ -29,6 +29,10 @@ import com.xayah.feature.main.directory.PageDirectory
 import com.xayah.feature.main.history.HistoryRoute
 import com.xayah.feature.main.history.TaskDetailsRoute
 import com.xayah.feature.main.list.ListRoute
+import com.xayah.feature.main.list.MediaRestoreRoute
+import com.xayah.feature.main.list.MediaRoute
+import com.xayah.feature.main.list.WifiRestoreRoute
+import com.xayah.feature.main.list.WifiRoute
 import com.xayah.feature.main.processing.medium.backup.MediumBackupProcessingGraph
 import com.xayah.feature.main.processing.medium.restore.MediumRestoreProcessingGraph
 import com.xayah.feature.main.processing.packages.backup.PackagesBackupProcessingGraph
@@ -97,6 +101,18 @@ class MainActivity : AppCompatActivity() {
                         }
                         composable(MainRoutes.List.route) {
                             ListRoute()
+                        }
+                        composable(MainRoutes.MediaBackup.route) {
+                            MediaRoute()
+                        }
+                        composable(MainRoutes.MediaRestore.route) {
+                            MediaRestoreRoute()
+                        }
+                        composable(MainRoutes.WifiBackup.route) {
+                            WifiRoute()
+                        }
+                        composable(MainRoutes.WifiRestore.route) {
+                            WifiRestoreRoute()
                         }
                         composable(MainRoutes.Details.route) {
                             DetailsRoute()

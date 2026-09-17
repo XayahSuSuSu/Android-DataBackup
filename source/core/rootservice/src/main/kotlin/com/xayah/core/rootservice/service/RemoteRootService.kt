@@ -328,6 +328,13 @@ class RemoteRootService(private val context: Context) {
     suspend fun calculateMD5(src: String): String? =
         runCatching { getService().calculateMD5(src) }.onFailure(onFailure).getOrNull()
 
+    /**
+     * Generate a downscaled thumbnail for an image/video/audio file as root
+     * and write it to [dst]. Returns [dst] on success, "" otherwise.
+     */
+    suspend fun generateMediaThumbnail(src: String, dst: String, size: Int): String =
+        runCatching { getService().generateMediaThumbnail(src, dst, size) }.onFailure(onFailure).getOrDefault("")
+
     suspend fun writeJson(data: Any, dst: String): ShellResult = runCatching {
         var isSuccess: Boolean
         val out = mutableListOf<String>()

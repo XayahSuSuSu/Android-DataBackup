@@ -64,6 +64,14 @@ sealed class MainRoutes(val route: String) {
 
     data object Directory : MainRoutes(route = "main_directory")
 
+    data object MediaBackup : MainRoutes(route = "main_media_backup")
+
+    data object MediaRestore : MainRoutes(route = "main_media_restore")
+
+    data object WifiBackup : MainRoutes(route = "main_wifi_backup")
+
+    data object WifiRestore : MainRoutes(route = "main_wifi_restore")
+
     data object PackagesBackupProcessing : MainRoutes(route = "main_packages_backup_processing")
     data object PackagesBackupProcessingSetup : MainRoutes(route = "main_packages_backup_processing_setup")
     data object PackagesBackupProcessingGraph : MainRoutes(route = "main_packages_backup_processing_graph")

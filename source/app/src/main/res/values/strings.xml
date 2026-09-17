@@ -119,6 +119,17 @@
     <string name="add">Add</string>
     <string name="custom_storage">Custom storage</string>
     <string name="select_target_directory">Select target folder</string>
+    <string name="backup_media">Backup media</string>
+    <string name="media_images">Images</string>
+    <string name="media_videos">Videos</string>
+    <string name="media_audio">Songs</string>
+    <string name="media_scanning">Scanning device for media…</string>
+    <string name="media_empty">No files found</string>
+    <string name="restore_media">Restore media</string>
+    <string name="backup_wifi">Backup Wi-Fi</string>
+    <string name="restore_wifi">Restore Wi-Fi</string>
+    <string name="wifi_scanning">Scanning for saved networks…</string>
+    <string name="wifi_empty">No saved networks found</string>
     <string name="confirm_delete">This will delete all the related files you selected</string>
     <string name="backup_dir_as_media_error">Cannot add backup directory as media</string>
     <string name="media_target_path_missing">The target folder is missing. Please set it manually.</string>

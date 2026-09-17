@@ -155,6 +155,17 @@
     <string name="confirm_delete">هذا سيحذف كل الملفات التي تم اختيارها</string>
     <string name="custom_storage">مساحة تخزين مخصصة</string>
     <string name="select_target_directory">اختيار الملف المراد</string>
+    <string name="backup_media">نسخ الميديا</string>
+    <string name="media_images">صور</string>
+    <string name="media_videos">فيديوهات</string>
+    <string name="media_audio">أغاني</string>
+    <string name="media_scanning">جارٍ فحص الجهاز عن الميديا…</string>
+    <string name="media_empty">لا توجد ملفات</string>
+    <string name="restore_media">استعادة الميديا</string>
+    <string name="backup_wifi">نسخ الواي فاي</string>
+    <string name="restore_wifi">استعادة الواي فاي</string>
+    <string name="wifi_scanning">جارٍ فحص الشبكات المحفوظة…</string>
+    <string name="wifi_empty">لا توجد شبكات محفوظة</string>
     <string name="update_available">تحديث متوفر</string>
     <string name="installed">مثبت</string>
     <string name="delete">حذف</string>

@@ -165,6 +165,28 @@ fun PageDashboard() {
                     ) {
                         navController.navigateSingle(MainRoutes.List.getRoute(target = Target.Files, opType = OpType.BACKUP))
                     }
+                    QuickActionsButton(
+                        modifier = Modifier.weight(1f),
+                        enabled = nullBackupDir.not(),
+                        title = stringResource(id = R.string.backup_media),
+                        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_acute),
+                        colorContainer = ThemedColorSchemeKeyTokens.GreenPrimaryContainer,
+                        colorL80D20 = ThemedColorSchemeKeyTokens.GreenL80D20,
+                        onColorContainer = ThemedColorSchemeKeyTokens.GreenOnPrimaryContainer
+                    ) {
+                        navController.navigateSingle(MainRoutes.MediaBackup.route)
+                    }
+                    QuickActionsButton(
+                        modifier = Modifier.weight(1f),
+                        enabled = nullBackupDir.not(),
+                        title = stringResource(id = R.string.backup_wifi),
+                        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_acute),
+                        colorContainer = ThemedColorSchemeKeyTokens.PinkPrimaryContainer,
+                        colorL80D20 = ThemedColorSchemeKeyTokens.PinkL80D20,
+                        onColorContainer = ThemedColorSchemeKeyTokens.PinkOnPrimaryContainer
+                    ) {
+                        navController.navigateSingle(MainRoutes.WifiBackup.route)
+                    }
                     // TODO MMS/SMS, Contacts backup/restore
 //                    QuickActionsButton(
 //                        modifier = Modifier.weight(1f),
@@ -207,6 +229,30 @@ fun PageDashboard() {
                         actionIcon = Icons.Rounded.KeyboardArrowRight
                     ) {
                         navController.navigateSingle(MainRoutes.Restore.route)
+                    }
+                    QuickActionsButton(
+                        modifier = Modifier.weight(1f),
+                        enabled = nullBackupDir.not(),
+                        title = stringResource(id = R.string.restore_media),
+                        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_history),
+                        colorContainer = ThemedColorSchemeKeyTokens.BluePrimaryContainer,
+                        colorL80D20 = ThemedColorSchemeKeyTokens.BlueL80D20,
+                        onColorContainer = ThemedColorSchemeKeyTokens.BlueOnPrimaryContainer,
+                        actionIcon = Icons.Rounded.KeyboardArrowRight
+                    ) {
+                        navController.navigateSingle(MainRoutes.MediaRestore.route)
+                    }
+                    QuickActionsButton(
+                        modifier = Modifier.weight(1f),
+                        enabled = nullBackupDir.not(),
+                        title = stringResource(id = R.string.restore_wifi),
+                        icon = ImageVector.vectorResource(id = R.drawable.ic_rounded_history),
+                        colorContainer = ThemedColorSchemeKeyTokens.OrangePrimaryContainer,
+                        colorL80D20 = ThemedColorSchemeKeyTokens.OrangeL80D20,
+                        onColorContainer = ThemedColorSchemeKeyTokens.OrangeOnPrimaryContainer,
+                        actionIcon = Icons.Rounded.KeyboardArrowRight
+                    ) {
+                        navController.navigateSingle(MainRoutes.WifiRestore.route)
                     }
                     QuickActionsButton(
                         modifier = Modifier.weight(1f),

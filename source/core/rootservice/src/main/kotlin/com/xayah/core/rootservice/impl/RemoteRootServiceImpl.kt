@@ -14,6 +14,10 @@ import android.content.pm.PackageManager.PackageInfoFlags
 import android.content.pm.PackageManagerHidden
 import android.content.pm.PermissionInfo
 import android.content.pm.UserInfo
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.media.MediaMetadataRetriever
+import android.media.ThumbnailUtils
 import android.os.Build
 import android.os.Parcel
 import android.os.ParcelFileDescriptor
@@ -27,6 +31,7 @@ import androidx.core.content.pm.PermissionInfoCompat
 import com.android.server.display.DisplayControl
 import com.topjohnwu.superuser.ShellUtils
 import com.xayah.core.datastore.ConstantUtil.DEFAULT_IDLE_TIMEOUT
+import com.xayah.core.datastore.ConstantUtil
 import com.xayah.core.hiddenapi.castTo
 import com.xayah.core.model.database.PackagePermission
 import com.xayah.core.rootservice.IRemoteRootService
@@ -42,6 +47,7 @@ import com.xayah.core.util.PathUtil
 import com.xayah.core.util.command.BaseUtil.setAllPermissions
 import com.xayah.libnative.NativeLib
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.file.FileVisitResult
 import java.nio.file.Files
@@ -516,4 +522,77 @@ internal class RemoteRootServiceImpl(private val context: Context) : IRemoteRoot
     }
 
     override fun calculateMD5(src: String): String = synchronized(lock) { HashUtil.calculateMD5(src) }
+
+    override fun generateMediaThumbnail(src: String, dst: String, size: Int): String = synchronized(lock) {
+        try {
+            val ext = PathUtil.getFileName(src).substringAfterLast('.', "").lowercase()
+            val bitmap = when (ext) {
+                in ConstantUtil.MediaImageExtensions -> decodeSampledBitmap(src, size)
+                in ConstantUtil.MediaVideoExtensions -> extractVideoFrame(src, size)
+                in ConstantUtil.MediaAudioExtensions -> extractAudioArt(src, size)
+                else -> null
+            } ?: return ""
+            File(PathUtil.getParentPath(dst)).mkdirs()
+            FileOutputStream(dst).use { out ->
+                if (bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out).not()) return ""
+            }
+            if (bitmap.isRecycled.not()) bitmap.recycle()
+            dst
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
+    private fun decodeSampledBitmap(src: String, size: Int): Bitmap? {
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        BitmapFactory.decodeFile(src, bounds)
+        if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
+        var sampleSize = 1
+        while (maxOf(bounds.outWidth, bounds.outHeight) / (sampleSize * 2) >= size) sampleSize *= 2
+        return BitmapFactory.decodeFile(src, BitmapFactory.Options().apply { inSampleSize = sampleSize })
+    }
+
+    private fun extractVideoFrame(src: String, size: Int): Bitmap? {
+        val retriever = MediaMetadataRetriever()
+        return try {
+            retriever.setDataSource(src)
+            val frame = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                retriever.getScaledFrameAtTime(-1, MediaMetadataRetriever.OPTION_CLOSEST_SYNC, size, size)
+            } else {
+                retriever.getFrameAtTime(-1)
+            } ?: return null
+            if (frame.width <= size && frame.height <= size) return frame
+            ThumbnailUtils.extractThumbnail(frame, size, size).also {
+                if (it != frame && frame.isRecycled.not()) frame.recycle()
+            }
+        } catch (e: Exception) {
+            null
+        } finally {
+            try {
+                retriever.release()
+            } catch (e: Exception) {
+            }
+        }
+    }
+
+    private fun extractAudioArt(src: String, size: Int): Bitmap? {
+        val retriever = MediaMetadataRetriever()
+        return try {
+            retriever.setDataSource(src)
+            val art = retriever.embeddedPicture ?: return null
+            val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            BitmapFactory.decodeByteArray(art, 0, art.size, bounds)
+            if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
+            var sampleSize = 1
+            while (maxOf(bounds.outWidth, bounds.outHeight) / (sampleSize * 2) >= size) sampleSize *= 2
+            BitmapFactory.decodeByteArray(art, 0, art.size, BitmapFactory.Options().apply { inSampleSize = sampleSize })
+        } catch (e: Exception) {
+            null
+        } finally {
+            try {
+                retriever.release()
+            } catch (e: Exception) {
+            }
+        }
+    }
 }

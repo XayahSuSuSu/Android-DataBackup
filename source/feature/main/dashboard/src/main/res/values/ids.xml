@@ -10,6 +10,10 @@
     <item name="backup_apps" type="string" />
     <item name="backup_contacts" type="string" />
     <item name="backup_files" type="string" />
+    <item name="backup_media" type="string" />
+    <item name="restore_media" type="string" />
+    <item name="backup_wifi" type="string" />
+    <item name="restore_wifi" type="string" />
     <item name="backup_messages" type="string" />
     <item name="cloud" type="string" />
     <item name="restore" type="string" />

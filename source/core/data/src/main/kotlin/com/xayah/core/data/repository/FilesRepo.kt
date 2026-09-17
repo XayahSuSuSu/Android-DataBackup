@@ -9,7 +9,9 @@ import com.xayah.core.hiddenapi.castTo
 import com.xayah.core.model.CompressionType
 import com.xayah.core.model.DataType
 import com.xayah.core.model.File
+import com.xayah.core.model.MediaKind
 import com.xayah.core.model.OpType
+import com.xayah.core.model.ScannedMediaFile
 import com.xayah.core.model.database.LabelFileCrossRefEntity
 import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.MediaExtraInfo
@@ -28,6 +30,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class FilesRepo @Inject constructor(
@@ -41,6 +44,11 @@ class FilesRepo @Inject constructor(
 ) {
     companion object {
         private const val TAG = "FilesRepo"
+        private const val THUMBNAIL_SIZE = 256
+
+        private val ImageExtensions = ConstantUtil.MediaImageExtensions
+        private val VideoExtensions = ConstantUtil.MediaVideoExtensions
+        private val AudioExtensions = ConstantUtil.MediaAudioExtensions
     }
 
     private fun log(block: () -> String): String = block().also { LogUtil.log { TAG to it } }
@@ -241,6 +249,12 @@ class FilesRepo @Inject constructor(
         var failure = 0
         pathList.forEach { pathString ->
             if (pathString.isNotEmpty()) {
+                // Prevent adding the backup dir itself (would cause recursion).
+                if (pathString == context.localBackupSaveDir()) {
+                    failure++
+                    log { "$pathString is backup dir, skip." }
+                    return@forEach
+                }
                 var name = PathUtil.getFileName(pathString)
                 filesDao.query(opType = OpType.BACKUP, preserveId = 0, cloud = "", backupDir = "").forEach {
                     if (it.name == name && it.path != pathString) name = renameDuplicateFile(name)
@@ -279,6 +293,103 @@ class FilesRepo @Inject constructor(
             }
         }
         filesDao.upsert(files)
+    }
+
+    /**
+     * Probe all [ConstantUtil.KnownWifiConfigs] paths (requires root) and
+     * return the ones that exist on this device as name-to-path pairs.
+     */
+    suspend fun scanWifiConfigs(): List<Pair<String, String>> {
+        val found = mutableListOf<Pair<String, String>>()
+        ConstantUtil.KnownWifiConfigs.forEach { (name, path) ->
+            if (rootService.exists(path)) found.add(name to path)
+        }
+        log { "Wi-Fi scan found ${found.size} configs." }
+        return found
+    }
+
+    /**
+     * Locally backed-up Wi-Fi configs (RESTORE rows named "WiFi-*").
+     */
+    fun getLocalRestoreWifi(): Flow<List<MediaEntity>> =
+        filesDao.queryFilesFlow(opType = OpType.RESTORE, cloud = "", backupDir = context.localBackupSaveDir())
+            .map { list -> list.filter { it.name.startsWith("WiFi-") } }
+            .flowOn(defaultDispatcher)
+
+    /**
+     * Scan internal storage (root) for image/video/audio files.
+     * Each result keeps its absolute path, so backing it up and later
+     * restoring writes it back to the exact same location.
+     */
+    suspend fun scanMediaFiles(): List<ScannedMediaFile> {
+        val found = mutableListOf<ScannedMediaFile>()
+        val root = ConstantUtil.DEFAULT_PATH_PARENT
+        if (rootService.exists(root)) {
+            rootService.walkFileTree(root).forEach { parcelable ->
+                val path = parcelable.pathString
+                val name = PathUtil.getFileName(path)
+                if (name.isEmpty() || name.startsWith(".")) return@forEach
+                if ("/Android/" in path) return@forEach
+                val ext = name.substringAfterLast('.', "").lowercase()
+                val kind = when (ext) {
+                    in ImageExtensions -> MediaKind.Images
+                    in VideoExtensions -> MediaKind.Videos
+                    in AudioExtensions -> MediaKind.Audio
+                    else -> null
+                } ?: return@forEach
+                found.add(ScannedMediaFile(path = path, name = name, kind = kind))
+            }
+        }
+        log { "Media scan found ${found.size} files under $root." }
+        return found.sortedWith(compareBy({ it.kind.ordinal }, { it.name.lowercase() }))
+    }
+
+    /**
+     * Classify a file path as image/video/audio by extension,
+     * or null if it is not a media file.
+     */
+    fun kindOfMedia(path: String): MediaKind? {
+        val name = PathUtil.getFileName(path)
+        if (name.isEmpty()) return null
+        return when (name.substringAfterLast('.', "").lowercase()) {
+            in ImageExtensions -> MediaKind.Images
+            in VideoExtensions -> MediaKind.Videos
+            in AudioExtensions -> MediaKind.Audio
+            else -> null
+        }
+    }
+
+    /**
+     * Locally backed-up files (RESTORE rows) for the media restore screen.
+     */
+    fun getLocalRestoreMedia(): Flow<List<MediaEntity>> =
+        filesDao.queryFilesFlow(opType = OpType.RESTORE, cloud = "", backupDir = context.localBackupSaveDir())
+
+    /**
+     * Return a cached thumbnail (JPEG) for a media file, generating it
+     * via root on first use (the app process cannot read storage directly).
+     * Returns null when no thumbnail could be produced (caller shows an icon).
+     */
+    suspend fun getMediaThumbnail(path: String): String? {
+        if (kindOfMedia(path) == null) return null
+        val cacheFile = java.io.File(java.io.File(context.cacheDir, "media_thumbs"), "${path.hashCode()}.jpg")
+        if (cacheFile.exists()) return cacheFile.absolutePath
+        return runCatching {
+            cacheFile.parentFile?.mkdirs()
+            val generated = rootService.generateMediaThumbnail(path, cacheFile.absolutePath, THUMBNAIL_SIZE)
+            if (generated.isNotEmpty() && cacheFile.exists()) cacheFile.absolutePath else null
+        }.getOrNull()
+    }
+
+    /**
+     * Backup exactly [pathList]: deactivate any previously selected files
+     * first so the backup run contains only these items, then add them
+     * (activated) and let the caller navigate to the backup processing.
+     */
+    suspend fun prepareMediaBackup(pathList: List<String>) {
+        val existing = filesDao.query(opType = OpType.BACKUP, blocked = false)
+        if (existing.isNotEmpty()) filesDao.activateByIds(existing.map { it.id }, false)
+        addFiles(pathList)
     }
 
     suspend fun calculateLocalFileSize(file: MediaEntity) {
