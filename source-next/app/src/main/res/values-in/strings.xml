@@ -380,7 +380,7 @@
     <string name="initializing_app_list">Menginisialisasi daftar aplikasi</string>
     <string name="restore_permissions">Pulihkan izin</string>
     <string name="restore_permissions_desc">Pulihkan izin aplikasi</string>
-    <string name="restore_ssaid">Pulihkan ID Android</string>
+    <string name="restore_ssaid">Pulihkan id Android</string>
     <string name="restore_ssaid_desc">Pulihkan aplikasi Android id, perlu segera mulai ulang setelah pemulihan agar berlaku</string>
     <string name="args_apps_backed_up_and_failed">%1$s aplikasi dicadangkan, %2$s gagal</string>
     <string name="args_apps_restored_and_failed">%1$s aplikasi dipulihkan, %2$s gagal</string>
@@ -424,7 +424,7 @@
     <string name="select_all_int_data">Pilih semua: Data Internal</string>
     <string name="select_all_ext_data">Pilih semua: Data Eksternal</string>
     <string name="select_all_addl_data">Pilih semua: Data tambahan</string>
-    <string name="select_all_obb_and_media"><![CDATA[Pilih semua: OBB & Media]]></string>
+    <string name="select_all_obb_and_media"><![CDATA[Pilih semua: OBB &amp; Media]]></string>
     <string name="unselect_all_apk">Batalkan semua: APK</string>
     <string name="unselect_all_data">Batalkan pemilihan semua: Data</string>
     <string name="unselect_all_int_data">Batalkan semua: Data Internal</string>
@@ -539,4 +539,13 @@
     <string name="no_matching_backups">Tidak ada backup yang cocok</string>
     <string name="no_matching_backups_desc">Coba sesuaikan pencarian atau filter Anda.</string>
     <string name="clear_filters">Bersihkan filter</string>
+    <string name="snapshots">Snapshot</string>
+    <string name="snapshot_summary">%1$s · %2$s</string>
+    <string name="delete_snapshot">Hapus snapshot</string>
+    <string name="delete_snapshot_description">Hapus snapshot %1$s (%2$s)</string>
+    <string name="confirm_delete_snapshot">Anda tidak akan bisa lagi memulihkan data dari snapshot ini.</string>
+    <string name="delete_snapshot_failed">Tidak dapat menghapus snapshot. Periksa akses ke repositori, lalu coba lagi.</string>
+    <string name="restore_snapshot">Kembalikan snapshot</string>
+    <string name="restore_snapshot_description">Kembalikan snapshot %1$s (%2$s)</string>
+    <string name="restore_snapshot_load_failed">Tidak dapat memuat snapshot</string>
 </resources>
