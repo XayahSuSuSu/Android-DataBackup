@@ -541,4 +541,11 @@
     <string name="view_all">Hepsini göster</string>
     <string name="snapshots">Anlık görüntüler</string>
     <string name="snapshot_summary">%1$s · %2$s</string>
+    <string name="delete_snapshot">Anlık görüntüyü sil</string>
+    <string name="delete_snapshot_description">%1$s (%2$s) görüntüsünü sil</string>
+    <string name="confirm_delete_snapshot">Bu anlık görüntü artık kullanılabilir değil.</string>
+    <string name="delete_snapshot_failed">Anlık görüntü silinemedi. Repoya olan erişiminizi kontrol edip yeniden deneyin.</string>
+    <string name="restore_snapshot">Anlık görüntüyü yükle</string>
+    <string name="restore_snapshot_description">%1$s (%2$s) görüntüsünü yükle</string>
+    <string name="restore_snapshot_load_failed">Anlık görüntü yüklenemedi</string>
 </resources>
