@@ -39,6 +39,7 @@ import com.xayah.databackup.parcelables.FilePathParcelable
 import com.xayah.databackup.parcelables.StatFsParcelable
 import com.xayah.databackup.service.restore.InstallApkHelper
 import com.xayah.databackup.service.restore.RestoreApkHelper
+import com.xayah.databackup.service.restore.RestoreCallLogsHelper
 import com.xayah.databackup.service.restore.RestoreContactsHelper
 import com.xayah.databackup.service.restore.RestoreExternalDataHelper
 import com.xayah.databackup.service.restore.RestoreInternalDataHelper
@@ -847,6 +848,39 @@ object RemoteRootService {
         val path = PathHelper.getRusticSnapshotMetadataFilePath(PathHelper.getBackupContactsConfigFileRelativePath())
         val serialized = readRusticSnapshotTextFiles(repositoryPath, password, snapshotId, listOf(path))
         RestoreContactsHelper(App.application.contentResolver).restore(serialized, path, contactIds)
+    }
+
+    /**
+     * Restores selected call logs from a Rustic snapshot for the app's current user.
+     *
+     * Requires READ_CALL_LOG and WRITE_CALL_LOG. The root service reads the snapshot, and the app writes to CallLogProvider.
+     * Imports portable fields supported by the target Android version without source IDs or SIM/account associations.
+     * Skips duplicates, voicemail and unsupported call types. Restored calls are marked read.
+     * Earlier imports are not rolled back if restoration fails.
+     *
+     * @param repositoryPath Path to the Rustic repository on the device.
+     * @param password Password used to access the repository.
+     * @param snapshotId Full 64-character hexadecimal snapshot ID.
+     * @param callLogIds Non-empty list of inventory keys in the form `call:<index>`, where `index` is the
+     * zero-based record position in the snapshot, not a source-device call ID.
+     * @return Distinct inventory keys of skipped records in selection order. Empty if none were skipped.
+     * @throws IllegalArgumentException If the snapshot ID, selection or selected call log data is invalid.
+     * @throws IllegalStateException If permissions are missing, the root service is unavailable or restoration fails.
+     */
+    suspend fun restoreRusticCallLogs(
+        repositoryPath: String,
+        password: String,
+        snapshotId: String,
+        callLogIds: List<String>,
+    ): List<String> = withContext(Dispatchers.IO) {
+        require(snapshotId.matches(Regex("[0-9a-fA-F]{64}"))) { "A full snapshot ID is required" }
+        require(callLogIds.isNotEmpty()) { "No call logs selected" }
+        check(listOf(Manifest.permission.READ_CALL_LOG, Manifest.permission.WRITE_CALL_LOG).all {
+            App.application.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
+        }) { "Call logs restore requires READ_CALL_LOG and WRITE_CALL_LOG permissions" }
+        val path = PathHelper.getRusticSnapshotMetadataFilePath(PathHelper.getBackupCallLogsConfigFileRelativePath())
+        val serialized = readRusticSnapshotTextFiles(repositoryPath, password, snapshotId, listOf(path))
+        RestoreCallLogsHelper(App.application.contentResolver).restore(serialized, path, callLogIds)
     }
 
     /**
