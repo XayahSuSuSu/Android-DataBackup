@@ -37,7 +37,7 @@ public class ApplicationInfoHidden {
      * <p>
      * {@hide}
      * <p>
-     * see <a href="https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/base/core/java/android/content/pm/ApplicationInfo.java;l=618">ApplicationInfo.java</a>
+     * see <a href="https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/base/core/java/android/content/pm/ApplicationInfo.java;l=618">ApplicationInfo.java</a>
      */
     public String seinfo;
 
@@ -50,7 +50,7 @@ public class ApplicationInfoHidden {
      * <p>
      * {@hide}
      * <p>
-     * see <a href="https://cs.android.com/android/platform/superproject/+/android-8.0.0_r51:frameworks/base/core/java/android/content/pm/ApplicationInfo.java;l=713">ApplicationInfo.java</a>
+     * see <a href="https://cs.android.com/android/platform/superproject/+/android-8.0.0_r1:frameworks/base/core/java/android/content/pm/ApplicationInfo.java;l=713">ApplicationInfo.java</a>
      */
     public String seInfo;
 
@@ -66,7 +66,7 @@ public class ApplicationInfoHidden {
      * <p>
      * {@hide}
      * <p>
-     * see <a href="https://cs.android.com/android/platform/superproject/+/android-8.0.0_r51:frameworks/base/core/java/android/content/pm/ApplicationInfo.java;l=727">ApplicationInfo.java</a>
+     * see <a href="https://cs.android.com/android/platform/superproject/+/android-8.0.0_r1:frameworks/base/core/java/android/content/pm/ApplicationInfo.java;l=727">ApplicationInfo.java</a>
      */
     public String seInfoUser;
 }

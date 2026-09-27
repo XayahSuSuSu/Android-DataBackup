@@ -50,7 +50,7 @@ namespace {
             // reconcileSdkData creates each per-SDK data directory with
             // owner sandboxUid and group AID_NOBODY. Its cache GID is the host
             // app's cache GID, which equals sandboxUid numerically.
-            // https://cs.android.com/android/platform/superproject/+/android-13.0.0_r84:frameworks/native/cmds/installd/InstalldNativeService.cpp;l=939
+            // https://cs.android.com/android/platform/superproject/+/android-13.0.0_r1:frameworks/native/cmds/installd/InstalldNativeService.cpp;l=939
             return {AID_NOBODY, uid};
         }
         if (api_level >= ANDROID_API_CINNAMON_BUN && app_id >= AID_PCC_COMPONENT_PROCESS_START && app_id <= AID_PCC_COMPONENT_PROCESS_END) {

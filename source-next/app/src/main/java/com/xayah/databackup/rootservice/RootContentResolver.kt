@@ -134,10 +134,10 @@ internal class RootContentResolver(context: Context) : ContentResolverHidden(
             Telephony.MmsSms.CONTENT_URI.authority,
         )
 
-        // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/base/services/core/java/com/android/server/AppOpsService.java;l=2280
+        // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/base/services/core/java/com/android/server/AppOpsService.java;l=2280
         const val ROOT_UID = 0
 
-        // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/base/services/core/java/com/android/server/AppOpsService.java;l=2280
+        // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/base/services/core/java/com/android/server/AppOpsService.java;l=2280
         const val ROOT_PACKAGE = "root"
     }
 }

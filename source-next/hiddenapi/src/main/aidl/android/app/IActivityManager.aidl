@@ -30,4 +30,4 @@ interface IActivityManager {
     void removeContentProviderExternal(String name, IBinder token);
 }
 
-// https://cs.android.com/android/platform/superproject/+/android-10.0.0_r47:frameworks/base/core/java/android/app/IActivityManager.aidl
+// https://cs.android.com/android/platform/superproject/+/android-10.0.0_r1:frameworks/base/core/java/android/app/IActivityManager.aidl

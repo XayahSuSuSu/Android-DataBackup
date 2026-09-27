@@ -26,4 +26,4 @@ public class SessionParamsHidden {
     public int installFlags;
 }
 
-// https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/base/core/java/android/content/pm/PackageInstaller.java;l=852
+// https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/base/core/java/android/content/pm/PackageInstaller.java;l=852

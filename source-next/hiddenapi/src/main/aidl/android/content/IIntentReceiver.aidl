@@ -31,4 +31,4 @@ oneway interface IIntentReceiver {
             in Bundle extras, boolean ordered, boolean sticky, int sendingUser);
 }
 
-// https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/base/core/java/android/content/IIntentReceiver.aidl
+// https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/base/core/java/android/content/IIntentReceiver.aidl

@@ -212,10 +212,10 @@ internal object MessageRestorePreparer {
             }
         }
 
-    // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:packages/providers/TelephonyProvider/src/com/android/providers/telephony/TelephonyBackupAgent.java;l=166
+    // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:packages/providers/TelephonyProvider/src/com/android/providers/telephony/TelephonyBackupAgent.java;l=166
     const val UNKNOWN_SENDER = "\u02bcUNKNOWN_SENDER!\u02bc"
 
-    // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/opt/telephony/src/java/com/google/android/mms/pdu/PduHeaders.java
+    // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/opt/telephony/src/java/com/google/android/mms/pdu/PduHeaders.java
     private const val ADDRESS_TYPE_BCC = 0x81L
     private const val ADDRESS_TYPE_CC = 0x82L
     private const val ADDRESS_TYPE_FROM = 0x89L

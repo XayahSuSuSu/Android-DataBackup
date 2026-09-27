@@ -70,7 +70,7 @@ public class WifiManagerHidden {
      * The updated choice will be made available through the updated config supplied by the
      * CONFIGURED_NETWORKS_CHANGED broadcast.
      * <p>
-     * see <a href="https://cs.android.com/android/platform/superproject/+/android-11.0.0_r48:frameworks/base/wifi/java/android/net/wifi/WifiManager.java;l=4360">WifiManager.java</a>
+     * see <a href="https://cs.android.com/android/platform/superproject/+/android-11.0.0_r1:frameworks/base/wifi/java/android/net/wifi/WifiManager.java;l=4360">WifiManager.java</a>
      *
      * @param netId         the id of the network to allow/disallow auto-join for.
      * @param allowAutojoin true to allow auto-join, false to disallow auto-join
@@ -94,4 +94,4 @@ public class WifiManagerHidden {
     }
 }
 
-// https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/base/wifi/java/android/net/wifi/WifiManager.java
+// https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/base/wifi/java/android/net/wifi/WifiManager.java

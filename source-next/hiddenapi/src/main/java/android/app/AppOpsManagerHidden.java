@@ -27,7 +27,7 @@ public class AppOpsManagerHidden {
     public static final int OP_WRITE_SMS = 15;
 
     /**
-     * @see <a href="https://cs.android.com/android/platform/superproject/+/android-9.0.0_r61:frameworks/base/core/java/android/app/AppOpsManager.java;l=494">AppOpsManager.java</a>
+     * @see <a href="https://cs.android.com/android/platform/superproject/+/android-9.0.0_r1:frameworks/base/core/java/android/app/AppOpsManager.java;l=494">AppOpsManager.java</a>
      */
     @RequiresApi(Build.VERSION_CODES.P)
     public static final String OPSTR_WRITE_SMS = "android:write_sms";
@@ -47,4 +47,4 @@ public class AppOpsManagerHidden {
     }
 }
 
-// https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/base/core/java/android/app/AppOpsManager.java
+// https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/base/core/java/android/app/AppOpsManager.java

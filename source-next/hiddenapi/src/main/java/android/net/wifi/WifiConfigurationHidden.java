@@ -18,7 +18,7 @@ public class WifiConfigurationHidden {
      * @hide Auto-join is allowed by user for this network.
      * Default true.
      * <p>
-     * see <a href="https://cs.android.com/android/platform/superproject/+/android-11.0.0_r48:frameworks/base/wifi/java/android/net/wifi/WifiConfiguration.java;l=866">WifiConfiguration.java</a>
+     * see <a href="https://cs.android.com/android/platform/superproject/+/android-11.0.0_r1:frameworks/base/wifi/java/android/net/wifi/WifiConfiguration.java;l=866">WifiConfiguration.java</a>
      */
     @RequiresApi(Build.VERSION_CODES.R)
     public boolean allowAutojoin;
@@ -35,4 +35,4 @@ public class WifiConfigurationHidden {
             };
 }
 
-// https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/base/wifi/java/android/net/wifi/WifiConfiguration.java
+// https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/base/wifi/java/android/net/wifi/WifiConfiguration.java

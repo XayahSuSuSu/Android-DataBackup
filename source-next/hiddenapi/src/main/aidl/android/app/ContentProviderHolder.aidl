@@ -18,4 +18,4 @@ package android.app;
 
 parcelable ContentProviderHolder;
 
-// https://cs.android.com/android/platform/superproject/+/android-8.0.0_r51:frameworks/base/core/java/android/app/ContentProviderHolder.aidl
+// https://cs.android.com/android/platform/superproject/+/android-8.0.0_r1:frameworks/base/core/java/android/app/ContentProviderHolder.aidl

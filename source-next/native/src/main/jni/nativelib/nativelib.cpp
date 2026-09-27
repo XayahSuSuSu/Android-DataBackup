@@ -15,7 +15,7 @@
 
 namespace NativeNS {
     /**
-     * https://cs.android.com/android/platform/superproject/+/android-15.0.0_r23:frameworks/native/cmds/installd/utils.cpp;l=467
+     * https://cs.android.com/android/platform/superproject/+/android-15.0.0_r1:frameworks/native/cmds/installd/utils.cpp;l=467
      */
     int calculate_tree_size(const std::string &path, int64_t *size) {
         FTS *fts;

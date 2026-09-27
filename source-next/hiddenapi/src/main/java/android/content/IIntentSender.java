@@ -25,7 +25,7 @@ public interface IIntentSender extends IInterface {
     /**
      * Android 7.0–7.1 callback signature
      * <p>
-     * See <a href="https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/base/core/java/android/content/IIntentSender.aidl">IIntentSender.aidl</a>.
+     * See <a href="https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/base/core/java/android/content/IIntentSender.aidl">IIntentSender.aidl</a>.
      */
     void send(int code, Intent intent, String resolvedType, IIntentReceiver finishedReceiver, String requiredPermission, Bundle options);
 

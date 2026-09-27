@@ -42,4 +42,4 @@ public interface IActivityManagerApi24 extends IInterface {
     }
 }
 
-// https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/base/core/java/android/app/IActivityManager.java
+// https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/base/core/java/android/app/IActivityManager.java

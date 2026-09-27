@@ -14,11 +14,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 object MessageConstant {
-    // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/opt/telephony/src/java/com/google/android/mms/ContentType.java
+    // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/opt/telephony/src/java/com/google/android/mms/ContentType.java
     const val APP_SMIL = "application/smil"
     const val TEXT_PLAIN = "text/plain"
 
-    // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/opt/telephony/src/java/com/google/android/mms/pdu/PduHeaders.java;l=168
+    // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/opt/telephony/src/java/com/google/android/mms/pdu/PduHeaders.java;l=168
     const val FROM_INSERT_ADDRESS_TOKEN_STR = "insert-address-token"
 }
 

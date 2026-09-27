@@ -49,7 +49,7 @@ public class PackageManagerHidden {
      * Flag parameter for {@link #installPackage} to bypass the low targer sdk version block
      * for this install.
      *
-     * @hide See <a href="https://cs.android.com/android/platform/superproject/+/android-14.0.0_r75:frameworks/base/core/java/android/content/pm/PackageManager.java;l=1777">PackageManager.java</a>
+     * @hide See <a href="https://cs.android.com/android/platform/superproject/+/android-14.0.0_r1:frameworks/base/core/java/android/content/pm/PackageManager.java;l=1777">PackageManager.java</a>
      */
     public static final int INSTALL_BYPASS_LOW_TARGET_SDK_BLOCK = 0x01000000;
 
@@ -62,4 +62,4 @@ public class PackageManagerHidden {
     }
 }
 
-// https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/base/core/java/android/content/pm/PackageManager.java
+// https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/base/core/java/android/content/pm/PackageManager.java

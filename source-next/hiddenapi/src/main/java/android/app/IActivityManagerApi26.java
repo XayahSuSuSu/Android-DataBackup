@@ -34,4 +34,4 @@ public interface IActivityManagerApi26 extends IInterface {
     ContentProviderHolder getContentProviderExternal(String name, int userId, IBinder token) throws RemoteException;
 }
 
-// https://cs.android.com/android/platform/superproject/+/android-8.0.0_r51:frameworks/base/core/java/android/app/IActivityManager.aidl
+// https://cs.android.com/android/platform/superproject/+/android-8.0.0_r1:frameworks/base/core/java/android/app/IActivityManager.aidl
