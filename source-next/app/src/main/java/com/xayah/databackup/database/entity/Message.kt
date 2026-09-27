@@ -14,9 +14,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 object MessageConstant {
-    const val APPLICATION_SMIL = "application/smil"
+    // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/opt/telephony/src/java/com/google/android/mms/ContentType.java
+    const val APP_SMIL = "application/smil"
     const val TEXT_PLAIN = "text/plain"
-    const val INVALID_ADDR = "insert-address-token"
+
+    // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r36:frameworks/opt/telephony/src/java/com/google/android/mms/pdu/PduHeaders.java;l=168
+    const val FROM_INSERT_ADDRESS_TOKEN_STR = "insert-address-token"
 }
 
 @JsonClass(generateAdapter = true)
@@ -75,7 +78,7 @@ data class MmsDeserialized(
     val address: String by lazy {
         addr.forEach { p ->
             val addr = p.getOrDefault(Telephony.Mms.Addr.ADDRESS, "").toString()
-            if (addr.isNotEmpty() && addr != MessageConstant.INVALID_ADDR) {
+            if (addr.isNotEmpty() && addr != MessageConstant.FROM_INSERT_ADDRESS_TOKEN_STR) {
                 return@lazy addr
             }
         }
@@ -86,7 +89,7 @@ data class MmsDeserialized(
         buildAnnotatedString {
             part.forEach { p ->
                 val contentType = p.getOrDefault(Telephony.Mms.Part.CONTENT_TYPE, "").toString()
-                if (contentType != MessageConstant.TEXT_PLAIN && contentType != MessageConstant.APPLICATION_SMIL) {
+                if (contentType != MessageConstant.TEXT_PLAIN && contentType != MessageConstant.APP_SMIL) {
                     appendInlineContent(id = iconMod)
                 } else if (contentType == MessageConstant.TEXT_PLAIN) {
                     val text = p.getOrDefault(Telephony.Mms.Part.TEXT, App.application.getString(R.string.unknown)).toString()

@@ -2,15 +2,16 @@ package com.xayah.databackup.service.restore
 
 import android.content.pm.ApplicationInfo
 import android.content.pm.ApplicationInfoHidden
+import android.os.Build
 import android.system.ErrnoException
 import android.system.Os
 import android.system.OsConstants
 import androidx.annotation.WorkerThread
+import com.xayah.hiddenapi.castTo
 import com.xayah.libnative.NativeLib
 import com.xayah.libnative.NativeLib.SELINUX_ANDROID_RESTORECON_FORCE
 import com.xayah.libnative.NativeLib.SELINUX_ANDROID_RESTORECON_RECURSE
 import com.xayah.libnative.Rustic
-import com.xayah.hiddenapi.castTo
 import java.io.File
 
 /**
@@ -85,15 +86,15 @@ internal class RestoreInternalDataHelper {
             runCatching {
                 check(NativeLib.chownAppDir(target.path, app.uid, entry.sourceUid) == 0) { "Failed to restore app data ownership: $target" }
                 Os.chown(target.path, app.uid, app.uid)
-                Os.chmod(target.path, if (app.targetSdkVersion >= 24) 448 else 489) // 0700 / 0751
+                Os.chmod(target.path, if (app.targetSdkVersion >= Build.VERSION_CODES.N) 448 else 489) // 0700 / 0751
                 val appId = app.uid % 100000
-                val cacheGid = if (android.os.Build.VERSION.SDK_INT >= 26 && appId in 10000..19999) app.uid + 10000 else app.uid
+                val cacheGid = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && appId in 10000..19999) app.uid + 10000 else app.uid
                 listOf("cache", "code_cache").forEach { name ->
                     val cache = File(target, name)
                     if (statOrNull(cache) == null) Os.mkdir(cache.path, 448)
                     check(OsConstants.S_ISDIR(Os.lstat(cache.path).st_mode)) { "Invalid cache directory: $cache" }
                     Os.chown(cache.path, app.uid, cacheGid)
-                    Os.chmod(cache.path, if (android.os.Build.VERSION.SDK_INT >= 26) 1529 else 505) // 02771 / 0771
+                    Os.chmod(cache.path, if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) 1529 else 505) // 02771 / 0771
                 }
                 if (entry.isCe) {
                     check(

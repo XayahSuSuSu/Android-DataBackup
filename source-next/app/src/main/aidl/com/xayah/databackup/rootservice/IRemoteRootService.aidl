@@ -39,4 +39,5 @@ interface IRemoteRootService {
     void restoreRusticAppInternalData(String repositoryPath, String password, String snapshotId, String packageName, int userId, int sourceUserId, in List<String> internalDataPaths);
     void restoreRusticAppExternalData(String repositoryPath, String password, String snapshotId, String packageName, int userId, int sourceUserId, in List<String> externalDataPaths);
     List<String> restoreRusticNetworks(String repositoryPath, String password, String snapshotId, in List<String> networkIds);
+    List<String> restoreRusticMessages(String repositoryPath, String password, String snapshotId, in List<String> messageIds);
 }

@@ -57,7 +57,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Hidden api
-    implementation(project(":hiddenapi"))
+    compileOnly(project(":hiddenapi"))
 
     // Native
     implementation(project(":native"))

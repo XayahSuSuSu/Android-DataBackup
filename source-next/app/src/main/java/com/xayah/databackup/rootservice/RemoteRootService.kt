@@ -42,6 +42,7 @@ import com.xayah.databackup.service.restore.RestoreApkHelper
 import com.xayah.databackup.service.restore.RestoreContactsHelper
 import com.xayah.databackup.service.restore.RestoreExternalDataHelper
 import com.xayah.databackup.service.restore.RestoreInternalDataHelper
+import com.xayah.databackup.service.restore.RestoreMessagesHelper
 import com.xayah.databackup.service.restore.RestoreNetworksHelper
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.NotificationHelper
@@ -403,6 +404,25 @@ object RemoteRootService {
                 LogHelper.e(TAG, "restoreRusticNetworks", "", e)
                 // JSON/parser exceptions may contain credentials and are not all supported by Binder.
                 throw IllegalStateException("Wi-Fi restore failed; some networks may already have been restored")
+            }
+        }
+
+        override fun restoreRusticMessages(
+            repositoryPath: String,
+            password: String,
+            snapshotId: String,
+            messageIds: List<String>,
+        ): List<String> = synchronized(mLock) {
+            runCatching {
+                val identity = clearCallingIdentity()
+                try {
+                    RestoreMessagesHelper(mSystemContext, context.cacheDir).restore(repositoryPath, password, snapshotId, messageIds)
+                } finally {
+                    restoreCallingIdentity(identity)
+                }
+            }.getOrElse { e ->
+                LogHelper.e(TAG, "restoreRusticMessages", "", e)
+                throw IllegalStateException("Messages restore failed; some messages may already be restored")
             }
         }
 
@@ -827,6 +847,34 @@ object RemoteRootService {
         val path = PathHelper.getRusticSnapshotMetadataFilePath(PathHelper.getBackupContactsConfigFileRelativePath())
         val serialized = readRusticSnapshotTextFiles(repositoryPath, password, snapshotId, listOf(path))
         RestoreContactsHelper(App.application.contentResolver).restore(serialized, path, contactIds)
+    }
+
+    /**
+     * Restores selected SMS/MMS records from a Rustic snapshot.
+     *
+     * The root service reads the snapshot and imports received/sent messages through Telephony Provider.
+     * Skips duplicates, unsupported message states and MMS records with missing attachments.
+     * Earlier imports are not rolled back if restoration fails.
+     *
+     * @param repositoryPath Path to the Rustic repository on the device.
+     * @param password Password used to access the repository.
+     * @param snapshotId Full 64-character hexadecimal snapshot ID.
+     * @param messageIds Non-empty list of restore inventory keys in the form `sms:<index>` or `mms:<index>`,
+     * where `index` is the zero-based record position in the snapshot, not a source-device message ID.
+     * @return Distinct inventory keys of skipped records in selection order. Empty if none were skipped.
+     * @throws IllegalArgumentException If the snapshot ID is invalid or the selection is empty.
+     * @throws IllegalStateException If the root service is unavailable or message restoration fails.
+     */
+    suspend fun restoreRusticMessages(
+        repositoryPath: String,
+        password: String,
+        snapshotId: String,
+        messageIds: List<String>,
+    ): List<String> = withContext(Dispatchers.IO) {
+        require(snapshotId.matches(Regex("[0-9a-fA-F]{64}"))) { "A full snapshot ID is required" }
+        require(messageIds.isNotEmpty()) { "No messages selected" }
+        val service = checkNotNull(getService()) { "Root service is unavailable" }
+        service.restoreRusticMessages(repositoryPath, password, snapshotId, messageIds)
     }
 
     /**

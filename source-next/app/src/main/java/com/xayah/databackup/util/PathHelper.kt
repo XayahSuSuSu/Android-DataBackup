@@ -10,6 +10,7 @@ import java.io.File
 object PathHelper {
     const val CACHE_SUBDIR_FIFO = "fifo"
     const val CACHE_SUBDIR_RESTORE_APK = "restore-apk"
+    const val CACHE_SUBDIR_RESTORE_MESSAGES = "restore-messages"
     private const val CACHE_SUBDIR_RUSTIC = "rustic"
 
     const val TMP_PARCEL_PREFIX = "databackup-parcel-"
