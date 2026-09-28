@@ -6,9 +6,9 @@
         <item quantity="other"><xliff:g id="count">%d</xliff:g> segundos</item>
     </plurals>
     <plurals name="num_minutes_ago">
-        <item quantity="one"><xliff:g id="count">%d</xliff:g> min</item>
-        <item quantity="many"><xliff:g id="count">%d</xliff:g> min</item>
-        <item quantity="other"><xliff:g id="count">%d</xliff:g> min</item>
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> min atrás</item>
+        <item quantity="many"><xliff:g id="count">%d</xliff:g> min atrás</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> min atrás</item>
     </plurals>
     <plurals name="items">
         <item quantity="one"><xliff:g id="count">%d</xliff:g> item</item>
