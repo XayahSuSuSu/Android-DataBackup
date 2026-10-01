@@ -8,6 +8,8 @@ import kotlinx.coroutines.Dispatchers
 class RestoreSetupViewModel(private val session: RestoreSession) : BaseViewModel() {
     val state = session.state
 
+    fun prepareRestore(): Boolean = runCatching { session.prepareRestore() }.isSuccess
+
     fun selectCategory(category: RestoreCategory, checked: Boolean) {
         withLock(Dispatchers.Default) {
             session.selectCategory(category, checked)

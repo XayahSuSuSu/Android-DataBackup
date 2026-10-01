@@ -548,4 +548,13 @@
     <string name="restore_snapshot">恢复快照</string>
     <string name="restore_snapshot_description">恢复快照 %1$s（%2$s）</string>
     <string name="restore_snapshot_load_failed">无法加载快照</string>
+    <string name="restore_session_expired">恢复任务已失效，请重新选择快照。</string>
+    <string name="restore_cancel_description">停止恢复？已恢复的数据将保留。</string>
+    <string name="restore_process_failed">恢复异常中断，部分数据可能已恢复。</string>
+    <string name="restore_finished_with_errors">恢复结束，存在失败项</string>
+    <string name="restore_result_restored">已恢复</string>
+    <string name="restore_result_skipped">已跳过</string>
+    <string name="restore_result_not_processed">未执行</string>
+    <string name="restore_skipped_count">%1$s · 跳过 %2$d 项</string>
+    <string name="restore_result_counts">%1$s · 失败 %2$d 项 · 跳过 %3$d 项</string>
 </resources>

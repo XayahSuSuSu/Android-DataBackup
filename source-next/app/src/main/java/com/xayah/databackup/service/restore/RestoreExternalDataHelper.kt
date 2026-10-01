@@ -11,6 +11,7 @@ import android.system.Os
 import android.system.OsConstants
 import androidx.annotation.WorkerThread
 import androidx.annotation.RequiresApi
+import com.xayah.databackup.data.rustic.requireFullSnapshotId
 import com.xayah.libnative.NativeLib
 import com.xayah.libnative.NativeLib.SELINUX_ANDROID_RESTORECON_FORCE
 import com.xayah.libnative.NativeLib.SELINUX_ANDROID_RESTORECON_RECURSE
@@ -32,8 +33,6 @@ import java.io.File
  */
 internal class RestoreExternalDataHelper {
     private companion object {
-        val SNAPSHOT_ID_PATTERN = Regex("[0-9a-fA-F]{64}")
-
         const val PROC_MOUNTS_PATH = "/proc/mounts"
         const val PROC_FILESYSTEMS_PATH = "/proc/filesystems"
         const val PROPERTY_SDCARDFS_ENABLED = "external_storage.sdcardfs.enabled"
@@ -79,7 +78,7 @@ internal class RestoreExternalDataHelper {
         sources: Map<String, String>,
         stopApp: () -> Unit,
     ) {
-        require(snapshotId.matches(SNAPSHOT_ID_PATTERN)) { "A full snapshot ID is required" }
+        requireFullSnapshotId(snapshotId)
         val userId = UserHandleHidden.getUserId(app.uid)
         val runtimeVolume = File("$RUNTIME_STORAGE_ROOT/$userId")
         val mounts = File(PROC_MOUNTS_PATH).readLines().map { it.split(' ') }

@@ -16,7 +16,10 @@ import com.xayah.databackup.data.GitHubReleaseRepository
 import com.xayah.databackup.data.MessageRepository
 import com.xayah.databackup.data.NetworkRepository
 import com.xayah.databackup.data.TranslatorRepository
+import com.xayah.databackup.data.restore.RestoreCoordinator
+import com.xayah.databackup.data.restore.RestoreGateway
 import com.xayah.databackup.data.restore.RestoreRepository
+import com.xayah.databackup.data.restore.RusticRestoreGateway
 import com.xayah.databackup.data.rustic.RusticAppSourcePlanner
 import com.xayah.databackup.data.rustic.RusticBackupCoordinator
 import com.xayah.databackup.data.rustic.RusticBackupGateway
@@ -36,6 +39,7 @@ import com.xayah.databackup.feature.backup.messages.MessagesViewModel
 import com.xayah.databackup.feature.backup.networks.NetworksViewModel
 import com.xayah.databackup.feature.backup.rustic.RusticBackupProcessViewModel
 import com.xayah.databackup.feature.dashboard.DashboardViewModel
+import com.xayah.databackup.feature.restore.RestoreProcessViewModel
 import com.xayah.databackup.feature.restore.RestoreSetupViewModel
 import com.xayah.databackup.feature.restore.RestoreViewModel
 import com.xayah.databackup.feature.update.UpdatesViewModel
@@ -49,6 +53,7 @@ import io.ktor.client.engine.cio.CIO
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
+import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -86,6 +91,9 @@ class App : Application(), SingletonImageLoader.Factory {
         singleOf(::RusticBackupSelectionProvider)
         singleOf(::RusticBackupSourceCollector)
         singleOf(::RusticBackupCoordinator)
+        singleOf(::RestoreCoordinator)
+
+        singleOf(::RusticRestoreGateway) { bind<RestoreGateway>() }
 
         viewModelOf(::DashboardViewModel)
         viewModelOf(::BackupSetupViewModel)
@@ -101,6 +109,7 @@ class App : Application(), SingletonImageLoader.Factory {
         viewModelOf(::RestoreCallLogsViewModel)
         viewModelOf(::RestoreMessagesViewModel)
         viewModelOf(::RestoreSetupViewModel)
+        viewModelOf(::RestoreProcessViewModel)
         viewModelOf(::AppsViewModel)
         viewModelOf(::NetworksViewModel)
         viewModelOf(::ContactsViewModel)

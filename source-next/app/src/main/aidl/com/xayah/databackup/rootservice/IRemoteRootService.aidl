@@ -4,6 +4,7 @@ import com.xayah.databackup.parcelables.BytesParcelable;
 import com.xayah.databackup.parcelables.StatFsParcelable;
 import com.xayah.databackup.parcelables.FilePathParcelable;
 import com.xayah.databackup.rootservice.ICallback;
+import com.xayah.databackup.rootservice.IRestoreCallback;
 
 interface IRemoteRootService {
     void testConnection();
@@ -38,6 +39,6 @@ interface IRemoteRootService {
     void restoreRusticAppApk(String repositoryPath, String password, String snapshotId, String packageName, int userId, in List<String> apkPaths);
     void restoreRusticAppInternalData(String repositoryPath, String password, String snapshotId, String packageName, int userId, int sourceUserId, in List<String> internalDataPaths);
     void restoreRusticAppExternalData(String repositoryPath, String password, String snapshotId, String packageName, int userId, int sourceUserId, in List<String> externalDataPaths);
-    List<String> restoreRusticNetworks(String repositoryPath, String password, String snapshotId, in List<String> networkIds);
-    List<String> restoreRusticMessages(String repositoryPath, String password, String snapshotId, in List<String> messageIds);
+    List<String> restoreRusticNetworks(String repositoryPath, String password, String snapshotId, in List<String> networkIds, IRestoreCallback callback);
+    List<String> restoreRusticMessages(String repositoryPath, String password, String snapshotId, in List<String> messageIds, IRestoreCallback callback);
 }

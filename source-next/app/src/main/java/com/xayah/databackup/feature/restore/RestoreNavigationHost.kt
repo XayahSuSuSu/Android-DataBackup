@@ -14,6 +14,7 @@ import com.xayah.databackup.feature.RestoreCallLogsRoute
 import com.xayah.databackup.feature.RestoreContactsRoute
 import com.xayah.databackup.feature.RestoreMessagesRoute
 import com.xayah.databackup.feature.RestoreNetworksRoute
+import com.xayah.databackup.feature.RestoreProcessRoute
 import com.xayah.databackup.feature.RestoreSetupRoute
 import com.xayah.databackup.feature.restore.apps.AppsViewModel
 import com.xayah.databackup.feature.restore.apps.RestoreAppsScreen
@@ -54,6 +55,10 @@ internal fun RestoreNavigationContent(
         popTransitionSpec = { backwardNavigationTransition() },
         predictivePopTransitionSpec = { backwardNavigationTransition() },
         entryProvider = entryProvider {
+            entry<RestoreProcessRoute> {
+                val viewModel = koinViewModel<RestoreProcessViewModel> { parametersOf(session) }
+                RestoreProcessScreen(viewModel, onFinish = onBack)
+            }
             entry<RestoreSetupRoute> {
                 val viewModel = koinViewModel<RestoreSetupViewModel> { parametersOf(session) }
                 RestoreSetupScreen(navigator, viewModel, onBack, onRetry)

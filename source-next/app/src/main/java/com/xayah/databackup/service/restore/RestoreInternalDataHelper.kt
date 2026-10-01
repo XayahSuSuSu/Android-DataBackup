@@ -7,6 +7,7 @@ import android.system.ErrnoException
 import android.system.Os
 import android.system.OsConstants
 import androidx.annotation.WorkerThread
+import com.xayah.databackup.data.rustic.requireFullSnapshotId
 import com.xayah.hiddenapi.castTo
 import com.xayah.libnative.NativeLib
 import com.xayah.libnative.NativeLib.SELINUX_ANDROID_RESTORECON_FORCE
@@ -43,7 +44,7 @@ internal class RestoreInternalDataHelper {
         sources: Map<Boolean, String>,
         stopApp: () -> Unit,
     ) {
-        require(snapshotId.matches(Regex("[0-9a-fA-F]{64}"))) { "A full snapshot ID is required" }
+        requireFullSnapshotId(snapshotId)
         val plan = sources.map { (isCe, path) ->
             val targetPath = if (isCe) app.castTo<ApplicationInfoHidden>().credentialProtectedDataDir else app.deviceProtectedDataDir
             check(!targetPath.isNullOrBlank()) { "Package has no ${if (isCe) "CE" else "DE"} data directory" }

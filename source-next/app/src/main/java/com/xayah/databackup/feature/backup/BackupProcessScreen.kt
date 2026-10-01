@@ -470,15 +470,22 @@ private fun ProcessAppsItem(
             ProcessItemCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_layout_grid),
                 title = stringResource(R.string.apps),
-                currentIndex = appsItem.currentIndex,
-                totalCount = appsItem.totalCount,
+                label = "${appsItem.currentIndex}/${appsItem.totalCount}",
                 subtitle = statusOverride ?: appsItem.msg,
                 subtitleShimmer = appsItem.isLoading && statusOverride == null,
-                onIconBtnClick = {
-                    if (openDetailsPage) {
-                        navigator.navigateSafely(BackupProcessDetailsRoute)
-                    } else {
-                        openAppItemDialog = true
+                trailingContent = {
+                    IconButton(onClick = {
+                        if (openDetailsPage) {
+                            navigator.navigateSafely(BackupProcessDetailsRoute)
+                        } else {
+                            openAppItemDialog = true
+                        }
+                    }) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_badge_info),
+                            tint = MaterialTheme.colorScheme.primary,
+                            contentDescription = stringResource(R.string.details),
+                        )
                     }
                 },
                 onClick = { }
@@ -498,11 +505,9 @@ private fun ProcessFilesItem(filesItem: ProcessItem, showProgress: Boolean, stat
             ProcessItemCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_folder),
                 title = stringResource(R.string.files),
-                currentIndex = filesItem.currentIndex,
-                totalCount = filesItem.totalCount,
+                label = "${filesItem.currentIndex}/${filesItem.totalCount}",
                 subtitle = statusOverride ?: filesItem.msg,
                 subtitleShimmer = filesItem.isLoading && statusOverride == null,
-                onIconBtnClick = null,
                 onClick = {}
             )
         }
@@ -520,11 +525,9 @@ private fun ProcessNetworksItem(networksItem: ProcessItem, showProgress: Boolean
             ProcessItemCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_wifi),
                 title = stringResource(R.string.network),
-                currentIndex = networksItem.currentIndex,
-                totalCount = networksItem.totalCount,
+                label = "${networksItem.currentIndex}/${networksItem.totalCount}",
                 subtitle = statusOverride ?: networksItem.msg,
                 subtitleShimmer = networksItem.isLoading && statusOverride == null,
-                onIconBtnClick = null,
                 onClick = {}
             )
         }
@@ -542,11 +545,9 @@ private fun ProcessContactsItem(contactsItem: ProcessItem, showProgress: Boolean
             ProcessItemCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_user_round),
                 title = stringResource(R.string.contacts),
-                currentIndex = contactsItem.currentIndex,
-                totalCount = contactsItem.totalCount,
+                label = "${contactsItem.currentIndex}/${contactsItem.totalCount}",
                 subtitle = statusOverride ?: contactsItem.msg,
                 subtitleShimmer = contactsItem.isLoading && statusOverride == null,
-                onIconBtnClick = null,
                 onClick = {}
             )
         }
@@ -564,11 +565,9 @@ private fun ProcessCallLogsItem(callLogsItem: ProcessItem, showProgress: Boolean
             ProcessItemCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_phone),
                 title = stringResource(R.string.call_logs),
-                currentIndex = callLogsItem.currentIndex,
-                totalCount = callLogsItem.totalCount,
+                label = "${callLogsItem.currentIndex}/${callLogsItem.totalCount}",
                 subtitle = statusOverride ?: callLogsItem.msg,
                 subtitleShimmer = callLogsItem.isLoading && statusOverride == null,
-                onIconBtnClick = null,
                 onClick = {}
             )
         }
@@ -586,11 +585,9 @@ private fun ProcessMessagesItem(messagesItem: ProcessItem, showProgress: Boolean
             ProcessItemCard(
                 icon = ImageVector.vectorResource(R.drawable.ic_message_circle),
                 title = stringResource(R.string.messages),
-                currentIndex = messagesItem.currentIndex,
-                totalCount = messagesItem.totalCount,
+                label = "${messagesItem.currentIndex}/${messagesItem.totalCount}",
                 subtitle = statusOverride ?: messagesItem.msg,
                 subtitleShimmer = messagesItem.isLoading && statusOverride == null,
-                onIconBtnClick = null,
                 onClick = {}
             )
         }

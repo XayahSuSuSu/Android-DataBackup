@@ -7,6 +7,7 @@ import android.provider.CallLog.Calls
 import androidx.annotation.WorkerThread
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
+import com.xayah.databackup.data.restore.RestoreProgressCallback
 import com.xayah.databackup.database.entity.FieldMap
 import com.xayah.databackup.util.LogHelper
 import kotlinx.coroutines.currentCoroutineContext
@@ -24,7 +25,12 @@ import kotlinx.coroutines.ensureActive
  */
 internal class RestoreCallLogsHelper(private val resolver: ContentResolver) {
     @WorkerThread
-    suspend fun restore(serialized: String, path: String, callLogIds: List<String>): List<String> {
+    suspend fun restore(
+        serialized: String,
+        path: String,
+        callLogIds: List<String>,
+        callback: RestoreProgressCallback,
+    ): List<String> {
         // Validate every selected record before the first write. Do not expose call log JSON in errors.
         val callLogs = runCatching {
             val files = requireNotNull(Moshi.Builder().build().adapter<Map<String, String>>().fromJson(serialized))
@@ -34,22 +40,20 @@ internal class RestoreCallLogsHelper(private val resolver: ContentResolver) {
             throw IllegalArgumentException("Invalid call logs backup or selection")
         }
         val skipped = mutableListOf<String>()
-        for ((id, callLog) in callLogs) {
+        for ((id, prepared) in callLogs) {
             currentCoroutineContext().ensureActive()
-            if (callLog == null) {
-                skipped.add(id)
-                continue
-            }
-            runCatching {
-                if (callLogExists(callLog)) {
-                    skipped.add(id)
+            val result = restoreRecord(id, callback) {
+                val callLog = prepared.getOrThrow()
+                if (callLog == null || callLogExists(callLog)) {
+                    true
                 } else {
                     val inserted = checkNotNull(resolver.insert(Calls.CONTENT_URI, contentValues(callLog))) { "Call log insertion failed" }
                     check(ContentUris.parseId(inserted) > 0) { "Call log insertion was rejected" }
+                    false
                 }
-            }.onFailure {
-                LogHelper.e(TAG, "restore", "", it)
-                throw IllegalStateException("Call logs restore failed; some calls may already have been restored")
+            }
+            if (result == true) {
+                skipped.add(id)
             }
         }
         return skipped

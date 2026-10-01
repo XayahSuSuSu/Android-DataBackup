@@ -12,8 +12,11 @@ import android.system.OsConstants
 import androidx.annotation.WorkerThread
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
+import com.xayah.databackup.data.restore.RestoreProgressCallback
+import com.xayah.databackup.data.restore.RestoreRecordEvent
 import com.xayah.databackup.data.rustic.RusticBackupManifest
 import com.xayah.databackup.data.rustic.RusticSourceCategory
+import com.xayah.databackup.data.rustic.requireFullSnapshotId
 import com.xayah.databackup.database.entity.FieldMap
 import com.xayah.databackup.rootservice.RootContentResolver
 import com.xayah.databackup.service.restore.MessageRestorePreparer.MmsRecord
@@ -49,8 +52,14 @@ internal class RestoreMessagesHelper(context: Context, private val mCacheDir: Fi
     }
 
     @WorkerThread
-    fun restore(repositoryPath: String, password: String, snapshotId: String, messageIds: List<String>): List<String> {
-        require(snapshotId.matches(Regex("[0-9a-fA-F]{64}"))) { "A full snapshot ID is required" }
+    fun restore(
+        repositoryPath: String,
+        password: String,
+        snapshotId: String,
+        messageIds: List<String>,
+        callback: RestoreProgressCallback,
+    ): List<String> {
+        requireFullSnapshotId(snapshotId)
         require(messageIds.isNotEmpty()) { "No messages selected" }
         fun getMetadataPath(relative: String) = PathHelper.getRusticSnapshotMetadataFilePath(relative)
         val smsPath = getMetadataPath(PathHelper.getBackupMessagesSmsConfigFileRelativePath())
@@ -77,35 +86,58 @@ internal class RestoreMessagesHelper(context: Context, private val mCacheDir: Fi
             if (!complete) skipped.add(id)
             complete
         }
+        prepared.failures.forEach { (id, error) ->
+            restoreRecord(id, callback) { throw error }
+        }
+        skipped.forEach { id ->
+            callback.onEvent(RestoreRecordEvent.Started(id))
+            callback.onEvent(RestoreRecordEvent.Skipped(id))
+        }
         val cacheDir = PathHelper.getCacheDir(PathHelper.CACHE_SUBDIR_RESTORE_MESSAGES, mCacheDir)
         val staging = File(cacheDir, UUID.randomUUID().toString())
         check(staging.mkdir()) { "Failed to create message staging directory: $staging" }
         val result = runCatching {
-            // Restore only manifest-listed snapshot attachments, never the live source-device paths.
-            val attachments = restorableMms.values.flatMap { it.parts }.mapNotNull { it.attachmentPath }.distinct()
-                .mapIndexed { index, path ->
-                    val file = File(staging, index.toString())
-                    Rustic.restoreSnapshot(repositoryPath, password, "$snapshotId:$path", file.path, Rustic.RestoreOptions(noOwnership = true))
-                    check(OsConstants.S_ISREG(Os.lstat(file.path).st_mode)) { "MMS attachment is not a regular file" }
-                    path to file
-                }.toMap()
             mResolver.allowTemporaryMessageWrites().use {
                 prepared.sms.forEach { (id, record) ->
-                    if (smsExists(record.values)) {
+                    val result = restoreRecord(id, callback) {
+                        if (smsExists(record.values)) {
+                            true
+                        } else {
+                            val values = contentValues(record.values)
+                            val address = (record.values[Telephony.Sms.ADDRESS] as String).ifBlank { MessageRestorePreparer.UNKNOWN_SENDER }
+                            values.put(Telephony.Sms.THREAD_ID, getOrCreateThreadId(setOf(address)))
+                            val inserted = checkNotNull(mResolver.insert(Telephony.Sms.CONTENT_URI, values)) { "SMS insertion failed" }
+                            check(ContentUris.parseId(inserted) > 0) { "SMS insertion was rejected" }
+                            false
+                        }
+                    }
+                    if (result == true) {
                         skipped.add(id)
-                    } else {
-                        val values = contentValues(record.values)
-                        val address = (record.values[Telephony.Sms.ADDRESS] as String).ifBlank { MessageRestorePreparer.UNKNOWN_SENDER }
-                        values.put(Telephony.Sms.THREAD_ID, getOrCreateThreadId(setOf(address)))
-                        val inserted = checkNotNull(mResolver.insert(Telephony.Sms.CONTENT_URI, values)) { "SMS insertion failed" }
-                        check(ContentUris.parseId(inserted) > 0) { "SMS insertion was rejected" }
                     }
                 }
                 restorableMms.forEach { (id, record) ->
-                    if (mmsExists(record, attachments)) {
+                    val result = restoreRecord(id, callback) {
+                        val attachments = record.parts.mapNotNull { it.attachmentPath }.distinct().mapIndexed { index, path ->
+                            val file = File(staging, "${id}_$index")
+                            Rustic.restoreSnapshot(
+                                repositoryPath = repositoryPath,
+                                password = password,
+                                snapshotId = "$snapshotId:$path",
+                                destinationPath = file.path,
+                                options = Rustic.RestoreOptions(noOwnership = true),
+                            )
+                            check(OsConstants.S_ISREG(Os.lstat(file.path).st_mode)) { "MMS attachment is not a regular file" }
+                            path to file
+                        }.toMap()
+                        if (mmsExists(record, attachments)) {
+                            true
+                        } else {
+                            insertMms(record, attachments)
+                            false
+                        }
+                    }
+                    if (result == true) {
                         skipped.add(id)
-                    } else {
-                        insertMms(record, attachments)
                     }
                 }
             }

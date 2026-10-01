@@ -30,6 +30,10 @@ import com.github.luben.zstd.ZstdOutputStream
 import com.topjohnwu.superuser.ipc.RootService
 import com.xayah.databackup.App
 import com.xayah.databackup.R
+import com.xayah.databackup.data.restore.RestoreProgressCallback
+import com.xayah.databackup.data.restore.asBinderCallback
+import com.xayah.databackup.data.restore.asProgressCallback
+import com.xayah.databackup.data.rustic.requireFullSnapshotId
 import com.xayah.databackup.database.entity.AppInfo
 import com.xayah.databackup.database.entity.AppStorage
 import com.xayah.databackup.database.entity.Info
@@ -398,9 +402,16 @@ object RemoteRootService {
             password: String,
             snapshotId: String,
             networkIds: List<String>,
+            callback: IRestoreCallback,
         ): List<String> = synchronized(mLock) {
             runCatching {
-                RestoreNetworksHelper(mWifiManager).restore(repositoryPath, password, snapshotId, networkIds)
+                RestoreNetworksHelper(mWifiManager).restore(
+                    repositoryPath = repositoryPath,
+                    password = password,
+                    snapshotId = snapshotId,
+                    networkIds = networkIds,
+                    callback = callback.asProgressCallback(),
+                )
             }.getOrElse { e ->
                 LogHelper.e(TAG, "restoreRusticNetworks", "", e)
                 // JSON/parser exceptions may contain credentials and are not all supported by Binder.
@@ -413,11 +424,18 @@ object RemoteRootService {
             password: String,
             snapshotId: String,
             messageIds: List<String>,
+            callback: IRestoreCallback,
         ): List<String> = synchronized(mLock) {
             runCatching {
                 val identity = clearCallingIdentity()
                 try {
-                    RestoreMessagesHelper(mSystemContext, context.cacheDir).restore(repositoryPath, password, snapshotId, messageIds)
+                    RestoreMessagesHelper(mSystemContext, context.cacheDir).restore(
+                        repositoryPath = repositoryPath,
+                        password = password,
+                        snapshotId = snapshotId,
+                        messageIds = messageIds,
+                        callback = callback.asProgressCallback(),
+                    )
                 } finally {
                     restoreCallingIdentity(identity)
                 }
@@ -799,18 +817,20 @@ object RemoteRootService {
      * @param snapshotId Full 64-character hexadecimal snapshot ID.
      * @param networkIds Non-empty list of restore inventory keys in the form `network:<index>`,
      * where `index` is the zero-based record position in the snapshot, not a source-device network ID.
+     * @param callback Synchronously receives restore progress and results for each record.
      * @return Distinct inventory keys of skipped records in selection order. Empty if no records were
      * skipped, or all selected keys if no records have a compatible configuration.
      * @throws IllegalStateException If the root service is unavailable or restoration fails.
      */
-    suspend fun restoreRusticNetworks(
+    internal suspend fun restoreRusticNetworks(
         repositoryPath: String,
         password: String,
         snapshotId: String,
         networkIds: List<String>,
+        callback: RestoreProgressCallback,
     ): List<String> = withContext(Dispatchers.IO) {
         val service = checkNotNull(getService()) { "Root service is unavailable" }
-        service.restoreRusticNetworks(repositoryPath, password, snapshotId, networkIds)
+        service.restoreRusticNetworks(repositoryPath, password, snapshotId, networkIds, callback.asBinderCallback())
     }
 
     /**
@@ -828,26 +848,28 @@ object RemoteRootService {
      * @param snapshotId Full 64-character hexadecimal snapshot ID.
      * @param contactIds Non-empty list of restore inventory keys in the form `contact:<index>`,
      * where `index` is the zero-based record position in the snapshot, not a source-device contact ID.
+     * @param callback Synchronously receives restore progress and results for each record.
      * @return Distinct inventory keys of skipped records in selection order. Empty if no records were
      * skipped, or all selected keys if no records contain restorable data.
      * @throws IllegalArgumentException If the snapshot ID, selection or selected contact backup data is invalid.
      * @throws IllegalStateException If WRITE_CONTACTS permission is missing, the root service is unavailable,
-     * or contact insertion fails.
+     * or shared contact restore setup fails.
      */
-    suspend fun restoreRusticContacts(
+    internal suspend fun restoreRusticContacts(
         repositoryPath: String,
         password: String,
         snapshotId: String,
         contactIds: List<String>,
+        callback: RestoreProgressCallback,
     ): List<String> = withContext(Dispatchers.IO) {
-        require(snapshotId.matches(Regex("[0-9a-fA-F]{64}"))) { "A full snapshot ID is required" }
+        requireFullSnapshotId(snapshotId)
         require(contactIds.isNotEmpty()) { "No contacts selected" }
         check(App.application.checkSelfPermission(Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
             "Contacts restore requires WRITE_CONTACTS permission"
         }
         val path = PathHelper.getRusticSnapshotMetadataFilePath(PathHelper.getBackupContactsConfigFileRelativePath())
         val serialized = readRusticSnapshotTextFiles(repositoryPath, password, snapshotId, listOf(path))
-        RestoreContactsHelper(App.application.contentResolver).restore(serialized, path, contactIds)
+        RestoreContactsHelper(App.application.contentResolver).restore(serialized, path, contactIds, callback)
     }
 
     /**
@@ -863,24 +885,26 @@ object RemoteRootService {
      * @param snapshotId Full 64-character hexadecimal snapshot ID.
      * @param callLogIds Non-empty list of inventory keys in the form `call:<index>`, where `index` is the
      * zero-based record position in the snapshot, not a source-device call ID.
+     * @param callback Synchronously receives restore progress and results for each record.
      * @return Distinct inventory keys of skipped records in selection order. Empty if none were skipped.
      * @throws IllegalArgumentException If the snapshot ID, selection or selected call log data is invalid.
      * @throws IllegalStateException If permissions are missing, the root service is unavailable or restoration fails.
      */
-    suspend fun restoreRusticCallLogs(
+    internal suspend fun restoreRusticCallLogs(
         repositoryPath: String,
         password: String,
         snapshotId: String,
         callLogIds: List<String>,
+        callback: RestoreProgressCallback,
     ): List<String> = withContext(Dispatchers.IO) {
-        require(snapshotId.matches(Regex("[0-9a-fA-F]{64}"))) { "A full snapshot ID is required" }
+        requireFullSnapshotId(snapshotId)
         require(callLogIds.isNotEmpty()) { "No call logs selected" }
         check(listOf(Manifest.permission.READ_CALL_LOG, Manifest.permission.WRITE_CALL_LOG).all {
             App.application.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
         }) { "Call logs restore requires READ_CALL_LOG and WRITE_CALL_LOG permissions" }
         val path = PathHelper.getRusticSnapshotMetadataFilePath(PathHelper.getBackupCallLogsConfigFileRelativePath())
         val serialized = readRusticSnapshotTextFiles(repositoryPath, password, snapshotId, listOf(path))
-        RestoreCallLogsHelper(App.application.contentResolver).restore(serialized, path, callLogIds)
+        RestoreCallLogsHelper(App.application.contentResolver).restore(serialized, path, callLogIds, callback)
     }
 
     /**
@@ -895,20 +919,22 @@ object RemoteRootService {
      * @param snapshotId Full 64-character hexadecimal snapshot ID.
      * @param messageIds Non-empty list of restore inventory keys in the form `sms:<index>` or `mms:<index>`,
      * where `index` is the zero-based record position in the snapshot, not a source-device message ID.
+     * @param callback Synchronously receives restore progress and results for each record.
      * @return Distinct inventory keys of skipped records in selection order. Empty if none were skipped.
      * @throws IllegalArgumentException If the snapshot ID is invalid or the selection is empty.
      * @throws IllegalStateException If the root service is unavailable or message restoration fails.
      */
-    suspend fun restoreRusticMessages(
+    internal suspend fun restoreRusticMessages(
         repositoryPath: String,
         password: String,
         snapshotId: String,
         messageIds: List<String>,
+        callback: RestoreProgressCallback,
     ): List<String> = withContext(Dispatchers.IO) {
-        require(snapshotId.matches(Regex("[0-9a-fA-F]{64}"))) { "A full snapshot ID is required" }
+        requireFullSnapshotId(snapshotId)
         require(messageIds.isNotEmpty()) { "No messages selected" }
         val service = checkNotNull(getService()) { "Root service is unavailable" }
-        service.restoreRusticMessages(repositoryPath, password, snapshotId, messageIds)
+        service.restoreRusticMessages(repositoryPath, password, snapshotId, messageIds, callback.asBinderCallback())
     }
 
     /**

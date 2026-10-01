@@ -3,6 +3,17 @@ package com.xayah.databackup.data.rustic
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+private val FULL_SNAPSHOT_ID_PATTERN = Regex("[0-9a-fA-F]{64}")
+
+/**
+ * Requires a full 64-character hexadecimal snapshot ID.
+ *
+ * @throws IllegalArgumentException if [snapshotId] is not a full snapshot ID.
+ */
+internal fun requireFullSnapshotId(snapshotId: String) {
+    require(snapshotId.matches(FULL_SNAPSHOT_ID_PATTERN)) { "A full snapshot ID is required" }
+}
+
 @JsonClass(generateAdapter = true)
 data class RusticSnapshot(
     val id: String = "",

@@ -35,6 +35,7 @@ data class RusticRestoreInventory(
     val sms: Map<String, SmsDeserialized> = emptyMap(),
     val mms: Map<String, MmsDeserialized> = emptyMap(),
     val availableAppParts: Map<String, Set<RusticSourceCategory>> = emptyMap(),
+    val appSources: Map<String, List<RusticSourcePath>> = emptyMap(),
 ) {
     fun ids(category: RestoreCategory): Set<String> = when (category) {
         RestoreCategory.Apps -> apps.keys
@@ -102,6 +103,7 @@ class RusticRestoreInventoryReader {
             availableAppParts = apps.mapValues { (_, app) ->
                 app.included.map { it.category }.filter { it in AppRestoreParts }.toSet()
             },
+            appSources = apps.mapValues { (_, app) -> app.included },
             files = manifest.included.filter { it.category == RusticSourceCategory.File }.distinctBy { it.path }
                 .associate { RestoreRecordId.file(it.path) to it.path },
             networks = records<Network>(manifest, files, PathHelper.getBackupNetworksConfigFileRelativePath())

@@ -10,7 +10,7 @@ import com.xayah.databackup.database.entity.FieldMap
 /**
  * Parses selected call log records from backup metadata and prepares fields for the target Android version.
  * Validates restorable fields, omits source IDs and device-local references, and applies restore defaults.
- * Returns null entries for voicemail and unsupported call types; does not read or write provider data.
+ * Returns successful null results for voicemail and unsupported call types; does not read or write provider data.
  */
 internal object CallLogRestorePreparer {
     private val mMoshi = Moshi.Builder().build()
@@ -20,18 +20,20 @@ internal object CallLogRestorePreparer {
 
     /**
      * Prepares distinct selected records in selection order, keyed by their inventory IDs.
-     * Returns null for voicemail and call types unsupported by the target Android version.
-     * Invalid selections or malformed restorable fields fail the entire preparation.
+     * Successful results contain null for voicemail and call types unsupported by the target Android version.
+     * Invalid selections or malformed fields are captured as failures for the affected records.
      */
-    fun prepare(content: String, ids: List<String>): Map<String, FieldMap?> {
+    fun prepare(content: String, ids: List<String>): Map<String, Result<FieldMap?>> {
         require(ids.isNotEmpty()) { "No call logs selected" }
         val records = requireNotNull(mRecordsAdapter.fromJson(content)) { "Missing call log records" }
         return ids.distinct().associateWith { id ->
-            require(mKeyPattern.matches(id)) { "Invalid call log key" }
-            val index = requireNotNull(id.substringAfter(':').toIntOrNull()) { "Invalid call log index" }
-            val record = requireNotNull(records.getOrNull(index)) { "Unknown call log record" }
-            val fields = requireNotNull(mFieldsAdapter.fromJson(requireNotNull(record.call))) { "Missing call log fields" }
-            prepareFields(fields)
+            runCatching {
+                require(mKeyPattern.matches(id)) { "Invalid call log key" }
+                val index = requireNotNull(id.substringAfter(':').toIntOrNull()) { "Invalid call log index" }
+                val record = requireNotNull(records.getOrNull(index)) { "Unknown call log record" }
+                val fields = requireNotNull(mFieldsAdapter.fromJson(requireNotNull(record.call) { "Missing call log JSON" })) { "Missing call log fields" }
+                prepareFields(fields)
+            }
         }
     }
 

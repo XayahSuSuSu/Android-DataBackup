@@ -24,6 +24,12 @@ fun <T> fadeContentTransitionSpec(): AnimatedContentTransitionScope<T>.() -> Con
     )
 }
 
+fun <T> fadeSlideContentTransitionSpec(): AnimatedContentTransitionScope<T>.() -> ContentTransform = {
+    ((fadeIn(tween(220, delayMillis = 80)) + slideInVertically(tween(300)) { it / 12 }) togetherWith
+            (fadeOut(tween(120)) + slideOutVertically(tween(220)) { -it / 12 }))
+        .using(SizeTransform { _, _ -> tween(300) })
+}
+
 fun textTransitionSpec(): AnimatedContentTransitionScope<String>.() -> ContentTransform = {
     if (targetState > initialState) {
         slideInVertically { height -> height } + fadeIn() togetherWith

@@ -2,7 +2,9 @@ package com.xayah.databackup.data.restore
 
 import com.xayah.databackup.data.rustic.RusticSourceCategory
 import com.xayah.databackup.database.entity.Option
+import kotlinx.serialization.Serializable
 
+@Serializable
 enum class RestoreCategory { Apps, Networks, Contacts, CallLogs, Messages }
 
 val AppRestoreParts = setOf(

@@ -56,6 +56,9 @@ data class RestoreRoute(val configUuid: String, val snapshotId: String) : NavKey
 data object RestoreSetupRoute : NavKey
 
 @Serializable
+data object RestoreProcessRoute : NavKey
+
+@Serializable
 data object RestoreAppsRoute : NavKey
 
 @Serializable

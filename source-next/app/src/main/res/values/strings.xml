@@ -563,4 +563,13 @@
     <string name="restore_snapshot">Restore snapshot</string>
     <string name="restore_snapshot_description">Restore snapshot %1$s (%2$s)</string>
     <string name="restore_snapshot_load_failed">Could not load snapshot</string>
+    <string name="restore_session_expired">Restore task is no longer available. Select the snapshot again.</string>
+    <string name="restore_cancel_description">Stop restoring? Restored data will be kept.</string>
+    <string name="restore_process_failed">Restore stopped unexpectedly. Some data may already have been restored.</string>
+    <string name="restore_finished_with_errors">Restore finished with failures</string>
+    <string name="restore_result_restored">Restored</string>
+    <string name="restore_result_skipped">Skipped</string>
+    <string name="restore_result_not_processed">Not processed</string>
+    <string name="restore_skipped_count">%1$s · %2$d skipped</string>
+    <string name="restore_result_counts">%1$s · %2$d failed · %3$d skipped</string>
 </resources>
