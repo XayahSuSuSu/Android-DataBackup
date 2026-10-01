@@ -548,4 +548,13 @@
     <string name="restore_snapshot">Przywróć migawkę</string>
     <string name="restore_snapshot_description">Przywróć migawkę %1$s (%2$s)</string>
     <string name="restore_snapshot_load_failed">Nie udało się wczytać migawki</string>
+    <string name="restore_session_expired">Zadanie przywracania nie jest już dostępne. Wybierz ponownie migawkę.</string>
+    <string name="restore_cancel_description">Zatrzymać przywracanie? Przywrócone dane zostaną zachowane.</string>
+    <string name="restore_process_failed">Proces przywracania został nieoczekiwanie przerwany. Część danych mogła już zostać przywrócona.</string>
+    <string name="restore_finished_with_errors">Przywracanie zakończone niepowodzeniem</string>
+    <string name="restore_result_restored">Przywrócono</string>
+    <string name="restore_result_skipped">Pominięto</string>
+    <string name="restore_result_not_processed">Nie przetworzono</string>
+    <string name="restore_skipped_count">%1$s · %2$d pominięto</string>
+    <string name="restore_result_counts">%1$s · %2$d nie powiodło się · %3$d pominięto</string>
 </resources>
