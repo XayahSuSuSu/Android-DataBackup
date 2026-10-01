@@ -42,6 +42,7 @@ add_library(rustic-jni SHARED
 
 set_target_properties(rustic-jni PROPERTIES
         OUTPUT_NAME rustic
+        LINK_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/rustic.map"
 )
 
 target_link_options(rustic-jni PRIVATE

@@ -5,11 +5,13 @@ import arrow.optics.optics
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.BackupConfigRepository
+import com.xayah.databackup.entity.BackupConfig
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.PathHelper
 import com.xayah.databackup.util.formatToStorageSize
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -40,7 +42,7 @@ enum class DashboardBackupsLoadState {
 }
 
 class DashboardViewModel(
-    private val backupConfigRepository: BackupConfigRepository,
+    private val mBackupConfigRepo: BackupConfigRepository,
 ) : BaseViewModel() {
     companion object {
         private const val TAG = "DashboardViewModel"
@@ -49,10 +51,10 @@ class DashboardViewModel(
     private val _storageUiState = MutableStateFlow(DashboardStorageUiState())
     val storageUiState: StateFlow<DashboardStorageUiState> = _storageUiState.asStateFlow()
     private val _backupsLoadState = MutableStateFlow(
-        if (backupConfigRepository.isLoaded.value) DashboardBackupsLoadState.Loaded else DashboardBackupsLoadState.Loading
+        if (mBackupConfigRepo.isLoaded.value) DashboardBackupsLoadState.Loaded else DashboardBackupsLoadState.Loading
     )
     val backupsLoadState: StateFlow<DashboardBackupsLoadState> = _backupsLoadState.asStateFlow()
-    val backupConfigs = backupConfigRepository.configs
+    val backupConfigs: StateFlow<List<BackupConfig>> = mBackupConfigRepo.configs
 
     fun initialize() {
         withLock(Dispatchers.IO) {
@@ -120,10 +122,11 @@ class DashboardViewModel(
     private suspend fun loadBackupConfigs() {
         _backupsLoadState.value = DashboardBackupsLoadState.Loading
         runCatching {
-            backupConfigRepository.loadBackupConfigsFromLocal()
+            mBackupConfigRepo.loadBackupConfigsFromLocal()
         }.onSuccess {
             _backupsLoadState.value = DashboardBackupsLoadState.Loaded
         }.onFailure {
+            if (it is CancellationException) throw it
             _backupsLoadState.value = DashboardBackupsLoadState.Error
             LogHelper.e(TAG, "loadBackupConfigs", "Failed to load backup configs.", it)
         }

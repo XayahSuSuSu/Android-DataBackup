@@ -6,7 +6,9 @@ import com.xayah.databackup.rootservice.ICallback
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.util.PathHelper.TMP_FIFO_PREFIX
 import com.xayah.databackup.util.PathHelper.TMP_SUFFIX
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -27,80 +29,92 @@ object ZstdHelper {
         val stdErr = File.createTempFile(TMP_FIFO_PREFIX, TMP_SUFFIX, cacheDir)
         stdErr.delete()
         Os.mkfifo(stdErr.path, 420)
-        runCatching {
-            withContext(Dispatchers.IO) {
-                val getStdErr = async(Dispatchers.IO) {
-                    runCatching {
-                        FileInputStream(stdErr).use { fileInputStream ->
-                            fileInputStream.bufferedReader().use { bufferedReader ->
-                                info = normalizeTarStdErr(bufferedReader.readText())
+        try {
+            runCatching {
+                withContext(Dispatchers.IO) {
+                    val getStdErr = async(Dispatchers.IO) {
+                        runCatching {
+                            FileInputStream(stdErr).use { fileInputStream ->
+                                fileInputStream.bufferedReader().use { bufferedReader ->
+                                    info = normalizeTarStdErr(bufferedReader.readText())
+                                }
                             }
+                        }.onFailure {
+                            if (it is CancellationException) throw it
+                            val msg = "Failed to get std err."
+                            LogHelper.e(TAG, "packageAndCompress#getStdErr", msg, it)
+                            ShellHelper.killRootService()
+                            status = -1
+                            info = msg
+                            throw IllegalStateException()
                         }
-                    }.onFailure {
-                        val msg = "Failed to get std err."
-                        LogHelper.e(TAG, "packageAndCompress#getStdErr", msg, it)
-                        ShellHelper.killRootService()
-                        status = -1
-                        info = msg
-                        throw IllegalStateException()
                     }
+
+                    val getStdOut = async(Dispatchers.IO) {
+                        var result: String? = null
+                        var tr: Throwable? = null
+                        runCatching {
+                            result = RemoteRootService.compress(1, stdOut.path, outputPath, callback)
+                        }.onFailure {
+                            if (it is CancellationException) throw it
+                            val msg = "Failed to get std out."
+                            result = msg
+                            tr = it
+                        }
+                        if (result != null) {
+                            LogHelper.e(TAG, "packageAndCompress#getStdOut", result, tr)
+                            ShellHelper.killRootService()
+                            status = -1
+                            info = result
+
+                            /**
+                             * Use shell instead of root service to remove broken file, 'cause root service may failed to connect
+                             */
+                            ShellHelper.rm(outputPath)
+                            RemoteRootService.checkENOSPC("$result, ${tr?.message}")
+
+                            throw IllegalStateException()
+                        }
+                    }
+
+                    val callTarCli = async(Dispatchers.IO) {
+                        runCatching {
+                            args.addAll(inputArgs)
+                            status = RemoteRootService.callTarCli(
+                                stdOut = stdOut.path,
+                                stdErr = stdErr.path,
+                                argv = args.toTypedArray()
+                            )
+                        }.onFailure {
+                            if (it is CancellationException) throw it
+                            val msg = "Failed to call tar cli."
+                            LogHelper.e(TAG, "packageAndCompress#callTarCli", msg, it)
+                            ShellHelper.killRootService()
+                            status = -1
+                            info = msg
+                            throw IllegalStateException()
+                        }
+                    }
+
+                    getStdErr.await()
+                    getStdOut.await()
+                    callTarCli.await()
                 }
-
-                val getStdOut = async(Dispatchers.IO) {
-                    var result: String? = null
-                    var tr: Throwable? = null
-                    runCatching {
-                        result = RemoteRootService.compress(1, stdOut.path, outputPath, callback)
-                    }.onFailure {
-                        val msg = "Failed to get std out."
-                        result = msg
-                        tr = it
+            }.onFailure { error ->
+                if (error is CancellationException) {
+                    withContext(NonCancellable) {
+                        runCatching { RemoteRootService.deleteRecursively(outputPath) }
+                            .onFailure { cleanup -> error.addSuppressed(cleanup) }
                     }
-                    if (result != null) {
-                        LogHelper.e(TAG, "packageAndCompress#getStdOut", result, tr)
-                        ShellHelper.killRootService()
-                        status = -1
-                        info = result
-
-                        /**
-                         * Use shell instead of root service to remove broken file, 'cause root service may failed to connect
-                         */
-                        ShellHelper.rm(outputPath)
-                        RemoteRootService.checkENOSPC("$result, ${tr?.message}")
-
-                        throw IllegalStateException()
-                    }
+                    throw error
                 }
-
-                val callTarCli = async(Dispatchers.IO) {
-                    runCatching {
-                        args.addAll(inputArgs)
-                        status = RemoteRootService.callTarCli(
-                            stdOut = stdOut.path,
-                            stdErr = stdErr.path,
-                            argv = args.toTypedArray()
-                        )
-                    }.onFailure {
-                        val msg = "Failed to call tar cli."
-                        LogHelper.e(TAG, "packageAndCompress#callTarCli", msg, it)
-                        ShellHelper.killRootService()
-                        status = -1
-                        info = msg
-                        throw IllegalStateException()
-                    }
-                }
-
-                getStdErr.await()
-                getStdOut.await()
-                callTarCli.await()
+                LogHelper.i(TAG, "packageAndCompress", "Failed to package, remove the target file: $outputPath")
+                RemoteRootService.deleteRecursively(outputPath)
             }
-        }.onFailure {
-            LogHelper.i(TAG, "packageAndCompress", "Failed to package, remove the target file: $outputPath")
-            RemoteRootService.deleteRecursively(outputPath)
+        } finally {
+            stdOut.delete()
+            stdErr.delete()
         }
-
-        stdOut.delete()
-        stdErr.delete()
 
         LogHelper.i(TAG, "packageAndCompress", "args:\n$args\nstatus: $status\ninfo:\n$info")
 

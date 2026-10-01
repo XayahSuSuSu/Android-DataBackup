@@ -8,6 +8,7 @@ import com.xayah.databackup.data.GitHubApiException
 import com.xayah.databackup.data.GitHubReleaseRepository
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.LogHelper
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,7 +37,7 @@ data class UpdatesUiState(
 )
 
 class UpdatesViewModel(
-    private val gitHubReleaseRepository: GitHubReleaseRepository,
+    private val mGitHubReleaseRepo: GitHubReleaseRepository,
 ) : BaseViewModel() {
     companion object {
         private const val TAG = "UpdatesViewModel"
@@ -62,7 +63,7 @@ class UpdatesViewModel(
             }
 
             runCatching {
-                val latestRelease = gitHubReleaseRepository.getLatestRelease()
+                val latestRelease = mGitHubReleaseRepo.getLatestRelease()
                 val latestVersion = latestRelease.tagName
                 val updateAvailable = if (latestVersion.isEmpty()) {
                     false
@@ -82,6 +83,7 @@ class UpdatesViewModel(
                     )
                 }
             }.onFailure { throwable ->
+                if (throwable is CancellationException) throw throwable
                 LogHelper.e(TAG, "refresh", "Failed to fetch releases.", throwable)
                 val app = App.application
                 val apiError = throwable as? GitHubApiException

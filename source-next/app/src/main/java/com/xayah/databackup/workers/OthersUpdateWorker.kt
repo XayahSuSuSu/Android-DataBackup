@@ -22,8 +22,8 @@ import com.xayah.databackup.adapter.WifiConfigurationAdapter
 import com.xayah.databackup.database.entity.CallLog
 import com.xayah.databackup.database.entity.Contact
 import com.xayah.databackup.database.entity.FieldMap
-import com.xayah.databackup.database.entity.MutableFieldMap
 import com.xayah.databackup.database.entity.Mms
+import com.xayah.databackup.database.entity.MutableFieldMap
 import com.xayah.databackup.database.entity.Network
 import com.xayah.databackup.database.entity.Sms
 import com.xayah.databackup.rootservice.RemoteRootService
@@ -31,6 +31,7 @@ import com.xayah.databackup.util.DatabaseHelper
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.NotificationHelper
 import com.xayah.databackup.util.NotificationHelper.NOTIFICATION_ID_OTHERS_UPDATE_WORKER
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -102,6 +103,7 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                 }
                 DatabaseHelper.networkDao.upsert(networks.values.toList())
             }.onFailure {
+                if (it is CancellationException) throw it
                 LogHelper.e(TAG, "doWork", "Failed to update networks.", it)
             }
 
@@ -143,6 +145,7 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                 }
                 DatabaseHelper.contactDao.upsert(contacts)
             }.onFailure {
+                if (it is CancellationException) throw it
                 LogHelper.e(TAG, "doWork", "Failed to update contacts.", it)
             }
 
@@ -171,6 +174,7 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                 }
                 DatabaseHelper.callLogDao.upsert(callLogs)
             }.onFailure {
+                if (it is CancellationException) throw it
                 LogHelper.e(TAG, "doWork", "Failed to update call logs.", it)
             }
 
@@ -200,6 +204,7 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                     }
                 DatabaseHelper.messageDao.upsertSms(smsList)
             }.onFailure {
+                if (it is CancellationException) throw it
                 LogHelper.e(TAG, "doWork", "Failed to update sms.", it)
             }
 
@@ -256,6 +261,7 @@ class OthersUpdateWorker(private val appContext: Context, workerParams: WorkerPa
                     }
                 DatabaseHelper.messageDao.upsertMms(mmsList)
             }.onFailure {
+                if (it is CancellationException) throw it
                 LogHelper.e(TAG, "doWork", "Failed to update mms.", it)
             }
         }

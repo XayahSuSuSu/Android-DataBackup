@@ -81,7 +81,7 @@ internal object MessageRestorePreparer {
         val skippedIds = linkedSetOf<String>()
         val failures = linkedMapOf<String, Exception>()
         selectedIds.forEach { (id, index) ->
-            try {
+            runCatching {
                 if (id.startsWith("sms:")) {
                     val record = prepareSms(requireNotNull(sms.getOrNull(index)) { "Unknown SMS record" })
                     if (record == null) skippedIds.add(id) else preparedSms[id] = record
@@ -89,7 +89,8 @@ internal object MessageRestorePreparer {
                     val record = prepareMms(requireNotNull(mms.getOrNull(index)) { "Unknown MMS record" })
                     if (record == null) skippedIds.add(id) else preparedMms[id] = record
                 }
-            } catch (error: Exception) {
+            }.onFailure { error ->
+                if (error !is Exception) throw error
                 failures[id] = error
             }
         }

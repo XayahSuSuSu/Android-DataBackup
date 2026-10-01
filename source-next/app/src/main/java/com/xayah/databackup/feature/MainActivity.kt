@@ -30,10 +30,10 @@ import com.xayah.databackup.feature.about.AboutScreen
 import com.xayah.databackup.feature.about.TranslatorsScreen
 import com.xayah.databackup.feature.backup.BackupConfigScreen
 import com.xayah.databackup.feature.backup.BackupConfigViewModel
-import com.xayah.databackup.feature.backup.BackupProcessDetailsScreen
-import com.xayah.databackup.feature.backup.BackupProcessScreen
 import com.xayah.databackup.feature.backup.BackupSetupScreen
 import com.xayah.databackup.feature.backup.apps.BackupAppsScreen
+import com.xayah.databackup.feature.backup.archive.BackupProcessDetailsScreen
+import com.xayah.databackup.feature.backup.archive.BackupProcessScreen
 import com.xayah.databackup.feature.backup.call_logs.BackupCallLogsScreen
 import com.xayah.databackup.feature.backup.contacts.BackupContactsScreen
 import com.xayah.databackup.feature.backup.messages.BackupMessagesScreen
@@ -59,6 +59,7 @@ import com.xayah.databackup.util.ProcessHelper
 import com.xayah.databackup.util.ShellHelper
 import com.xayah.databackup.util.preloadingDataStore
 import com.xayah.databackup.util.readBoolean
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -122,7 +123,10 @@ class MainActivity : ComponentActivity() {
         } else {
             runCatching {
                 runBlocking { ShellHelper.initMainShell(context = App.application) }
-            }.onFailure { LogHelper.e(TAG, "onCreate", "Failed to init main shell.", it) }
+            }.onFailure {
+                if (it is CancellationException) throw it
+                LogHelper.e(TAG, "onCreate", "Failed to init main shell.", it)
+            }
             val isRoot = runCatching {
                 Shell.getShell().isRoot
             }.getOrNull() ?: false

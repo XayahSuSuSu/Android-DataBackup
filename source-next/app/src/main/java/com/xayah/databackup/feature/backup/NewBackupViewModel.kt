@@ -21,7 +21,7 @@ data class NewBackupUiState(
 )
 
 class NewBackupViewModel(
-    private val backupConfigRepository: BackupConfigRepository,
+    private val mBackupConfigRepo: BackupConfigRepository,
 ) : BaseViewModel() {
     companion object {
         private const val TAG = "NewBackupViewModel"
@@ -51,18 +51,17 @@ class NewBackupViewModel(
             if (uiState.value.isSaving) return@withLock
 
             _uiState.value = NewBackupUiState(isSaving = true)
-            try {
-                backupConfigRepository.updateNewConfig {
+            runCatching {
+                mBackupConfigRepo.updateNewConfig {
                     copy {
                         BackupConfig.backupBackend set this@NewBackupViewModel.backupBackend.value
                     }
                 }
-                backupConfigRepository.saveNewBackup()
-                try {
-                    backupConfigRepository.resetNewBackup()
-                } catch (error: CancellationException) {
-                    throw error
-                } catch (error: Exception) {
+                mBackupConfigRepo.saveNewBackup()
+                runCatching {
+                    mBackupConfigRepo.resetNewBackup()
+                }.onFailure { error ->
+                    if (error is CancellationException || error !is Exception) throw error
                     LogHelper.w(TAG, "saveNewBackup", "Failed to reset the new backup draft: ${error.message}")
                 }
                 _uiState.value = NewBackupUiState()
@@ -70,9 +69,8 @@ class NewBackupViewModel(
                 withContext(Dispatchers.Main) {
                     onSaved()
                 }
-            } catch (error: CancellationException) {
-                throw error
-            } catch (error: Exception) {
+            }.onFailure { error ->
+                if (error is CancellationException || error !is Exception) throw error
                 LogHelper.e(TAG, "saveNewBackup", "Failed to save new backup.", error)
                 _uiState.value = NewBackupUiState(saveError = error.message.orEmpty())
             }

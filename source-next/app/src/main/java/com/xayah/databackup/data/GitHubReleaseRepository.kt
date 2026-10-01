@@ -1,5 +1,7 @@
 package com.xayah.databackup.data
 
+import com.xayah.databackup.entity.GitHubAsset
+import com.xayah.databackup.entity.GitHubRelease
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.HttpTimeout
@@ -12,52 +14,12 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CancellationException
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.io.Closeable
 
 private const val BASE_URL = "https://api.github.com/repos/XayahSuSuSu/Android-DataBackup/"
-
-@Serializable
-data class GitHubAsset(
-    @SerialName("id")
-    val id: Long = 0L,
-    @SerialName("name")
-    val name: String = "",
-    @SerialName("content_type")
-    val contentType: String? = null,
-    @SerialName("size")
-    val size: Long = 0L,
-    @SerialName("download_count")
-    val downloadCount: Long = 0L,
-    @SerialName("browser_download_url")
-    val browserDownloadUrl: String = "",
-)
-
-@Serializable
-data class GitHubRelease(
-    @SerialName("id")
-    val id: Long = 0L,
-    @SerialName("tag_name")
-    val tagName: String = "",
-    @SerialName("name")
-    val name: String? = null,
-    @SerialName("body")
-    val body: String? = null,
-    @SerialName("html_url")
-    val htmlUrl: String = "",
-    @SerialName("published_at")
-    val publishedAt: String? = null,
-    @SerialName("draft")
-    val draft: Boolean = false,
-    @SerialName("prerelease")
-    val prerelease: Boolean = false,
-    @SerialName("assets")
-    val assets: List<GitHubAsset> = emptyList(),
-)
 
 enum class GitHubApiErrorKind {
     RATE_LIMITED,
@@ -74,7 +36,7 @@ class GitHubApiException(
 ) : Exception(message, cause)
 
 class GitHubReleaseRepository : Closeable {
-    private val client = HttpClient {
+    private val mClient = HttpClient {
         expectSuccess = false
         install(ContentNegotiation) {
             json(
@@ -94,29 +56,29 @@ class GitHubReleaseRepository : Closeable {
         }
     }
 
-    override fun close() = client.close()
+    override fun close() = mClient.close()
 
     suspend fun getLatestRelease(): GitHubRelease = request("releases/latest")
 
     private suspend inline fun <reified T> request(path: String): T {
-        return try {
-            val response = client.get(path)
+        return runCatching {
+            val response = mClient.get(path)
             if (response.status.isSuccess()) {
                 response.body<T>()
             } else {
                 throw response.toApiException()
             }
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: GitHubApiException) {
-            throw e
-        } catch (e: Throwable) {
-            throw e.normalizeToApiException()
+        }.getOrElse { error ->
+            if (error is CancellationException) throw error
+            throw error.normalizeToApiException()
         }
     }
 
     private suspend fun HttpResponse.toApiException(): GitHubApiException {
-        val bodyText = runCatching { bodyAsText() }.getOrDefault("")
+        val bodyText = runCatching { bodyAsText() }.getOrElse { error ->
+            if (error is CancellationException) throw error
+            ""
+        }
         val apiMessage = extractApiMessage(bodyText)
         val rateLimitResetAtMillis = headers["X-RateLimit-Reset"]?.toLongOrNull()?.times(1000)
         val isRateLimited =

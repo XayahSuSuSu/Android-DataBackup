@@ -13,10 +13,14 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
 class CountingOutputStream(
-    private val source: OutputStream,
-    private val interval: Duration = 1.seconds,
-    private val onProgress: ((bytesWritten: Long, speed: Long) -> Unit)? = null
+    source: OutputStream,
+    interval: Duration = 1.seconds,
+    onProgress: ((bytesWritten: Long, speed: Long) -> Unit)? = null
 ) : OutputStream() {
+    private val mSource = source
+    private val mInterval = interval
+    private val mOnProgress = onProgress
+
     @Volatile
     private var mBytesWritten: Long = 0L
     private var mLastBytesWritten: Long = 0L
@@ -32,47 +36,47 @@ class CountingOutputStream(
     }
 
     private fun onListening() {
-        if (onProgress != null) {
+        if (mOnProgress != null) {
             mListener = mScope.launch {
                 while (isActive && mIsClosed.not()) {
                     val currentBytes = mBytesWritten
                     val delta = currentBytes - mLastBytesWritten
-                    val speed = delta / interval.inWholeSeconds
+                    val speed = delta / mInterval.inWholeSeconds
                     mLastBytesWritten = currentBytes
                     if (mIsClosed.not() && currentBytes != 0L) {
-                        onProgress(currentBytes, speed)
+                        mOnProgress(currentBytes, speed)
                     }
-                    delay(interval)
+                    delay(mInterval)
                 }
             }
         }
     }
 
     override fun write(b: Int) {
-        source.write(b)
+        mSource.write(b)
         mBytesWritten++
     }
 
     override fun write(b: ByteArray) {
-        source.write(b)
+        mSource.write(b)
         mBytesWritten += b.size
     }
 
     override fun write(b: ByteArray, off: Int, len: Int) {
-        source.write(b, off, len)
+        mSource.write(b, off, len)
         mBytesWritten += len
     }
 
-    override fun flush() = source.flush()
+    override fun flush() = mSource.flush()
 
     override fun close() {
         mIsClosed = true
         mEndTimestamp = System.currentTimeMillis()
         if (mBytesWritten != 0L) {
             val speed = (mBytesWritten / ((mEndTimestamp - mStartTimestamp).toFloat() / 1000)).roundToLong()
-            onProgress?.invoke(mBytesWritten, speed)
+            mOnProgress?.invoke(mBytesWritten, speed)
         }
         mListener?.cancel()
-        source.close()
+        mSource.close()
     }
 }

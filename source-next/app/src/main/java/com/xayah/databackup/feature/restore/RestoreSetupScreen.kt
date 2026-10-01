@@ -52,10 +52,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.xayah.databackup.R
-import com.xayah.databackup.data.restore.RestoreCategory
-import com.xayah.databackup.data.restore.RestoreSessionState
-import com.xayah.databackup.data.rustic.RusticRestoreInventory
 import com.xayah.databackup.database.entity.ContactDeserialized
+import com.xayah.databackup.entity.restore.RestoreCategory
+import com.xayah.databackup.entity.restore.RestoreInventory
+import com.xayah.databackup.entity.restore.RestoreState
 import com.xayah.databackup.feature.RestoreAppsRoute
 import com.xayah.databackup.feature.RestoreCallLogsRoute
 import com.xayah.databackup.feature.RestoreContactsRoute
@@ -91,10 +91,10 @@ fun RestoreSetupScreen(
     var restorePreparationFailed by rememberSaveable { mutableStateOf(false) }
     val permissions = rememberMultiplePermissionsState(
         buildList {
-            if (state.inventory?.ids(RestoreCategory.Contacts).orEmpty().any { it in state.selected }) {
+            if (state.inventory?.getIds(RestoreCategory.Contacts).orEmpty().any { it in state.selected }) {
                 add(Manifest.permission.WRITE_CONTACTS)
             }
-            if (state.inventory?.ids(RestoreCategory.CallLogs).orEmpty().any { it in state.selected }) {
+            if (state.inventory?.getIds(RestoreCategory.CallLogs).orEmpty().any { it in state.selected }) {
                 add(Manifest.permission.READ_CALL_LOG)
                 add(Manifest.permission.WRITE_CALL_LOG)
             }
@@ -134,7 +134,7 @@ fun RestoreSetupScreen(
 
 @Composable
 internal fun RestoreSetupContent(
-    state: RestoreSessionState,
+    state: RestoreState,
     onBack: () -> Unit,
     onRetry: () -> Unit,
     onSelectCategory: (RestoreCategory, Boolean) -> Unit,
@@ -245,7 +245,7 @@ internal fun RestoreSetupContent(
                 }
                 RestoreCategory.entries.forEach { target ->
                     item(key = target.name) {
-                        val entries = state.inventory?.ids(target).orEmpty()
+                        val entries = state.inventory?.getIds(target).orEmpty()
                         val selected = entries.count { it in state.selected }
                         SmallCheckActionButton(
                             modifier = Modifier.fillMaxWidth(),
@@ -303,9 +303,9 @@ internal fun RestoreSetupContent(
 }
 
 @Composable
-private fun SnapshotInfo(state: RestoreSessionState) {
+private fun SnapshotInfo(state: RestoreState) {
     val config = state.config
-    val snapshot = state.snapshot
+    val sourceInfo = state.sourceInfo
     PreferenceGroup {
         Preference(
             icon = ImageVector.vectorResource(R.drawable.ic_database_backup),
@@ -323,7 +323,7 @@ private fun SnapshotInfo(state: RestoreSessionState) {
         Preference(
             icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
             title = stringResource(R.string.snapshot),
-            subtitle = snapshot?.let {
+            subtitle = sourceInfo?.let {
                 if (it.createdAt > 0) "${TimeHelper.formatTimestampInShort(it.createdAt)} · ${it.id.take(8)}" else it.id.take(8)
             } ?: stringResource(R.string.unknown),
             subtitleShimmer = state.loading,
@@ -331,7 +331,7 @@ private fun SnapshotInfo(state: RestoreSessionState) {
         Preference(
             icon = ImageVector.vectorResource(R.drawable.ic_database),
             title = stringResource(R.string.storage),
-            subtitle = snapshot?.summary?.totalBytesProcessed?.formatToStorageSize ?: stringResource(R.string.unknown),
+            subtitle = sourceInfo?.totalBytes?.formatToStorageSize ?: stringResource(R.string.unknown),
             subtitleShimmer = state.loading,
         )
     }
@@ -359,12 +359,12 @@ private val RestoreCategory.iconRes: Int
 @Preview(name = "Tablet", widthDp = 840, heightDp = 900)
 @Composable
 private fun RestoreSetupPreview() {
-    val inventory = RusticRestoreInventory(
+    val inventory = RestoreInventory(
         contacts = (0..1).associate { "contact:$it" to ContactDeserialized(it.toLong(), mapOf("display_name" to "Contact $it"), emptyList(), false) },
     )
     MaterialTheme {
         RestoreSetupContent(
-            state = RestoreSessionState(loading = false, inventory = inventory),
+            state = RestoreState(loading = false, inventory = inventory),
             onBack = {}, onRetry = {}, onSelectCategory = { _, _ -> }, onOpenCategory = {},
         )
     }
@@ -375,7 +375,7 @@ private fun RestoreSetupPreview() {
 private fun RestoreSetupLoadingPreview() {
     MaterialTheme {
         RestoreSetupContent(
-            state = RestoreSessionState(),
+            state = RestoreState(),
             onBack = {}, onRetry = {}, onSelectCategory = { _, _ -> }, onOpenCategory = {},
         )
     }

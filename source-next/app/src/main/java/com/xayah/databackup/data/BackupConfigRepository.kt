@@ -5,7 +5,6 @@ import com.squareup.moshi.adapter
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import com.xayah.databackup.App
 import com.xayah.databackup.adapter.UuidJsonAdapter
-import com.xayah.databackup.data.rustic.RusticBackupGateway
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.BackupConfig
 import com.xayah.databackup.entity.Source
@@ -16,7 +15,9 @@ import com.xayah.databackup.util.PathHelper
 import com.xayah.databackup.util.TimeHelper
 import com.xayah.databackup.util.readString
 import com.xayah.databackup.util.saveString
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,7 +29,7 @@ import kotlinx.coroutines.withContext
 import kotlin.uuid.Uuid
 
 class BackupConfigRepository(
-    private val rusticBackupGateway: RusticBackupGateway,
+    private val mRusticRepo: RusticRepository,
 ) {
     companion object {
         private const val TAG = "BackupConfigRepository"
@@ -106,37 +107,42 @@ class BackupConfigRepository(
         )
     }
 
-    suspend fun saveNewBackup(): Int = withContext(Dispatchers.IO) {
-        val config = _newConfig.value.copy(updatedAt = System.currentTimeMillis())
-        check(config.path.isNotBlank()) { "Backup path is empty." }
-        check(RemoteRootService.exists(config.path).not()) { "Backup directory already exists." }
+    suspend fun saveNewBackup(): Int {
+        return withContext(Dispatchers.IO) {
+            val config = _newConfig.value.copy(updatedAt = System.currentTimeMillis())
+            check(config.path.isNotBlank()) { "Backup path is empty." }
+            check(RemoteRootService.exists(config.path).not()) { "Backup directory already exists." }
 
-        var directoryCreated = false
-        try {
-            check(RemoteRootService.mkdirs(config.path)) { "Failed to create backup directory." }
-            directoryCreated = true
-            check(saveBackupConfig(config)) { "Failed to write backup config." }
+            var directoryCreated = false
+            runCatching {
+                check(RemoteRootService.mkdirs(config.path)) { "Failed to create backup directory." }
+                directoryCreated = true
+                check(saveBackupConfig(config)) { "Failed to write backup config." }
 
-            (config.backupBackend as? BackupBackend.Rustic)?.let { backend ->
-                rusticBackupGateway.prepareRepository(
-                    repositoryPath = PathHelper.getBackupRepoDir(config.path),
-                    password = backend.password,
-                )
-            }
+                (config.backupBackend as? BackupBackend.Rustic)?.let { backend ->
+                    mRusticRepo.prepareRepository(
+                        repositoryPath = PathHelper.getBackupRepoDir(config.path),
+                        password = backend.password,
+                    )
+                }
 
-            val configs = (_configs.value + config).sortedByDescending { it.updatedAt }
-            val savedIndex = configs.indexOfFirst { it.uuid == config.uuid }
-            check(savedIndex >= 0) { "Saved backup is missing from the config list." }
+                val configs = (_configs.value + config).sortedByDescending { it.updatedAt }
+                val savedIndex = configs.indexOfFirst { it.uuid == config.uuid }
+                check(savedIndex >= 0) { "Saved backup is missing from the config list." }
 
-            App.application.saveString(BackupConfigSelectedUuid.first, config.uuidString)
-            _configs.emit(configs)
-            _selectedIndex.emit(savedIndex)
-            savedIndex
-        } catch (throwable: Throwable) {
-            if (directoryCreated && RemoteRootService.deleteRecursively(config.path).not()) {
-                LogHelper.w(TAG, "saveNewBackup", "Failed to clean incomplete backup directory: ${config.path}")
-            }
-            throw throwable
+                App.application.saveString(BackupConfigSelectedUuid.first, config.uuidString)
+                _configs.emit(configs)
+                _selectedIndex.emit(savedIndex)
+                savedIndex
+            }.onFailure { error ->
+                withContext(NonCancellable) {
+                    runCatching {
+                        if (directoryCreated && RemoteRootService.deleteRecursively(config.path).not()) {
+                            LogHelper.w(TAG, "saveNewBackup", "Failed to clean incomplete backup directory: ${config.path}")
+                        }
+                    }.onFailure { cleanup -> error.addSuppressed(cleanup) }
+                }
+            }.getOrThrow()
         }
     }
 
@@ -193,6 +199,7 @@ class BackupConfigRepository(
             RemoteRootService.writeText(configPath, json)
             RemoteRootService.exists(configPath) && RemoteRootService.readText(configPath) == json
         }.onFailure {
+            if (it is CancellationException) throw it
             LogHelper.e(TAG, "saveBackupConfig", "Failed to write backup config.", it)
         }.getOrDefault(false)
     }

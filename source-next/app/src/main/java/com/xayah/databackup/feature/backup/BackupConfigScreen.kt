@@ -58,9 +58,9 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.xayah.databackup.R
-import com.xayah.databackup.data.rustic.RusticSnapshot
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.BackupConfig
+import com.xayah.databackup.entity.rustic.RusticSnapshot
 import com.xayah.databackup.feature.BackupSetupRoute
 import com.xayah.databackup.feature.RestoreRoute
 import com.xayah.databackup.ui.component.DataBackupDialog

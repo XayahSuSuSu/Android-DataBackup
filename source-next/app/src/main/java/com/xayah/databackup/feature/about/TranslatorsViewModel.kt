@@ -1,10 +1,11 @@
 package com.xayah.databackup.feature.about
 
-import com.xayah.databackup.data.Translator
 import com.xayah.databackup.data.TranslatorHttpException
 import com.xayah.databackup.data.TranslatorRepository
+import com.xayah.databackup.entity.Translator
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.LogHelper
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +32,7 @@ data class TranslatorsUiState(
 )
 
 class TranslatorsViewModel(
-    private val translatorRepository: TranslatorRepository,
+    private val mTranslatorRepo: TranslatorRepository,
 ) : BaseViewModel() {
     companion object {
         private const val TAG = "TranslatorsViewModel"
@@ -56,7 +57,7 @@ class TranslatorsViewModel(
     private suspend fun loadTranslators() {
         _uiState.update { it.copy(status = TranslatorsStatus.Loading) }
         runCatching {
-            translatorRepository.getTranslators()
+            mTranslatorRepo.getTranslators()
         }.onSuccess { translators ->
             _uiState.update {
                 it.copy(
@@ -65,6 +66,7 @@ class TranslatorsViewModel(
                 )
             }
         }.onFailure { error ->
+            if (error is CancellationException) throw error
             LogHelper.e(TAG, "loadTranslators", "Failed to fetch translators.", error)
             _uiState.update {
                 it.copy(

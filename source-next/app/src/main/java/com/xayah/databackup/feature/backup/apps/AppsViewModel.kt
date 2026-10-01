@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import com.xayah.databackup.database.entity.App as AppEntity
 
 data object UiState
 
@@ -47,7 +48,7 @@ open class AppsViewModel(
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
     private val _searchText = MutableStateFlow("")
     val searchText: StateFlow<String> = _searchText.asStateFlow()
-    val apps = combine(
+    val apps: StateFlow<List<AppEntity>> = combine(
         appRepo.appsFiltered,
         _searchText,
         App.application.readEnum(SortsTypeBackup),
@@ -66,49 +67,49 @@ open class AppsViewModel(
         started = SharingStarted.WhileSubscribed(5_000),
     )
 
-    val allSelected =
+    val allSelected: StateFlow<Int> =
         apps.map { list -> list.count { it.isSelected } }.stateIn(
             scope = viewModelScope,
             initialValue = 0,
             started = SharingStarted.WhileSubscribed(5_000),
         )
 
-    val selectedBytes =
+    val selectedBytes: StateFlow<String> =
         apps.map { list -> list.sumOf { it.selectedBytes }.formatToStorageSize }.stateIn(
             scope = viewModelScope,
             initialValue = DefStorageSize,
             started = SharingStarted.WhileSubscribed(5_000),
         )
 
-    val apkAllSelected =
+    val apkAllSelected: StateFlow<Boolean> =
         apps.map { list -> list.count { it.option.apk } == list.size }.stateIn(
             scope = viewModelScope,
             initialValue = true,
             started = SharingStarted.WhileSubscribed(5_000),
         )
 
-    val dataAllSelected =
+    val dataAllSelected: StateFlow<Boolean> =
         apps.map { list -> list.count { it.isDataAllSelected } == list.size }.stateIn(
             scope = viewModelScope,
             initialValue = true,
             started = SharingStarted.WhileSubscribed(5_000),
         )
 
-    val intDataAllSelected =
+    val intDataAllSelected: StateFlow<Boolean> =
         apps.map { list -> list.count { it.option.internalData } == list.size }.stateIn(
             scope = viewModelScope,
             initialValue = true,
             started = SharingStarted.WhileSubscribed(5_000),
         )
 
-    val extDataAllSelected =
+    val extDataAllSelected: StateFlow<Boolean> =
         apps.map { list -> list.count { it.option.externalData } == list.size }.stateIn(
             scope = viewModelScope,
             initialValue = true,
             started = SharingStarted.WhileSubscribed(5_000),
         )
 
-    val addlDataAllSelected =
+    val addlDataAllSelected: StateFlow<Boolean> =
         apps.map { list -> list.count { it.option.additionalData } == list.size }.stateIn(
             scope = viewModelScope,
             initialValue = true,

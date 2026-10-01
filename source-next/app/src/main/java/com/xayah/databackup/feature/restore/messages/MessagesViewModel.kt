@@ -1,7 +1,10 @@
 package com.xayah.databackup.feature.restore.messages
 
 import androidx.lifecycle.viewModelScope
-import com.xayah.databackup.data.restore.RestoreSession
+import com.xayah.databackup.data.RestoreRepository
+import com.xayah.databackup.database.entity.MmsDeserialized
+import com.xayah.databackup.database.entity.SmsDeserialized
+import com.xayah.databackup.entity.restore.RestoreState
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.filterMms
 import com.xayah.databackup.util.filterSms
@@ -18,26 +21,26 @@ import kotlinx.coroutines.flow.update
 data class UiState(val selectedIndex: Int = 0)
 
 class MessagesViewModel(
-    private val session: RestoreSession,
+    private val mRestoreRepo: RestoreRepository,
 ) : BaseViewModel() {
-    private val sharingStarted = SharingStarted.WhileSubscribed(5_000)
-    val state = session.state
+    private val mSharingStarted = SharingStarted.WhileSubscribed(5_000)
+    val state: StateFlow<RestoreState> = mRestoreRepo.state
     private val _searchText = MutableStateFlow("")
     val searchText: StateFlow<String> = _searchText.asStateFlow()
-    val sms = combine(state, searchText) { state, query ->
+    val sms: StateFlow<Map<String, SmsDeserialized>> = combine(state, searchText) { state, query ->
         state.inventory?.sms.orEmpty().filterSms(query)
-    }.stateIn(viewModelScope, sharingStarted, state.value.inventory?.sms.orEmpty())
-    val mms = combine(state, searchText) { state, query ->
+    }.stateIn(viewModelScope, mSharingStarted, state.value.inventory?.sms.orEmpty())
+    val mms: StateFlow<Map<String, MmsDeserialized>> = combine(state, searchText) { state, query ->
         state.inventory?.mms.orEmpty().filterMms(query)
-    }.stateIn(viewModelScope, sharingStarted, state.value.inventory?.mms.orEmpty())
-    val items = combine(sms, mms) { sms, mms -> (sms.keys + mms.keys).toList() }
-        .stateIn(viewModelScope, sharingStarted, emptyList())
+    }.stateIn(viewModelScope, mSharingStarted, state.value.inventory?.mms.orEmpty())
+    val items: StateFlow<List<String>> = combine(sms, mms) { sms, mms -> (sms.keys + mms.keys).toList() }
+        .stateIn(viewModelScope, mSharingStarted, emptyList())
     private val _uiState = MutableStateFlow(UiState())
-    val uiState = _uiState.asStateFlow()
-    val selectedIndex = uiState.map { it.selectedIndex }.stateIn(viewModelScope, sharingStarted, 0)
-    val visibleItems = combine(sms, mms, selectedIndex) { sms, mms, index ->
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    val selectedIndex: StateFlow<Int> = uiState.map { it.selectedIndex }.stateIn(viewModelScope, mSharingStarted, 0)
+    val visibleItems: StateFlow<List<String>> = combine(sms, mms, selectedIndex) { sms, mms, index ->
         (if (index == 0) sms.keys else mms.keys).toList()
-    }.stateIn(viewModelScope, sharingStarted, emptyList())
+    }.stateIn(viewModelScope, mSharingStarted, emptyList())
 
     fun selectTab(index: Int) {
         withLock(Dispatchers.Default) {
@@ -47,7 +50,7 @@ class MessagesViewModel(
     fun selectAllMessages() {
         withLock(Dispatchers.Default) {
             val messages = visibleItems.value
-            session.selectItems(messages.toSet(), messages.any { it !in state.value.selected })
+            mRestoreRepo.selectItems(messages.toSet(), messages.any { it !in state.value.selected })
         }
     }
 
@@ -59,7 +62,7 @@ class MessagesViewModel(
 
     fun selectItem(id: String, checked: Boolean) {
         withLock(Dispatchers.Default) {
-            session.selectItem(id, checked)
+            mRestoreRepo.selectItem(id, checked)
         }
     }
 }

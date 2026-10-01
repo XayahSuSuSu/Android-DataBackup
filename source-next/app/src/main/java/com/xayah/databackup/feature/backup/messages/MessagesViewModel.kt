@@ -2,6 +2,8 @@ package com.xayah.databackup.feature.backup.messages
 
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.data.MessageRepository
+import com.xayah.databackup.database.entity.MmsDeserialized
+import com.xayah.databackup.database.entity.SmsDeserialized
 import com.xayah.databackup.database.entity.deserializeMms
 import com.xayah.databackup.database.entity.deserializeSms
 import com.xayah.databackup.util.BaseViewModel
@@ -28,7 +30,7 @@ open class MessagesViewModel(
 
     private val _searchText = MutableStateFlow("")
     val searchText: StateFlow<String> = _searchText.asStateFlow()
-    val smsList = combine(
+    val smsList: StateFlow<List<SmsDeserialized>> = combine(
         messageRepo.smsList.deserializeSms(),
         _searchText,
     ) { contacts, searchText ->
@@ -38,7 +40,7 @@ open class MessagesViewModel(
         initialValue = listOf(),
         started = SharingStarted.WhileSubscribed(5_000),
     )
-    val mmsList = combine(
+    val mmsList: StateFlow<List<MmsDeserialized>> = combine(
         messageRepo.mmsList.deserializeMms(),
         _searchText,
     ) { contacts, searchText ->
@@ -49,7 +51,7 @@ open class MessagesViewModel(
         started = SharingStarted.WhileSubscribed(5_000),
     )
 
-    val selected = combine(smsList, mmsList) { sms, mms ->
+    val selected: StateFlow<Int> = combine(smsList, mmsList) { sms, mms ->
         sms.count { it.selected } + mms.count { it.selected }
     }.stateIn(
         scope = viewModelScope,

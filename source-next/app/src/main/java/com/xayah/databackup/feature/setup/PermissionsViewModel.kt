@@ -17,6 +17,7 @@ import com.xayah.databackup.util.NotificationHelper
 import com.xayah.databackup.util.ShellHelper
 import com.xayah.databackup.util.saveBoolean
 import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +26,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 
 data class CardProp(
     val state: CardState,
@@ -115,6 +116,7 @@ class PermissionsViewModel : BaseViewModel() {
                 runCatching {
                     ShellHelper.initMainShell(context = context)
                 }.onFailure {
+                    if (it is CancellationException) throw it
                     errMsg = it.localizedMessage
                 }
                 runCatching {
@@ -124,6 +126,7 @@ class PermissionsViewModel : BaseViewModel() {
                         onFailure(errDesc)
                     }
                 }.onFailure {
+                    if (it is CancellationException) throw it
                     errMsg = it.localizedMessage
                     errMsg?.also { msg -> onFailure("$msg\n$errDesc") }
                 }
@@ -200,7 +203,7 @@ class PermissionsViewModel : BaseViewModel() {
                         onFailure(msg)
                     } else {
                         runCatching {
-                            withTimeout(TIMEOUT) {
+                            withTimeoutOrNull(TIMEOUT) {
                                 suspendCancellableCoroutine {
                                     // Suspend here util receiving the result
                                     _uiState.update { currentState ->
@@ -209,7 +212,7 @@ class PermissionsViewModel : BaseViewModel() {
                                 }
                             }
                         }.onFailure {
-                            // Timeout
+                            if (it is CancellationException) throw it
                         }
                     }
                 }
@@ -267,7 +270,7 @@ class PermissionsViewModel : BaseViewModel() {
                     state.launchMultiplePermissionRequest()
                 }
                 runCatching {
-                    withTimeout(TIMEOUT) {
+                    withTimeoutOrNull(TIMEOUT) {
                         suspendCancellableCoroutine {
                             // Suspend here util receiving the result
                             _uiState.update { currentState ->
@@ -276,7 +279,7 @@ class PermissionsViewModel : BaseViewModel() {
                         }
                     }
                 }.onFailure {
-                    // Timeout
+                    if (it is CancellationException) throw it
                 }
             }
         }
@@ -332,7 +335,7 @@ class PermissionsViewModel : BaseViewModel() {
                     state.launchMultiplePermissionRequest()
                 }
                 runCatching {
-                    withTimeout(TIMEOUT) {
+                    withTimeoutOrNull(TIMEOUT) {
                         suspendCancellableCoroutine {
                             // Suspend here util receiving the result
                             _uiState.update { currentState ->
@@ -341,7 +344,7 @@ class PermissionsViewModel : BaseViewModel() {
                         }
                     }
                 }.onFailure {
-                    // Timeout
+                    if (it is CancellationException) throw it
                 }
             }
         }
@@ -397,7 +400,7 @@ class PermissionsViewModel : BaseViewModel() {
                     state.launchMultiplePermissionRequest()
                 }
                 runCatching {
-                    withTimeout(TIMEOUT) {
+                    withTimeoutOrNull(TIMEOUT) {
                         suspendCancellableCoroutine {
                             // Suspend here util receiving the result
                             _uiState.update { currentState ->
@@ -406,7 +409,7 @@ class PermissionsViewModel : BaseViewModel() {
                         }
                     }
                 }.onFailure {
-                    // Timeout
+                    if (it is CancellationException) throw it
                 }
             }
         }

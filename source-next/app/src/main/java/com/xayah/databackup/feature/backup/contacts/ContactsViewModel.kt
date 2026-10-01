@@ -2,6 +2,7 @@ package com.xayah.databackup.feature.backup.contacts
 
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.data.ContactRepository
+import com.xayah.databackup.database.entity.ContactDeserialized
 import com.xayah.databackup.database.entity.deserialize
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.DatabaseHelper
@@ -25,7 +26,7 @@ open class ContactsViewModel(
 
     private val _searchText = MutableStateFlow("")
     val searchText: StateFlow<String> = _searchText.asStateFlow()
-    val contacts = combine(
+    val contacts: StateFlow<List<ContactDeserialized>> = combine(
         contactRepo.contacts.deserialize(),
         _searchText,
     ) { contacts, searchText ->
@@ -36,7 +37,7 @@ open class ContactsViewModel(
         started = SharingStarted.WhileSubscribed(5_000),
     )
 
-    val selected =
+    val selected: StateFlow<Int> =
         contacts.map { list -> list.count { it.selected } }.stateIn(
             scope = viewModelScope,
             initialValue = 0,

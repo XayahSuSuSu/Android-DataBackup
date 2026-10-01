@@ -9,18 +9,14 @@ import android.os.Binder
 import android.os.IBinder
 import android.os.RemoteException
 import com.xayah.databackup.App
-import com.xayah.databackup.data.AppRepository
+import com.xayah.databackup.data.ArchiveBackupProcessRepository
 import com.xayah.databackup.data.BackupConfigRepository
-import com.xayah.databackup.data.BackupProcessRepository
-import com.xayah.databackup.data.CallLogRepository
-import com.xayah.databackup.data.ContactRepository
-import com.xayah.databackup.data.MessageRepository
-import com.xayah.databackup.data.NetworkRepository
-import com.xayah.databackup.service.util.BackupAppsHelper
-import com.xayah.databackup.service.util.BackupCallLogsHelper
-import com.xayah.databackup.service.util.BackupContactsHelper
-import com.xayah.databackup.service.util.BackupMessagesHelper
-import com.xayah.databackup.service.util.BackupNetworksHelper
+import com.xayah.databackup.data.BackupSelectionRepository
+import com.xayah.databackup.service.backup.archive.BackupAppsHelper
+import com.xayah.databackup.service.backup.archive.BackupCallLogsHelper
+import com.xayah.databackup.service.backup.archive.BackupContactsHelper
+import com.xayah.databackup.service.backup.archive.BackupMessagesHelper
+import com.xayah.databackup.service.backup.archive.BackupNetworksHelper
 import com.xayah.databackup.util.LogHelper
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
@@ -28,7 +24,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.android.ext.android.inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -44,13 +40,9 @@ object BackupService {
     private var mConnection: ServiceConnection? = null
 
     class BackupServiceImpl : Service() {
+        private val mBackupSelectionRepo: BackupSelectionRepository by inject()
         private val mBackupConfigRepo: BackupConfigRepository by inject()
-        private val mBackupProcessRepo: BackupProcessRepository by inject()
-        private val mAppRepo: AppRepository by inject()
-        private val mNetworkRepo: NetworkRepository by inject()
-        private val mContactRepo: ContactRepository by inject()
-        private val mCallLogRepo: CallLogRepository by inject()
-        private val mMessageRepo: MessageRepository by inject()
+        private val mBackupProcessRepo: ArchiveBackupProcessRepository by inject()
         private val mBackupAppsHelper: BackupAppsHelper by inject()
         private val mBackupNetworksHelper: BackupNetworksHelper by inject()
         private val mBackupContactsHelper: BackupContactsHelper by inject()
@@ -103,7 +95,7 @@ object BackupService {
         }
 
         private fun ensureNotCanceled(stage: String) {
-            if (mBackupProcessRepo.mIsCanceled) {
+            if (mBackupProcessRepo.isCanceled) {
                 throw CancellationException("Backup canceled before $stage.")
             }
         }
@@ -111,27 +103,27 @@ object BackupService {
         suspend fun start() {
             try {
                 ensureNotCanceled("apps backup")
-                if (mAppRepo.isBackupAppsSelected.first()) {
+                if (mBackupSelectionRepo.isBackupAppsSelected.first()) {
                     backupApps()
                 }
 
                 ensureNotCanceled("networks backup")
-                if (mNetworkRepo.isBackupNetworksSelected.first()) {
+                if (mBackupSelectionRepo.isBackupNetworksSelected.first()) {
                     backupNetworks()
                 }
 
                 ensureNotCanceled("contacts backup")
-                if (mContactRepo.isBackupContactsSelected.first()) {
+                if (mBackupSelectionRepo.isBackupContactsSelected.first()) {
                     backupContacts()
                 }
 
                 ensureNotCanceled("call logs backup")
-                if (mCallLogRepo.isBackupCallLogsSelected.first()) {
+                if (mBackupSelectionRepo.isBackupCallLogsSelected.first()) {
                     backupCallLogs()
                 }
 
                 ensureNotCanceled("messages backup")
-                if (mMessageRepo.isBackupMessagesSelected.first()) {
+                if (mBackupSelectionRepo.isBackupMessagesSelected.first()) {
                     backupMessages()
                 }
 
@@ -142,8 +134,8 @@ object BackupService {
         }
     }
 
-    private suspend fun bindService(context: Context): BackupServiceImpl {
-        return withTimeout(TIMEOUT.seconds) {
+    private suspend fun bindService(context: Context): BackupServiceImpl? {
+        return withTimeoutOrNull(TIMEOUT.seconds) {
             suspendCancellableCoroutine { continuation ->
                 if (mService == null) {
                     val connection = object : ServiceConnection {
@@ -197,10 +189,16 @@ object BackupService {
 
     private suspend fun getService(): BackupServiceImpl? {
         return if (mService == null) {
-            runCatching { bindService(App.application) }.getOrNull()
+            runCatching { bindService(App.application) }.getOrElse { error ->
+                if (error is CancellationException) throw error
+                null
+            }
         } else if (mBinder?.isBinderAlive == false) {
             destroyService(App.application)
-            runCatching { bindService(App.application) }.getOrNull()
+            runCatching { bindService(App.application) }.getOrElse { error ->
+                if (error is CancellationException) throw error
+                null
+            }
         } else {
             mService
         }

@@ -14,6 +14,7 @@ import com.xayah.databackup.util.DatabaseHelper
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.NotificationHelper
 import com.xayah.databackup.util.NotificationHelper.NOTIFICATION_ID_APPS_UPDATE_WORKER
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -40,6 +41,7 @@ class AppsUpdateWorker(private val appContext: Context, workerParams: WorkerPara
                 val appInfos = RemoteRootService.getInstalledAppInfos()
                 DatabaseHelper.appDao.upsertInfo(appInfos)
             }.onFailure {
+                if (it is CancellationException) throw it
                 LogHelper.e(TAG, "doWork", "Failed to update app infos.", it)
             }
 
@@ -53,6 +55,7 @@ class AppsUpdateWorker(private val appContext: Context, workerParams: WorkerPara
                 val appStorages = RemoteRootService.getInstalledAppStorages()
                 DatabaseHelper.appDao.upsertStorage(appStorages)
             }.onFailure {
+                if (it is CancellationException) throw it
                 LogHelper.e(TAG, "doWork", "Failed to update app storages.", it)
             }
         }

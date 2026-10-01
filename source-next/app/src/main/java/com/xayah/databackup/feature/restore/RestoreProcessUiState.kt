@@ -1,8 +1,8 @@
 package com.xayah.databackup.feature.restore
 
 import androidx.annotation.FloatRange
-import com.xayah.databackup.data.restore.RestoreCategory
-import com.xayah.databackup.data.rustic.RusticSourceCategory
+import com.xayah.databackup.entity.backup.BackupSourceCategory
+import com.xayah.databackup.entity.restore.RestoreCategory
 
 internal enum class RestoreProcessStatus {
     Processing,
@@ -35,9 +35,9 @@ internal data class RestoreRecordResult(
     val title: String,
     val subtitle: String = "",
     val status: RestoreRecordStatus = RestoreRecordStatus.Pending,
-    val parts: Map<RusticSourceCategory, RestoreRecordStatus> = emptyMap(),
+    val parts: Map<BackupSourceCategory, RestoreRecordStatus> = emptyMap(),
 ) {
-    val currentPart: RusticSourceCategory? =
+    val currentPart: BackupSourceCategory? =
         (parts.entries.firstOrNull { it.value == RestoreRecordStatus.Processing }
             ?: parts.entries.lastOrNull { it.value != RestoreRecordStatus.Pending && it.value != RestoreRecordStatus.NotProcessed }
             ?: parts.entries.firstOrNull())?.key
@@ -72,7 +72,7 @@ internal data class RestoreProcessItem(
         }
 }
 
-/** Presentation state only; the restore coordinator supplies progress and terminal results. */
+/** Presentation state only; the process repository supplies progress and terminal results. */
 internal data class RestoreProcessUiState(
     val status: RestoreProcessStatus = RestoreProcessStatus.Processing,
     val items: List<RestoreProcessItem> = emptyList(),

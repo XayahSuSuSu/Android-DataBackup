@@ -1,7 +1,9 @@
 package com.xayah.databackup.feature.restore.networks
 
 import androidx.lifecycle.viewModelScope
-import com.xayah.databackup.data.restore.RestoreSession
+import com.xayah.databackup.data.RestoreRepository
+import com.xayah.databackup.database.entity.NetworkUnmarshalled
+import com.xayah.databackup.entity.restore.RestoreState
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.filterNetwork
 import kotlinx.coroutines.Dispatchers
@@ -17,19 +19,19 @@ import kotlinx.coroutines.flow.update
 data class UiState(val showPassword: Boolean = false)
 
 class NetworksViewModel(
-    private val session: RestoreSession,
+    private val mRestoreRepo: RestoreRepository,
 ) : BaseViewModel() {
-    private val sharingStarted = SharingStarted.WhileSubscribed(5_000)
-    val state = session.state
+    private val mSharingStarted = SharingStarted.WhileSubscribed(5_000)
+    val state: StateFlow<RestoreState> = mRestoreRepo.state
     private val _searchText = MutableStateFlow("")
     val searchText: StateFlow<String> = _searchText.asStateFlow()
-    val items = combine(state, searchText) { state, query ->
+    val items: StateFlow<Map<String, NetworkUnmarshalled>> = combine(state, searchText) { state, query ->
         state.inventory?.networks.orEmpty().filterNetwork(query)
-    }.stateIn(viewModelScope, sharingStarted, state.value.inventory?.networks.orEmpty())
+    }.stateIn(viewModelScope, mSharingStarted, state.value.inventory?.networks.orEmpty())
 
     private val _uiState = MutableStateFlow(UiState())
-    val uiState = _uiState.asStateFlow()
-    val showPassword = uiState.map { it.showPassword }.stateIn(viewModelScope, sharingStarted, false)
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    val showPassword: StateFlow<Boolean> = uiState.map { it.showPassword }.stateIn(viewModelScope, mSharingStarted, false)
 
     fun showOrHidePassword() {
         withLock(Dispatchers.Default) {
@@ -45,14 +47,14 @@ class NetworksViewModel(
 
     fun selectItem(id: String, checked: Boolean) {
         withLock(Dispatchers.Default) {
-            session.selectItem(id, checked)
+            mRestoreRepo.selectItem(id, checked)
         }
     }
 
     fun selectAll() {
         withLock(Dispatchers.Default) {
             val visibleItems = items.value
-            session.selectItems(visibleItems.keys, visibleItems.keys.any { it !in state.value.selected })
+            mRestoreRepo.selectItems(visibleItems.keys, visibleItems.keys.any { it !in state.value.selected })
         }
     }
 }

@@ -1,12 +1,12 @@
 package com.xayah.databackup.feature.restore
 
-import com.xayah.databackup.data.restore.RestoreCategory
-import com.xayah.databackup.data.restore.RestoreEvent
-import com.xayah.databackup.data.restore.RestoreRequest
-import com.xayah.databackup.data.restore.RestoreTask
-import com.xayah.databackup.data.rustic.RusticRestoreInventory
+import com.xayah.databackup.entity.restore.RestoreCategory
+import com.xayah.databackup.entity.restore.RestoreEvent
+import com.xayah.databackup.entity.restore.RestoreInventory
+import com.xayah.databackup.entity.restore.RestoreRequest
+import com.xayah.databackup.entity.restore.RestoreTask
 
-internal fun RestoreRequest.toInitialProcessUiState(inventory: RusticRestoreInventory?): RestoreProcessUiState = RestoreProcessUiState(
+internal fun RestoreRequest.toInitialProcessUiState(inventory: RestoreInventory?): RestoreProcessUiState = RestoreProcessUiState(
     items = tasks.groupBy { it.category }.map { (category, tasks) ->
         val records = tasks.flatMap { task ->
             task.ids.map { id ->

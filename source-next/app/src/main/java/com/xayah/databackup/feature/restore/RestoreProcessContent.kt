@@ -37,8 +37,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.xayah.databackup.R
-import com.xayah.databackup.data.restore.RestoreCategory
-import com.xayah.databackup.data.rustic.RusticSourceCategory
+import com.xayah.databackup.entity.backup.BackupSourceCategory
+import com.xayah.databackup.entity.restore.RestoreCategory
 import com.xayah.databackup.ui.component.BackupProgressHeader
 import com.xayah.databackup.ui.component.FadeVisibility
 import com.xayah.databackup.ui.component.InlineNotice
@@ -296,10 +296,10 @@ private fun RestoreAppsCardPreview() {
                             subtitle = "com.example.calendar · 0",
                             status = RestoreRecordStatus.Processing,
                             parts = mapOf(
-                                RusticSourceCategory.Apk to RestoreRecordStatus.Restored,
-                                RusticSourceCategory.InternalData to RestoreRecordStatus.Processing,
-                                RusticSourceCategory.ExternalData to RestoreRecordStatus.Pending,
-                                RusticSourceCategory.AdditionalData to RestoreRecordStatus.Pending,
+                                BackupSourceCategory.Apk to RestoreRecordStatus.Restored,
+                                BackupSourceCategory.InternalData to RestoreRecordStatus.Processing,
+                                BackupSourceCategory.ExternalData to RestoreRecordStatus.Pending,
+                                BackupSourceCategory.AdditionalData to RestoreRecordStatus.Pending,
                             ),
                         ),
                     ),
@@ -320,11 +320,11 @@ private val RestoreRecordStatus.titleRes: Int
         RestoreRecordStatus.NotProcessed -> R.string.restore_result_not_processed
     }
 
-private val RusticSourceCategory.restoreTitleRes: Int
+private val BackupSourceCategory.restoreTitleRes: Int
     get() = when (this) {
-        RusticSourceCategory.Apk -> R.string.apk
-        RusticSourceCategory.InternalData -> R.string.internal_data
-        RusticSourceCategory.ExternalData -> R.string.external_data
-        RusticSourceCategory.AdditionalData -> R.string.additional_data
+        BackupSourceCategory.Apk -> R.string.apk
+        BackupSourceCategory.InternalData -> R.string.internal_data
+        BackupSourceCategory.ExternalData -> R.string.external_data
+        BackupSourceCategory.AdditionalData -> R.string.additional_data
         else -> R.string.unknown
     }

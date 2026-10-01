@@ -3,11 +3,11 @@ package com.xayah.databackup.feature.backup
 import androidx.lifecycle.viewModelScope
 import arrow.optics.copy
 import com.xayah.databackup.data.BackupConfigRepository
-import com.xayah.databackup.data.rustic.RusticBackupGateway
-import com.xayah.databackup.data.rustic.RusticSnapshot
+import com.xayah.databackup.data.RusticRepository
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.BackupConfig
 import com.xayah.databackup.entity.name
+import com.xayah.databackup.entity.rustic.RusticSnapshot
 import com.xayah.databackup.feature.BackupConfigRoute
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.PathHelper
@@ -28,33 +28,33 @@ data class BackupSnapshotsState(
 )
 
 open class BackupConfigViewModel(
-    private val route: BackupConfigRoute,
-    private val backupConfigRepo: BackupConfigRepository,
-    private val snapshotGateway: RusticBackupGateway,
+    private val mRoute: BackupConfigRoute,
+    private val mBackupConfigRepo: BackupConfigRepository,
+    private val mRusticRepo: RusticRepository,
 ) : BaseViewModel() {
     companion object {
-        private val sharingStarted = SharingStarted.WhileSubscribed(5_000)
+        private val mSharingStarted = SharingStarted.WhileSubscribed(5_000)
     }
 
-    private val currentConfig: BackupConfig?
-        get() = backupConfigRepo.configs.value.getOrNull(route.index)
+    private val mCurrentConfig: BackupConfig?
+        get() = mBackupConfigRepo.configs.value.getOrNull(mRoute.index)
 
     val backupConfig: StateFlow<BackupConfig?> =
-        backupConfigRepo.configs.map { configs ->
-            configs.getOrNull(route.index)
+        mBackupConfigRepo.configs.map { configs ->
+            configs.getOrNull(mRoute.index)
         }.stateIn(
             scope = viewModelScope,
-            initialValue = currentConfig,
-            started = sharingStarted,
+            initialValue = mCurrentConfig,
+            started = mSharingStarted,
         )
 
     private val _snapshots = MutableStateFlow(BackupSnapshotsState())
-    val snapshots = _snapshots.asStateFlow()
+    val snapshots: StateFlow<BackupSnapshotsState> = _snapshots.asStateFlow()
 
     private val _deletingSnapshot = MutableStateFlow(false)
-    val deletingSnapshot = _deletingSnapshot.asStateFlow()
+    val deletingSnapshot: StateFlow<Boolean> = _deletingSnapshot.asStateFlow()
     private val _snapshotDeleteFailed = MutableStateFlow(false)
-    val snapshotDeleteFailed = _snapshotDeleteFailed.asStateFlow()
+    val snapshotDeleteFailed: StateFlow<Boolean> = _snapshotDeleteFailed.asStateFlow()
 
     fun clearSnapshotDeleteError() {
         _snapshotDeleteFailed.value = false
@@ -68,8 +68,8 @@ open class BackupConfigViewModel(
         withLock(Dispatchers.IO) {
             try {
                 val repositoryPath = PathHelper.getBackupRepoDir(config.path)
-                val snapshots = snapshotGateway.deleteSnapshot(repositoryPath, backend.password, snapshotId)
-                if (snapshotsRepositoryPath == repositoryPath) {
+                val snapshots = mRusticRepo.deleteSnapshot(repositoryPath, backend.password, snapshotId)
+                if (mSnapshotsRepositoryPath == repositoryPath) {
                     _snapshots.value = BackupSnapshotsState(snapshots = snapshots, isLoading = false)
                 }
                 withContext(Dispatchers.Main) {
@@ -85,7 +85,7 @@ open class BackupConfigViewModel(
         }
     }
 
-    private var snapshotsRepositoryPath: String? = null
+    private var mSnapshotsRepositoryPath: String? = null
 
     fun refreshSnapshots(config: BackupConfig) = withLock(Dispatchers.IO) {
         refreshSnapshotsLocked(config)
@@ -94,29 +94,28 @@ open class BackupConfigViewModel(
     private suspend fun refreshSnapshotsLocked(config: BackupConfig) {
         val backend = config.backupBackend as? BackupBackend.Rustic ?: return
         val repositoryPath = PathHelper.getBackupRepoDir(config.path)
-        val retained = _snapshots.value.snapshots.takeIf { snapshotsRepositoryPath == repositoryPath }
-        snapshotsRepositoryPath = repositoryPath
+        val retained = _snapshots.value.snapshots.takeIf { mSnapshotsRepositoryPath == repositoryPath }
+        mSnapshotsRepositoryPath = repositoryPath
         _snapshots.value = BackupSnapshotsState(snapshots = retained)
-        val cached = retained ?: snapshotGateway.readCachedSnapshots(repositoryPath)?.sortedByDescending { it.createdAt }
+        val cached = retained ?: mRusticRepo.readCachedSnapshots(repositoryPath)?.sortedByDescending { it.createdAt }
         _snapshots.value = BackupSnapshotsState(snapshots = cached)
-        try {
-            val snapshots = if (snapshotGateway.repositoryExists(repositoryPath)) {
-                snapshotGateway.listSnapshots(repositoryPath, backend.password).sortedByDescending { it.createdAt }
+        runCatching {
+            val snapshots = if (mRusticRepo.repositoryExists(repositoryPath)) {
+                mRusticRepo.listSnapshots(repositoryPath, backend.password).sortedByDescending { it.createdAt }
             } else {
                 emptyList()
             }
             _snapshots.value = BackupSnapshotsState(snapshots = snapshots, isLoading = false)
-        } catch (cancelled: CancellationException) {
-            throw cancelled
-        } catch (_: Exception) {
+        }.onFailure { error ->
+            if (error is CancellationException || error !is Exception) throw error
             _snapshots.value = BackupSnapshotsState(snapshots = cached, isLoading = false, hasError = true)
         }
     }
 
     fun changeName(name: String) {
         withLock(Dispatchers.Default) {
-            currentConfig?.let { config ->
-                backupConfigRepo.updateConfig(config.uuidString) {
+            mCurrentConfig?.let { config ->
+                mBackupConfigRepo.updateConfig(config.uuidString) {
                     copy {
                         BackupConfig.name set name
                     }
@@ -127,8 +126,8 @@ open class BackupConfigViewModel(
 
     fun deleteConfig(onDeleted: suspend () -> Unit) {
         withLock(Dispatchers.Default) {
-            currentConfig?.let { config ->
-                backupConfigRepo.deleteConfig(config.uuidString)
+            mCurrentConfig?.let { config ->
+                mBackupConfigRepo.deleteConfig(config.uuidString)
             }
             onDeleted()
         }
@@ -136,7 +135,7 @@ open class BackupConfigViewModel(
 
     fun selectBackup(onSelected: () -> Unit) {
         withLock(Dispatchers.IO) {
-            backupConfigRepo.selectBackup(route.index)
+            mBackupConfigRepo.selectBackup(mRoute.index)
             withContext(Dispatchers.Main) {
                 onSelected()
             }

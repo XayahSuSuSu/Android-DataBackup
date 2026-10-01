@@ -5,6 +5,7 @@ import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
 import com.xayah.databackup.App
 import com.xayah.databackup.util.SymbolHelper.USD
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
 
 object ShellHelper {
@@ -35,7 +36,12 @@ object ShellHelper {
         Shell.setDefaultBuilder(getShellBuilder(context))
     }
 
-    private suspend fun getNewShell(context: Context): Shell? = runCatching { getShellBuilder(context).build() }.getOrNull()
+    private suspend fun getNewShell(context: Context): Shell? {
+        return runCatching { getShellBuilder(context).build() }.getOrElse { error ->
+            if (error is CancellationException) throw error
+            null
+        }
+    }
 
     private suspend fun kill(context: Context, vararg keys: String) {
         val shell = getNewShell(context)

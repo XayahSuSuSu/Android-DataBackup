@@ -17,8 +17,8 @@ import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.databackup.R
-import com.xayah.databackup.data.restore.toAppOptions
-import com.xayah.databackup.data.rustic.RusticSourceCategory
+import com.xayah.databackup.entity.backup.BackupSourceCategory
+import com.xayah.databackup.entity.restore.toAppOptions
 import com.xayah.databackup.feature.restore.component.RestoreListScaffold
 import com.xayah.databackup.ui.component.selection.AppFilterSheetContent
 import com.xayah.databackup.ui.component.selection.AppFilterUserOption
@@ -53,10 +53,10 @@ fun RestoreAppsScreen(navigator: Navigator, viewModel: AppsViewModel) {
             IconButton(onClick = { showFilters = true }) {
                 Icon(ImageVector.vectorResource(R.drawable.ic_funnel), stringResource(R.string.filters))
             }
-            val apk = setOf(RusticSourceCategory.Apk)
-            val internal = setOf(RusticSourceCategory.InternalData)
-            val external = setOf(RusticSourceCategory.ExternalData)
-            val additional = setOf(RusticSourceCategory.AdditionalData)
+            val apk = setOf(BackupSourceCategory.Apk)
+            val internal = setOf(BackupSourceCategory.InternalData)
+            val external = setOf(BackupSourceCategory.ExternalData)
+            val additional = setOf(BackupSourceCategory.AdditionalData)
             val data = internal + external + additional
             AppSelectionMenu(
                 apkAllSelected = viewModel.getAllPartsSelected(apk),
@@ -83,10 +83,10 @@ fun RestoreAppsScreen(navigator: Navigator, viewModel: AppsViewModel) {
                 else -> ToggleableState.Indeterminate
             },
             onSelectAll = { viewModel.selectItem(item.key, parts != availableParts) },
-            onSelectApk = { viewModel.selectAppPart(item.key, RusticSourceCategory.Apk, it) },
-            onSelectInternalData = { viewModel.selectAppPart(item.key, RusticSourceCategory.InternalData, it) },
-            onSelectExternalData = { viewModel.selectAppPart(item.key, RusticSourceCategory.ExternalData, it) },
-            onSelectAdditionalData = { viewModel.selectAppPart(item.key, RusticSourceCategory.AdditionalData, it) },
+            onSelectApk = { viewModel.selectAppPart(item.key, BackupSourceCategory.Apk, it) },
+            onSelectInternalData = { viewModel.selectAppPart(item.key, BackupSourceCategory.InternalData, it) },
+            onSelectExternalData = { viewModel.selectAppPart(item.key, BackupSourceCategory.ExternalData, it) },
+            onSelectAdditionalData = { viewModel.selectAppPart(item.key, BackupSourceCategory.AdditionalData, it) },
         )
     }
     if (showFilters) {

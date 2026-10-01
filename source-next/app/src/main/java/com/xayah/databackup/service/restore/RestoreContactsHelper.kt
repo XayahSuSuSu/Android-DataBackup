@@ -10,9 +10,9 @@ import android.provider.ContactsContract.RawContacts
 import androidx.annotation.WorkerThread
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
-import com.xayah.databackup.data.restore.RestoreProgressCallback
 import com.xayah.databackup.database.entity.Contact
 import com.xayah.databackup.database.entity.FieldMap
+import com.xayah.databackup.entity.restore.RestoreProgressCallback
 import com.xayah.databackup.util.LogHelper
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
@@ -27,7 +27,7 @@ import kotlinx.coroutines.ensureActive
  *
  * see [VCardEntry.java](https://cs.android.com/android/platform/superproject/+/android-17.0.0_r1:frameworks/opt/vcard/java/com/android/vcard/VCardEntry.java)
  */
-internal class RestoreContactsHelper(private val resolver: ContentResolver) {
+internal class RestoreContactsHelper(private val mResolver: ContentResolver) {
     @WorkerThread
     suspend fun restore(
         serialized: String,
@@ -51,7 +51,7 @@ internal class RestoreContactsHelper(private val resolver: ContentResolver) {
                 if (contact == null) {
                     true
                 } else {
-                    resolver.applyBatch(ContactsContract.AUTHORITY, buildOperations(contact))
+                    mResolver.applyBatch(ContactsContract.AUTHORITY, buildOperations(contact))
                     false
                 }
             }

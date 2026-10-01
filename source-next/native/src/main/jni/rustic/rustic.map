@@ -1,6 +1,6 @@
 {
         global:
-                Java_com_xayah_libnative_Rustic_*;
+                Java_com_xayah_libnative_RusticWrapper_*;
         local:
                 *;
 };

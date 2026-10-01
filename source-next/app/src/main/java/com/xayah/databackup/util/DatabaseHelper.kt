@@ -5,15 +5,15 @@ import com.xayah.databackup.App
 import com.xayah.databackup.database.AppDatabase
 
 object DatabaseHelper {
-    private val database = Room.databaseBuilder(
+    private val mDatabase = Room.databaseBuilder(
         App.application,
         AppDatabase::class.java,
         "database-databackup"
     ).build()
 
-    val appDao = database.appDao()
-    val networkDao = database.networkDao()
-    val contactDao = database.contactDao()
-    val callLogDao = database.callLogDao()
-    val messageDao = database.messageDao()
+    val appDao = mDatabase.appDao()
+    val networkDao = mDatabase.networkDao()
+    val contactDao = mDatabase.contactDao()
+    val callLogDao = mDatabase.callLogDao()
+    val messageDao = mDatabase.messageDao()
 }

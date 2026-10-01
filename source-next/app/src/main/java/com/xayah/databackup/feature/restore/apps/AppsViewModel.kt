@@ -1,9 +1,11 @@
 package com.xayah.databackup.feature.restore.apps
 
 import androidx.lifecycle.viewModelScope
-import com.xayah.databackup.data.restore.RestoreSession
-import com.xayah.databackup.data.restore.toAppOptions
-import com.xayah.databackup.data.rustic.RusticSourceCategory
+import com.xayah.databackup.data.RestoreRepository
+import com.xayah.databackup.database.entity.App
+import com.xayah.databackup.entity.backup.BackupSourceCategory
+import com.xayah.databackup.entity.restore.RestoreState
+import com.xayah.databackup.entity.restore.toAppOptions
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.DefStorageSize
 import com.xayah.databackup.util.SortsSequence
@@ -35,17 +37,17 @@ data class UiState(
 )
 
 class AppsViewModel(
-    private val session: RestoreSession,
+    private val mRestoreRepo: RestoreRepository,
 ) : BaseViewModel() {
-    private val sharingStarted = SharingStarted.WhileSubscribed(5_000)
-    val state = session.state
+    private val mSharingStarted = SharingStarted.WhileSubscribed(5_000)
+    val state: StateFlow<RestoreState> = mRestoreRepo.state
     private val _searchText = MutableStateFlow("")
     val searchText: StateFlow<String> = _searchText.asStateFlow()
     private val _uiState = MutableStateFlow(UiState())
-    val uiState = _uiState.asStateFlow()
-    val users = state.map { it.inventory?.apps.orEmpty().values.map { app -> app.userId }.distinct().sorted() }
-        .stateIn(viewModelScope, sharingStarted, emptyList())
-    val items = combine(state, searchText, uiState) { state, query, filters ->
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    val users: StateFlow<List<Int>> = state.map { it.inventory?.apps.orEmpty().values.map { app -> app.userId }.distinct().sorted() }
+        .stateIn(viewModelScope, mSharingStarted, emptyList())
+    val items: StateFlow<List<Map.Entry<String, App>>> = combine(state, searchText, uiState) { state, query, filters ->
         val entries = state.inventory?.apps.orEmpty()
         val keys = entries.entries.associate { it.value.pkgUserKey to it.key }
         val currentUser = filters.userId ?: entries.values.minOfOrNull { it.userId } ?: 0
@@ -59,9 +61,9 @@ class AppsViewModel(
             SortsType.INSTALL_TIME -> apps.sortByInstallTime(filters.sortsSequence)
             SortsType.UPDATE_TIME -> apps.sortByUpdateTime(filters.sortsSequence)
         }.sortBySelectedFirst(filters.selectedFirst).filterApp(query).associateBy { keys.getValue(it.pkgUserKey) }.entries.toList()
-    }.stateIn(viewModelScope, sharingStarted, emptyList())
-    val selectedBytes = items.map { apps -> apps.sumOf { it.value.selectedBytes }.formatToStorageSize }
-        .stateIn(viewModelScope, sharingStarted, DefStorageSize)
+    }.stateIn(viewModelScope, mSharingStarted, emptyList())
+    val selectedBytes: StateFlow<String> = items.map { apps -> apps.sumOf { it.value.selectedBytes }.formatToStorageSize }
+        .stateIn(viewModelScope, mSharingStarted, DefStorageSize)
 
     fun selectUser(id: Int) {
         withLock(Dispatchers.Default) {
@@ -101,22 +103,22 @@ class AppsViewModel(
         }
     }
 
-    fun selectAppPart(id: String, part: RusticSourceCategory, checked: Boolean) {
+    fun selectAppPart(id: String, part: BackupSourceCategory, checked: Boolean) {
         withLock(Dispatchers.Default) {
-            session.selectAppPart(id, part, checked)
+            mRestoreRepo.selectAppPart(id, part, checked)
         }
     }
 
-    fun getAllPartsSelected(parts: Set<RusticSourceCategory>): Boolean {
+    fun getAllPartsSelected(parts: Set<BackupSourceCategory>): Boolean {
         val available = items.value.map { it.key }.flatMap { id ->
             state.value.inventory?.availableAppParts?.get(id).orEmpty().intersect(parts).map { id to it }
         }
         return available.isNotEmpty() && available.all { (id, part) -> part in state.value.appParts[id].orEmpty() }
     }
 
-    fun selectAllParts(parts: Set<RusticSourceCategory>) {
+    fun selectAllParts(parts: Set<BackupSourceCategory>) {
         withLock(Dispatchers.Default) {
-            session.selectAppParts(items.value.map { it.key }.toSet(), parts, !getAllPartsSelected(parts))
+            mRestoreRepo.selectAppParts(items.value.map { it.key }.toSet(), parts, !getAllPartsSelected(parts))
         }
     }
 
@@ -128,7 +130,7 @@ class AppsViewModel(
 
     fun selectItem(id: String, checked: Boolean) {
         withLock(Dispatchers.Default) {
-            session.selectItem(id, checked)
+            mRestoreRepo.selectItem(id, checked)
         }
     }
 }

@@ -11,10 +11,10 @@ import com.xayah.databackup.data.ContactRepository
 import com.xayah.databackup.data.FileRepository
 import com.xayah.databackup.data.MessageRepository
 import com.xayah.databackup.data.NetworkRepository
-import com.xayah.databackup.data.rustic.RusticBackupCoordinator
-import com.xayah.databackup.data.rustic.RusticBackupEvent
-import com.xayah.databackup.data.rustic.RusticBackupStage
+import com.xayah.databackup.data.RusticBackupProcessRepository
 import com.xayah.databackup.entity.BackupBackend
+import com.xayah.databackup.entity.rustic.RusticBackupEvent
+import com.xayah.databackup.entity.rustic.RusticBackupStage
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.LogHelper
@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
 
 open class RusticBackupProcessViewModel(
     private val mBackupConfigRepo: BackupConfigRepository,
-    private val mBackupCoordinator: RusticBackupCoordinator,
+    private val mBackupProcessRepo: RusticBackupProcessRepository,
     mAppRepo: AppRepository,
     mFileRepo: FileRepository,
     mNetworkRepo: NetworkRepository,
@@ -203,8 +203,8 @@ open class RusticBackupProcessViewModel(
                             && backend.password != BackupBackend.DEFAULT_PASSWORD)
                 }
             }
-            try {
-                val result = mBackupCoordinator.start { event ->
+            runCatching {
+                val result = mBackupProcessRepo.start { event ->
                     _uiState.update { state -> reduceRusticBackupState(state, event) }
                 }
                 _uiState.update {
@@ -214,10 +214,8 @@ open class RusticBackupProcessViewModel(
                         progress = it.progress.copy(progress = 1f),
                     )
                 }
-            } catch (error: CancellationException) {
-                // Cancellation should not be reported as a backup failure.
-                throw error
-            } catch (error: Throwable) {
+            }.onFailure { error ->
+                if (error is CancellationException) throw error
                 LogHelper.e(TAG, "loadProcessItems", "Rustic backup failed.", error)
                 _uiState.update { state ->
                     state.copy(
@@ -246,6 +244,7 @@ open class RusticBackupProcessViewModel(
 
             val storagePath = PathHelper.getParentPath(repositoryPath).ifBlank { repositoryPath }
             val stat = runCatching { RemoteRootService.readStatFs(storagePath) }.onFailure { error ->
+                if (error is CancellationException) throw error
                 LogHelper.e(TAG, "refreshRepositoryStorage", "Failed to read storage statistics.", error)
             }.getOrNull()
             if (stat == null || stat.totalBytes <= 0L) {
@@ -262,6 +261,7 @@ open class RusticBackupProcessViewModel(
             val usedBytes = (totalBytes - freeBytes).coerceAtLeast(0L)
             val repositoryBytes = runCatching { RemoteRootService.calculateTreeSize(repositoryPath) }
                 .onFailure { error ->
+                    if (error is CancellationException) throw error
                     LogHelper.e(TAG, "refreshRepositoryStorage", "Failed to calculate repository size.", error)
                 }
                 .getOrDefault(0L)

@@ -1,7 +1,7 @@
 package com.xayah.databackup.service.restore
 
-import com.xayah.databackup.data.restore.RestoreProgressCallback
-import com.xayah.databackup.data.restore.RestoreRecordEvent
+import com.xayah.databackup.entity.restore.RestoreProgressCallback
+import com.xayah.databackup.entity.restore.RestoreRecordEvent
 import com.xayah.databackup.util.LogHelper
 import kotlinx.coroutines.CancellationException
 
@@ -18,11 +18,10 @@ internal fun restoreRecord(
     operation: () -> Boolean,
 ): Boolean? {
     callback.onEvent(RestoreRecordEvent.Started(id))
-    val skipped = try {
+    val skipped = runCatching {
         operation()
-    } catch (error: CancellationException) {
-        throw error
-    } catch (error: Exception) {
+    }.getOrElse { error ->
+        if (error is CancellationException || error !is Exception) throw error
         LogHelper.e(TAG, "restoreRecord", "Record restore failed: id=$id", error)
         callback.onEvent(RestoreRecordEvent.Failed(id))
         return null

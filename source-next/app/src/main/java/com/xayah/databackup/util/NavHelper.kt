@@ -7,17 +7,17 @@ import androidx.navigation3.runtime.NavKey
  * Handles navigation events by updating the Navigation 3 back stack.
  */
 class Navigator(
-    private val backStack: NavBackStack<NavKey>,
+    private val mBackStack: NavBackStack<NavKey>,
 ) {
     fun navigate(route: NavKey) {
-        if (backStack.lastOrNull()?.let { it::class == route::class } != true) {
-            backStack.add(route)
+        if (mBackStack.lastOrNull()?.let { it::class == route::class } != true) {
+            mBackStack.add(route)
         }
     }
 
     fun goBack() {
-        if (backStack.size > 1) {
-            backStack.removeLastOrNull()
+        if (mBackStack.size > 1) {
+            mBackStack.removeLastOrNull()
         }
     }
 }

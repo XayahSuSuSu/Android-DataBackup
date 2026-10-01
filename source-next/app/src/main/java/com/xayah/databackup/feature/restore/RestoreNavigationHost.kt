@@ -8,7 +8,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.xayah.databackup.data.restore.RestoreSession
+import com.xayah.databackup.data.RestoreRepository
 import com.xayah.databackup.feature.RestoreAppsRoute
 import com.xayah.databackup.feature.RestoreCallLogsRoute
 import com.xayah.databackup.feature.RestoreContactsRoute
@@ -35,12 +35,12 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun RestoreNavigationHost(navigator: Navigator, viewModel: RestoreViewModel) {
-    RestoreNavigationContent(viewModel.session, onBack = navigator::popBackStackSafely, onRetry = viewModel::load)
+    RestoreNavigationContent(viewModel.repository, onBack = navigator::popBackStackSafely, onRetry = viewModel::load)
 }
 
 @Composable
 internal fun RestoreNavigationContent(
-    session: RestoreSession,
+    restoreRepo: RestoreRepository,
     onBack: () -> Unit,
     onRetry: () -> Unit = {},
     initialRoute: NavKey = RestoreSetupRoute,
@@ -56,31 +56,31 @@ internal fun RestoreNavigationContent(
         predictivePopTransitionSpec = { backwardNavigationTransition() },
         entryProvider = entryProvider {
             entry<RestoreProcessRoute> {
-                val viewModel = koinViewModel<RestoreProcessViewModel> { parametersOf(session) }
+                val viewModel = koinViewModel<RestoreProcessViewModel> { parametersOf(restoreRepo) }
                 RestoreProcessScreen(viewModel, onFinish = onBack)
             }
             entry<RestoreSetupRoute> {
-                val viewModel = koinViewModel<RestoreSetupViewModel> { parametersOf(session) }
+                val viewModel = koinViewModel<RestoreSetupViewModel> { parametersOf(restoreRepo) }
                 RestoreSetupScreen(navigator, viewModel, onBack, onRetry)
             }
             entry<RestoreAppsRoute> {
-                val viewModel = koinViewModel<AppsViewModel> { parametersOf(session) }
+                val viewModel = koinViewModel<AppsViewModel> { parametersOf(restoreRepo) }
                 RestoreAppsScreen(navigator, viewModel)
             }
             entry<RestoreNetworksRoute> {
-                val viewModel = koinViewModel<NetworksViewModel> { parametersOf(session) }
+                val viewModel = koinViewModel<NetworksViewModel> { parametersOf(restoreRepo) }
                 RestoreNetworksScreen(navigator, viewModel)
             }
             entry<RestoreContactsRoute> {
-                val viewModel = koinViewModel<ContactsViewModel> { parametersOf(session) }
+                val viewModel = koinViewModel<ContactsViewModel> { parametersOf(restoreRepo) }
                 RestoreContactsScreen(navigator, viewModel)
             }
             entry<RestoreCallLogsRoute> {
-                val viewModel = koinViewModel<CallLogsViewModel> { parametersOf(session) }
+                val viewModel = koinViewModel<CallLogsViewModel> { parametersOf(restoreRepo) }
                 RestoreCallLogsScreen(navigator, viewModel)
             }
             entry<RestoreMessagesRoute> {
-                val viewModel = koinViewModel<MessagesViewModel> { parametersOf(session) }
+                val viewModel = koinViewModel<MessagesViewModel> { parametersOf(restoreRepo) }
                 RestoreMessagesScreen(navigator, viewModel)
             }
         },

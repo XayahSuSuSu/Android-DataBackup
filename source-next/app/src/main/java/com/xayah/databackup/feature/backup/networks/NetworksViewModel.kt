@@ -2,6 +2,7 @@ package com.xayah.databackup.feature.backup.networks
 
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.data.NetworkRepository
+import com.xayah.databackup.database.entity.NetworkUnmarshalled
 import com.xayah.databackup.database.entity.deserialize
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.DatabaseHelper
@@ -27,7 +28,7 @@ open class NetworksViewModel(
 
     private val _searchText = MutableStateFlow("")
     val searchText: StateFlow<String> = _searchText.asStateFlow()
-    val networks = combine(
+    val networks: StateFlow<List<NetworkUnmarshalled>> = combine(
         networkRepo.networks.deserialize(),
         _searchText,
     ) { networks, searchText ->
@@ -38,7 +39,7 @@ open class NetworksViewModel(
         started = SharingStarted.WhileSubscribed(5_000),
     )
 
-    val selected =
+    val selected: StateFlow<Int> =
         networks.map { list -> list.count { it.selected } }.stateIn(
             scope = viewModelScope,
             initialValue = 0,

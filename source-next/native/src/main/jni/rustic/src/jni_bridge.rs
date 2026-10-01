@@ -13,7 +13,7 @@ use crate::repository::{
 };
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeInitLogger<'local>(
+pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeInitLogger<'local>(
     _unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
 ) {
@@ -23,7 +23,7 @@ pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeInitLogger<'local>(
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeInitRepository<'local>(
+pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeInitRepository<'local>(
     mut unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
     repository_path: JString<'local>,
@@ -38,7 +38,7 @@ pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeInitRepository<'loc
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeRepositoryExists<'local>(
+pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeRepositoryExists<'local>(
     mut unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
     repository_path: JString<'local>,
@@ -53,7 +53,7 @@ pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeRepositoryExists<'l
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeValidateRepository<'local>(
+pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeValidateRepository<'local>(
     mut unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
     repository_path: JString<'local>,
@@ -68,7 +68,7 @@ pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeValidateRepository<
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeCreateSnapshot<'local>(
+pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeCreateSnapshot<'local>(
     mut unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
     repository_path: JString<'local>,
@@ -122,7 +122,7 @@ pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeCreateSnapshot<'loc
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeRestoreSnapshot<'local>(
+pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeRestoreSnapshot<'local>(
     mut unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
     repository_path: JString<'local>,
@@ -152,7 +152,7 @@ pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeRestoreSnapshot<'lo
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeValidateExternalSnapshot<'local>(
+pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeValidateExternalSnapshot<'local>(
     mut unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
     repository_path: JString<'local>,
@@ -172,7 +172,7 @@ pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeValidateExternalSna
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeRestoreExternalSnapshot<'local>(
+pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeRestoreExternalSnapshot<'local>(
     mut unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
     repository_path: JString<'local>,
@@ -194,7 +194,7 @@ pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeRestoreExternalSnap
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeReadSnapshotDirectoryUid<'local>(
+pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeReadSnapshotDirectoryUid<'local>(
     mut unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
     repository_path: JString<'local>,
@@ -214,7 +214,7 @@ pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeReadSnapshotDirecto
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeListSnapshots<'local>(
+pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeListSnapshots<'local>(
     mut unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
     repository_path: JString<'local>,
@@ -230,7 +230,7 @@ pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeListSnapshots<'loca
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeCheckRepository<'local>(
+pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeCheckRepository<'local>(
     mut unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
     repository_path: JString<'local>,
@@ -257,7 +257,7 @@ fn string_array_to_vec<'local>(
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeReadSnapshotTextFiles<'local>(
+pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeReadSnapshotTextFiles<'local>(
     mut unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
     repository_path: JString<'local>,
@@ -281,7 +281,7 @@ pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeReadSnapshotTextFil
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_xayah_libnative_Rustic_nativeDeleteSnapshot<'local>(
+pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeDeleteSnapshot<'local>(
     mut unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
     repository_path: JString<'local>,

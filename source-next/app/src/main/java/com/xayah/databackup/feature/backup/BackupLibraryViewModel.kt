@@ -47,14 +47,14 @@ enum class BackupLibraryFilter {
 }
 
 class BackupLibraryViewModel(
-    private val backupConfigRepository: BackupConfigRepository,
+    private val mBackupConfigRepo: BackupConfigRepository,
 ) : BaseViewModel() {
-    private val isLoading = MutableStateFlow(backupConfigRepository.configs.value.isEmpty())
-    private val searchQuery = MutableStateFlow("")
-    private val filter = MutableStateFlow(BackupLibraryFilter.All)
+    private val _isLoading = MutableStateFlow(mBackupConfigRepo.configs.value.isEmpty())
+    private val _searchQuery = MutableStateFlow("")
+    private val _filter = MutableStateFlow(BackupLibraryFilter.All)
 
     val uiState: StateFlow<BackupLibraryUiState> =
-        combine(isLoading, backupConfigRepository.configs, searchQuery, filter) { loading, backups, query, filter ->
+        combine(_isLoading, mBackupConfigRepo.configs, _searchQuery, _filter) { loading, backups, query, filter ->
             when {
                 loading -> BackupLibraryUiState.Loading
                 backups.isEmpty() -> BackupLibraryUiState.Empty
@@ -67,7 +67,7 @@ class BackupLibraryViewModel(
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
-            initialValue = backupConfigRepository.configs.value
+            initialValue = mBackupConfigRepo.configs.value
                 .takeIf { it.isNotEmpty() }
                 ?.let { BackupLibraryUiState.Content(it) }
                 ?: BackupLibraryUiState.Loading,
@@ -75,21 +75,21 @@ class BackupLibraryViewModel(
 
     fun initialize() {
         withLock(Dispatchers.IO) {
-            backupConfigRepository.loadBackupConfigsFromLocal()
-            isLoading.value = false
+            mBackupConfigRepo.loadBackupConfigsFromLocal()
+            _isLoading.value = false
         }
     }
 
     fun updateSearchQuery(query: String) {
-        searchQuery.value = query
+        _searchQuery.value = query
     }
 
     fun updateFilter(value: BackupLibraryFilter) {
-        filter.value = value
+        _filter.value = value
     }
 
     fun clearFilters() {
-        searchQuery.value = ""
-        filter.value = BackupLibraryFilter.All
+        _searchQuery.value = ""
+        _filter.value = BackupLibraryFilter.All
     }
 }

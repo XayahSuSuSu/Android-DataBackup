@@ -3,8 +3,8 @@ package com.xayah.databackup.feature.restore
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.R
-import com.xayah.databackup.data.restore.RestoreCoordinator
-import com.xayah.databackup.data.restore.RestoreSession
+import com.xayah.databackup.data.RestoreProcessRepository
+import com.xayah.databackup.data.RestoreRepository
 import com.xayah.databackup.util.BaseViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,11 +18,11 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 internal class RestoreProcessViewModel(
-    session: RestoreSession,
-    coordinator: RestoreCoordinator,
+    restoreRepo: RestoreRepository,
+    processRepo: RestoreProcessRepository,
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(RestoreProcessUiState())
-    val uiState = _uiState.asStateFlow()
+    val uiState: StateFlow<RestoreProcessUiState> = _uiState.asStateFlow()
     val overallProgress: StateFlow<String> = uiState
         .map { calculateRestoreProgress(it.items) }
         .stateIn(
@@ -34,23 +34,22 @@ internal class RestoreProcessViewModel(
 
     init {
         // Consumed once: recreation after process death must not repeat destructive writes.
-        val request = session.consumeRestoreRequest()
+        val request = restoreRepo.consumeRestoreRequest()
         if (request == null) {
             _uiState.value = RestoreProcessUiState(
                 status = RestoreProcessStatus.Failed,
                 errorMessage = App.application.getString(R.string.restore_session_expired),
             )
         } else {
-            _uiState.value = request.toInitialProcessUiState(session.state.value.inventory)
+            _uiState.value = request.toInitialProcessUiState(restoreRepo.state.value.inventory)
             viewModelScope.launch {
-                try {
-                    val finished = coordinator.restore(request, { mIsCancelRequested }) { event ->
+                runCatching {
+                    val finished = processRepo.restore(request, { mIsCancelRequested }) { event ->
                         _uiState.update { it.reduceRestoreProcessState(event) }
                     }
                     _uiState.update { it.toTerminalState(finished) }
-                } catch (error: CancellationException) {
-                    throw error
-                } catch (_: Exception) {
+                }.onFailure { error ->
+                    if (error is CancellationException || error !is Exception) throw error
                     // Parser and Binder exceptions can contain private data. Show a localized summary.
                     _uiState.update { it.toFailedState(App.application.getString(R.string.restore_process_failed)) }
                 }

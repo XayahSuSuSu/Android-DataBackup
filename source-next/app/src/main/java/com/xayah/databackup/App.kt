@@ -7,32 +7,27 @@ import coil3.SingletonImageLoader
 import coil3.annotation.ExperimentalCoilApi
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import com.xayah.databackup.data.AppRepository
+import com.xayah.databackup.data.ArchiveBackupProcessRepository
 import com.xayah.databackup.data.BackupConfigRepository
-import com.xayah.databackup.data.BackupProcessRepository
+import com.xayah.databackup.data.BackupSelectionRepository
 import com.xayah.databackup.data.CallLogRepository
 import com.xayah.databackup.data.ContactRepository
 import com.xayah.databackup.data.FileRepository
 import com.xayah.databackup.data.GitHubReleaseRepository
 import com.xayah.databackup.data.MessageRepository
 import com.xayah.databackup.data.NetworkRepository
+import com.xayah.databackup.data.RestoreProcessRepository
+import com.xayah.databackup.data.RestoreRepository
+import com.xayah.databackup.data.RusticBackupProcessRepository
+import com.xayah.databackup.data.RusticRepository
 import com.xayah.databackup.data.TranslatorRepository
-import com.xayah.databackup.data.restore.RestoreCoordinator
-import com.xayah.databackup.data.restore.RestoreGateway
-import com.xayah.databackup.data.restore.RestoreRepository
-import com.xayah.databackup.data.restore.RusticRestoreGateway
-import com.xayah.databackup.data.rustic.RusticAppSourcePlanner
-import com.xayah.databackup.data.rustic.RusticBackupCoordinator
-import com.xayah.databackup.data.rustic.RusticBackupGateway
-import com.xayah.databackup.data.rustic.RusticBackupSelectionProvider
-import com.xayah.databackup.data.rustic.RusticBackupSourceCollector
-import com.xayah.databackup.data.rustic.RusticStructuredDataSerializer
 import com.xayah.databackup.feature.about.TranslatorsViewModel
 import com.xayah.databackup.feature.backup.BackupConfigViewModel
 import com.xayah.databackup.feature.backup.BackupLibraryViewModel
-import com.xayah.databackup.feature.backup.BackupProcessViewModel
 import com.xayah.databackup.feature.backup.BackupSetupViewModel
 import com.xayah.databackup.feature.backup.NewBackupViewModel
 import com.xayah.databackup.feature.backup.apps.AppsViewModel
+import com.xayah.databackup.feature.backup.archive.BackupProcessViewModel
 import com.xayah.databackup.feature.backup.call_logs.CallLogsViewModel
 import com.xayah.databackup.feature.backup.contacts.ContactsViewModel
 import com.xayah.databackup.feature.backup.messages.MessagesViewModel
@@ -43,11 +38,16 @@ import com.xayah.databackup.feature.restore.RestoreProcessViewModel
 import com.xayah.databackup.feature.restore.RestoreSetupViewModel
 import com.xayah.databackup.feature.restore.RestoreViewModel
 import com.xayah.databackup.feature.update.UpdatesViewModel
-import com.xayah.databackup.service.util.BackupAppsHelper
-import com.xayah.databackup.service.util.BackupCallLogsHelper
-import com.xayah.databackup.service.util.BackupContactsHelper
-import com.xayah.databackup.service.util.BackupMessagesHelper
-import com.xayah.databackup.service.util.BackupNetworksHelper
+import com.xayah.databackup.service.backup.BackupAppSourceHelper
+import com.xayah.databackup.service.backup.BackupSerializationHelper
+import com.xayah.databackup.service.backup.archive.BackupAppsHelper
+import com.xayah.databackup.service.backup.archive.BackupCallLogsHelper
+import com.xayah.databackup.service.backup.archive.BackupContactsHelper
+import com.xayah.databackup.service.backup.archive.BackupMessagesHelper
+import com.xayah.databackup.service.backup.archive.BackupNetworksHelper
+import com.xayah.databackup.service.backup.rustic.RusticBackupSourceHelper
+import com.xayah.databackup.service.restore.RestoreHelper
+import com.xayah.databackup.service.restore.rustic.RusticRestoreHelper
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import org.koin.android.ext.koin.androidContext
@@ -68,8 +68,9 @@ class App : Application(), SingletonImageLoader.Factory {
         lateinit var application: Application
     }
 
-    private val appModule = module {
-        singleOf(::RestoreRepository)
+    private val mAppModule = module {
+        factory { RestoreRepository(get(), get()) }
+
         singleOf(::BackupConfigRepository)
         singleOf(::AppRepository)
         singleOf(::FileRepository)
@@ -77,7 +78,7 @@ class App : Application(), SingletonImageLoader.Factory {
         singleOf(::ContactRepository)
         singleOf(::CallLogRepository)
         singleOf(::MessageRepository)
-        singleOf(::BackupProcessRepository)
+        singleOf(::ArchiveBackupProcessRepository)
         singleOf(::GitHubReleaseRepository)
         singleOf(::TranslatorRepository)
         singleOf(::BackupAppsHelper)
@@ -85,15 +86,15 @@ class App : Application(), SingletonImageLoader.Factory {
         singleOf(::BackupContactsHelper)
         singleOf(::BackupCallLogsHelper)
         singleOf(::BackupMessagesHelper)
-        singleOf(::RusticAppSourcePlanner)
-        singleOf(::RusticStructuredDataSerializer)
-        singleOf(::RusticBackupGateway)
-        singleOf(::RusticBackupSelectionProvider)
-        singleOf(::RusticBackupSourceCollector)
-        singleOf(::RusticBackupCoordinator)
-        singleOf(::RestoreCoordinator)
+        singleOf(::BackupAppSourceHelper)
+        singleOf(::BackupSerializationHelper)
+        singleOf(::RusticRepository)
+        singleOf(::BackupSelectionRepository)
+        singleOf(::RusticBackupSourceHelper)
+        singleOf(::RusticBackupProcessRepository)
+        singleOf(::RestoreProcessRepository)
 
-        singleOf(::RusticRestoreGateway) { bind<RestoreGateway>() }
+        singleOf(::RusticRestoreHelper) { bind<RestoreHelper>() }
 
         viewModelOf(::DashboardViewModel)
         viewModelOf(::BackupSetupViewModel)
@@ -126,7 +127,7 @@ class App : Application(), SingletonImageLoader.Factory {
         startKoin {
             androidLogger()
             androidContext(application)
-            modules(appModule)
+            modules(mAppModule)
         }
     }
 

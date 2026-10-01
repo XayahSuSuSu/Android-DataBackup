@@ -1,7 +1,9 @@
 package com.xayah.databackup.feature.restore.call_logs
 
 import androidx.lifecycle.viewModelScope
-import com.xayah.databackup.data.restore.RestoreSession
+import com.xayah.databackup.data.RestoreRepository
+import com.xayah.databackup.database.entity.CallLogDeserialized
+import com.xayah.databackup.entity.restore.RestoreState
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.filterCallLog
 import kotlinx.coroutines.Dispatchers
@@ -13,15 +15,15 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
 class CallLogsViewModel(
-    private val session: RestoreSession,
+    private val mRestoreRepo: RestoreRepository,
 ) : BaseViewModel() {
-    private val sharingStarted = SharingStarted.WhileSubscribed(5_000)
-    val state = session.state
+    private val mSharingStarted = SharingStarted.WhileSubscribed(5_000)
+    val state: StateFlow<RestoreState> = mRestoreRepo.state
     private val _searchText = MutableStateFlow("")
     val searchText: StateFlow<String> = _searchText.asStateFlow()
-    val items = combine(state, searchText) { state, query ->
+    val items: StateFlow<Map<String, CallLogDeserialized>> = combine(state, searchText) { state, query ->
         state.inventory?.callLogs.orEmpty().filterCallLog(query)
-    }.stateIn(viewModelScope, sharingStarted, state.value.inventory?.callLogs.orEmpty())
+    }.stateIn(viewModelScope, mSharingStarted, state.value.inventory?.callLogs.orEmpty())
 
     fun changeSearchText(text: String) {
         withLock(Dispatchers.Default) {
@@ -31,14 +33,14 @@ class CallLogsViewModel(
 
     fun selectItem(id: String, checked: Boolean) {
         withLock(Dispatchers.Default) {
-            session.selectItem(id, checked)
+            mRestoreRepo.selectItem(id, checked)
         }
     }
 
     fun selectAll() {
         withLock(Dispatchers.Default) {
             val visibleItems = items.value
-            session.selectItems(visibleItems.keys, visibleItems.keys.any { it !in state.value.selected })
+            mRestoreRepo.selectItems(visibleItems.keys, visibleItems.keys.any { it !in state.value.selected })
         }
     }
 }

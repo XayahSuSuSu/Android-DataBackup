@@ -1,48 +1,40 @@
 package com.xayah.databackup.feature.restore
 
-import com.xayah.databackup.data.restore.RestoreRepository
-import com.xayah.databackup.data.restore.RestoreSession
-import com.xayah.databackup.data.restore.RestoreSessionState
+import com.xayah.databackup.data.RestoreRepository
+import com.xayah.databackup.entity.restore.RestoreState
 import com.xayah.databackup.feature.RestoreRoute
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.LogHelper
 import kotlinx.coroutines.CancellationException
 
 class RestoreViewModel(
-    private val route: RestoreRoute,
-    private val repository: RestoreRepository,
+    private val mRoute: RestoreRoute,
+    val repository: RestoreRepository,
 ) : BaseViewModel() {
-    val session = RestoreSession()
-    private var isLoading = false
+    companion object {
+        private const val TAG = "RestoreViewModel"
+    }
+
+    private var mIsLoading = false
 
     init {
         load()
     }
 
     fun load() {
-        if (isLoading) return
-        isLoading = true
+        if (mIsLoading) return
+        mIsLoading = true
         withLock {
             try {
-                session.updateState(RestoreSessionState())
-                val data = repository.loadSnapshot(route.configUuid, route.snapshotId)
-                session.updateState(
-                    RestoreSessionState(
-                        loading = false,
-                        config = data.config,
-                        snapshot = data.snapshot,
-                        inventory = data.inventory,
-                        selected = data.inventory.allIds,
-                        appParts = data.inventory.availableAppParts,
-                    )
-                )
+                repository.updateState(RestoreState())
+                repository.loadSnapshot(mRoute.configUuid, mRoute.snapshotId)
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (error: Exception) {
-                LogHelper.e("RestoreViewModel", "load", "Failed to read snapshot inventory", error)
-                session.updateState(RestoreSessionState(loading = false, failed = true))
+                LogHelper.e(TAG, "load", "Failed to read snapshot inventory", error)
+                repository.updateState(RestoreState(loading = false, failed = true))
             } finally {
-                isLoading = false
+                mIsLoading = false
             }
         }
     }

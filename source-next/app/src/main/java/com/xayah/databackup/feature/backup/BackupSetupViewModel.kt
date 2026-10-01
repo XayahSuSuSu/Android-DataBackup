@@ -5,8 +5,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.data.AppRepository
+import com.xayah.databackup.data.ArchiveBackupProcessRepository
 import com.xayah.databackup.data.BackupConfigRepository
-import com.xayah.databackup.data.BackupProcessRepository
 import com.xayah.databackup.data.CallLogRepository
 import com.xayah.databackup.data.ContactRepository
 import com.xayah.databackup.data.FileRepository
@@ -24,6 +24,7 @@ import com.xayah.databackup.util.ContactsOptionSelectedBackup
 import com.xayah.databackup.util.MessagesOptionSelectedBackup
 import com.xayah.databackup.util.combine
 import com.xayah.databackup.util.saveBoolean
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -42,8 +43,8 @@ data class TargetItem(
 const val MaxSelectedItems = 6
 
 open class BackupSetupViewModel(
-    private val backupConfigRepo: BackupConfigRepository,
-    private val backupProcessRepo: BackupProcessRepository,
+    private val mBackupConfigRepo: BackupConfigRepository,
+    private val mBackupProcessRepo: ArchiveBackupProcessRepository,
     appRepo: AppRepository,
     fileRepo: FileRepository,
     networkRepo: NetworkRepository,
@@ -55,13 +56,13 @@ open class BackupSetupViewModel(
     val isLoadingConfigs: StateFlow<Boolean> = _isLoadingConfigs.asStateFlow()
 
     val selectedBackup: StateFlow<BackupConfig?> = combine(
-        backupConfigRepo.configs,
-        backupConfigRepo.selectedIndex,
+        mBackupConfigRepo.configs,
+        mBackupConfigRepo.selectedIndex,
     ) { configs, selectedIndex ->
         configs.getOrNull(selectedIndex)
     }.stateIn(
         scope = viewModelScope,
-        initialValue = backupConfigRepo.configs.value.getOrNull(backupConfigRepo.selectedIndex.value),
+        initialValue = mBackupConfigRepo.configs.value.getOrNull(mBackupConfigRepo.selectedIndex.value),
         started = SharingStarted.WhileSubscribed(5_000),
     )
 
@@ -69,7 +70,10 @@ open class BackupSetupViewModel(
         .map { backup ->
             backup?.let {
                 withContext(Dispatchers.IO) {
-                    runCatching { RemoteRootService.calculateTreeSize(it.path) }.getOrNull()
+                    runCatching { RemoteRootService.calculateTreeSize(it.path) }.getOrElse { error ->
+                        if (error is CancellationException) throw error
+                        null
+                    }
                 }
             }
         }
@@ -190,7 +194,7 @@ open class BackupSetupViewModel(
         started = SharingStarted.WhileSubscribed(5_000),
     )
 
-    val nextBtnEnabled = combine(isLoadingConfigs, selectedItems, selectedBackup) { isLoading, selectedItems, selectedBackup ->
+    val nextBtnEnabled: StateFlow<Boolean> = combine(isLoadingConfigs, selectedItems, selectedBackup) { isLoading, selectedItems, selectedBackup ->
         isLoading.not() &&
                 selectedItems?.first != 0 &&
                 selectedBackup != null
@@ -234,7 +238,7 @@ open class BackupSetupViewModel(
     private suspend fun initBackupConfigs() {
         withContext(Dispatchers.IO) {
             _isLoadingConfigs.value = true
-            backupConfigRepo.loadBackupConfigsFromLocal()
+            mBackupConfigRepo.loadBackupConfigsFromLocal()
             _isLoadingConfigs.value = false
         }
     }
@@ -247,7 +251,7 @@ open class BackupSetupViewModel(
     }
 
     fun resetProcessRepo() {
-        backupProcessRepo.reset()
+        mBackupProcessRepo.reset()
     }
 
     fun isCurrentBackupRustic(): Boolean {
