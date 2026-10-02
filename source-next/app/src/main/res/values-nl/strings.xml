@@ -548,4 +548,13 @@
     <string name="restore_snapshot">Opname herstellen</string>
     <string name="restore_snapshot_description">Herstel opname %1$s (%2$s)</string>
     <string name="restore_snapshot_load_failed">Kon opname niet laden</string>
+    <string name="restore_session_expired">Hersteltaak is niet meer beschikbaar. Selecteer de opname opnieuw.</string>
+    <string name="restore_cancel_description">Stop met herstellen? Herstelde gegevens worden opgeslagen.</string>
+    <string name="restore_process_failed">Herstellen is onverwacht gestopt. Sommige gegevens zijn mogelijk al hersteld.</string>
+    <string name="restore_finished_with_errors">Herstel beëindigd met fouten</string>
+    <string name="restore_result_restored">Hersteld</string>
+    <string name="restore_result_skipped">Overgeslagen</string>
+    <string name="restore_result_not_processed">Niet verwerkt</string>
+    <string name="restore_skipped_count">%1$s · %2$d overgeslagen</string>
+    <string name="restore_result_counts">%1$s · %2$d mislukt · %3$d overgeslagen</string>
 </resources>
