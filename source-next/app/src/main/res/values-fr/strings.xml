@@ -548,4 +548,6 @@
     <string name="restore_snapshot">Restaurer la snapshot</string>
     <string name="restore_snapshot_description">Restaurer la snapshot %1$s (%2$s)</string>
     <string name="restore_snapshot_load_failed">Impossible de charger la snapshot</string>
+    <string name="restore_session_expired">La tâche de restauration n\'est plus disponible. Sélectionnez à nouveau le snapshot.</string>
+    <string name="restore_cancel_description">Arrêter la restauration ? Les données restaurées seront conservées.</string>
 </resources>
