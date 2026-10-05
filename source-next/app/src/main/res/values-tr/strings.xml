@@ -548,4 +548,13 @@
     <string name="restore_snapshot">Anlık görüntüyü yükle</string>
     <string name="restore_snapshot_description">%1$s (%2$s) görüntüsünü yükle</string>
     <string name="restore_snapshot_load_failed">Anlık görüntü yüklenemedi</string>
+    <string name="restore_session_expired">Geri yükleme görevi artık kullanılamıyor. Anlık görüntüyü tekrar seçin.</string>
+    <string name="restore_cancel_description">Geri yükleme durdurulsun mu? Geri yüklenen veriler korunacaktır.</string>
+    <string name="restore_process_failed">Geri yükleme işlemi beklenmeyen bir şekilde durdu. Bazı veriler zaten geri yüklenmiş olabilir.</string>
+    <string name="restore_finished_with_errors">Geri yükleme işlemi hatalarla sonuçlandı</string>
+    <string name="restore_result_restored">Geri yüklendi</string>
+    <string name="restore_result_skipped">Atlandı</string>
+    <string name="restore_result_not_processed">İşlenmedi</string>
+    <string name="restore_skipped_count">%1$s · %2$d atlandı</string>
+    <string name="restore_result_counts">%1$s · %2$d başarısız· %3$d atlandı</string>
 </resources>
