@@ -3,6 +3,7 @@ package com.xayah.databackup.data
 import com.xayah.databackup.entity.backup.BackupSourceCategory
 import com.xayah.databackup.entity.restore.RestoreEvent
 import com.xayah.databackup.entity.restore.RestoreRequest
+import com.xayah.databackup.entity.restore.RestoreSource
 import com.xayah.databackup.entity.restore.RestoreTask
 import com.xayah.databackup.service.restore.RestoreHelper
 import com.xayah.databackup.util.LogHelper
@@ -12,7 +13,10 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-internal class RestoreProcessRepository(private val mRestoreHelper: RestoreHelper) {
+internal class RestoreProcessRepository(
+    private val mRusticHelper: RestoreHelper,
+    private val mArchiveHelper: RestoreHelper,
+) {
     companion object {
         private const val TAG = "RestoreProcessRepository"
     }
@@ -29,6 +33,10 @@ internal class RestoreProcessRepository(private val mRestoreHelper: RestoreHelpe
         onEvent: (RestoreEvent) -> Unit,
     ): Boolean {
         return mMutex.withLock {
+            val helper: RestoreHelper = when (request.source) {
+                is RestoreSource.Archive -> mArchiveHelper
+                is RestoreSource.Rustic -> mRusticHelper
+            }
             for (task in request.tasks) {
                 currentCoroutineContext().ensureActive()
                 if (isCanceled()) {
@@ -42,7 +50,7 @@ internal class RestoreProcessRepository(private val mRestoreHelper: RestoreHelpe
                     val failed = mutableSetOf<String>()
                     val pendingParts = (task as? RestoreTask.App)?.source?.paths.orEmpty().map { it.category }.toMutableSet()
                     val startedParts = mutableSetOf<BackupSourceCategory>()
-                    val skipped = mRestoreHelper.restore(request, task) { event ->
+                    val skipped = helper.restore(request, task) { event ->
                         check(event.task == task) { "Backend reported a different restore task" }
                         when (event) {
                             is RestoreEvent.RecordStarted -> {

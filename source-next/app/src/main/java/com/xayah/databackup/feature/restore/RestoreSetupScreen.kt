@@ -36,12 +36,14 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
@@ -74,7 +76,6 @@ import com.xayah.databackup.ui.component.shimmer
 import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.Navigator
-import com.xayah.databackup.util.PathHelper
 import com.xayah.databackup.util.TimeHelper
 import com.xayah.databackup.util.formatToStorageSize
 import com.xayah.databackup.util.navigateSafely
@@ -87,7 +88,8 @@ fun RestoreSetupScreen(
     onRetry: () -> Unit,
 ) {
     val context = LocalContext.current
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val state = uiState.restoreState
     var restorePreparationFailed by rememberSaveable { mutableStateOf(false) }
     val permissions = rememberMultiplePermissionsState(
         buildList {
@@ -101,7 +103,9 @@ fun RestoreSetupScreen(
         }
     )
     RestoreSetupContent(
-        state = state, onBack = onBack, onRetry = onRetry,
+        uiState = uiState,
+        onBack = onBack,
+        onRetry = onRetry,
         onStart = {
             restorePreparationFailed = false
             if (!permissions.allPermissionsGranted) {
@@ -134,7 +138,7 @@ fun RestoreSetupScreen(
 
 @Composable
 internal fun RestoreSetupContent(
-    state: RestoreState,
+    uiState: RestoreSetupUiState,
     onBack: () -> Unit,
     onRetry: () -> Unit,
     onSelectCategory: (RestoreCategory, Boolean) -> Unit,
@@ -142,6 +146,7 @@ internal fun RestoreSetupContent(
     onStart: () -> Unit = {},
     startErrorMessage: String? = null,
 ) {
+    val state = uiState.restoreState
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val gridState = rememberLazyGridState()
     val fadingEdgeState = rememberFadingEdgeState(gridState, label = "restoreSetup")
@@ -237,7 +242,7 @@ internal fun RestoreSetupContent(
                                 )
                             }
                         }
-                        SnapshotInfo(state)
+                        RestoreSourceInfo(uiState.sourceInfo, state.loading)
                     }
                 }
                 item(span = { GridItemSpan(maxLineSpan) }) {
@@ -303,36 +308,39 @@ internal fun RestoreSetupContent(
 }
 
 @Composable
-private fun SnapshotInfo(state: RestoreState) {
-    val config = state.config
-    val sourceInfo = state.sourceInfo
+private fun RestoreSourceInfo(sourceInfo: RestoreSourceUiState, loading: Boolean) {
+    val configuration = LocalConfiguration.current
+    val detail = remember(sourceInfo.detailTimestamp, sourceInfo.detail, configuration) {
+        listOfNotNull(
+            sourceInfo.detailTimestamp?.let { TimeHelper.formatTimestampInShort(it) },
+            sourceInfo.detail,
+        ).joinToString(" · ")
+    }
     PreferenceGroup {
         Preference(
             icon = ImageVector.vectorResource(R.drawable.ic_database_backup),
-            title = config?.displayName ?: stringResource(R.string.unnamed),
-            subtitle = stringResource(R.string.rustic),
-            subtitleShimmer = state.loading,
+            title = sourceInfo.name ?: stringResource(R.string.unnamed),
+            subtitle = stringResource(sourceInfo.backendRes),
+            subtitleShimmer = loading,
         )
         Preference(
             icon = ImageVector.vectorResource(R.drawable.ic_map_pin),
             title = stringResource(R.string.backup_dir),
-            subtitle = config?.let { PathHelper.getChildPath(it.path).ifEmpty { it.path } } ?: stringResource(R.string.unknown),
+            subtitle = sourceInfo.directory ?: stringResource(R.string.unknown),
             subtitleIcon = ImageVector.vectorResource(R.drawable.ic_folder),
-            subtitleShimmer = state.loading,
+            subtitleShimmer = loading,
         )
         Preference(
             icon = ImageVector.vectorResource(R.drawable.ic_archive_restore),
-            title = stringResource(R.string.snapshot),
-            subtitle = sourceInfo?.let {
-                if (it.createdAt > 0) "${TimeHelper.formatTimestampInShort(it.createdAt)} · ${it.id.take(8)}" else it.id.take(8)
-            } ?: stringResource(R.string.unknown),
-            subtitleShimmer = state.loading,
+            title = stringResource(sourceInfo.detailTitleRes),
+            subtitle = detail.ifEmpty { stringResource(R.string.unknown) },
+            subtitleShimmer = loading,
         )
         Preference(
             icon = ImageVector.vectorResource(R.drawable.ic_database),
             title = stringResource(R.string.storage),
-            subtitle = sourceInfo?.totalBytes?.formatToStorageSize ?: stringResource(R.string.unknown),
-            subtitleShimmer = state.loading,
+            subtitle = sourceInfo.totalBytes?.formatToStorageSize ?: stringResource(R.string.unknown),
+            subtitleShimmer = loading,
         )
     }
 }
@@ -364,7 +372,7 @@ private fun RestoreSetupPreview() {
     )
     MaterialTheme {
         RestoreSetupContent(
-            state = RestoreState(loading = false, inventory = inventory),
+            uiState = RestoreState(loading = false, inventory = inventory).toSetupUiState(),
             onBack = {}, onRetry = {}, onSelectCategory = { _, _ -> }, onOpenCategory = {},
         )
     }
@@ -375,7 +383,7 @@ private fun RestoreSetupPreview() {
 private fun RestoreSetupLoadingPreview() {
     MaterialTheme {
         RestoreSetupContent(
-            state = RestoreState(),
+            uiState = RestoreState().toSetupUiState(),
             onBack = {}, onRetry = {}, onSelectCategory = { _, _ -> }, onOpenCategory = {},
         )
     }

@@ -32,10 +32,12 @@ import com.xayah.databackup.rootservice.ICallback
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.PathHelper
-import com.xayah.databackup.util.ZstdHelper
+import com.xayah.databackup.util.ShellHelper
 import com.xayah.databackup.util.formatToStorageSize
 import com.xayah.databackup.util.formatToStorageSizePerSecond
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 
 class BackupAppsHelper(private val mBackupProcessRepo: ArchiveBackupProcessRepository) {
     companion object {
@@ -83,6 +85,34 @@ class BackupAppsHelper(private val mBackupProcessRepo: ArchiveBackupProcessRepos
         }
     }
 
+    private suspend fun packageAndCompressArchive(
+        outputPath: String,
+        callback: ICallback,
+        inputArgs: Array<String>,
+    ): Pair<Int, String> {
+        return runCatching {
+            val result = RemoteRootService.packageAndCompressArchive(outputPath, inputArgs, callback)
+            val prefixRegex = Regex("^${Regex.escape(application.packageName)}:root:\\d+:\\s*")
+            val diagnostics = result.mDiagnostics.lineSequence().joinToString("\n") { it.replace(prefixRegex, "") }
+            result.mExitCode to diagnostics
+        }.getOrElse { error ->
+            if (error is CancellationException) {
+                withContext(NonCancellable) {
+                    runCatching { RemoteRootService.deleteRecursively(outputPath) }
+                        .onFailure { error.addSuppressed(it) }
+                }
+                throw error
+            }
+            LogHelper.e(TAG, "packageAndCompressArchive", "Failed to create archive", error)
+            // A failed Binder call can leave the root process unavailable; use shell cleanup as before.
+            ShellHelper.killRootService()
+            ShellHelper.rm(outputPath)
+            val diagnostics = error.message ?: "Archive backup failed"
+            RemoteRootService.checkENOSPC(diagnostics)
+            STATUS_ERROR to diagnostics
+        }
+    }
+
     private suspend fun packageAndCompressApk(app: App, onProgress: (bytesWritten: Long, speed: Long) -> Unit): Pair<Int, String> {
         var status = STATUS_SUCCESS
         var info = ""
@@ -113,7 +143,7 @@ class BackupAppsHelper(private val mBackupProcessRepo: ArchiveBackupProcessRepos
             inputArgs.add(PathHelper.getParentPath(it))
             inputArgs.add(PathHelper.getChildPath(it))
         }
-        ZstdHelper.packageAndCompress(
+        packageAndCompressArchive(
             outputPath = apkPath,
             callback = object : ICallback.Stub() {
                 override fun onProgress(bytesWritten: Long, speed: Long, progress: Float) {
@@ -157,7 +187,7 @@ class BackupAppsHelper(private val mBackupProcessRepo: ArchiveBackupProcessRepos
         inputArgs.add("-C")
         inputArgs.add(PathHelper.getParentPath(inputDir))
         inputArgs.add(PathHelper.getChildPath(inputDir))
-        ZstdHelper.packageAndCompress(
+        packageAndCompressArchive(
             outputPath = outputPath,
             callback = object : ICallback.Stub() {
                 override fun onProgress(bytesWritten: Long, speed: Long, progress: Float) {

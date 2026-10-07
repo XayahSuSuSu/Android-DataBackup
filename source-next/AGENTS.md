@@ -53,7 +53,13 @@ Use the Gradle wrapper from repository root:
 ## Coding Style & Naming Conventions
 - Language stack: Kotlin + Android (plus C/C++ in `native/src/main/jni`).
 - Follow Kotlin conventions: 4-space indentation, `PascalCase` for types, `camelCase` for functions/properties, package names lowercase.
+  Compose functions that emit UI use `PascalCase` noun phrases describing the displayed content.
+  Name shared UI for its full domain scope rather than a single backend or implementation.
 - Use a maximum line width of 150 characters.
+- Use braces for every `if` and `else` branch and every `for`, `while`, and `do-while` body, even for a single statement or expression.
+  Put each body's contents on separate indented lines. Exception: an `if` expression used as an assignment value (including a `val` or `var`
+  initializer) may omit braces when the entire assignment fits on one line within the 150-character limit. If the assignment spans multiple
+  lines, use braces for all branches. Keep `else if` chains in the conventional `} else if (...) {` form.
 - Keep feature classes descriptive and domain-oriented (examples: `BackupService`, `BackupConfig`, `TarWrapper`).
 - Resource naming should stay Android-standard snake_case (examples: `ic_archive_restore.xml`, `values-zh-rCN/strings.xml`).
 - Use `mFoo` for stored instance dependencies and internal held objects, `_foo` for mutable Flow backing fields, and camelCase for public
@@ -61,7 +67,20 @@ Use the Gradle wrapper from repository root:
   `private val _state = MutableStateFlow(...)`, and `val state: StateFlow<...> = _state.asStateFlow()`.
 - Give public state an explicit type and expose read-only Flow/StateFlow. Keep mutable state private and update it through named operations.
 - Use descriptive verbs: `get` for current values, `load` for loading state, `read` for raw input, `serialize`/`deserialize` for format conversion,
-  and `start`/`restore` for execution. Name boolean properties with `is`, `has`, or `can` where appropriate.
+  and `start`/`restore` for execution. Use `validate` for input validation and `toXxx` for model transformations. Name functions after their
+  operation and result rather than using bare nouns.
+- Name variables and parameters for their business meaning and role, including local variables. Consult neighboring implementations first
+  and use consistent names for the same concept. Avoid vague nouns and ambiguous abbreviations; retain established platform terminology
+  when it accurately describes the value.
+- Boolean properties, parameters, and locals must read as predicates using `is`, `has`, or `can` rather than bare nouns or adjectives.
+  Retain existing platform/API names where required.
+- Distinguish path strings from files and directories when naming filesystem values. Make each location's role clear when several
+  source, destination, or temporary locations are involved.
+- Name collections for their contents and maps for the lookup they provide. Make the mapping direction explicit when otherwise unclear.
+  Avoid names that describe only the collection implementation or omit the business meaning of its contents.
+- Keep names concise within their scope; do not repeat the enclosing class or function name unnecessarily. Short lambda parameters
+  are appropriate when unambiguous; use explicit role names for nested lambdas or multiple values of the same type. Rename all affected
+  references together and preserve behavior and serialized/platform contracts during naming-only changes.
 - Expression bodies suit simple accessors and transformations; use block bodies for multi-step operations. Prefer readable control flow over
   chained side effects. Preserve Arrow optics for nested updates and ordinary `copy` for simple updates.
 - Prefer `runCatching` over `try/catch` when behavior is equivalent and the code remains clear; use `onFailure`, `getOrElse`, or `getOrThrow`

@@ -21,19 +21,20 @@ import kotlinx.coroutines.withContext
 class RestoreRepository(
     private val mBackupConfigRepo: BackupConfigRepository,
     private val mRusticRepo: RusticRepository,
+    private val mArchiveRepo: ArchiveRepository,
     initialState: RestoreState = RestoreState(),
 ) {
     private val _state = MutableStateFlow(initialState)
     val state: StateFlow<RestoreState> = _state.asStateFlow()
     private var mPendingRequest: RestoreRequest? = null
 
-    suspend fun loadSnapshot(configUuid: String, snapshotId: String) {
+    suspend fun loadBackup(configUuid: String, snapshotId: String) {
         withContext(Dispatchers.IO) {
             if (mBackupConfigRepo.isLoaded.value.not()) mBackupConfigRepo.loadBackupConfigsFromLocal()
             val config = requireNotNull(mBackupConfigRepo.configs.value.find { it.uuidString == configUuid })
             val state = when (config.backupBackend) {
                 is BackupBackend.Rustic -> mRusticRepo.loadRestoreState(config, snapshotId)
-                is BackupBackend.Archive -> error("Archive restore is not implemented.")
+                is BackupBackend.Archive -> mArchiveRepo.loadRestoreState(config)
             }
             _state.value = state
         }

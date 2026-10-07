@@ -27,11 +27,11 @@ class RestoreViewModel(
         withLock {
             try {
                 repository.updateState(RestoreState())
-                repository.loadSnapshot(mRoute.configUuid, mRoute.snapshotId)
+                repository.loadBackup(mRoute.configUuid, mRoute.snapshotId)
             } catch (cancelled: CancellationException) {
                 throw cancelled
             } catch (error: Exception) {
-                LogHelper.e(TAG, "load", "Failed to read snapshot inventory", error)
+                LogHelper.e(TAG, "load", "Failed to read backup inventory", error)
                 repository.updateState(RestoreState(loading = false, failed = true))
             } finally {
                 mIsLoading = false

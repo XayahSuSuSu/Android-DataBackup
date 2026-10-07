@@ -26,7 +26,8 @@ import android.os.ParcelFileDescriptor
 import android.os.RemoteException
 import android.os.StatFs
 import android.os.UserManagerHidden
-import com.github.luben.zstd.ZstdOutputStream
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapter
 import com.topjohnwu.superuser.ipc.RootService
 import com.xayah.databackup.App
 import com.xayah.databackup.R
@@ -36,12 +37,18 @@ import com.xayah.databackup.database.entity.Info
 import com.xayah.databackup.database.entity.Storage
 import com.xayah.databackup.entity.restore.RestoreProgressCallback
 import com.xayah.databackup.entity.rustic.requireFullSnapshotId
+import com.xayah.databackup.parcelables.ArchiveOperationResultParcelable
 import com.xayah.databackup.parcelables.BytesParcelable
 import com.xayah.databackup.parcelables.FilePathParcelable
 import com.xayah.databackup.parcelables.StatFsParcelable
+import com.xayah.databackup.service.archive.ArchiveStreamHelper
 import com.xayah.databackup.service.restore.InstallApkHelper
 import com.xayah.databackup.service.restore.RestoreCallLogsHelper
 import com.xayah.databackup.service.restore.RestoreContactsHelper
+import com.xayah.databackup.service.restore.RestoreNetworksHelper
+import com.xayah.databackup.service.restore.archive.ArchiveRestoreAppHelper
+import com.xayah.databackup.service.restore.archive.ArchiveRestoreMessagesHelper
+import com.xayah.databackup.service.restore.archive.ArchiveRestorePaths
 import com.xayah.databackup.service.restore.rustic.RusticRestoreApkHelper
 import com.xayah.databackup.service.restore.rustic.RusticRestoreExternalDataHelper
 import com.xayah.databackup.service.restore.rustic.RusticRestoreInternalDataHelper
@@ -58,19 +65,18 @@ import com.xayah.databackup.util.PathHelper.TMP_SUFFIX
 import com.xayah.hiddenapi.castTo
 import com.xayah.libnative.NativeLib
 import com.xayah.libnative.RusticWrapper
-import com.xayah.libnative.TarWrapper
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
+import java.util.UUID
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.time.Duration.Companion.seconds
@@ -271,10 +277,6 @@ object RemoteRootService {
             return NativeLib.calculateTreeSize(path)
         }
 
-        override fun callTarCli(stdOut: String, stdErr: String, argv: Array<String>): Int {
-            return TarWrapper.callCli(stdOut, stdErr, argv)
-        }
-
         override fun getPackageSourceDir(packageName: String, userId: Int): List<String> {
             val sourceDirList = mutableListOf<String>()
             val packageInfo = mPackageManagerHidden.getPackageInfoAsUser(packageName, 0, userId)
@@ -284,23 +286,23 @@ object RemoteRootService {
             return sourceDirList
         }
 
-        override fun compress(level: Int, inputPath: String, outputPath: String, callback: ICallback?): String? {
-            runCatching {
-                FileInputStream(inputPath).use { fileInputStream ->
-                    FileOutputStream(outputPath).use { fileOutputStream ->
-                        CountingOutputStream(
-                            source = fileOutputStream,
-                            onProgress = if (callback != null) { bytesWritten, speed -> callback.onProgress(bytesWritten, speed, 0f) } else null
-                        ).use { countingOutputStream ->
-                            ZstdOutputStream(countingOutputStream, level).use { zstdOutputStream ->
-                                zstdOutputStream.setWorkers(Runtime.getRuntime().availableProcessors())
-                                fileInputStream.copyTo(zstdOutputStream)
-                            }
-                        }
-                    }
+        override fun packageAndCompressArchive(
+            outputPath: String,
+            inputArgs: Array<String>,
+            callback: ICallback?,
+        ): ArchiveOperationResultParcelable = synchronized(mLock) {
+            val workDir = File(PathHelper.getCacheDir("archive-backup", mContext.cacheDir), UUID.randomUUID().toString())
+            check(workDir.mkdir()) { "Cannot create archive working directory" }
+            val result = runCatching {
+                val (exitCode, diagnostics) = runBlocking {
+                    ArchiveStreamHelper.packageAndCompress(outputPath, workDir, callback, *inputArgs)
                 }
-            }.onFailure { return it.message }
-            return null
+                ArchiveOperationResultParcelable(exitCode, diagnostics)
+            }
+            runCatching { check(workDir.deleteRecursively()) { "Failed to remove archive working directory" } }.onFailure { error ->
+                result.exceptionOrNull()?.addSuppressed(error) ?: throw error
+            }
+            result.getOrElse { error -> throw IllegalStateException(error.message ?: "Archive backup failed", error) }
         }
 
         override fun mkdirs(path: String): Boolean {
@@ -392,6 +394,94 @@ object RemoteRootService {
             }
         }
 
+        override fun restoreArchiveApp(
+            archivePath: String,
+            packageName: String,
+            userId: Int,
+            paths: List<String>,
+        ) = synchronized(mLock) {
+            runCatching {
+                ArchiveRestorePaths.validatePackageName(packageName)
+                require(packageName != mContext.packageName) { "Cannot restore DataBackup while it is running" }
+                require(mUserManager.users.any { it.id == userId }) { "Target user does not exist" }
+                val isApkRestore = paths == listOf(PathHelper.getBackupAppsApkFilePath(archivePath, packageName))
+                val applicationInfo = if (isApkRestore) {
+                    null
+                } else {
+                    checkNotNull(mPackageManagerHidden.getPackageInfoAsUser(packageName, 0, userId).applicationInfo)
+                }
+                var seInfo: String? = null
+                if (applicationInfo != null) {
+                    check(applicationInfo.flags and ApplicationInfo.FLAG_PERSISTENT == 0) { "Cannot safely stop persistent package" }
+                    val isDeviceProtectedDataOnly = paths == listOf(PathHelper.getBackupAppsUserDeFilePath(archivePath, packageName))
+                    check(isDeviceProtectedDataOnly || mUserManager.isUserUnlocked(userId)) { "Target user storage is locked" }
+                    val applicationInfoHidden: ApplicationInfoHidden = applicationInfo.castTo()
+                    seInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        checkNotNull(applicationInfoHidden.seInfo) + applicationInfoHidden.seInfoUser.orEmpty()
+                    } else {
+                        checkNotNull(applicationInfoHidden.seinfo)
+                    }
+                    check(seInfo.isNotBlank()) { "Missing app SELinux information" }
+                    listOfNotNull(applicationInfoHidden.credentialProtectedDataDir, applicationInfo.deviceProtectedDataDir).forEach { dataDir ->
+                        val restoreDirPath = File(dataDir).canonicalPath
+                        val backupDirPath = File(archivePath).canonicalPath
+                        require(backupDirPath != restoreDirPath && !backupDirPath.startsWith("$restoreDirPath/")) {
+                            "Backup is inside the restore destination"
+                        }
+                    }
+                }
+                runBlocking {
+                    ArchiveRestoreAppHelper(mContext.cacheDir).restore(
+                        archivePath = archivePath,
+                        packageName = packageName,
+                        paths = paths,
+                        app = applicationInfo,
+                        seInfo = seInfo,
+                        installer = InstallApkHelper(mSystemContext, userId),
+                    ) { mActivityManager.forceStopPackageAsUser(packageName, userId) }
+                }
+                check(mPackageManagerHidden.getPackageInfoAsUser(packageName, 0, userId).applicationInfo != null) {
+                    "Package is not installed for target user"
+                }
+            }.getOrElse { error ->
+                if (error is CancellationException || error !is Exception) {
+                    throw error
+                }
+                throw IllegalStateException("Archive app restore failed; app data may be partially restored")
+            }
+        }
+
+        override fun restoreArchiveNetworks(
+            archivePath: String, networkIds: List<String>, callback: IRestoreCallback,
+        ): List<String> = synchronized(mLock) {
+            runCatching {
+                RestoreNetworksHelper(mWifiManager).restore(
+                    File(PathHelper.getBackupNetworksConfigFilePath(archivePath)).readText(), networkIds, callback.asProgressCallback(),
+                )
+            }.getOrElse { error ->
+                if (error is CancellationException || error !is Exception) throw error
+                throw IllegalStateException("Archive Wi-Fi restore failed; some networks may already be restored")
+            }
+        }
+
+        override fun restoreArchiveMessages(
+            archivePath: String, messageIds: List<String>, callback: IRestoreCallback,
+        ): List<String> = synchronized(mLock) {
+            runCatching {
+                val identity = clearCallingIdentity()
+                try {
+                    ArchiveRestoreMessagesHelper(mSystemContext, mContext.cacheDir).restore(
+                        archivePath, messageIds, callback.asProgressCallback(),
+                    )
+                } finally {
+                    restoreCallingIdentity(identity)
+                }
+            }.getOrElse { error ->
+                if (error is CancellationException || error !is Exception) throw error
+                throw IllegalStateException("Archive messages restore failed; some messages may already be restored")
+            }
+        }
+
         override fun checkRusticRepository(repositoryPath: String, password: String) {
             RusticWrapper.checkRepository(repositoryPath, password)
         }
@@ -459,9 +549,9 @@ object RemoteRootService {
                 require(sourceUserId >= 0) { "Invalid source user" }
                 // Map backed-up external data paths to their storage kind (data, obb, media).
                 val sources = mapOf(
-                    "data" to PathHelper.getAppDataDir(sourceUserId, packageName),
-                    "obb" to PathHelper.getAppObbDir(sourceUserId, packageName),
-                    "media" to PathHelper.getAppMediaDir(sourceUserId, packageName),
+                    PathHelper.EXTERNAL_DATA_DIR_NAME to PathHelper.getAppDataDir(sourceUserId, packageName),
+                    PathHelper.EXTERNAL_OBB_DIR_NAME to PathHelper.getAppObbDir(sourceUserId, packageName),
+                    PathHelper.EXTERNAL_MEDIA_DIR_NAME to PathHelper.getAppMediaDir(sourceUserId, packageName),
                 ).filterValues { it in externalDataPaths }
                 require(
                     externalDataPaths.isNotEmpty() && externalDataPaths.size == externalDataPaths.toSet().size &&
@@ -474,11 +564,15 @@ object RemoteRootService {
                 }
                 check(app.flags and ApplicationInfo.FLAG_PERSISTENT == 0) { "Cannot safely stop persistent package: $packageName" }
                 check(mUserManager.isUserUnlocked(userId)) { "Target user external storage is locked: $userId" }
-                RusticRestoreExternalDataHelper().restore(repositoryPath, password, snapshotId, app, sources) {
-                    mActivityManager.forceStopPackageAsUser(packageName, userId)
+                runBlocking {
+                    RusticRestoreExternalDataHelper().restore(repositoryPath, password, snapshotId, app, sources) {
+                        mActivityManager.forceStopPackageAsUser(packageName, userId)
+                    }
                 }
             }.getOrElse { e ->
-                if (e !is Exception) throw e
+                if (e is CancellationException || e !is Exception) {
+                    throw e
+                }
                 throw IllegalStateException(e.message ?: "External data restore failed", e)
             }
         }
@@ -516,11 +610,15 @@ object RemoteRootService {
                     checkNotNull(applicationInfoHidden.seinfo)
                 }
                 check(seInfo.isNotBlank()) { "Missing app SELinux information" }
-                RusticRestoreInternalDataHelper().restore(repositoryPath, password, snapshotId, app, seInfo, sources) {
-                    mActivityManager.forceStopPackageAsUser(packageName, userId)
+                runBlocking {
+                    RusticRestoreInternalDataHelper().restore(repositoryPath, password, snapshotId, app, seInfo, sources) {
+                        mActivityManager.forceStopPackageAsUser(packageName, userId)
+                    }
                 }
             }.getOrElse { e ->
-                if (e !is Exception) throw e
+                if (e is CancellationException || e !is Exception) {
+                    throw e
+                }
                 // Wrap failures in a supported exception type so Binder can report them to the caller.
                 throw IllegalStateException(e.message ?: "Internal data restore failed", e)
             }
@@ -713,16 +811,16 @@ object RemoteRootService {
         return getService()?.calculateTreeSize(path) ?: 0
     }
 
-    suspend fun callTarCli(stdOut: String, stdErr: String, argv: Array<String>): Int {
-        return getService()?.callTarCli(stdOut, stdErr, argv) ?: -1
-    }
-
     suspend fun getPackageSourceDir(packageName: String, userId: Int): List<String> {
         return getService()?.getPackageSourceDir(packageName, userId) ?: listOf()
     }
 
-    suspend fun compress(level: Int, inputPath: String, outputPath: String, callback: ICallback?): String? {
-        return getService()?.compress(level, inputPath, outputPath, callback)
+    suspend fun packageAndCompressArchive(
+        outputPath: String,
+        inputArgs: Array<String>,
+        callback: ICallback?,
+    ): ArchiveOperationResultParcelable = withContext(Dispatchers.IO) {
+        checkNotNull(getService()) { "Root service is unavailable" }.packageAndCompressArchive(outputPath, inputArgs, callback)
     }
 
     suspend fun mkdirs(path: String): Boolean {
@@ -981,4 +1079,41 @@ object RemoteRootService {
         val service = checkNotNull(getService()) { "Root service is unavailable" }
         service.restoreRusticAppExternalData(repositoryPath, password, snapshotId, packageName, userId, sourceUserId, externalDataPaths)
     }
+
+    suspend fun restoreArchiveApp(archivePath: String, packageName: String, userId: Int, paths: List<String>) = withContext(Dispatchers.IO) {
+        checkNotNull(getService()) { "Root service is unavailable" }.restoreArchiveApp(archivePath, packageName, userId, paths)
+    }
+
+    internal suspend fun restoreArchiveNetworks(archivePath: String, ids: List<String>, callback: RestoreProgressCallback): List<String> =
+        withContext(Dispatchers.IO) {
+            checkNotNull(getService()) { "Root service is unavailable" }.restoreArchiveNetworks(archivePath, ids, callback.asBinderCallback())
+        }
+
+    internal suspend fun restoreArchiveMessages(archivePath: String, ids: List<String>, callback: RestoreProgressCallback): List<String> =
+        withContext(Dispatchers.IO) {
+            checkNotNull(getService()) { "Root service is unavailable" }.restoreArchiveMessages(archivePath, ids, callback.asBinderCallback())
+        }
+
+    internal suspend fun restoreArchiveContacts(archivePath: String, ids: List<String>, callback: RestoreProgressCallback): List<String> =
+        withContext(Dispatchers.IO) {
+            check(App.application.checkSelfPermission(Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+                "Contacts restore requires WRITE_CONTACTS permission"
+            }
+            val path = PathHelper.getBackupContactsConfigFilePath(archivePath)
+            val serialized = Moshi.Builder().build().adapter<Map<String, String>>().toJson(mapOf(path to readText(path)))
+            RestoreContactsHelper(App.application.contentResolver).restore(serialized, path, ids, callback)
+        }
+
+    internal suspend fun restoreArchiveCallLogs(archivePath: String, ids: List<String>, callback: RestoreProgressCallback): List<String> =
+        withContext(Dispatchers.IO) {
+            check(
+                listOf(
+                    Manifest.permission.READ_CALL_LOG,
+                    Manifest.permission.WRITE_CALL_LOG
+                ).all { App.application.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED }
+            ) { "Call logs restore requires READ_CALL_LOG and WRITE_CALL_LOG permissions" }
+            val path = PathHelper.getBackupCallLogsConfigFilePath(archivePath)
+            val serialized = Moshi.Builder().build().adapter<Map<String, String>>().toJson(mapOf(path to readText(path)))
+            RestoreCallLogsHelper(App.application.contentResolver).restore(serialized, path, ids, callback)
+        }
 }

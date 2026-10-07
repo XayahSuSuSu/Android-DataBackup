@@ -15,7 +15,12 @@ object PathHelper {
 
     const val TMP_PARCEL_PREFIX = "databackup-parcel-"
     const val TMP_FIFO_PREFIX = "databackup-fifo-"
+    const val TMP_STDERR_PREFIX = "databackup-stderr-"
     const val TMP_SUFFIX = ".tmp"
+
+    const val EXTERNAL_DATA_DIR_NAME = "data"
+    const val EXTERNAL_OBB_DIR_NAME = "obb"
+    const val EXTERNAL_MEDIA_DIR_NAME = "media"
 
     const val DEFAULT_BACKUP_PATH = "/storage/emulated/0/DataBackup"
 
@@ -66,11 +71,12 @@ object PathHelper {
 
     fun getAppUserDir(userId: Int, packageName: String): String = "/data/user/$userId/$packageName"
     fun getAppUserDeDir(userId: Int, packageName: String): String = "/data/user_de/$userId/$packageName"
-    fun getAppDataDir(userId: Int, packageName: String): String = "/data/media/${userId}/Android/data/$packageName"
-    fun getAppObbDir(userId: Int, packageName: String): String = "/data/media/${userId}/Android/obb/$packageName"
-    fun getAppMediaDir(userId: Int, packageName: String): String = "/data/media/${userId}/Android/media/$packageName"
+    fun getAppDataDir(userId: Int, packageName: String): String = "/data/media/${userId}/Android/$EXTERNAL_DATA_DIR_NAME/$packageName"
+    fun getAppObbDir(userId: Int, packageName: String): String = "/data/media/${userId}/Android/$EXTERNAL_OBB_DIR_NAME/$packageName"
+    fun getAppMediaDir(userId: Int, packageName: String): String = "/data/media/${userId}/Android/$EXTERNAL_MEDIA_DIR_NAME/$packageName"
 
     fun getBackupConfigFile(parent: String): String = "$parent/$CONFIG_FILE_SUFFIX"
+    fun getBackupAppsDir(parent: String): String = "$parent/$SUBDIR_APPS"
     fun getBackupAppsApkDir(parent: String, packageName: String): String = "$parent/$SUBDIR_APPS/$packageName/$SUBDIR_APK"
     fun getBackupAppsIntDataDir(parent: String, packageName: String): String = "$parent/$SUBDIR_APPS/$packageName/$SUBDIR_INT_DATA"
     fun getBackupAppsExtDataDir(parent: String, packageName: String): String = "$parent/$SUBDIR_APPS/$packageName/$SUBDIR_EXT_DATA"

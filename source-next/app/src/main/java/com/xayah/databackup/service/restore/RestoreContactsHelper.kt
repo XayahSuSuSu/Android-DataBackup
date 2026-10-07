@@ -18,7 +18,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 
 /**
- * Restores contact records read from a Rustic snapshot through Contacts Provider without rolling back earlier imports.
+ * Restores contact records read from backup metadata through Contacts Provider without rolling back earlier imports.
  * The caller must provide the snapshot metadata and an app ContentResolver with WRITE_CONTACTS permission.
  * Inserts local contacts in the app's current user, with each raw contact and its data rows in one transaction.
  * Links data rows to newly allocated raw contact IDs without overwriting existing contacts.

@@ -8,6 +8,7 @@ import coil3.annotation.ExperimentalCoilApi
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import com.xayah.databackup.data.AppRepository
 import com.xayah.databackup.data.ArchiveBackupProcessRepository
+import com.xayah.databackup.data.ArchiveRepository
 import com.xayah.databackup.data.BackupConfigRepository
 import com.xayah.databackup.data.BackupSelectionRepository
 import com.xayah.databackup.data.CallLogRepository
@@ -46,14 +47,13 @@ import com.xayah.databackup.service.backup.archive.BackupContactsHelper
 import com.xayah.databackup.service.backup.archive.BackupMessagesHelper
 import com.xayah.databackup.service.backup.archive.BackupNetworksHelper
 import com.xayah.databackup.service.backup.rustic.RusticBackupSourceHelper
-import com.xayah.databackup.service.restore.RestoreHelper
+import com.xayah.databackup.service.restore.archive.ArchiveRestoreHelper
 import com.xayah.databackup.service.restore.rustic.RusticRestoreHelper
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
-import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -69,7 +69,7 @@ class App : Application(), SingletonImageLoader.Factory {
     }
 
     private val mAppModule = module {
-        factory { RestoreRepository(get(), get()) }
+        factory { RestoreRepository(get(), get(), get()) }
 
         singleOf(::BackupConfigRepository)
         singleOf(::AppRepository)
@@ -92,9 +92,12 @@ class App : Application(), SingletonImageLoader.Factory {
         singleOf(::BackupSelectionRepository)
         singleOf(::RusticBackupSourceHelper)
         singleOf(::RusticBackupProcessRepository)
-        singleOf(::RestoreProcessRepository)
 
-        singleOf(::RusticRestoreHelper) { bind<RestoreHelper>() }
+        single { RestoreProcessRepository(get<RusticRestoreHelper>(), get<ArchiveRestoreHelper>()) }
+
+        singleOf(::RusticRestoreHelper)
+        singleOf(::ArchiveRestoreHelper)
+        singleOf(::ArchiveRepository)
 
         viewModelOf(::DashboardViewModel)
         viewModelOf(::BackupSetupViewModel)

@@ -30,12 +30,16 @@ class RusticRepository {
             val manifestFiles = readSnapshotTextFiles(repository, backend.password, snapshot.id, listOf(manifestPath))
             val manifest = reader.deserializeManifest(manifestFiles.getValue(manifestPath))
             val paths = reader.getStructuredPaths(manifest)
-            val files = if (paths.isEmpty()) emptyMap() else readSnapshotTextFiles(
-                repositoryPath = repository,
-                password = backend.password,
-                snapshotId = snapshot.id,
-                paths = paths.map(PathHelper::getRusticSnapshotMetadataFilePath),
-            ).mapKeys { (path, _) -> path.removePrefix("${PathHelper.getRusticSnapshotMetadataDir()}/") }
+            val files = if (paths.isEmpty()) {
+                emptyMap()
+            } else {
+                readSnapshotTextFiles(
+                    repositoryPath = repository,
+                    password = backend.password,
+                    snapshotId = snapshot.id,
+                    paths = paths.map(PathHelper::getRusticSnapshotMetadataFilePath),
+                ).mapKeys { (path, _) -> path.removePrefix("${PathHelper.getRusticSnapshotMetadataDir()}/") }
+            }
             val inventory = reader.deserializeInventory(manifest, files)
             RestoreState(
                 loading = false,
