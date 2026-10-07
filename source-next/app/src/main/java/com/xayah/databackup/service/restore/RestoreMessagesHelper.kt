@@ -5,7 +5,9 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.ContextWrapper
 import android.net.Uri
+import android.os.Build
 import android.provider.Telephony
+import android.provider.TelephonyHidden.ReadRestriction
 import android.security.keystore.KeyProperties
 import android.system.Os
 import android.system.OsConstants
@@ -45,6 +47,14 @@ internal class RestoreMessagesHelper(context: Context, private val mCacheDir: Fi
         override fun getContentResolver() = mResolver
     }
 
+    // Android 17 providers may not expose "restricted". Check that the column exists
+    // before using it in queries or writes to avoid an unknown-column error.
+    private val mHasReadRestriction: Boolean by lazy {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN && checkNotNull(
+            mResolver.query(Telephony.Sms.CONTENT_URI, null, "${Telephony.Sms._ID} = -1", null, null)
+        ) { "Message restriction query failed" }.use { it.getColumnIndex(ReadRestriction.RESTRICTED) >= 0 }
+    }
+
     @WorkerThread
     fun restore(
         prepared: MessageRestorePreparer.PreparedMessages,
@@ -73,10 +83,11 @@ internal class RestoreMessagesHelper(context: Context, private val mCacheDir: Fi
             mResolver.allowTemporaryMessageWrites().use {
                 prepared.sms.forEach { (id, record) ->
                     val result = restoreRecord(id, callback) {
-                        if (smsExists(record.values)) {
-                            true
+                        val existingUri = findExistingSms(record.values)
+                        if (existingUri != null) {
+                            !restoreReadAccess(existingUri, record.values)
                         } else {
-                            val values = contentValues(record.values)
+                            val values = toMessageContentValues(record.values)
                             val address = (record.values[Telephony.Sms.ADDRESS] as String).ifBlank { MessageRestorePreparer.UNKNOWN_SENDER }
                             values.put(Telephony.Sms.THREAD_ID, getOrCreateThreadId(setOf(address)))
                             val inserted = checkNotNull(mResolver.insert(Telephony.Sms.CONTENT_URI, values)) { "SMS insertion failed" }
@@ -96,8 +107,9 @@ internal class RestoreMessagesHelper(context: Context, private val mCacheDir: Fi
                             check(OsConstants.S_ISREG(Os.lstat(file.path).st_mode)) { "MMS attachment is not a regular file" }
                             path to file
                         }.toMap()
-                        if (mmsExists(record, attachments)) {
-                            true
+                        val existingUri = findExistingMms(record, attachments)
+                        if (existingUri != null) {
+                            !restoreReadAccess(existingUri, record.values)
                         } else {
                             insertMms(record, attachments)
                             false
@@ -123,7 +135,7 @@ internal class RestoreMessagesHelper(context: Context, private val mCacheDir: Fi
     private fun getOrCreateThreadId(recipients: Set<String>): Long =
         Telephony.Threads.getOrCreateThreadId(mConversationContext, recipients.ifEmpty { setOf(MessageRestorePreparer.UNKNOWN_SENDER) })
 
-    private fun smsExists(values: FieldMap): Boolean {
+    private fun findExistingSms(values: FieldMap): Uri? {
         // Compare address and type as well as date and body to avoid treating messages
         // with different senders, recipients or message types as duplicates.
         val columns = listOf(Telephony.Sms.DATE, Telephony.Sms.BODY, Telephony.Sms.ADDRESS, Telephony.Sms.TYPE)
@@ -132,10 +144,16 @@ internal class RestoreMessagesHelper(context: Context, private val mCacheDir: Fi
                 Telephony.Sms.CONTENT_URI, arrayOf(Telephony.Sms._ID), columns.joinToString(" AND ") { "$it = ?" },
                 columns.map { values.getValue(it).toString() }.toTypedArray(), null
             )
-        ) { "SMS duplicate query failed" }.use { it.moveToFirst() }
+        ) { "SMS duplicate query failed" }.use { cursor ->
+            if (cursor.moveToFirst()) {
+                ContentUris.withAppendedId(Telephony.Sms.CONTENT_URI, cursor.getLong(0))
+            } else {
+                null
+            }
+        }
     }
 
-    private fun mmsExists(record: MmsRecord, attachments: Map<String, File>): Boolean {
+    private fun findExistingMms(record: MmsRecord, attachments: Map<String, File>): Uri? {
         // Compare addresses, part metadata and attachment hashes to distinguish MMS messages
         // with the same date and text but different recipients or attachments.
         checkNotNull(
@@ -196,10 +214,12 @@ internal class RestoreMessagesHelper(context: Context, private val mCacheDir: Fi
                     }
                     if (match < 0) false else { parts.removeAt(match); true }
                 }
-                if (matches) return true
+                if (matches) {
+                    return uri
+                }
             }
         }
-        return false
+        return null
     }
 
     private fun insertMms(record: MmsRecord, attachments: Map<String, File>) {
@@ -214,7 +234,7 @@ internal class RestoreMessagesHelper(context: Context, private val mCacheDir: Fi
         )
         var messageUri: Uri? = null
         runCatching {
-            val values = contentValues(record.values)
+            val values = toMessageContentValues(record.values)
             values.put(Telephony.Mms.THREAD_ID, getOrCreateThreadId(MessageRestorePreparer.recipients(record)))
             record.parts.forEach { part ->
                 val partUri = checkNotNull(mResolver.insert(partsUri, contentValues(part.values))) { "MMS part insertion failed" }
@@ -246,6 +266,40 @@ internal class RestoreMessagesHelper(context: Context, private val mCacheDir: Fi
             LogHelper.e(TAG, "insertMms", "", failure)
             throw IllegalStateException("MMS restore failed; some messages may already have been restored")
         }
+    }
+
+    private fun toMessageContentValues(fields: FieldMap): ContentValues = contentValues(fields).apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            if (mHasReadRestriction) {
+                // Explicit false avoids A17's default restriction for non-default SMS writers.
+                put(ReadRestriction.RESTRICTED, fields[ReadRestriction.RESTRICTED] as? Long ?: 0L)
+            } else {
+                remove(ReadRestriction.RESTRICTED)
+            }
+        }
+    }
+
+    private fun restoreReadAccess(uri: Uri, fields: FieldMap): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN) {
+            return false
+        }
+        if (!mHasReadRestriction || fields[ReadRestriction.RESTRICTED] == 1L) {
+            return false
+        }
+        val canRepair = checkNotNull(
+            mResolver.query(uri, arrayOf(Telephony.Sms.CREATOR, ReadRestriction.RESTRICTED), null, null, null)
+        ) { "Message restriction query failed" }.use { cursor ->
+            cursor.moveToFirst() && cursor.getString(0) == RootContentResolver.ROOT_PACKAGE && cursor.getInt(1) != 0
+        }
+        if (!canRepair) {
+            return false
+        }
+        // Follow Telephony.ReadRestriction.unrestrictMessage: update one URI through the provider,
+        // which maintains thread/address restrictions too. Never write the internal read_restriction bitmask.
+        // https://cs.android.com/android/platform/superproject/+/android-17.0.0_r1:frameworks/base/core/java/android/provider/Telephony.java
+        val values = ContentValues().apply { put(ReadRestriction.RESTRICTED, false) }
+        check(mResolver.update(uri, values, null, null) == 1) { "Message read access repair failed" }
+        return true
     }
 
     private fun queryRows(uri: Uri, columns: List<String>): List<FieldMap> =

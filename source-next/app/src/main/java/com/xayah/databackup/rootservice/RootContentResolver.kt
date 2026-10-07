@@ -127,15 +127,15 @@ internal class RootContentResolver(context: Context) : ContentResolverHidden(
         override fun getAttributionSource(): AttributionSource = AttributionSource.Builder(Process.myUid()).setPackageName(ROOT_PACKAGE).build()
     }
 
-    private companion object {
-        val supportedAuthorities = setOf(
+    companion object {
+        private val supportedAuthorities = setOf(
             Telephony.Sms.CONTENT_URI.authority,
             Telephony.Mms.CONTENT_URI.authority,
             Telephony.MmsSms.CONTENT_URI.authority,
         )
 
         // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/base/services/core/java/com/android/server/AppOpsService.java;l=2280
-        const val ROOT_UID = 0
+        private const val ROOT_UID = 0
 
         // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/base/services/core/java/com/android/server/AppOpsService.java;l=2280
         const val ROOT_PACKAGE = "root"
