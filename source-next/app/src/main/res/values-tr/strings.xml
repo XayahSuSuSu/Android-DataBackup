@@ -549,7 +549,7 @@
     <string name="restore_snapshot_description">%1$s (%2$s) görüntüsünü yükle</string>
     <string name="restore_snapshot_load_failed">Anlık görüntü yüklenemedi</string>
     <string name="restore_session_expired">Geri yükleme görevi artık kullanılamıyor. Anlık görüntüyü tekrar seçin.</string>
-    <string name="restore_cancel_description">Geri yükleme durdurulsun mu? Geri yüklenen veriler korunacaktır.</string>
+    <string name="restore_cancel_description">Geri yükleme şimdi durdurulsun mu? Geri yüklenen veriler saklanacaktır. Mevcut öge yalnızca kısmen geri yüklenmiş olabilir.</string>
     <string name="restore_process_failed">Geri yükleme işlemi beklenmeyen bir şekilde durdu. Bazı veriler zaten geri yüklenmiş olabilir.</string>
     <string name="restore_finished_with_errors">Geri yükleme işlemi hatalarla sonuçlandı</string>
     <string name="restore_result_restored">Geri yüklendi</string>
@@ -557,4 +557,11 @@
     <string name="restore_result_not_processed">İşlenmedi</string>
     <string name="restore_skipped_count">%1$s · %2$d atlandı</string>
     <string name="restore_result_counts">%1$s · %2$d başarısız· %3$d atlandı</string>
+    <string name="backup_interrupted">Yedekleme kesintiye uğradı</string>
+    <string name="backup_partial_failure">Bazı yedekleme ögeleri başarısız oldu veya işlenmedi</string>
+    <string name="backup_start_failed">Yedekleme başlatılamadı</string>
+    <string name="restore_interrupted">Geri yükleme kesintiye uğradı</string>
+    <string name="restore_background_description">Geri yükleme arka planda devam edecek. İlerlemeyi görmek için bildirimi açın.</string>
+    <string name="backup_restore_busy">Bir yedekleme veya geri yükleme işlemi devam ediyor ya da durduruluyor. Başka bir işlem başlatmadan önce tamamlanmasını bekleyin.</string>
+    <string name="view_active_task">Mevcut görevi görüntüle</string>
 </resources>
