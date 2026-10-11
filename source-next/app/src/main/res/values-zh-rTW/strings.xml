@@ -557,4 +557,7 @@
     <string name="restore_result_not_processed">未執行</string>
     <string name="restore_skipped_count">%1$s · 跳過 %2$d 項</string>
     <string name="restore_result_counts">%1$s · 失敗 %2$d 項 · 跳過 %3$d 項</string>
+    <string name="backup_interrupted">備份已中斷</string>
+    <string name="backup_partial_failure">部分備份項目失敗或未處理</string>
+    <string name="backup_start_failed">無法啟動備份</string>
 </resources>

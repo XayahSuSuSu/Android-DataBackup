@@ -104,7 +104,7 @@ internal class RestoreExternalDataHelper {
         // same unless mounted with unshared_obb (AOSP enables it starting with Android 10).
         // See https://cs.android.com/android/platform/superproject/+/android-10.0.0_r1:system/vold/model/EmulatedVolume.cpp
         val sharedObb = !useVold && (runtimeMount?.get(MOUNT_TYPE_INDEX) == FILESYSTEM_FUSE ||
-                MOUNT_OPTION_UNSHARED_OBB !in runtimeMount!![MOUNT_OPTIONS_INDEX].split(','))
+                MOUNT_OPTION_UNSHARED_OBB !in checkNotNull(runtimeMount)[MOUNT_OPTIONS_INDEX].split(','))
         val repository = File(repositoryPath).canonicalPath
         val plan = sources.map { (kind, source) ->
             val relative = "$ANDROID_DIRECTORY/$kind/${app.packageName}"
@@ -163,7 +163,8 @@ internal class RestoreExternalDataHelper {
 
     private fun validateDestination(volume: File, target: File) {
         // Missing Android/category directories will be prepared by the storage service/filesystem.
-        listOf(File(volume, ANDROID_DIRECTORY), target.parentFile!!).forEach { ancestor ->
+        val parentDir = checkNotNull(target.parentFile) { "External data destination has no parent: $target" }
+        listOf(File(volume, ANDROID_DIRECTORY), parentDir).forEach { ancestor ->
             statOrNull(ancestor)?.let {
                 check(OsConstants.S_ISDIR(it.st_mode)) { "Invalid external storage ancestor: $ancestor" }
             }

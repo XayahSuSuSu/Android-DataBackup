@@ -4,12 +4,11 @@ import android.app.Application
 import android.content.Context
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
-import coil3.annotation.ExperimentalCoilApi
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import com.xayah.databackup.data.AppRepository
-import com.xayah.databackup.data.ArchiveBackupProcessRepository
 import com.xayah.databackup.data.ArchiveRepository
 import com.xayah.databackup.data.BackupConfigRepository
+import com.xayah.databackup.data.BackupProcessRepository
 import com.xayah.databackup.data.BackupSelectionRepository
 import com.xayah.databackup.data.CallLogRepository
 import com.xayah.databackup.data.ContactRepository
@@ -19,7 +18,6 @@ import com.xayah.databackup.data.MessageRepository
 import com.xayah.databackup.data.NetworkRepository
 import com.xayah.databackup.data.RestoreProcessRepository
 import com.xayah.databackup.data.RestoreRepository
-import com.xayah.databackup.data.RusticBackupProcessRepository
 import com.xayah.databackup.data.RusticRepository
 import com.xayah.databackup.data.TranslatorRepository
 import com.xayah.databackup.feature.about.TranslatorsViewModel
@@ -40,12 +38,12 @@ import com.xayah.databackup.feature.restore.RestoreSetupViewModel
 import com.xayah.databackup.feature.restore.RestoreViewModel
 import com.xayah.databackup.feature.update.UpdatesViewModel
 import com.xayah.databackup.service.backup.BackupAppSourceHelper
+import com.xayah.databackup.service.backup.BackupMetadataHelper
+import com.xayah.databackup.service.backup.BackupMmsSourceHelper
 import com.xayah.databackup.service.backup.BackupSerializationHelper
-import com.xayah.databackup.service.backup.archive.BackupAppsHelper
-import com.xayah.databackup.service.backup.archive.BackupCallLogsHelper
-import com.xayah.databackup.service.backup.archive.BackupContactsHelper
-import com.xayah.databackup.service.backup.archive.BackupMessagesHelper
-import com.xayah.databackup.service.backup.archive.BackupNetworksHelper
+import com.xayah.databackup.service.backup.archive.ArchiveBackupAppsHelper
+import com.xayah.databackup.service.backup.archive.ArchiveBackupHelper
+import com.xayah.databackup.service.backup.rustic.RusticBackupHelper
 import com.xayah.databackup.service.backup.rustic.RusticBackupSourceHelper
 import com.xayah.databackup.service.restore.archive.ArchiveRestoreHelper
 import com.xayah.databackup.service.restore.rustic.RusticRestoreHelper
@@ -55,6 +53,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import com.xayah.databackup.feature.restore.apps.AppsViewModel as RestoreAppsViewModel
@@ -69,43 +68,56 @@ class App : Application(), SingletonImageLoader.Factory {
     }
 
     private val mAppModule = module {
-        factory { RestoreRepository(get(), get(), get()) }
-
-        singleOf(::BackupConfigRepository)
+        // Shared data repositories
         singleOf(::AppRepository)
         singleOf(::FileRepository)
         singleOf(::NetworkRepository)
         singleOf(::ContactRepository)
         singleOf(::CallLogRepository)
         singleOf(::MessageRepository)
-        singleOf(::ArchiveBackupProcessRepository)
+        singleOf(::ArchiveRepository)
+        singleOf(::RusticRepository)
         singleOf(::GitHubReleaseRepository)
         singleOf(::TranslatorRepository)
-        singleOf(::BackupAppsHelper)
-        singleOf(::BackupNetworksHelper)
-        singleOf(::BackupContactsHelper)
-        singleOf(::BackupCallLogsHelper)
-        singleOf(::BackupMessagesHelper)
-        singleOf(::BackupAppSourceHelper)
-        singleOf(::BackupSerializationHelper)
-        singleOf(::RusticRepository)
+
+        // Backup configuration and selection
+        singleOf(::BackupConfigRepository)
         singleOf(::BackupSelectionRepository)
+
+        // Shared backup operations
+        singleOf(::BackupAppSourceHelper)
+        singleOf(::BackupMmsSourceHelper)
+        singleOf(::BackupSerializationHelper)
+        singleOf(::BackupMetadataHelper)
+
+        // Backup backends and execution
+        singleOf(::ArchiveBackupAppsHelper)
+        singleOf(::ArchiveBackupHelper)
         singleOf(::RusticBackupSourceHelper)
-        singleOf(::RusticBackupProcessRepository)
+        singleOf(::RusticBackupHelper)
+        single { BackupProcessRepository(get<ArchiveBackupHelper>(), get<RusticBackupHelper>(), get()) }
 
-        single { RestoreProcessRepository(get<RusticRestoreHelper>(), get<ArchiveRestoreHelper>()) }
-
-        singleOf(::RusticRestoreHelper)
+        // Restore backends and execution
         singleOf(::ArchiveRestoreHelper)
-        singleOf(::ArchiveRepository)
+        singleOf(::RusticRestoreHelper)
+        single { RestoreProcessRepository(get<RusticRestoreHelper>(), get<ArchiveRestoreHelper>()) }
+        // Each restore navigation entry owns its selection and pending request.
+        factory { RestoreRepository(get(), get(), get()) }
 
-        viewModelOf(::DashboardViewModel)
-        viewModelOf(::BackupSetupViewModel)
+        // Backup screens
         viewModelOf(::BackupLibraryViewModel)
         viewModelOf(::NewBackupViewModel)
-        viewModelOf(::BackupProcessViewModel)
-        viewModelOf(::RusticBackupProcessViewModel)
         viewModelOf(::BackupConfigViewModel)
+        viewModelOf(::BackupSetupViewModel)
+        viewModelOf(::AppsViewModel)
+        viewModelOf(::NetworksViewModel)
+        viewModelOf(::ContactsViewModel)
+        viewModelOf(::CallLogsViewModel)
+        viewModelOf(::MessagesViewModel)
+        viewModel { parameters -> BackupProcessViewModel(get(), parameters.get()) }
+        viewModel { parameters -> RusticBackupProcessViewModel(get(), parameters.get()) }
+
+        // Restore screens
         viewModelOf(::RestoreViewModel)
         viewModelOf(::RestoreAppsViewModel)
         viewModelOf(::RestoreNetworksViewModel)
@@ -114,11 +126,9 @@ class App : Application(), SingletonImageLoader.Factory {
         viewModelOf(::RestoreMessagesViewModel)
         viewModelOf(::RestoreSetupViewModel)
         viewModelOf(::RestoreProcessViewModel)
-        viewModelOf(::AppsViewModel)
-        viewModelOf(::NetworksViewModel)
-        viewModelOf(::ContactsViewModel)
-        viewModelOf(::CallLogsViewModel)
-        viewModelOf(::MessagesViewModel)
+
+        // Dashboard, updates and about screens
+        viewModelOf(::DashboardViewModel)
         viewModelOf(::UpdatesViewModel)
         viewModelOf(::TranslatorsViewModel)
     }
@@ -134,7 +144,6 @@ class App : Application(), SingletonImageLoader.Factory {
         }
     }
 
-    @OptIn(ExperimentalCoilApi::class)
     override fun newImageLoader(context: Context): ImageLoader {
         return ImageLoader.Builder(context)
             .components {

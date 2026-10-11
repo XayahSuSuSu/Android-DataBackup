@@ -133,6 +133,8 @@ kotlin {
             "-XXLanguage:+PropertyParamAnnotationDefaultTargetMode",
             "-opt-in=com.google.accompanist.permissions.ExperimentalPermissionsApi",
             "-opt-in=androidx.compose.material3.ExperimentalMaterial3ExpressiveApi",
+            "-opt-in=kotlinx.coroutines.FlowPreview",
+            "-opt-in=coil3.annotation.ExperimentalCoilApi",
         )
     }
 }

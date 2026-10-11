@@ -100,6 +100,10 @@ class RusticRepository {
         tags: List<String>,
         onProgress: (Long, Long, Float) -> Unit,
     ): String {
+        val cachePath = PathHelper.getRusticSnapshotsCacheFile(PathHelper.getParentPath(repositoryPath))
+        if (RemoteRootService.exists(cachePath)) {
+            check(RemoteRootService.deleteRecursively(cachePath)) { "Failed to invalidate snapshot cache" }
+        }
         return RemoteRootService.createRusticSnapshot(
             repositoryPath = repositoryPath,
             password = password,

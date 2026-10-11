@@ -8,6 +8,8 @@ import com.xayah.databackup.R
 import com.xayah.databackup.util.TimeHelper
 import kotlin.uuid.Uuid
 
+enum class BackupBackendType { Archive, Rustic }
+
 sealed class BackupBackend {
     @JsonClass(generateAdapter = true)
     data class Rustic(
@@ -50,11 +52,6 @@ data class BackupConfig(
             TimeHelper.formatTimestampInShort(updatedAt)
         } else {
             App.application.getString(R.string.unknown)
-        }
-
-    val displayTitle: String
-        get() = name.ifEmpty {
-            displayCreatedAt
         }
 
     val displayName: String

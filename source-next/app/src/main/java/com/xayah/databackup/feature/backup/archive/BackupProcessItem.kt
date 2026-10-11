@@ -1,4 +1,4 @@
-package com.xayah.databackup.entity.backup
+package com.xayah.databackup.feature.backup.archive
 
 import androidx.annotation.FloatRange
 import arrow.optics.optics

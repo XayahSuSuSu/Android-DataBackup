@@ -57,12 +57,11 @@ import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.formatToStorageSize
 import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.Dispatchers
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun RusticBackupProcessScreen(
     navigator: Navigator,
-    viewModel: RusticBackupProcessViewModel = koinViewModel(),
+    viewModel: RusticBackupProcessViewModel,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -76,9 +75,6 @@ fun RusticBackupProcessScreen(
     }
     BackHandler(onBack = leave)
 
-    LaunchedEffect(context = Dispatchers.IO, null) {
-        viewModel.loadProcessItems()
-    }
     LaunchedEffect(context = Dispatchers.Default, showRepositoryInfo, uiState.status) {
         if (showRepositoryInfo) viewModel.refreshRepositoryStorage()
     }

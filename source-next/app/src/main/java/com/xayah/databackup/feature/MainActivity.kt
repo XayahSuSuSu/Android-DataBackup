@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -26,6 +27,8 @@ import androidx.navigation3.ui.NavDisplay
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.R
+import com.xayah.databackup.data.BackupProcessRepository
+import com.xayah.databackup.entity.BackupBackendType
 import com.xayah.databackup.feature.about.AboutScreen
 import com.xayah.databackup.feature.about.TranslatorsScreen
 import com.xayah.databackup.feature.backup.BackupConfigScreen
@@ -44,6 +47,7 @@ import com.xayah.databackup.feature.restore.RestoreViewModel
 import com.xayah.databackup.feature.setup.NoPermKey
 import com.xayah.databackup.feature.setup.SetupActivity
 import com.xayah.databackup.feature.update.UpdatesScreen
+import com.xayah.databackup.service.BackupService
 import com.xayah.databackup.ui.component.DataBackupDialog
 import com.xayah.databackup.ui.component.DialogDestructiveButton
 import com.xayah.databackup.ui.component.DialogDismissButton
@@ -60,9 +64,11 @@ import com.xayah.databackup.util.ShellHelper
 import com.xayah.databackup.util.preloadingDataStore
 import com.xayah.databackup.util.readBoolean
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.koin.android.ext.android.inject
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -105,6 +111,21 @@ class MainActivity : ComponentActivity() {
     }
 
     private lateinit var mMainViewModel: MainViewModel
+    private val mBackupProcessRepo: BackupProcessRepository by inject()
+    private val _backupTaskId = MutableStateFlow<String?>(null)
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        loadBackupTask(intent)
+    }
+
+    private fun loadBackupTask(intent: Intent) {
+        val requestedId = intent.getStringExtra(BackupService.EXTRA_TASK_ID)
+        val requestedState = requestedId?.let { mBackupProcessRepo.getStateOrNull(it)?.value }
+        val latest = mBackupProcessRepo.latestState.value
+        _backupTaskId.value = requestedState?.id ?: latest?.takeIf { it.isActive }?.id
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
@@ -137,6 +158,7 @@ class MainActivity : ComponentActivity() {
             }
         }
         NotificationHelper.createChannelIfNecessary(this)
+        loadBackupTask(intent)
         splashScreen.setKeepOnScreenCondition { false }
 
         enableEdgeToEdge()
@@ -148,6 +170,25 @@ class MainActivity : ComponentActivity() {
                 val uiState by mMainViewModel.uiState.collectAsStateWithLifecycle()
                 val backStack = rememberNavBackStack(MainNavigationRoute)
                 val navigator = remember(backStack) { Navigator(backStack) }
+                val backupTaskId by _backupTaskId.collectAsStateWithLifecycle()
+                LaunchedEffect(backupTaskId) {
+                    backupTaskId?.let { taskId ->
+                        val state = mBackupProcessRepo.getState(taskId).value
+                        val route = when (state.backendType) {
+                            BackupBackendType.Archive -> BackupProcessRoute(taskId)
+                            BackupBackendType.Rustic -> RusticBackupProcessRoute(taskId)
+                        }
+                        val existingIndex = backStack.indexOf(route)
+                        if (existingIndex >= 0) {
+                            while (backStack.lastIndex > existingIndex) {
+                                backStack.removeLastOrNull()
+                            }
+                        } else {
+                            backStack.add(route)
+                        }
+                        _backupTaskId.value = null
+                    }
+                }
 
                 if (uiState.showErrorServiceDialog) {
                     ErrorServiceDialog(onConfirm = { ProcessHelper.killSelf(this) }, onRetry = { mMainViewModel.checkRootService() })
@@ -191,16 +232,25 @@ class MainActivity : ComponentActivity() {
                                 BackupSetupScreen(navigator)
                             }
 
-                            entry<BackupProcessRoute> {
-                                BackupProcessScreen(navigator)
+                            entry<BackupProcessRoute> { route ->
+                                val processViewModel = koinViewModel<com.xayah.databackup.feature.backup.archive.BackupProcessViewModel> {
+                                    parametersOf(route.taskId)
+                                }
+                                BackupProcessScreen(navigator, processViewModel)
                             }
 
-                            entry<RusticBackupProcessRoute> {
-                                RusticBackupProcessScreen(navigator)
+                            entry<RusticBackupProcessRoute> { route ->
+                                val processViewModel = koinViewModel<com.xayah.databackup.feature.backup.rustic.RusticBackupProcessViewModel> {
+                                    parametersOf(route.taskId)
+                                }
+                                RusticBackupProcessScreen(navigator, processViewModel)
                             }
 
-                            entry<BackupProcessDetailsRoute> {
-                                BackupProcessDetailsScreen(navigator)
+                            entry<BackupProcessDetailsRoute> { route ->
+                                val processViewModel = koinViewModel<com.xayah.databackup.feature.backup.archive.BackupProcessViewModel> {
+                                    parametersOf(route.taskId)
+                                }
+                                BackupProcessDetailsScreen(navigator, processViewModel)
                             }
 
                             entry<BackupConfigRoute> { route ->

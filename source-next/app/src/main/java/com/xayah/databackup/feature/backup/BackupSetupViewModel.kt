@@ -5,8 +5,9 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.data.AppRepository
-import com.xayah.databackup.data.ArchiveBackupProcessRepository
 import com.xayah.databackup.data.BackupConfigRepository
+import com.xayah.databackup.data.BackupProcessRepository
+import com.xayah.databackup.data.BackupSelectionRepository
 import com.xayah.databackup.data.CallLogRepository
 import com.xayah.databackup.data.ContactRepository
 import com.xayah.databackup.data.FileRepository
@@ -14,7 +15,9 @@ import com.xayah.databackup.data.MessageRepository
 import com.xayah.databackup.data.NetworkRepository
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.BackupConfig
+import com.xayah.databackup.entity.backup.BackupState
 import com.xayah.databackup.rootservice.RemoteRootService
+import com.xayah.databackup.service.BackupService
 import com.xayah.databackup.ui.component.CallLogPermissions
 import com.xayah.databackup.ui.component.ContactPermissions
 import com.xayah.databackup.ui.component.MessagePermissions
@@ -44,7 +47,8 @@ const val MaxSelectedItems = 6
 
 open class BackupSetupViewModel(
     private val mBackupConfigRepo: BackupConfigRepository,
-    private val mBackupProcessRepo: ArchiveBackupProcessRepository,
+    private val mBackupProcessRepo: BackupProcessRepository,
+    private val mSelectionRepo: BackupSelectionRepository,
     appRepo: AppRepository,
     fileRepo: FileRepository,
     networkRepo: NetworkRepository,
@@ -52,6 +56,10 @@ open class BackupSetupViewModel(
     callLogRepo: CallLogRepository,
     messageRepo: MessageRepository,
 ) : BaseViewModel() {
+    private val _startError = MutableStateFlow(false)
+    val startError: StateFlow<Boolean> = _startError.asStateFlow()
+    private var mIsStarting = false
+
     private val _isLoadingConfigs = MutableStateFlow(true)
     val isLoadingConfigs: StateFlow<Boolean> = _isLoadingConfigs.asStateFlow()
 
@@ -250,11 +258,35 @@ open class BackupSetupViewModel(
         }
     }
 
-    fun resetProcessRepo() {
-        mBackupProcessRepo.reset()
-    }
-
-    fun isCurrentBackupRustic(): Boolean {
-        return selectedBackup.value?.backupBackend is BackupBackend.Rustic
+    fun startBackup(onStarted: (BackupState) -> Unit) {
+        if (mIsStarting) {
+            return
+        }
+        mIsStarting = true
+        _startError.value = false
+        withLock {
+            try {
+                val state = withContext(Dispatchers.IO) {
+                    mBackupProcessRepo.latestState.value?.takeIf { it.isActive }
+                        ?: mBackupProcessRepo.prepare(mSelectionRepo.getSelection())
+                }
+                if (mBackupProcessRepo.canExecute(state.id)) {
+                    runCatching { BackupService.start(App.application, state.id) }.onFailure { error ->
+                        if (error is CancellationException) {
+                            throw error
+                        }
+                        mBackupProcessRepo.failToStart(state.id)
+                    }
+                }
+                onStarted(mBackupProcessRepo.getState(state.id).value)
+            } catch (error: Exception) {
+                if (error is CancellationException) {
+                    throw error
+                }
+                _startError.value = true
+            } finally {
+                mIsStarting = false
+            }
+        }
     }
 }

@@ -55,8 +55,6 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.xayah.databackup.R
-import com.xayah.databackup.entity.backup.ProcessAppItem
-import com.xayah.databackup.entity.backup.ProcessItem
 import com.xayah.databackup.feature.BackupProcessDetailsRoute
 import com.xayah.databackup.ui.component.BackupProgressHeader
 import com.xayah.databackup.ui.component.DataBackupDialog
@@ -75,12 +73,11 @@ import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.navigateSafely
 import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.Dispatchers
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BackupProcessScreen(
     navigator: Navigator,
-    viewModel: BackupProcessViewModel = koinViewModel(),
+    viewModel: BackupProcessViewModel,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -92,15 +89,12 @@ fun BackupProcessScreen(
     val messagesItem by viewModel.messagesItem.collectAsStateWithLifecycle()
     var openConfirmExitDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(context = Dispatchers.IO, null) {
-        viewModel.loadProcessItems()
-    }
 
-    val onBack = remember {
+    val onBack = remember(uiState.canBeCanceled, uiState.isCanceling, navigator) {
         {
             if (uiState.canBeCanceled) {
                 openConfirmExitDialog = true
-            } else {
+            } else if (!uiState.isCanceling) {
                 navigator.popBackStackSafely()
             }
         }
@@ -115,14 +109,17 @@ fun BackupProcessScreen(
         BackupProcessStatus.Canceled -> stringResource(R.string.canceled)
         BackupProcessStatus.Processing -> stringResource(R.string.backing_up)
         BackupProcessStatus.Finished -> stringResource(R.string.finished)
+        BackupProcessStatus.Failed -> stringResource(R.string.failed)
+        BackupProcessStatus.PartialFailure -> stringResource(R.string.backup_partial_failure)
+        BackupProcessStatus.Interrupted -> stringResource(R.string.backup_interrupted)
     }
     val actionLabel = when (uiState.status) {
         BackupProcessStatus.Canceling -> stringResource(R.string.processing)
         BackupProcessStatus.Processing -> stringResource(R.string.cancel)
         else -> stringResource(R.string.finish)
     }
-    val itemStatusOverride = if (uiState.isCanceled) stringResource(R.string.canceled) else null
-    val showItemProgress = uiState.isCanceling.not() && uiState.isCanceled.not()
+    val itemStatusOverride: String? = null
+    val showItemProgress = uiState.isProcessing
 
     if (openConfirmExitDialog) {
         ConfirmExitDialog(
@@ -476,7 +473,7 @@ private fun ProcessAppsItem(
                 trailingContent = {
                     IconButton(onClick = {
                         if (openDetailsPage) {
-                            navigator.navigateSafely(BackupProcessDetailsRoute)
+                            navigator.navigateSafely(BackupProcessDetailsRoute(viewModel.taskId))
                         } else {
                             openAppItemDialog = true
                         }

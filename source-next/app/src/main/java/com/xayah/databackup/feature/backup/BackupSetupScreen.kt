@@ -38,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.entity.BackupBackend
+import com.xayah.databackup.entity.BackupBackendType
 import com.xayah.databackup.entity.BackupConfig
 import com.xayah.databackup.feature.BackupAppsRoute
 import com.xayah.databackup.feature.BackupCallLogsRoute
@@ -53,11 +54,11 @@ import com.xayah.databackup.ui.component.PreferenceGroup
 import com.xayah.databackup.ui.component.ResetBackupListSwitch
 import com.xayah.databackup.ui.component.SectionHeader
 import com.xayah.databackup.ui.component.SmallCheckActionButton
-import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.ui.component.rememberCallLogPermissionsState
 import com.xayah.databackup.ui.component.rememberContactPermissionsState
 import com.xayah.databackup.ui.component.rememberMessagePermissionsState
 import com.xayah.databackup.ui.component.shimmer
+import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
 import com.xayah.databackup.util.AppsOptionSelectedBackup
 import com.xayah.databackup.util.CallLogsOptionSelectedBackup
@@ -84,6 +85,7 @@ fun BackupSetupScreen(
     val selectedBackupSize by viewModel.selectedBackupSize.collectAsStateWithLifecycle()
     val isLoadingConfigs by viewModel.isLoadingConfigs.collectAsStateWithLifecycle()
     val selectedItems by viewModel.selectedItems.collectAsStateWithLifecycle(null)
+    val startError by viewModel.startError.collectAsStateWithLifecycle()
     val nextBtnEnabled by viewModel.nextBtnEnabled.collectAsStateWithLifecycle()
 
     LaunchedEffect(context = Dispatchers.IO, null) {
@@ -156,17 +158,22 @@ fun BackupSetupScreen(
                     .padding(top = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Spacer(modifier = Modifier.weight(1f))
+                if (startError) {
+                    Text(text = stringResource(R.string.backup_start_failed), color = MaterialTheme.colorScheme.error, modifier = Modifier.weight(1f))
+                } else {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
 
                 Button(
                     modifier = Modifier.wrapContentSize(),
                     enabled = nextBtnEnabled,
                     onClick = {
-                        viewModel.resetProcessRepo()
-                        if (viewModel.isCurrentBackupRustic()) {
-                            navigator.navigateSafely(RusticBackupProcessRoute)
-                        } else {
-                            navigator.navigateSafely(BackupProcessRoute)
+                        viewModel.startBackup { state ->
+                            val route = when (state.backendType) {
+                                BackupBackendType.Archive -> BackupProcessRoute(state.id)
+                                BackupBackendType.Rustic -> RusticBackupProcessRoute(state.id)
+                            }
+                            navigator.navigateSafely(route)
                         }
                     }
                 ) {

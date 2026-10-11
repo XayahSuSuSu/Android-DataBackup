@@ -52,7 +52,10 @@ Use the Gradle wrapper from repository root:
 
 ## Coding Style & Naming Conventions
 - Language stack: Kotlin + Android (plus C/C++ in `native/src/main/jni`).
+- Do not use the Kotlin non-null assertion operator (`!!`) outside original AOSP code.
+  Use null-safe control flow or explicit validation that preserves the intended failure behavior.
 - Follow Kotlin conventions: 4-space indentation, `PascalCase` for types, `camelCase` for functions/properties, package names lowercase.
+  Configure experimental API opt-ins in the module's Gradle `compilerOptions` instead of adding source-level `@OptIn` annotations.
   Compose functions that emit UI use `PascalCase` noun phrases describing the displayed content.
   Name shared UI for its full domain scope rather than a single backend or implementation.
 - Use a maximum line width of 150 characters.

@@ -1,31 +1,30 @@
 package com.xayah.databackup.service.backup.rustic
 
-import android.provider.Telephony
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
-import com.xayah.databackup.database.entity.FieldMap
 import com.xayah.databackup.entity.backup.BackupSelection
 import com.xayah.databackup.entity.backup.BackupSkippedSource
 import com.xayah.databackup.entity.backup.BackupSourceCategory
 import com.xayah.databackup.entity.backup.BackupSourcePath
-import com.xayah.databackup.entity.backup.BackupSources
 import com.xayah.databackup.entity.backup.BackupStagedFile
 import com.xayah.databackup.entity.rustic.RusticAppManifest
 import com.xayah.databackup.entity.rustic.RusticBackupManifest
+import com.xayah.databackup.entity.rustic.RusticBackupSources
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.service.backup.BackupAppSourceHelper
+import com.xayah.databackup.service.backup.BackupMetadataHelper
+import com.xayah.databackup.service.backup.BackupMmsSourceHelper
 import com.xayah.databackup.service.backup.BackupSerializationHelper
-import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.PathHelper
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 
 class RusticBackupSourceHelper(
     private val mAppSourceHelper: BackupAppSourceHelper,
     private val mSerializationHelper: BackupSerializationHelper,
+    private val mMetadataHelper: BackupMetadataHelper,
+    private val mMmsHelper: BackupMmsSourceHelper,
 ) {
-    companion object {
-        private const val TAG = "RusticBackupSourceHelper"
-    }
-
     /**
      * Builds the complete source list for a Rustic snapshot and writes generated JSON and
      * manifest files under [stagingPath]. Missing optional paths are returned as skipped sources.
@@ -34,12 +33,17 @@ class RusticBackupSourceHelper(
         selection: BackupSelection,
         stagingPath: String,
         createdAt: Long,
-    ): BackupSources {
+    ): RusticBackupSources {
         // Resolve each app's enabled options into existing source paths and missing optional paths.
-        val appPlans = selection.apps.map { app ->
+        val appPlans = selection.apps.orEmpty().map { app ->
+            currentCoroutineContext().ensureActive()
             mAppSourceHelper.getAppSources(
                 app = app,
-                apkPaths = if (app.option.apk) RemoteRootService.getPackageSourceDir(app.packageName, app.userId) else emptyList(),
+                apkPaths = if (app.option.apk) {
+                    RemoteRootService.getPackageSourceDir(app.packageName, app.userId)
+                } else {
+                    emptyList()
+                },
                 exists = RemoteRootService::exists,
             )
         }
@@ -48,10 +52,11 @@ class RusticBackupSourceHelper(
         val skipped = appPlans.flatMap { it.skipped }.toMutableList()
 
         // Add standalone user files and binary MMS attachments to the physical sources.
-        selection.files.filter { it.selected }.forEach { file ->
+        selection.files.orEmpty().filter { it.selected }.forEach { file ->
             addPath(file.path, BackupSourceCategory.File, included, skipped)
         }
-        extractMmsAttachmentPaths(selection).forEach { path ->
+        val mmsSources = mMmsHelper.getSources(selection.mms.orEmpty())
+        mmsSources.paths.forEach { path ->
             addPath(path, BackupSourceCategory.MmsAttachment, included, skipped)
         }
 
@@ -101,20 +106,15 @@ class RusticBackupSourceHelper(
         }
 
         // Materialize generated JSON and the manifest under the temporary staging root.
-        allStagedFiles.forEach { stagedFile ->
-            val destination = "$stagingPath/${stagedFile.relativePath}"
-            val parent = PathHelper.getParentPath(destination)
-            if (RemoteRootService.mkdirs(parent).not()) {
-                throw IllegalStateException("Failed to create Rustic staging directory: $parent")
-            }
-            RemoteRootService.writeText(destination, stagedFile.content)
-        }
+        mMetadataHelper.writeFiles(stagingPath, allStagedFiles)
 
         // Ordinary sources keep their paths; generated metadata uses a fixed snapshot directory.
         val sourcePaths = included.associate { it.path to it.path }
-        return BackupSources(
+        return RusticBackupSources(
             sourcePaths = sourcePaths + (stagingPath to PathHelper.getRusticSnapshotMetadataDir()),
             includedCount = sourcePaths.size,
+            hasFailures = mmsSources.failedRecordIds.isNotEmpty(),
+            apps = appPlans,
             skippedSources = skipped.distinctBy { it.path },
         )
     }
@@ -126,7 +126,10 @@ class RusticBackupSourceHelper(
         included: MutableList<BackupSourcePath>,
         skipped: MutableList<BackupSkippedSource>,
     ) {
-        if (path.isBlank()) return
+        currentCoroutineContext().ensureActive()
+        if (path.isBlank()) {
+            return
+        }
         if (RemoteRootService.exists(path)) {
             included += BackupSourcePath(path, category)
         } else {
@@ -135,21 +138,6 @@ class RusticBackupSourceHelper(
                 category = category,
                 reason = BackupSkippedSource.REASON_NOT_FOUND,
             )
-        }
-    }
-
-    /**
-     * Extracts non-blank attachment paths from serialized MMS parts. Malformed part data is
-     * logged and skipped so one invalid MMS does not prevent other attachments from being backed up.
-     */
-    private fun extractMmsAttachmentPaths(selection: BackupSelection): List<String> {
-        val moshi = Moshi.Builder().build()
-        return selection.mms.orEmpty().flatMap { mms ->
-            // MMS parts store attachment paths in the platform _data field.
-            runCatching { moshi.adapter<List<FieldMap>>().fromJson(mms.part.orEmpty()).orEmpty() }
-                .onFailure { LogHelper.e(TAG, "extractMmsAttachmentPaths", "mms: $mms", it) }
-                .getOrDefault(emptyList())
-                .mapNotNull { it[Telephony.Mms.Part._DATA]?.toString()?.takeIf(String::isNotBlank) }
         }
     }
 }

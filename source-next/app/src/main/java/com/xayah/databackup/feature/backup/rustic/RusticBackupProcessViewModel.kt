@@ -1,226 +1,82 @@
 package com.xayah.databackup.feature.backup.rustic
 
 import androidx.lifecycle.viewModelScope
-import arrow.optics.copy
 import com.xayah.databackup.App
 import com.xayah.databackup.R
-import com.xayah.databackup.data.AppRepository
-import com.xayah.databackup.data.BackupConfigRepository
-import com.xayah.databackup.data.CallLogRepository
-import com.xayah.databackup.data.ContactRepository
-import com.xayah.databackup.data.FileRepository
-import com.xayah.databackup.data.MessageRepository
-import com.xayah.databackup.data.NetworkRepository
-import com.xayah.databackup.data.RusticBackupProcessRepository
-import com.xayah.databackup.entity.BackupBackend
-import com.xayah.databackup.entity.rustic.RusticBackupEvent
-import com.xayah.databackup.entity.rustic.RusticBackupStage
+import com.xayah.databackup.data.BackupProcessRepository
+import com.xayah.databackup.entity.backup.BackupCategory
+import com.xayah.databackup.entity.backup.BackupStatus
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.PathHelper
-import com.xayah.databackup.util.combine
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-open class RusticBackupProcessViewModel(
-    private val mBackupConfigRepo: BackupConfigRepository,
-    private val mBackupProcessRepo: RusticBackupProcessRepository,
-    mAppRepo: AppRepository,
-    mFileRepo: FileRepository,
-    mNetworkRepo: NetworkRepository,
-    mContactRepo: ContactRepository,
-    mCallLogRepo: CallLogRepository,
-    mMessageRepo: MessageRepository,
-) : BaseViewModel() {
+class RusticBackupProcessViewModel(private val mProcessRepo: BackupProcessRepository, val taskId: String) : BaseViewModel() {
     companion object {
         private const val TAG = "RusticBackupProcessViewModel"
     }
-
-    private val _uiState: MutableStateFlow<RusticBackupProcessUiState> = MutableStateFlow(RusticBackupProcessUiState())
+    private val mState = mProcessRepo.getState(taskId)
+    private val _uiState = MutableStateFlow(RusticBackupProcessUiState())
     val uiState: StateFlow<RusticBackupProcessUiState> = _uiState.asStateFlow()
-
-    val appsItem: StateFlow<RusticBackupSourceUiItem> = combine(
-        mAppRepo.isBackupAppsSelected,
-        mAppRepo.appsFilteredAndSelected,
-        mAppRepo.appsFiltered,
-    ) { selected, selectedApps, apps ->
-        sourceItem(
-            titleRes = R.string.apps,
-            iconRes = R.drawable.ic_layout_grid,
-            selected = selected,
-            selectedCount = selectedApps.size,
-            totalCount = apps.size,
-        )
-    }.stateIn(
-        scope = viewModelScope,
-        initialValue = initialSourceItem(R.string.apps, R.drawable.ic_layout_grid),
-        started = SharingStarted.WhileSubscribed(5_000),
-    )
-
-    val filesItem: StateFlow<RusticBackupSourceUiItem> = combine(
-        mFileRepo.isBackupFilesSelected,
-        mFileRepo.filesSelected,
-        mFileRepo.files,
-    ) { selected, selectedFiles, files ->
-        sourceItem(
-            titleRes = R.string.files,
-            iconRes = R.drawable.ic_folder,
-            selected = selected,
-            selectedCount = selectedFiles.size,
-            totalCount = files.size,
-        )
-    }.stateIn(
-        scope = viewModelScope,
-        initialValue = initialSourceItem(R.string.files, R.drawable.ic_folder),
-        started = SharingStarted.WhileSubscribed(5_000),
-    )
-
-    val networksItem: StateFlow<RusticBackupSourceUiItem> = combine(
-        mNetworkRepo.isBackupNetworksSelected,
-        mNetworkRepo.networksSelected,
-        mNetworkRepo.networks,
-    ) { selected, selectedNetworks, networks ->
-        sourceItem(
-            titleRes = R.string.networks,
-            iconRes = R.drawable.ic_wifi,
-            selected = selected,
-            selectedCount = selectedNetworks.size,
-            totalCount = networks.size,
-        )
-    }.stateIn(
-        scope = viewModelScope,
-        initialValue = initialSourceItem(R.string.networks, R.drawable.ic_wifi),
-        started = SharingStarted.WhileSubscribed(5_000),
-    )
-
-    val contactsItem: StateFlow<RusticBackupSourceUiItem> = combine(
-        mContactRepo.isBackupContactsSelected,
-        mContactRepo.contactsSelected,
-        mContactRepo.contacts,
-    ) { selected, selectedContacts, contacts ->
-        sourceItem(
-            titleRes = R.string.contacts,
-            iconRes = R.drawable.ic_user_round,
-            selected = selected,
-            selectedCount = selectedContacts.size,
-            totalCount = contacts.size,
-        )
-    }.stateIn(
-        scope = viewModelScope,
-        initialValue = initialSourceItem(R.string.contacts, R.drawable.ic_user_round),
-        started = SharingStarted.WhileSubscribed(5_000),
-    )
-
-    val callLogsItem: StateFlow<RusticBackupSourceUiItem> = combine(
-        mCallLogRepo.isBackupCallLogsSelected,
-        mCallLogRepo.callLogsSelected,
-        mCallLogRepo.callLogs,
-    ) { selected, selectedCallLogs, callLogs ->
-        sourceItem(
-            titleRes = R.string.call_logs,
-            iconRes = R.drawable.ic_phone,
-            selected = selected,
-            selectedCount = selectedCallLogs.size,
-            totalCount = callLogs.size,
-        )
-    }.stateIn(
-        scope = viewModelScope,
-        initialValue = initialSourceItem(R.string.call_logs, R.drawable.ic_phone),
-        started = SharingStarted.WhileSubscribed(5_000),
-    )
-
-    val messagesItem: StateFlow<RusticBackupSourceUiItem> = combine(
-        mMessageRepo.isBackupMessagesSelected,
-        mMessageRepo.smsList,
-        mMessageRepo.mmsList,
-    ) { selected, smsList, mmsList ->
-        sourceItem(
-            titleRes = R.string.messages,
-            iconRes = R.drawable.ic_message_circle,
-            selected = selected,
-            selectedCount = smsList.count { it.selected } + mmsList.count { it.selected },
-            totalCount = smsList.size + mmsList.size,
-        )
-    }.stateIn(
-        scope = viewModelScope,
-        initialValue = initialSourceItem(R.string.messages, R.drawable.ic_message_circle),
-        started = SharingStarted.WhileSubscribed(5_000),
-    )
-
-    val sourceItems: StateFlow<List<RusticBackupSourceUiItem>> = combine(
-        appsItem,
-        filesItem,
-        networksItem,
-        contactsItem,
-        callLogsItem,
-        messagesItem,
-    ) { appsItem, filesItem, networksItem, contactsItem, callLogsItem, messagesItem ->
-        listOf(appsItem, filesItem, networksItem, contactsItem, callLogsItem, messagesItem)
-    }.stateIn(
-        scope = viewModelScope,
-        initialValue = listOf(),
-        started = SharingStarted.WhileSubscribed(5_000),
-    )
-
-    val overallProgress: StateFlow<String> = uiState
-        .map { it.progress.progressPercent }
-        .stateIn(
-            scope = viewModelScope,
-            initialValue = "0",
-            started = SharingStarted.WhileSubscribed(5_000),
-        )
-
-    fun updateUiState(onUpdate: RusticBackupProcessUiState.() -> RusticBackupProcessUiState) {
-        _uiState.update {
-            it.onUpdate()
-        }
-    }
-
-    fun loadProcessItems() {
-        withLock(Dispatchers.IO) {
-            if (uiState.value.isLoaded) return@withLock
-
-            val config = mBackupConfigRepo.getCurrentConfig()
-            val backend = config.backupBackend as? BackupBackend.Rustic
-            val repositoryPath = PathHelper.getBackupRepoDir(config.path)
-            updateUiState {
-                copy {
-                    RusticBackupProcessUiState.isLoaded set true
-                    RusticBackupProcessUiState.status set RusticBackupProcessStatus.Processing
-                    RusticBackupProcessUiState.backupName set config.displayName
-                    RusticBackupProcessUiState.repositoryPath set repositoryPath
-                    RusticBackupProcessUiState.isPasswordProtected set (backend?.password.isNullOrBlank().not()
-                            && backend.password != BackupBackend.DEFAULT_PASSWORD)
-                }
+    val sourceItems: StateFlow<List<RusticBackupSourceUiItem>> = mState.map { state ->
+        state.categoryProgress.map { category ->
+            val (title, icon) = when (category.category) {
+                BackupCategory.Apps -> R.string.apps to R.drawable.ic_layout_grid
+                BackupCategory.Files -> R.string.files to R.drawable.ic_folder
+                BackupCategory.Networks -> R.string.networks to R.drawable.ic_wifi
+                BackupCategory.Contacts -> R.string.contacts to R.drawable.ic_user_round
+                BackupCategory.CallLogs -> R.string.call_logs to R.drawable.ic_phone
+                BackupCategory.Messages -> R.string.messages to R.drawable.ic_message_circle
             }
-            runCatching {
-                val result = mBackupProcessRepo.start { event ->
-                    _uiState.update { state -> reduceRusticBackupState(state, event) }
-                }
-                _uiState.update {
-                    it.copy(
-                        status = RusticBackupProcessStatus.Finished,
-                        snapshotId = result.snapshotId,
-                        progress = it.progress.copy(progress = 1f),
-                    )
-                }
-            }.onFailure { error ->
-                if (error is CancellationException) throw error
-                LogHelper.e(TAG, "loadProcessItems", "Rustic backup failed.", error)
-                _uiState.update { state ->
-                    state.copy(
-                        status = RusticBackupProcessStatus.Failed,
-                        errorMessage = App.application.getString(R.string.rustic_backup_failed),
+            RusticBackupSourceUiItem(title, icon, category.totalCount, category.availableCount)
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+    val overallProgress: StateFlow<String> = uiState.map { it.progress.progressPercent }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "0")
+
+    init {
+        viewModelScope.launch {
+            mState.collect { state ->
+                _uiState.update { previous ->
+                    previous.copy(
+                        isLoaded = true,
+                        status = when (state.status) {
+                            BackupStatus.Pending, BackupStatus.Running, BackupStatus.Canceling -> RusticBackupProcessStatus.Processing
+                            BackupStatus.Completed -> RusticBackupProcessStatus.Finished
+                            else -> RusticBackupProcessStatus.Failed
+                        },
+                        backupName = state.backupName.ifBlank { App.application.getString(R.string.unnamed) },
+                        repositoryPath = if (state.backupPath.isNotBlank()) {
+                            PathHelper.getBackupRepoDir(state.backupPath)
+                        } else {
+                            ""
+                        },
+                        isPasswordProtected = state.isPasswordProtected,
+                        snapshotId = state.result.snapshotId,
+                        progress = RusticBackupProgressUiState(state.bytes, state.speed, state.progress),
+                        steps = rusticBackupProcessSteps().mapIndexed { index, step ->
+                            step.copy(status = if (index == state.stage.ordinal) {
+                                RusticBackupStepStatus.Active
+                            } else {
+                                RusticBackupStepStatus.Pending
+                            })
+                        },
+                        errorMessage = when (state.status) {
+                            BackupStatus.Interrupted -> App.application.getString(R.string.backup_interrupted)
+                            BackupStatus.PartialFailure -> App.application.getString(R.string.backup_partial_failure)
+                            BackupStatus.Failed -> App.application.getString(R.string.rustic_backup_failed)
+                            else -> ""
+                        },
                     )
                 }
             }
@@ -282,60 +138,4 @@ open class RusticBackupProcessViewModel(
         }
     }
 
-    private fun initialSourceItem(
-        titleRes: Int,
-        iconRes: Int,
-    ): RusticBackupSourceUiItem {
-        return sourceItem(
-            titleRes = titleRes,
-            iconRes = iconRes,
-            selected = false,
-            selectedCount = 0,
-            totalCount = 0,
-        )
-    }
-
-    private fun sourceItem(
-        titleRes: Int,
-        iconRes: Int,
-        selected: Boolean,
-        selectedCount: Int,
-        totalCount: Int,
-    ): RusticBackupSourceUiItem {
-        return RusticBackupSourceUiItem(
-            titleRes = titleRes,
-            iconRes = iconRes,
-            selectedCount = if (selected) selectedCount else 0,
-            totalCount = totalCount,
-        )
-    }
-
-    private fun reduceRusticBackupState(
-        state: RusticBackupProcessUiState,
-        event: RusticBackupEvent,
-    ): RusticBackupProcessUiState {
-        return when (event) {
-            is RusticBackupEvent.Progress -> state.copy(
-                progress = RusticBackupProgressUiState(
-                    bytesDone = event.bytesDone.coerceAtLeast(0),
-                    speed = event.speed.coerceAtLeast(0),
-                    progress = event.progress.coerceIn(0f, 1f),
-                ),
-            )
-
-            is RusticBackupEvent.StageChanged -> {
-                val activeIndex = when (event.stage) {
-                    RusticBackupStage.PrepareRepository -> 0
-                    RusticBackupStage.CollectSources -> 1
-                    RusticBackupStage.CreateSnapshot -> 2
-                    RusticBackupStage.FinalizeSnapshot -> 3
-                }
-                state.copy(
-                    steps = state.steps.mapIndexed { index, step ->
-                        step.copy(status = if (index == activeIndex) RusticBackupStepStatus.Active else RusticBackupStepStatus.Pending)
-                    },
-                )
-            }
-        }
-    }
 }

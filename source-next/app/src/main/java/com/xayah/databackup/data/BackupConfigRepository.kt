@@ -204,15 +204,26 @@ class BackupConfigRepository(
         }.getOrDefault(false)
     }
 
-    suspend fun setupBackupConfig() {
-        val currentConfig = getCurrentConfig()
-        currentConfig.updatedAt = System.currentTimeMillis()
-        check(saveBackupConfig(currentConfig)) { "Failed to save backup config." }
-        if (_selectedIndex.value == NEW_CONFIG_INDEX) {
-            App.application.saveString(BackupConfigSelectedUuid.first, currentConfig.uuidString)
+    suspend fun setupBackupConfig(config: BackupConfig) {
+        mMutex.withLock {
+            val completedConfig = config.copy(updatedAt = System.currentTimeMillis())
+            check(saveBackupConfig(completedConfig)) { "Failed to save backup config." }
+            _configs.update { configs ->
+                configs.map { existing ->
+                    if (existing.uuid == completedConfig.uuid) {
+                        completedConfig.copy()
+                    } else {
+                        existing
+                    }
+                }
+            }
+            if (_newConfig.value.uuid == completedConfig.uuid) {
+                _newConfig.value = completedConfig.copy()
+                if (_selectedIndex.value == NEW_CONFIG_INDEX) {
+                    App.application.saveString(BackupConfigSelectedUuid.first, completedConfig.uuidString)
+                }
+            }
         }
-
-        // We don't need to update any flow here, 'cause loadBackupConfigsFromLocal() will be called once user return to setup page.
     }
 
     suspend fun updateConfig(uuid: String, onUpdate: BackupConfig.() -> BackupConfig) {

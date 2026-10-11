@@ -5,9 +5,3 @@ data class BackupStagedFile(
     val content: String,
 )
 
-data class BackupSources(
-    val sourcePaths: Map<String, String>,
-    val includedCount: Int,
-    val skippedSources: List<BackupSkippedSource>,
-)
-

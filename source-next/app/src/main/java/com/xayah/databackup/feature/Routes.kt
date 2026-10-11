@@ -19,13 +19,13 @@ data object TranslatorsRoute : NavKey
 data object BackupSetupRoute : NavKey
 
 @Serializable
-data object BackupProcessRoute : NavKey
+data class BackupProcessRoute(val taskId: String = "") : NavKey
 
 @Serializable
-data object RusticBackupProcessRoute : NavKey
+data class RusticBackupProcessRoute(val taskId: String = "") : NavKey
 
 @Serializable
-data object BackupProcessDetailsRoute : NavKey
+data class BackupProcessDetailsRoute(val taskId: String = "") : NavKey
 
 @Serializable
 data class BackupConfigRoute(val index: Int) : NavKey {

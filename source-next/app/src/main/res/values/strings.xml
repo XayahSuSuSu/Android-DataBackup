@@ -572,4 +572,7 @@
     <string name="restore_result_not_processed">Not processed</string>
     <string name="restore_skipped_count">%1$s · %2$d skipped</string>
     <string name="restore_result_counts">%1$s · %2$d failed · %3$d skipped</string>
+    <string name="backup_interrupted">Backup interrupted</string>
+    <string name="backup_partial_failure">Some backup items failed or were not processed</string>
+    <string name="backup_start_failed">Could not start backup</string>
 </resources>

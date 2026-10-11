@@ -27,7 +27,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
@@ -62,7 +61,6 @@ private const val StorageCardShimmerHighlightAlpha = 0.55f
 private val StorageCardShape = RoundedCornerShape(18.dp)
 private val DistributionBarShape = CircleShape
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StorageCard(
     modifier: Modifier,
@@ -310,7 +308,6 @@ private fun LoadingDistributionBar(modifier: Modifier) {
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 private fun LegendItem(modifier: Modifier, color: Color, label: String, tooltip: String, enabled: Boolean) {
     val tooltipState = rememberTooltipState(isPersistent = true)
     val scope = rememberCoroutineScope()

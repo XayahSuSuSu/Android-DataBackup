@@ -56,8 +56,6 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.xayah.databackup.R
-import com.xayah.databackup.entity.backup.ProcessAppDataItem
-import com.xayah.databackup.entity.backup.ProcessAppItem
 import com.xayah.databackup.entity.backup.isFailedStatus
 import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.util.LaunchedEffect
@@ -65,19 +63,21 @@ import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.formatToStorageSizePerSecond
 import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.Dispatchers
-import org.koin.androidx.compose.koinViewModel
 import kotlin.math.roundToInt
 
 @Composable
 fun BackupProcessDetailsScreen(
     navigator: Navigator,
-    viewModel: BackupProcessViewModel = koinViewModel(),
+    viewModel: BackupProcessViewModel,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val appsItem by viewModel.appsItem.collectAsStateWithLifecycle()
     val failedApps by viewModel.failedProcessedAppItems.collectAsStateWithLifecycle()
     val canceledApps by viewModel.canceledProcessedAppItems.collectAsStateWithLifecycle()
     val succeededApps by viewModel.succeededProcessedAppItems.collectAsStateWithLifecycle()
+    val skippedApps by viewModel.skippedAppItems.collectAsStateWithLifecycle()
+    val unprocessedApps by viewModel.unprocessedAppItems.collectAsStateWithLifecycle()
+    val runningApps by viewModel.runningAppItems.collectAsStateWithLifecycle()
 
     var expandedKey by remember { mutableStateOf<String?>(null) }
 
@@ -125,72 +125,24 @@ fun BackupProcessDetailsScreen(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                if (failedApps.isNotEmpty()) {
-                    item(FAILED_HEADER_KEY) {
-                        GroupHeader(
-                            title = stringResource(R.string.failed),
-                            count = failedApps.size,
-                        )
-                    }
-                    items(
-                        items = failedApps,
-                        key = { item -> toAppKey(item) }
-                    ) { item ->
-                        val itemKey = toAppKey(item)
-                        val expanded = expandedKey == itemKey
-                        AppDetailCard(
-                            appItem = item,
-                            expanded = expanded,
-                            onExpandToggle = {
-                                expandedKey = if (expanded) null else itemKey
-                            }
-                        )
-                    }
-                }
-
-                if (canceledApps.isNotEmpty()) {
-                    item(CANCELED_HEADER_KEY) {
-                        GroupHeader(
-                            title = stringResource(R.string.canceled),
-                            count = canceledApps.size,
-                        )
-                    }
-                    items(
-                        items = canceledApps,
-                        key = { item -> toAppKey(item) }
-                    ) { item ->
-                        val itemKey = toAppKey(item)
-                        val expanded = expandedKey == itemKey
-                        AppDetailCard(
-                            appItem = item,
-                            expanded = expanded,
-                            onExpandToggle = {
-                                expandedKey = if (expanded) null else itemKey
-                            }
-                        )
-                    }
-                }
-
-                if (succeededApps.isNotEmpty()) {
-                    item(SUCCEEDED_HEADER_KEY) {
-                        GroupHeader(
-                            title = stringResource(R.string.succeed),
-                            count = succeededApps.size,
-                        )
-                    }
-                    items(
-                        items = succeededApps,
-                        key = { item -> toAppKey(item) }
-                    ) { item ->
-                        val itemKey = toAppKey(item)
-                        val expanded = expandedKey == itemKey
-                        AppDetailCard(
-                            appItem = item,
-                            expanded = expanded,
-                            onExpandToggle = {
-                                expandedKey = if (expanded) null else itemKey
-                            }
-                        )
+                listOf(
+                    Triple(R.string.failed, failedApps, FAILED_HEADER_KEY),
+                    Triple(R.string.canceled, canceledApps, CANCELED_HEADER_KEY),
+                    Triple(R.string.succeed, succeededApps, SUCCEEDED_HEADER_KEY),
+                    Triple(R.string.skip, skippedApps, SKIPPED_HEADER_KEY),
+                    Triple(R.string.restore_result_not_processed, unprocessedApps, UNPROCESSED_HEADER_KEY),
+                    Triple(R.string.processing, runningApps, RUNNING_HEADER_KEY),
+                ).forEach { (title, apps, headerKey) ->
+                    if (apps.isNotEmpty()) {
+                        item(headerKey) {
+                            GroupHeader(title = stringResource(title), count = apps.size)
+                        }
+                        items(apps, key = { toAppKey(it) }) { item ->
+                            val itemKey = toAppKey(item)
+                            val isExpanded = expandedKey == itemKey
+                            AppDetailCard(appItem = item, expanded = isExpanded,
+                                onExpandToggle = { expandedKey = if (isExpanded) null else itemKey })
+                        }
                     }
                 }
 
@@ -444,6 +396,9 @@ private fun toAppKey(item: ProcessAppItem): String {
 private const val FAILED_HEADER_KEY = "failed_header"
 private const val CANCELED_HEADER_KEY = "canceled_header"
 private const val SUCCEEDED_HEADER_KEY = "succeeded_header"
+private const val SKIPPED_HEADER_KEY = "skipped_header"
+private const val UNPROCESSED_HEADER_KEY = "unprocessed_header"
+private const val RUNNING_HEADER_KEY = "running_header"
 private const val DISABLED_CONTENT_ALPHA = 0.5f
 private const val ERROR_INFO_CONTAINER_ALPHA = 0.55f
 private const val NORMAL_ICON_CONTAINER_ENABLED_ALPHA = 1f

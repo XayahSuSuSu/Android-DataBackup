@@ -7,6 +7,7 @@ import com.xayah.databackup.database.entity.File
 import com.xayah.databackup.database.entity.Mms
 import com.xayah.databackup.database.entity.Network
 import com.xayah.databackup.database.entity.Sms
+import com.xayah.databackup.entity.backup.BackupCategory
 import com.xayah.databackup.entity.backup.BackupSelection
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -35,15 +36,24 @@ class BackupSelectionRepository(
     val mmsListSelected: Flow<List<Mms>> = mMessageRepo.mmsListSelected
 
     suspend fun getSelection(): BackupSelection {
+        val isMessagesSelected = isBackupMessagesSelected.first()
         return BackupSelection(
-            config = mBackupConfigRepo.getCurrentConfig(),
-            apps = if (isBackupAppsSelected.first()) appsFilteredAndSelected.first() else emptyList(),
-            files = if (isBackupFilesSelected.first()) filesSelected.first() else emptyList(),
+            config = mBackupConfigRepo.getCurrentConfig().copy(),
+            apps = if (isBackupAppsSelected.first()) appsFilteredAndSelected.first() else null,
+            files = if (isBackupFilesSelected.first()) filesSelected.first() else null,
             networks = if (isBackupNetworksSelected.first()) networksSelected.first() else null,
             contacts = if (isBackupContactsSelected.first()) contactsSelected.first() else null,
             callLogs = if (isBackupCallLogsSelected.first()) callLogsSelected.first() else null,
-            sms = if (isBackupMessagesSelected.first()) smsListSelected.first() else null,
-            mms = if (isBackupMessagesSelected.first()) mmsListSelected.first() else null,
+            sms = if (isMessagesSelected) smsListSelected.first() else null,
+            mms = if (isMessagesSelected) mmsListSelected.first() else null,
+            totalCounts = mapOf(
+                BackupCategory.Apps to mAppRepo.appsFiltered.first().size,
+                BackupCategory.Files to mFileRepo.files.first().size,
+                BackupCategory.Networks to mNetworkRepo.networks.first().size,
+                BackupCategory.Contacts to mContactRepo.contacts.first().size,
+                BackupCategory.CallLogs to mCallLogRepo.callLogs.first().size,
+                BackupCategory.Messages to (mMessageRepo.smsList.first().size + mMessageRepo.mmsList.first().size),
+            ),
         )
     }
 }

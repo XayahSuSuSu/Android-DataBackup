@@ -1,210 +1,247 @@
 package com.xayah.databackup.service
 
+import android.app.PendingIntent
 import android.app.Service
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
-import android.os.Binder
+import android.content.pm.ServiceInfo
+import android.os.Build
 import android.os.IBinder
-import android.os.RemoteException
-import com.xayah.databackup.App
-import com.xayah.databackup.data.ArchiveBackupProcessRepository
-import com.xayah.databackup.data.BackupConfigRepository
-import com.xayah.databackup.data.BackupSelectionRepository
-import com.xayah.databackup.service.backup.archive.BackupAppsHelper
-import com.xayah.databackup.service.backup.archive.BackupCallLogsHelper
-import com.xayah.databackup.service.backup.archive.BackupContactsHelper
-import com.xayah.databackup.service.backup.archive.BackupMessagesHelper
-import com.xayah.databackup.service.backup.archive.BackupNetworksHelper
+import android.os.PowerManager
+import androidx.core.app.ServiceCompat
+import androidx.core.content.ContextCompat
+import com.xayah.databackup.R
+import com.xayah.databackup.data.BackupProcessRepository
+import com.xayah.databackup.entity.BackupBackendType
+import com.xayah.databackup.entity.backup.BackupState
+import com.xayah.databackup.entity.backup.BackupStatus
+import com.xayah.databackup.feature.MainActivity
 import com.xayah.databackup.util.LogHelper
+import com.xayah.databackup.util.NotificationHelper
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.time.Duration.Companion.seconds
 
+/**
+ * Starts or cancels a backup by task ID. The request data stays in [BackupProcessRepository],
+ * which prevents repeated service starts from executing the same request more than once.
+ */
 object BackupService {
+    const val EXTRA_TASK_ID = "backup_task_id"
+    private const val ACTION_START = "com.xayah.databackup.START_BACKUP"
+    private const val ACTION_CANCEL = "com.xayah.databackup.CANCEL_BACKUP"
+    private const val NOTIFICATION_ID = 3
     private const val TAG = "BackupService"
-    private const val TIMEOUT = 10 // 10s
 
-    private var mMutex = Mutex()
-    private var mBinder: IBinder? = null
-    private var mService: BackupServiceImpl? = null
-    private var mConnection: ServiceConnection? = null
-
-    class BackupServiceImpl : Service() {
-        private val mBackupSelectionRepo: BackupSelectionRepository by inject()
-        private val mBackupConfigRepo: BackupConfigRepository by inject()
-        private val mBackupProcessRepo: ArchiveBackupProcessRepository by inject()
-        private val mBackupAppsHelper: BackupAppsHelper by inject()
-        private val mBackupNetworksHelper: BackupNetworksHelper by inject()
-        private val mBackupContactsHelper: BackupContactsHelper by inject()
-        private val mBackupCallLogsHelper: BackupCallLogsHelper by inject()
-        private val mBackupMessagesHelper: BackupMessagesHelper by inject()
-        private val mBinder: Binder = Service()
-
-        inner class Service : Binder() {
-            fun getService(): BackupServiceImpl = this@BackupServiceImpl
-        }
-
-        override fun onBind(intent: Intent): IBinder {
-            return mBinder
-        }
-
-        suspend fun backupApps() {
-            mMutex.withLock {
-                mBackupAppsHelper.start()
-            }
-        }
-
-        suspend fun backupNetworks() {
-            mMutex.withLock {
-                mBackupNetworksHelper.start()
-            }
-        }
-
-        suspend fun backupContacts() {
-            mMutex.withLock {
-                mBackupContactsHelper.start()
-            }
-        }
-
-        suspend fun backupCallLogs() {
-            mMutex.withLock {
-                mBackupCallLogsHelper.start()
-            }
-        }
-
-        suspend fun backupMessages() {
-            mMutex.withLock {
-                mBackupMessagesHelper.start()
-            }
-        }
-
-        suspend fun setupBackupConfig() {
-            mMutex.withLock {
-                mBackupConfigRepo.setupBackupConfig()
-            }
-        }
-
-        private fun ensureNotCanceled(stage: String) {
-            if (mBackupProcessRepo.isCanceled) {
-                throw CancellationException("Backup canceled before $stage.")
-            }
-        }
-
-        suspend fun start() {
-            try {
-                ensureNotCanceled("apps backup")
-                if (mBackupSelectionRepo.isBackupAppsSelected.first()) {
-                    backupApps()
-                }
-
-                ensureNotCanceled("networks backup")
-                if (mBackupSelectionRepo.isBackupNetworksSelected.first()) {
-                    backupNetworks()
-                }
-
-                ensureNotCanceled("contacts backup")
-                if (mBackupSelectionRepo.isBackupContactsSelected.first()) {
-                    backupContacts()
-                }
-
-                ensureNotCanceled("call logs backup")
-                if (mBackupSelectionRepo.isBackupCallLogsSelected.first()) {
-                    backupCallLogs()
-                }
-
-                ensureNotCanceled("messages backup")
-                if (mBackupSelectionRepo.isBackupMessagesSelected.first()) {
-                    backupMessages()
-                }
-
-                setupBackupConfig()
-            } catch (e: CancellationException) {
-                LogHelper.i(TAG, "start", "Backup pipeline canceled and exited early: ${e.message}")
-            }
-        }
+    fun start(context: Context, taskId: String) {
+        ContextCompat.startForegroundService(context, Intent(context, BackupServiceImpl::class.java)
+            .setAction(ACTION_START).putExtra(EXTRA_TASK_ID, taskId))
     }
 
-    private suspend fun bindService(context: Context): BackupServiceImpl? {
-        return withTimeoutOrNull(TIMEOUT.seconds) {
-            suspendCancellableCoroutine { continuation ->
-                if (mService == null) {
-                    val connection = object : ServiceConnection {
-                        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-                            mBinder = service
-                            (service as? BackupServiceImpl.Service)?.getService()?.also {
-                                val msg = "Service connected."
-                                LogHelper.i(TAG, "bindService", msg)
-                                mService = it
-                                if (continuation.context.isActive) continuation.resume(it)
-                                return
-                            }
-                            val msg = "Service connected, but failed to get service instance."
-                            if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
-                        }
+    fun cancel(context: Context, taskId: String) {
+        context.startService(Intent(context, BackupServiceImpl::class.java)
+            .setAction(ACTION_CANCEL).putExtra(EXTRA_TASK_ID, taskId))
+    }
 
-                        override fun onServiceDisconnected(name: ComponentName) {
-                            val msg = "Service disconnected."
-                            LogHelper.w(TAG, "bindService", msg)
-                            if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
-                        }
+    /**
+     * Runs in the app process. The manifest registers this service as BackupService$BackupServiceImpl.
+     */
+    class BackupServiceImpl : Service() {
+        private val mProcessRepo: BackupProcessRepository by inject()
+        private val mScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        private var mExecutionJob: Job? = null
+        private var mNotificationJob: Job? = null
+        private var mWakeJob: Job? = null
+        private var mWakeLock: PowerManager.WakeLock? = null
+        private val mResourceLock = Any()
+        private var mCanPublishProgress = false
+        private var mActiveId: String? = null
+        private var mIsFinishing = false
 
-                        override fun onBindingDied(name: ComponentName) {
-                            val msg = "Binding died."
-                            LogHelper.e(TAG, "bindService", msg)
-                            if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
-                        }
+        override fun onBind(intent: Intent): IBinder? = null
 
-                        override fun onNullBinding(name: ComponentName) {
-                            val msg = "Null binding."
-                            LogHelper.e(TAG, "bindService", msg)
-                            if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
+        override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+            val taskId = intent?.getStringExtra(EXTRA_TASK_ID)
+            if (taskId.isNullOrBlank()) {
+                if (mActiveId == null) {
+                    stopSelf(startId)
+                }
+                return START_NOT_STICKY
+            }
+            if (intent.action == ACTION_CANCEL) {
+                if (taskId == mActiveId) {
+                    stopTask(taskId, isInterrupted = false)
+                } else if (mActiveId == null) {
+                    stopSelf(startId)
+                }
+                return START_NOT_STICKY
+            }
+            if (mActiveId != null) {
+                // Duplicate start delivery only reconnects observers; it must never start another writer.
+                return START_NOT_STICKY
+            }
+            if (intent.action != ACTION_START || !mProcessRepo.canExecute(taskId)) {
+                stopSelf(startId)
+                return START_NOT_STICKY
+            }
+            mActiveId = taskId
+            mIsFinishing = false
+            try {
+                NotificationHelper.createChannelIfNecessary(this)
+                val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC else 0
+                ServiceCompat.startForeground(this, NOTIFICATION_ID, buildNotification(mProcessRepo.getState(taskId).value), type)
+                mCanPublishProgress = true
+                val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+                mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "$packageName:BackupService").apply {
+                    setReferenceCounted(false)
+                    acquire(10 * 60 * 1000L)
+                }
+                mWakeJob = mScope.launch {
+                    while (isActive) {
+                        delay(5 * 60 * 1000L)
+                        synchronized(mResourceLock) {
+                            mWakeLock?.acquire(10 * 60 * 1000L)
                         }
                     }
-                    context.bindService(Intent(context, BackupServiceImpl::class.java), connection, Context.BIND_AUTO_CREATE)
-                    mConnection = connection
-                } else {
-                    mService
+                }
+                mNotificationJob = mScope.launch {
+                    mProcessRepo.getState(taskId).sample(500).collect { state ->
+                        synchronized(mResourceLock) {
+                            if (mCanPublishProgress && NotificationHelper.checkPermission(this@BackupServiceImpl)) {
+                                NotificationHelper.getNotificationManager(this@BackupServiceImpl).notify(NOTIFICATION_ID, buildNotification(state))
+                            }
+                        }
+                    }
+                }
+                mExecutionJob = mScope.launch {
+                    try {
+                        mProcessRepo.execute(taskId)
+                    } finally {
+                        withContext(NonCancellable + Dispatchers.Main.immediate) {
+                            mIsFinishing = true
+                            releaseResources()
+                            val state = mProcessRepo.getState(taskId).value
+                            ServiceCompat.stopForeground(this@BackupServiceImpl, ServiceCompat.STOP_FOREGROUND_DETACH)
+                            try {
+                                if (NotificationHelper.checkPermission(this@BackupServiceImpl)) {
+                                    NotificationHelper.getNotificationManager(this@BackupServiceImpl).notify(NOTIFICATION_ID, buildNotification(state))
+                                }
+                            } finally {
+                                mActiveId = null
+                                stopSelf()
+                            }
+                        }
+                    }
+                }
+            } catch (error: Exception) {
+                LogHelper.w(TAG, "onStartCommand", "Cannot start foreground backup: error=${error.javaClass.simpleName}")
+                mProcessRepo.failToStart(taskId)
+                mIsFinishing = true
+                releaseResources()
+                mActiveId = null
+                ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+                stopSelf()
+            }
+            return START_NOT_STICKY
+        }
+
+        override fun onTimeout(startId: Int, fgsType: Int) {
+            mActiveId?.let { stopTask(it, isInterrupted = true) }
+            releaseResources()
+            ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+            // Do not wait for blocking Binder/root cleanup on the main thread or exceed Android's timeout grace period.
+            stopSelf()
+        }
+
+        override fun onDestroy() {
+            if (!mIsFinishing) {
+                mActiveId?.let { stopTask(it, isInterrupted = true) }
+            }
+            releaseResources()
+            mScope.cancel()
+            super.onDestroy()
+        }
+
+        private fun stopTask(taskId: String, isInterrupted: Boolean) {
+            // Start undispatched to register cancellation before onDestroy cancels the execution scope.
+            CoroutineScope(Dispatchers.IO).launch(start = CoroutineStart.UNDISPATCHED) {
+                runCatching { mProcessRepo.cancel(taskId, isInterrupted) }.onFailure { error ->
+                    if (error is CancellationException) {
+                        throw error
+                    }
+                    LogHelper.w(TAG, "stopTask", "Root backup termination failed")
                 }
             }
         }
-    }
 
-    fun destroyService(context: Context) {
-        mConnection?.also { context.unbindService(it) }
-        mService?.stopSelf()
-        mBinder = null
-        mService = null
-        mConnection = null
-    }
-
-    private suspend fun getService(): BackupServiceImpl? {
-        return if (mService == null) {
-            runCatching { bindService(App.application) }.getOrElse { error ->
-                if (error is CancellationException) throw error
-                null
+        private fun releaseResources() {
+            mNotificationJob?.cancel()
+            mWakeJob?.cancel()
+            synchronized(mResourceLock) {
+                mCanPublishProgress = false
+                mWakeLock?.let {
+                    if (it.isHeld) {
+                        it.release()
+                    }
+                }
+                mWakeLock = null
             }
-        } else if (mBinder?.isBinderAlive == false) {
-            destroyService(App.application)
-            runCatching { bindService(App.application) }.getOrElse { error ->
-                if (error is CancellationException) throw error
-                null
-            }
-        } else {
-            mService
         }
-    }
 
-    suspend fun start() {
-        getService()?.start()
+        private fun buildNotification(state: BackupState): android.app.Notification {
+            val openIntent = Intent(this, MainActivity::class.java)
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                .putExtra(EXTRA_TASK_ID, state.id)
+            val contentIntent = PendingIntent.getActivity(this, NOTIFICATION_ID, openIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            val title = when (state.status) {
+                BackupStatus.Completed -> R.string.finished
+                BackupStatus.Canceled -> R.string.canceled
+                BackupStatus.Interrupted -> R.string.backup_interrupted
+                BackupStatus.Failed, BackupStatus.PartialFailure -> R.string.failed
+                else -> R.string.backing_up
+            }
+            val total = state.categoryProgress.sumOf { it.totalCount }
+            val completed = state.categoryProgress.sumOf { it.completedCount }
+            val percent = when (state.backendType) {
+                BackupBackendType.Archive -> if (total > 0) {
+                    completed * 100 / total
+                } else {
+                    0
+                }
+                BackupBackendType.Rustic -> (state.progress * 100).toInt()
+            }
+            return NotificationHelper.getNotificationBuilder(this)
+                .setContentTitle(getString(title))
+                .setContentText(state.backupName.ifBlank { getString(R.string.backup) })
+                .setContentIntent(contentIntent)
+                .setOngoing(state.isActive)
+                .setAutoCancel(!state.isActive)
+                .setProgress(
+                    if (state.isActive) {
+                        100
+                    } else {
+                        0
+                    },
+                    if (state.isActive) {
+                        percent
+                    } else {
+                        0
+                    },
+                    state.isActive && percent == 0,
+                )
+                .build()
+        }
     }
 }
