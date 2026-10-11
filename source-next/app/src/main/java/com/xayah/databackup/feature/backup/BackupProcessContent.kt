@@ -22,9 +22,9 @@ import com.xayah.databackup.ui.component.DialogActionButton
 import com.xayah.databackup.ui.component.DialogDestructiveButton
 import com.xayah.databackup.ui.component.DialogDismissButton
 import com.xayah.databackup.ui.component.DialogIcon
-import com.xayah.databackup.ui.component.ProcessItemCard
-import com.xayah.databackup.ui.component.ProcessItemCardState
-import com.xayah.databackup.ui.component.ProcessScaffold
+import com.xayah.databackup.ui.component.TaskProgressCard
+import com.xayah.databackup.ui.component.TaskProgressCardState
+import com.xayah.databackup.ui.component.TaskProgressScaffold
 import com.xayah.databackup.ui.theme.DataBackupTheme
 
 @Composable
@@ -51,7 +51,7 @@ internal fun BackupProcessContent(
         BackupStatus.Failed, BackupStatus.PartialFailure, BackupStatus.Interrupted -> statusLabel
         else -> ""
     }
-    ProcessScaffold(
+    TaskProgressScaffold(
         overallProgress = uiState.overallProgress,
         statusLabel = statusLabel,
         isProcessing = uiState.isProcessing,
@@ -118,8 +118,8 @@ private fun BackupProcessItemCard(item: BackupProcessItem, backendType: BackupBa
         BackupCategory.CallLogs -> R.string.call_logs to R.drawable.ic_phone
         BackupCategory.Messages -> R.string.messages to R.drawable.ic_message_circle
     }
-    ProcessItemCard(
-        category = ProcessItemCardState(
+    TaskProgressCard(
+        category = TaskProgressCardState(
             icon = ImageVector.vectorResource(iconRes),
             title = stringResource(titleRes),
             label = if (isArchive) {
@@ -133,7 +133,7 @@ private fun BackupProcessItemCard(item: BackupProcessItem, backendType: BackupBa
         ),
         isTerminal = isTerminal,
         currentApp = item.currentApp?.takeIf { isArchive }?.let { app ->
-            ProcessItemCardState(
+            TaskProgressCardState(
                 icon = ImageVector.vectorResource(R.drawable.ic_resource_package),
                 title = app.label.ifBlank { stringResource(R.string.unknown) },
                 label = stringResource(app.currentPart.titleRes),

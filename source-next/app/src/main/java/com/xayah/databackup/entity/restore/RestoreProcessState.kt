@@ -38,26 +38,10 @@ internal enum class RestoreRecordStatus {
 internal data class RestoreRecordResult(
     val id: String,
     val title: String,
-    val subtitle: String = "",
     val status: RestoreRecordStatus = RestoreRecordStatus.Pending,
     val parts: Map<BackupSourceCategory, RestoreRecordStatus> = emptyMap(),
 ) {
     companion object
-
-    val currentPart: BackupSourceCategory? =
-        (parts.entries.firstOrNull { it.value == RestoreRecordStatus.Processing }
-            ?: parts.entries.lastOrNull { it.value != RestoreRecordStatus.Pending && it.value != RestoreRecordStatus.NotProcessed }
-            ?: parts.entries.firstOrNull())?.key
-
-    val progress: Float =
-        when {
-            status == RestoreRecordStatus.Restored || status == RestoreRecordStatus.Skipped -> 1f
-            parts.isEmpty() -> 0f
-            else -> parts.values.count {
-                it == RestoreRecordStatus.Restored || it == RestoreRecordStatus.Skipped ||
-                        it == RestoreRecordStatus.Failed || it == RestoreRecordStatus.Interrupted
-            }.toFloat() / parts.size
-        }
 }
 
 @optics
@@ -69,18 +53,8 @@ internal data class RestoreProcessItem(
     val failedCount: Int = 0,
     val status: RestoreItemStatus = RestoreItemStatus.Pending,
     val records: List<RestoreRecordResult> = emptyList(),
-    val progress: Float = 0f,
 ) {
     companion object
-
-    val currentApp: RestoreRecordResult? =
-        if (category == RestoreCategory.Apps) {
-            records.firstOrNull { it.status == RestoreRecordStatus.Processing }
-                ?: records.lastOrNull { it.status != RestoreRecordStatus.Pending && it.status != RestoreRecordStatus.NotProcessed }
-                ?: records.firstOrNull()
-        } else {
-            null
-        }
 }
 
 /** Tracks a restore task's status, progress, and results for each category and record. */
@@ -113,18 +87,9 @@ internal fun RestoreRequest.toInitialState(inventory: RestoreInventory?, backupN
                     RestoreCategory.CallLogs -> inventory?.callLogs?.get(id)?.number
                     RestoreCategory.Messages -> inventory?.sms?.get(id)?.address ?: inventory?.mms?.get(id)?.address
                 }.orEmpty()
-                val subtitle = when (task) {
-                    is RestoreTask.App -> task.source.let { "${it.packageName} · ${it.userId}" }
-                    is RestoreTask.Records -> when (category) {
-                        RestoreCategory.CallLogs -> inventory?.callLogs?.get(id)?.description.orEmpty()
-                        RestoreCategory.Messages -> inventory?.sms?.get(id)?.body ?: inventory?.mms?.get(id)?.body?.text.orEmpty()
-                        else -> ""
-                    }
-                }
                 RestoreRecordResult(
                     id = id,
                     title = title,
-                    subtitle = subtitle.take(160),
                     parts = if (task is RestoreTask.App) {
                         task.source.paths.map { it.category }.distinct().associateWith { RestoreRecordStatus.Pending }
                     } else {
@@ -243,11 +208,6 @@ private fun RestoreProcessItem.updateRecords(records: List<RestoreRecordResult>)
         completedCount = completedCount,
         skippedCount = records.count { it.status == RestoreRecordStatus.Skipped },
         failedCount = records.count { it.status == RestoreRecordStatus.Failed },
-        progress = if (totalCount > 0) {
-            completedCount.toFloat() / totalCount
-        } else {
-            0f
-        },
     )
 }
 

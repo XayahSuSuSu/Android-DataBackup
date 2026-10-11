@@ -13,9 +13,6 @@ import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -24,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.xayah.databackup.util.SymbolHelper
 
 @Composable
-fun ProgressHeader(
+internal fun TaskProgressHeader(
     progress: String,
     statusLabel: String,
     isLoading: Boolean,
@@ -41,10 +38,9 @@ fun ProgressHeader(
                     style = MaterialTheme.typography.displayLarge,
                     fontWeight = FontWeight.Bold,
                 )
-                val percent by remember { mutableStateOf(SymbolHelper.PERCENT.toString()) }
                 Text(
                     modifier = Modifier.alignByBaseline(),
-                    text = percent,
+                    text = SymbolHelper.PERCENT.toString(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.titleLarge,

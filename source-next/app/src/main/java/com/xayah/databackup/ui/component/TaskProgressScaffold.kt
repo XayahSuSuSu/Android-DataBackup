@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.xayah.databackup.R
 
 @Composable
-internal fun ProcessScaffold(
+internal fun TaskProgressScaffold(
     overallProgress: String,
     statusLabel: String,
     isProcessing: Boolean,
@@ -72,7 +72,7 @@ internal fun ProcessScaffold(
                 .padding(innerPadding)
                 .consumeWindowInsets(innerPadding),
         ) {
-            ProgressHeader(
+            TaskProgressHeader(
                 progress = overallProgress,
                 statusLabel = statusLabel,
                 isLoading = isProcessing,
