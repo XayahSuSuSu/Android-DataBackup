@@ -549,7 +549,7 @@
     <string name="restore_snapshot_description">Przywróć migawkę %1$s (%2$s)</string>
     <string name="restore_snapshot_load_failed">Nie udało się wczytać migawki</string>
     <string name="restore_session_expired">Zadanie przywracania nie jest już dostępne. Wybierz ponownie migawkę.</string>
-    <string name="restore_cancel_description">Zatrzymać przywracanie? Przywrócone dane zostaną zachowane.</string>
+    <string name="restore_cancel_description">Przerwać przywracanie? Przywrócone dane zostaną zachowane. Bieżący element może zostać przywrócony tylko częściowo.</string>
     <string name="restore_process_failed">Proces przywracania został nieoczekiwanie przerwany. Część danych mogła już zostać przywrócona.</string>
     <string name="restore_finished_with_errors">Przywracanie zakończone niepowodzeniem</string>
     <string name="restore_result_restored">Przywrócono</string>
@@ -560,4 +560,8 @@
     <string name="backup_partial_failure">Niektóre elementy kopii zapasowej nie powiodły się lub nie zostały przetworzone</string>
     <string name="backup_start_failed">Nie udało się uruchomić kopii zapasowej</string>
     <string name="backup_interrupted">Kopia zapasowa przerwana</string>
+    <string name="restore_background_description">Przywracanie będzie kontynuowane w tle. Otwórz powiadomienie, aby sprawdzić postęp.</string>
+    <string name="backup_restore_busy">Trwa wykonywanie lub zatrzymywanie kopii zapasowej bądź procesu przywracania danych. Przed rozpoczęciem kolejnego zadania należy poczekać na zakończenie bieżącej operacji.</string>
+    <string name="view_active_task">Wyświetl bieżące zadanie</string>
+    <string name="restore_interrupted">Przywracanie przerwane</string>
 </resources>
