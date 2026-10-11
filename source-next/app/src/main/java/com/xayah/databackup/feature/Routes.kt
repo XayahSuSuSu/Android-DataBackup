@@ -25,9 +25,6 @@ data class BackupProcessRoute(val taskId: String = "") : NavKey
 data class RusticBackupProcessRoute(val taskId: String = "") : NavKey
 
 @Serializable
-data class BackupProcessDetailsRoute(val taskId: String = "") : NavKey
-
-@Serializable
 data class BackupConfigRoute(val index: Int) : NavKey {
     init {
         require(index >= 0) { "BackupConfigRoute only accepts an existing backup index." }

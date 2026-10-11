@@ -1,35 +1,9 @@
 package com.xayah.databackup.feature.restore
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -39,15 +13,9 @@ import androidx.compose.ui.unit.dp
 import com.xayah.databackup.R
 import com.xayah.databackup.entity.backup.BackupSourceCategory
 import com.xayah.databackup.entity.restore.RestoreCategory
-import com.xayah.databackup.ui.component.BackupProgressHeader
-import com.xayah.databackup.ui.component.FadeVisibility
-import com.xayah.databackup.ui.component.InlineNotice
-import com.xayah.databackup.ui.component.ProcessItemCardContainer
-import com.xayah.databackup.ui.component.ProcessItemCardContent
-import com.xayah.databackup.ui.component.ProcessItemHolder
-import com.xayah.databackup.ui.component.fadeSlideContentTransitionSpec
-import com.xayah.databackup.ui.component.surfaceTopAppBarColors
-import com.xayah.databackup.ui.component.verticalFadingEdges
+import com.xayah.databackup.ui.component.ProcessItemCard
+import com.xayah.databackup.ui.component.ProcessItemCardState
+import com.xayah.databackup.ui.component.ProcessScaffold
 import com.xayah.databackup.ui.theme.DataBackupTheme
 
 @Composable
@@ -63,8 +31,6 @@ internal fun RestoreProcessContent(
             uiState.isProcessing -> onRequestCancel()
         }
     }
-    BackHandler(onBack = onBack)
-
     val statusLabel = when (uiState.status) {
         RestoreProcessStatus.Canceling -> stringResource(R.string.processing)
         RestoreProcessStatus.Canceled -> stringResource(R.string.canceled)
@@ -73,96 +39,27 @@ internal fun RestoreProcessContent(
         RestoreProcessStatus.FinishedWithErrors -> stringResource(R.string.restore_finished_with_errors)
         RestoreProcessStatus.Failed -> stringResource(R.string.failed)
     }
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        contentWindowInsets = WindowInsets.safeDrawing,
-        topBar = {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    IconButton(onClick = onBack, enabled = !uiState.isCanceling) {
-                        Icon(ImageVector.vectorResource(R.drawable.ic_arrow_left), stringResource(R.string.back))
-                    }
-                },
-                colors = TopAppBarDefaults.surfaceTopAppBarColors(),
-            )
-        },
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .consumeWindowInsets(innerPadding),
-        ) {
-            BackupProgressHeader(
-                progress = overallProgress,
-                statusLabel = statusLabel,
-                showLoading = uiState.isProcessing,
-            )
-            AnimatedVisibility(visible = uiState.isCanceling) {
-                InlineNotice(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    text = stringResource(R.string.wait_for_remaining_data_processing),
-                    icon = ImageVector.vectorResource(R.drawable.ic_badge_info),
-                ) {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                }
-            }
-            AnimatedVisibility(visible = uiState.isFailed) {
-                InlineNotice(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    text = uiState.errorMessage.ifEmpty { stringResource(R.string.failed) },
-                    icon = ImageVector.vectorResource(R.drawable.ic_circle_x),
-                )
-            }
-            val scrollState = rememberScrollState()
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(scrollState)
-                    .verticalFadingEdges(scrollState)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                uiState.items.filter { it.totalCount > 0 }.forEach { item ->
-                    key(item.category) {
-                        RestoreProcessItemCard(item = item, isTerminal = uiState.isTerminal)
-                    }
-                }
-            }
-            FadeVisibility(visible = uiState.isTerminal) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Spacer(modifier = Modifier.weight(1f))
-                    Button(onClick = onFinish) {
-                        Text(text = stringResource(R.string.finish))
-                    }
-                }
+    ProcessScaffold(
+        overallProgress = overallProgress,
+        statusLabel = statusLabel,
+        isProcessing = uiState.isProcessing,
+        isCanceling = uiState.isCanceling,
+        isTerminal = uiState.isTerminal,
+        isBackEnabled = !uiState.isCanceling,
+        notice = if (uiState.isFailed) uiState.errorMessage.ifEmpty { stringResource(R.string.failed) } else "",
+        onBack = onBack,
+        onFinish = onFinish,
+    ) {
+        uiState.items.filter { it.totalCount > 0 }.forEach { item ->
+            key(item.category) {
+                RestoreProcessItemCard(item = item, isTerminal = uiState.isTerminal)
             }
         }
     }
 }
 
 @Composable
-private fun RestoreProcessItemCard(
-    item: RestoreProcessItem,
-    isTerminal: Boolean,
-) {
-    var showAppDetails by rememberSaveable(item.category, isTerminal) { mutableStateOf(false) }
-    val currentApp = item.currentApp
-    val canShowAppDetails = !isTerminal && currentApp != null
-    val displayedApp = currentApp.takeIf { showAppDetails && canShowAppDetails }
-    val progress = displayedApp?.progress ?: item.progress
-    val toggleDetails: () -> Unit = { showAppDetails = !showAppDetails }
+private fun RestoreProcessItemCard(item: RestoreProcessItem, isTerminal: Boolean) {
     val (titleRes, iconRes) = when (item.category) {
         RestoreCategory.Apps -> R.string.apps to R.drawable.ic_layout_grid
         RestoreCategory.Networks -> R.string.networks to R.drawable.ic_wifi
@@ -179,42 +76,33 @@ private fun RestoreProcessItemCard(
             RestoreItemStatus.Canceled -> R.string.canceled
         }
     )
-    ProcessItemHolder(
-        modifier = Modifier.fillMaxWidth(),
-        process = { progress.coerceIn(0f, 1f) },
-        showProgress = !isTerminal && if (displayedApp != null) {
-            displayedApp.status == RestoreRecordStatus.Processing
-        } else {
-            item.status == RestoreItemStatus.Processing
+    ProcessItemCard(
+        category = ProcessItemCardState(
+            icon = ImageVector.vectorResource(iconRes),
+            title = stringResource(titleRes),
+            label = "${item.completedCount}/${item.totalCount}",
+            subtitle = if (item.failedCount > 0) {
+                stringResource(R.string.restore_result_counts, statusLabel, item.failedCount, item.skippedCount)
+            } else if (item.skippedCount > 0) {
+                stringResource(R.string.restore_skipped_count, statusLabel, item.skippedCount)
+            } else {
+                item.message.ifEmpty { statusLabel }
+            },
+            progress = item.progress,
+            isProcessing = item.status == RestoreItemStatus.Processing,
+        ),
+        isTerminal = isTerminal,
+        currentApp = item.currentApp?.let { app ->
+            ProcessItemCardState(
+                icon = ImageVector.vectorResource(R.drawable.ic_resource_package),
+                title = app.title.ifBlank { stringResource(R.string.unknown) },
+                label = app.currentPart?.let { stringResource(it.restoreTitleRes) } ?: stringResource(R.string.apps),
+                subtitle = stringResource(app.status.titleRes),
+                progress = app.progress,
+                isProcessing = app.status == RestoreRecordStatus.Processing,
+            )
         },
-    ) {
-        ProcessItemCardContainer(onClick = { if (canShowAppDetails) toggleDetails() }) {
-            AnimatedContent(
-                targetState = showAppDetails && canShowAppDetails,
-                transitionSpec = fadeSlideContentTransitionSpec(),
-                label = "restoreAppDetails",
-            ) { showDetails ->
-                val app = currentApp.takeIf { showDetails }
-                ProcessItemCardContent(
-                    icon = ImageVector.vectorResource(if (app != null) R.drawable.ic_resource_package else iconRes),
-                    title = app?.title?.ifBlank { stringResource(R.string.unknown) } ?: stringResource(titleRes),
-                    subtitle = if (app != null) {
-                        stringResource(app.status.titleRes)
-                    } else if (item.failedCount > 0) {
-                        stringResource(R.string.restore_result_counts, statusLabel, item.failedCount, item.skippedCount)
-                    } else if (item.skippedCount > 0) {
-                        stringResource(R.string.restore_skipped_count, statusLabel, item.skippedCount)
-                    } else item.message.ifEmpty { statusLabel },
-                    subtitleShimmer = false,
-                    label = if (app != null) {
-                        app.currentPart?.let { stringResource(it.restoreTitleRes) } ?: stringResource(R.string.apps)
-                    } else {
-                        "${item.completedCount}/${item.totalCount}"
-                    },
-                )
-            }
-        }
-    }
+    )
 }
 
 @Preview(name = "Phone", widthDp = 400, heightDp = 800)

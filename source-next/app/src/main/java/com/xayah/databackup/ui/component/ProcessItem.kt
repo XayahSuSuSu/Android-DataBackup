@@ -65,36 +65,13 @@ fun ProcessItemHolder(
 }
 
 @Composable
-fun ProcessItemCard(
-    icon: ImageVector,
-    title: String,
-    label: String,
-    subtitle: String,
-    subtitleShimmer: Boolean,
-    onClick: () -> Unit,
-    trailingContent: (@Composable () -> Unit)? = null,
-) {
-    ProcessItemCardContainer(onClick = onClick) {
-        ProcessItemCardContent(
-            icon = icon,
-            title = title,
-            label = label,
-            subtitle = subtitle,
-            subtitleShimmer = subtitleShimmer,
-            trailingContent = trailingContent,
-        )
-    }
-}
-
-@Composable
-fun ProcessItemCardContainer(onClick: () -> Unit, content: @Composable ColumnScope.() -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-        shape = RoundedCornerShape(16.dp),
-        onClick = onClick
-    ) {
-        content()
+fun ProcessItemCardContainer(onClick: (() -> Unit)? = null, content: @Composable ColumnScope.() -> Unit) {
+    val colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+    val shape = RoundedCornerShape(16.dp)
+    if (onClick == null) {
+        Card(modifier = Modifier.fillMaxWidth(), colors = colors, shape = shape, content = content)
+    } else {
+        Card(modifier = Modifier.fillMaxWidth(), colors = colors, shape = shape, onClick = onClick, content = content)
     }
 }
 
@@ -118,7 +95,7 @@ fun ProcessItemCardContent(
             modifier = Modifier.size(20.dp),
             tint = MaterialTheme.colorScheme.primary,
             imageVector = icon,
-            contentDescription = "Localized description"
+            contentDescription = null
         )
         Column(
             modifier = Modifier

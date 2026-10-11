@@ -24,10 +24,10 @@ import androidx.compose.ui.unit.dp
 import com.xayah.databackup.util.SymbolHelper
 
 @Composable
-fun BackupProgressHeader(
+fun ProgressHeader(
     progress: String,
     statusLabel: String,
-    showLoading: Boolean,
+    isLoading: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Row(modifier = modifier.padding(start = 16.dp, top = 40.dp, bottom = 12.dp, end = 16.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -67,7 +67,7 @@ fun BackupProgressHeader(
             }
         }
         Spacer(modifier = Modifier.weight(1f))
-        FadeVisibility(visible = showLoading) {
+        FadeVisibility(visible = isLoading) {
             ContainedLoadingIndicator(modifier = Modifier.size(64.dp))
         }
     }

@@ -33,10 +33,10 @@ import com.xayah.databackup.feature.about.AboutScreen
 import com.xayah.databackup.feature.about.TranslatorsScreen
 import com.xayah.databackup.feature.backup.BackupConfigScreen
 import com.xayah.databackup.feature.backup.BackupConfigViewModel
+import com.xayah.databackup.feature.backup.BackupProcessViewModel
 import com.xayah.databackup.feature.backup.BackupSetupScreen
 import com.xayah.databackup.feature.backup.apps.BackupAppsScreen
-import com.xayah.databackup.feature.backup.archive.BackupProcessDetailsScreen
-import com.xayah.databackup.feature.backup.archive.BackupProcessScreen
+import com.xayah.databackup.feature.backup.archive.ArchiveBackupProcessScreen
 import com.xayah.databackup.feature.backup.call_logs.BackupCallLogsScreen
 import com.xayah.databackup.feature.backup.contacts.BackupContactsScreen
 import com.xayah.databackup.feature.backup.messages.BackupMessagesScreen
@@ -233,24 +233,17 @@ class MainActivity : ComponentActivity() {
                             }
 
                             entry<BackupProcessRoute> { route ->
-                                val processViewModel = koinViewModel<com.xayah.databackup.feature.backup.archive.BackupProcessViewModel> {
+                                val processViewModel = koinViewModel<BackupProcessViewModel> {
                                     parametersOf(route.taskId)
                                 }
-                                BackupProcessScreen(navigator, processViewModel)
+                                ArchiveBackupProcessScreen(navigator, processViewModel)
                             }
 
                             entry<RusticBackupProcessRoute> { route ->
-                                val processViewModel = koinViewModel<com.xayah.databackup.feature.backup.rustic.RusticBackupProcessViewModel> {
+                                val processViewModel = koinViewModel<BackupProcessViewModel> {
                                     parametersOf(route.taskId)
                                 }
                                 RusticBackupProcessScreen(navigator, processViewModel)
-                            }
-
-                            entry<BackupProcessDetailsRoute> { route ->
-                                val processViewModel = koinViewModel<com.xayah.databackup.feature.backup.archive.BackupProcessViewModel> {
-                                    parametersOf(route.taskId)
-                                }
-                                BackupProcessDetailsScreen(navigator, processViewModel)
                             }
 
                             entry<BackupConfigRoute> { route ->

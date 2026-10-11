@@ -23,15 +23,14 @@ import com.xayah.databackup.data.TranslatorRepository
 import com.xayah.databackup.feature.about.TranslatorsViewModel
 import com.xayah.databackup.feature.backup.BackupConfigViewModel
 import com.xayah.databackup.feature.backup.BackupLibraryViewModel
+import com.xayah.databackup.feature.backup.BackupProcessViewModel
 import com.xayah.databackup.feature.backup.BackupSetupViewModel
 import com.xayah.databackup.feature.backup.NewBackupViewModel
 import com.xayah.databackup.feature.backup.apps.AppsViewModel
-import com.xayah.databackup.feature.backup.archive.BackupProcessViewModel
 import com.xayah.databackup.feature.backup.call_logs.CallLogsViewModel
 import com.xayah.databackup.feature.backup.contacts.ContactsViewModel
 import com.xayah.databackup.feature.backup.messages.MessagesViewModel
 import com.xayah.databackup.feature.backup.networks.NetworksViewModel
-import com.xayah.databackup.feature.backup.rustic.RusticBackupProcessViewModel
 import com.xayah.databackup.feature.dashboard.DashboardViewModel
 import com.xayah.databackup.feature.restore.RestoreProcessViewModel
 import com.xayah.databackup.feature.restore.RestoreSetupViewModel
@@ -115,7 +114,6 @@ class App : Application(), SingletonImageLoader.Factory {
         viewModelOf(::CallLogsViewModel)
         viewModelOf(::MessagesViewModel)
         viewModel { parameters -> BackupProcessViewModel(get(), parameters.get()) }
-        viewModel { parameters -> RusticBackupProcessViewModel(get(), parameters.get()) }
 
         // Restore screens
         viewModelOf(::RestoreViewModel)
