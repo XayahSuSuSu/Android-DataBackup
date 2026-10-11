@@ -549,7 +549,7 @@
     <string name="restore_snapshot_description">復原快照 %1$s（%2$s）</string>
     <string name="restore_snapshot_load_failed">無法載入快照</string>
     <string name="restore_session_expired">復原工作已失效，請重新選擇快照。</string>
-    <string name="restore_cancel_description">停止復原？已復原的資料將保留。</string>
+    <string name="restore_cancel_description">立即停止還原？已還原的資料將保留，目前項目可能僅還原了部分資料。</string>
     <string name="restore_process_failed">復原意外中斷，部分資料可能已復原。</string>
     <string name="restore_finished_with_errors">復原結束，有失敗項目</string>
     <string name="restore_result_restored">已復原</string>
@@ -560,4 +560,8 @@
     <string name="backup_interrupted">備份已中斷</string>
     <string name="backup_partial_failure">部分備份項目失敗或未處理</string>
     <string name="backup_start_failed">無法啟動備份</string>
+    <string name="restore_interrupted">還原已中斷</string>
+    <string name="restore_background_description">還原將在背景繼續。可透過通知返回查看進度。</string>
+    <string name="backup_restore_busy">已有備份或還原工作正在執行或停止，請等待其結束後再啟動新工作。</string>
+    <string name="view_active_task">查看目前工作</string>
 </resources>

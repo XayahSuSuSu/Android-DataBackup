@@ -2,13 +2,19 @@ package com.xayah.databackup.feature.restore
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
+import com.xayah.databackup.App
 import com.xayah.databackup.R
+import com.xayah.databackup.data.RestoreProcessRepository
 import com.xayah.databackup.data.RestoreRepository
+import com.xayah.databackup.data.TaskInfo
+import com.xayah.databackup.data.TaskRepository
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.restore.RestoreCategory
 import com.xayah.databackup.entity.restore.RestoreState
+import com.xayah.databackup.service.RestoreService
 import com.xayah.databackup.util.BaseViewModel
 import com.xayah.databackup.util.PathHelper
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -72,7 +78,13 @@ internal fun RestoreState.toSetupUiState(): RestoreSetupUiState {
     )
 }
 
-class RestoreSetupViewModel(private val mRestoreRepo: RestoreRepository) : BaseViewModel() {
+internal class RestoreSetupViewModel(
+    private val mRestoreRepo: RestoreRepository,
+    private val mProcessRepo: RestoreProcessRepository,
+    private val mTaskRepo: TaskRepository,
+) : BaseViewModel() {
+    val activeTask: StateFlow<TaskInfo?> = mTaskRepo.activeTask
+    private var mIsStarting = false
     internal val uiState: StateFlow<RestoreSetupUiState> = mRestoreRepo.state
         .map { it.toSetupUiState() }
         .stateIn(
@@ -81,7 +93,34 @@ class RestoreSetupViewModel(private val mRestoreRepo: RestoreRepository) : BaseV
             initialValue = mRestoreRepo.state.value.toSetupUiState()
         )
 
-    fun prepareRestore(): Boolean = runCatching { mRestoreRepo.prepareRestore() }.isSuccess
+    fun startRestore(): String? {
+        if (mIsStarting) {
+            return null
+        }
+        mIsStarting = true
+        try {
+            if (mTaskRepo.activeTask.value != null) {
+                return null
+            }
+            val initialState = mRestoreRepo.prepareRestore()
+            val request = checkNotNull(mRestoreRepo.consumeRestoreRequest())
+            val state = mProcessRepo.prepare(request, initialState)
+            runCatching { RestoreService.start(App.application, state.id) }.onFailure { error ->
+                mProcessRepo.failToStart(state.id)
+                if (error is CancellationException) {
+                    throw error
+                }
+            }
+            return state.id
+        } catch (error: Exception) {
+            if (error is CancellationException) {
+                throw error
+            }
+            return null
+        } finally {
+            mIsStarting = false
+        }
+    }
 
     fun selectCategory(category: RestoreCategory, checked: Boolean) {
         withLock(Dispatchers.Default) {

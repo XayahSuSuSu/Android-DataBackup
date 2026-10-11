@@ -13,7 +13,8 @@ import com.xayah.databackup.data.ContactRepository
 import com.xayah.databackup.data.FileRepository
 import com.xayah.databackup.data.MessageRepository
 import com.xayah.databackup.data.NetworkRepository
-import com.xayah.databackup.entity.BackupBackend
+import com.xayah.databackup.data.TaskInfo
+import com.xayah.databackup.data.TaskRepository
 import com.xayah.databackup.entity.BackupConfig
 import com.xayah.databackup.entity.backup.BackupState
 import com.xayah.databackup.rootservice.RemoteRootService
@@ -48,6 +49,7 @@ const val MaxSelectedItems = 6
 open class BackupSetupViewModel(
     private val mBackupConfigRepo: BackupConfigRepository,
     private val mBackupProcessRepo: BackupProcessRepository,
+    private val mTaskRepo: TaskRepository,
     private val mSelectionRepo: BackupSelectionRepository,
     appRepo: AppRepository,
     fileRepo: FileRepository,
@@ -56,6 +58,7 @@ open class BackupSetupViewModel(
     callLogRepo: CallLogRepository,
     messageRepo: MessageRepository,
 ) : BaseViewModel() {
+    val activeTask: StateFlow<TaskInfo?> = mTaskRepo.activeTask
     private val _startError = MutableStateFlow(false)
     val startError: StateFlow<Boolean> = _startError.asStateFlow()
     private var mIsStarting = false
@@ -258,6 +261,10 @@ open class BackupSetupViewModel(
         }
     }
 
+    fun dismissStartError() {
+        _startError.value = false
+    }
+
     fun startBackup(onStarted: (BackupState) -> Unit) {
         if (mIsStarting) {
             return
@@ -267,8 +274,7 @@ open class BackupSetupViewModel(
         withLock {
             try {
                 val state = withContext(Dispatchers.IO) {
-                    mBackupProcessRepo.latestState.value?.takeIf { it.isActive }
-                        ?: mBackupProcessRepo.prepare(mSelectionRepo.getSelection())
+                    mBackupProcessRepo.prepare(mSelectionRepo.getSelection())
                 }
                 if (mBackupProcessRepo.canExecute(state.id)) {
                     runCatching { BackupService.start(App.application, state.id) }.onFailure { error ->

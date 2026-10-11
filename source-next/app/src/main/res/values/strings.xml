@@ -564,7 +564,7 @@
     <string name="restore_snapshot_description">Restore snapshot %1$s (%2$s)</string>
     <string name="restore_snapshot_load_failed">Could not load snapshot</string>
     <string name="restore_session_expired">Restore task is no longer available. Select the snapshot again.</string>
-    <string name="restore_cancel_description">Stop restoring? Restored data will be kept.</string>
+    <string name="restore_cancel_description">Stop restoring now? Restored data will be kept. The current item may be only partially restored.</string>
     <string name="restore_process_failed">Restore stopped unexpectedly. Some data may already have been restored.</string>
     <string name="restore_finished_with_errors">Restore finished with failures</string>
     <string name="restore_result_restored">Restored</string>
@@ -575,4 +575,8 @@
     <string name="backup_interrupted">Backup interrupted</string>
     <string name="backup_partial_failure">Some backup items failed or were not processed</string>
     <string name="backup_start_failed">Could not start backup</string>
+    <string name="restore_interrupted">Restore interrupted</string>
+    <string name="restore_background_description">Restoration will continue in the background. Open the notification to return to its progress.</string>
+    <string name="backup_restore_busy">A backup or restore is running or stopping. Wait for it to finish before starting another task.</string>
+    <string name="view_active_task">View current task</string>
 </resources>

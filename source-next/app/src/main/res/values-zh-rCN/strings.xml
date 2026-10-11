@@ -549,7 +549,7 @@
     <string name="restore_snapshot_description">恢复快照 %1$s（%2$s）</string>
     <string name="restore_snapshot_load_failed">无法加载快照</string>
     <string name="restore_session_expired">恢复任务已失效，请重新选择快照。</string>
-    <string name="restore_cancel_description">停止恢复？已恢复的数据将保留。</string>
+    <string name="restore_cancel_description">立即停止恢复？已恢复的数据将保留，当前项目可能仅恢复了部分数据。</string>
     <string name="restore_process_failed">恢复异常中断，部分数据可能已恢复。</string>
     <string name="restore_finished_with_errors">恢复结束，存在失败项</string>
     <string name="restore_result_restored">已恢复</string>
@@ -560,4 +560,8 @@
     <string name="backup_interrupted">备份已中断</string>
     <string name="backup_partial_failure">部分备份项目失败或未处理</string>
     <string name="backup_start_failed">无法启动备份</string>
+    <string name="restore_interrupted">恢复已中断</string>
+    <string name="restore_background_description">恢复将在后台继续。可通过通知返回查看进度。</string>
+    <string name="backup_restore_busy">已有备份或恢复任务正在运行或停止，请等待其结束后再启动新任务。</string>
+    <string name="view_active_task">查看当前任务</string>
 </resources>

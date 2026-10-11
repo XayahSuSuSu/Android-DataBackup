@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.xayah.databackup.R
+import com.xayah.databackup.data.TaskInfo
 import com.xayah.databackup.database.entity.ContactDeserialized
 import com.xayah.databackup.entity.restore.RestoreCategory
 import com.xayah.databackup.entity.restore.RestoreInventory
@@ -63,7 +64,6 @@ import com.xayah.databackup.feature.RestoreCallLogsRoute
 import com.xayah.databackup.feature.RestoreContactsRoute
 import com.xayah.databackup.feature.RestoreMessagesRoute
 import com.xayah.databackup.feature.RestoreNetworksRoute
-import com.xayah.databackup.feature.RestoreProcessRoute
 import com.xayah.databackup.feature.setup.NoPermKey
 import com.xayah.databackup.feature.setup.SetupActivity
 import com.xayah.databackup.ui.component.InlineNotice
@@ -71,6 +71,7 @@ import com.xayah.databackup.ui.component.Preference
 import com.xayah.databackup.ui.component.PreferenceGroup
 import com.xayah.databackup.ui.component.SectionHeader
 import com.xayah.databackup.ui.component.SmallCheckActionButton
+import com.xayah.databackup.ui.component.TaskBusyDialog
 import com.xayah.databackup.ui.component.rememberFadingEdgeState
 import com.xayah.databackup.ui.component.shimmer
 import com.xayah.databackup.ui.component.surfaceTopAppBarColors
@@ -81,14 +82,18 @@ import com.xayah.databackup.util.formatToStorageSize
 import com.xayah.databackup.util.navigateSafely
 
 @Composable
-fun RestoreSetupScreen(
+internal fun RestoreSetupScreen(
     navigator: Navigator,
     viewModel: RestoreSetupViewModel,
     onBack: () -> Unit,
     onRetry: () -> Unit,
+    onStarted: (String) -> Unit,
+    onOpenTask: (TaskInfo) -> Unit,
 ) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val activeTask by viewModel.activeTask.collectAsStateWithLifecycle()
+    var isBusyDialogVisible by rememberSaveable { mutableStateOf(false) }
     val state = uiState.restoreState
     var restorePreparationFailed by rememberSaveable { mutableStateOf(false) }
     val permissions = rememberMultiplePermissionsState(
@@ -102,18 +107,36 @@ fun RestoreSetupScreen(
             }
         }
     )
+    if (isBusyDialogVisible) {
+        activeTask?.let { task ->
+            TaskBusyDialog(
+                onDismiss = { isBusyDialogVisible = false },
+                onOpenTask = {
+                    isBusyDialogVisible = false
+                    onOpenTask(task)
+                },
+            )
+        }
+    }
     RestoreSetupContent(
         uiState = uiState,
         onBack = onBack,
         onRetry = onRetry,
         onStart = {
             restorePreparationFailed = false
-            if (!permissions.allPermissionsGranted) {
+            if (activeTask != null) {
+                isBusyDialogVisible = true
+            } else if (!permissions.allPermissionsGranted) {
                 context.startActivity(Intent(context, SetupActivity::class.java).putExtra(NoPermKey, true))
-            } else if (viewModel.prepareRestore()) {
-                navigator.navigateSafely(RestoreProcessRoute)
             } else {
-                restorePreparationFailed = true
+                val taskId = viewModel.startRestore()
+                if (taskId != null) {
+                    onStarted(taskId)
+                } else if (viewModel.activeTask.value != null) {
+                    isBusyDialogVisible = true
+                } else {
+                    restorePreparationFailed = true
+                }
             }
         },
         startErrorMessage = when {

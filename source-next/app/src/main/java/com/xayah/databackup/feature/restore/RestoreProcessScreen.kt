@@ -12,6 +12,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.DataBackupDialog
+import com.xayah.databackup.ui.component.DialogActionButton
 import com.xayah.databackup.ui.component.DialogDestructiveButton
 import com.xayah.databackup.ui.component.DialogDismissButton
 import com.xayah.databackup.ui.component.DialogIcon
@@ -20,30 +21,49 @@ import com.xayah.databackup.ui.component.DialogIcon
 internal fun RestoreProcessScreen(viewModel: RestoreProcessViewModel, onFinish: () -> Unit) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val overallProgress by viewModel.overallProgress.collectAsStateWithLifecycle()
-    var showCancelDialog by rememberSaveable { mutableStateOf(false) }
+    var isCancelDialogVisible by rememberSaveable { mutableStateOf(false) }
+    var isLeaveDialogVisible by rememberSaveable { mutableStateOf(false) }
     RestoreProcessContent(
         uiState = state,
         overallProgress = overallProgress,
-        onRequestCancel = { showCancelDialog = true },
+        onRequestCancel = { isCancelDialogVisible = true },
         onFinish = onFinish,
+        onRequestLeave = { isLeaveDialogVisible = true },
     )
-    if (showCancelDialog && state.isProcessing) {
+    if (isCancelDialogVisible && state.canCancel) {
         DataBackupDialog(
             title = stringResource(R.string.prompt),
-            onDismissRequest = { showCancelDialog = false },
+            onDismissRequest = { isCancelDialogVisible = false },
             icon = { DialogIcon(imageVector = ImageVector.vectorResource(R.drawable.ic_badge_info)) },
             content = { Text(stringResource(R.string.restore_cancel_description)) },
             confirmButton = {
                 DialogDestructiveButton(
                     text = stringResource(R.string.confirm),
                     onClick = {
-                        showCancelDialog = false
+                        isCancelDialogVisible = false
                         viewModel.cancel()
                     },
                 )
             },
             dismissButton = {
-                DialogDismissButton(text = stringResource(R.string.cancel), onClick = { showCancelDialog = false })
+                DialogDismissButton(text = stringResource(R.string.cancel), onClick = { isCancelDialogVisible = false })
+            },
+        )
+    }
+    if (isLeaveDialogVisible && state.canLeave) {
+        DataBackupDialog(
+            title = stringResource(R.string.restoring),
+            onDismissRequest = { isLeaveDialogVisible = false },
+            icon = { DialogIcon(imageVector = ImageVector.vectorResource(R.drawable.ic_clock)) },
+            content = { Text(stringResource(R.string.restore_background_description)) },
+            confirmButton = {
+                DialogActionButton(text = stringResource(R.string.confirm), onClick = {
+                    isLeaveDialogVisible = false
+                    onFinish()
+                })
+            },
+            dismissButton = {
+                DialogDismissButton(text = stringResource(R.string.cancel), onClick = { isLeaveDialogVisible = false })
             },
         )
     }

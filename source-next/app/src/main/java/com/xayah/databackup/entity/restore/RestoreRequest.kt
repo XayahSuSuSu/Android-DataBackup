@@ -1,15 +1,39 @@
 package com.xayah.databackup.entity.restore
 
+import com.xayah.databackup.entity.BackupBackendType
 import com.xayah.databackup.entity.backup.BackupSourceCategory
 import com.xayah.databackup.entity.backup.BackupSourcePath
+import kotlin.uuid.Uuid
 
 /**
  * Captures the restore parameters and selected tasks. Apps are restored to their source user IDs.
  */
 internal class RestoreRequest(
     val source: RestoreSource,
-    val tasks: List<RestoreTask>,
-)
+    tasks: List<RestoreTask>,
+    val id: String = Uuid.random().toString(),
+    val createdAt: Long = System.currentTimeMillis(),
+) {
+    private val mTasks = tasks.deepCopy()
+    val tasks: List<RestoreTask> get() = mTasks.deepCopy()
+    val backendType: BackupBackendType = when (source) {
+        is RestoreSource.Archive -> BackupBackendType.Archive
+        is RestoreSource.Rustic -> BackupBackendType.Rustic
+    }
+
+    init {
+        require(id.isNotBlank() && mTasks.isNotEmpty()) { "Empty restore request" }
+        require(mTasks.flatMap { it.ids }.distinct().size == mTasks.sumOf { it.ids.size }) { "Repeated restore records" }
+        require(mTasks.all { it.ids.isNotEmpty() }) { "Empty restore task" }
+    }
+}
+
+private fun List<RestoreTask>.deepCopy(): List<RestoreTask> = map { task ->
+    when (task) {
+        is RestoreTask.App -> task.copy(source = task.source.copy(paths = task.source.paths.map { it.copy() }))
+        is RestoreTask.Records -> task.copy(ids = task.ids.toList())
+    }
+}
 
 internal data class RestoreAppSource(
     val packageName: String,

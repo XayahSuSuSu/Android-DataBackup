@@ -28,7 +28,10 @@ import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.BackupProcessRepository
-import com.xayah.databackup.entity.BackupBackendType
+import com.xayah.databackup.data.RestoreProcessRepository
+import com.xayah.databackup.data.TaskInfo
+import com.xayah.databackup.data.TaskRepository
+import com.xayah.databackup.data.TaskType
 import com.xayah.databackup.feature.about.AboutScreen
 import com.xayah.databackup.feature.about.TranslatorsScreen
 import com.xayah.databackup.feature.backup.BackupConfigScreen
@@ -43,11 +46,14 @@ import com.xayah.databackup.feature.backup.messages.BackupMessagesScreen
 import com.xayah.databackup.feature.backup.networks.BackupNetworksScreen
 import com.xayah.databackup.feature.backup.rustic.RusticBackupProcessScreen
 import com.xayah.databackup.feature.restore.RestoreNavigationHost
+import com.xayah.databackup.feature.restore.RestoreProcessScreen
+import com.xayah.databackup.feature.restore.RestoreProcessViewModel
 import com.xayah.databackup.feature.restore.RestoreViewModel
 import com.xayah.databackup.feature.setup.NoPermKey
 import com.xayah.databackup.feature.setup.SetupActivity
 import com.xayah.databackup.feature.update.UpdatesScreen
 import com.xayah.databackup.service.BackupService
+import com.xayah.databackup.service.RestoreService
 import com.xayah.databackup.ui.component.DataBackupDialog
 import com.xayah.databackup.ui.component.DialogDestructiveButton
 import com.xayah.databackup.ui.component.DialogDismissButton
@@ -61,6 +67,7 @@ import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.NotificationHelper
 import com.xayah.databackup.util.ProcessHelper
 import com.xayah.databackup.util.ShellHelper
+import com.xayah.databackup.util.popBackStackSafely
 import com.xayah.databackup.util.preloadingDataStore
 import com.xayah.databackup.util.readBoolean
 import kotlinx.coroutines.CancellationException
@@ -112,19 +119,31 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var mMainViewModel: MainViewModel
     private val mBackupProcessRepo: BackupProcessRepository by inject()
-    private val _backupTaskId = MutableStateFlow<String?>(null)
+    private val mRestoreProcessRepo: RestoreProcessRepository by inject()
+    private val mTaskRepo: TaskRepository by inject()
+    private val _taskToOpen = MutableStateFlow<TaskInfo?>(null)
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        loadBackupTask(intent)
+        loadTaskToOpen(intent)
     }
 
-    private fun loadBackupTask(intent: Intent) {
-        val requestedId = intent.getStringExtra(BackupService.EXTRA_TASK_ID)
-        val requestedState = requestedId?.let { mBackupProcessRepo.getStateOrNull(it)?.value }
-        val latest = mBackupProcessRepo.latestState.value
-        _backupTaskId.value = requestedState?.id ?: latest?.takeIf { it.isActive }?.id
+    private fun loadTaskToOpen(intent: Intent) {
+        val restoreId = intent.getStringExtra(RestoreService.EXTRA_TASK_ID)?.takeIf { it.isNotBlank() }
+        val backupId = intent.getStringExtra(BackupService.EXTRA_TASK_ID)?.takeIf { it.isNotBlank() }
+        _taskToOpen.value = when {
+            restoreId != null -> TaskInfo(
+                restoreId, TaskType.Restore, mRestoreProcessRepo.getState(restoreId).value.backendType,
+            )
+            backupId != null -> TaskInfo(
+                backupId, TaskType.Backup, mBackupProcessRepo.getState(backupId).value.backendType,
+            )
+            else -> mTaskRepo.activeTask.value
+        }
+        // A later activity recreation must not reopen a task already dismissed by the user.
+        intent.removeExtra(RestoreService.EXTRA_TASK_ID)
+        intent.removeExtra(BackupService.EXTRA_TASK_ID)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -158,7 +177,7 @@ class MainActivity : ComponentActivity() {
             }
         }
         NotificationHelper.createChannelIfNecessary(this)
-        loadBackupTask(intent)
+        loadTaskToOpen(intent)
         splashScreen.setKeepOnScreenCondition { false }
 
         enableEdgeToEdge()
@@ -170,14 +189,10 @@ class MainActivity : ComponentActivity() {
                 val uiState by mMainViewModel.uiState.collectAsStateWithLifecycle()
                 val backStack = rememberNavBackStack(MainNavigationRoute)
                 val navigator = remember(backStack) { Navigator(backStack) }
-                val backupTaskId by _backupTaskId.collectAsStateWithLifecycle()
-                LaunchedEffect(backupTaskId) {
-                    backupTaskId?.let { taskId ->
-                        val state = mBackupProcessRepo.getState(taskId).value
-                        val route = when (state.backendType) {
-                            BackupBackendType.Archive -> BackupProcessRoute(taskId)
-                            BackupBackendType.Rustic -> RusticBackupProcessRoute(taskId)
-                        }
+                val taskToOpen by _taskToOpen.collectAsStateWithLifecycle()
+                LaunchedEffect(taskToOpen) {
+                    taskToOpen?.let { task ->
+                        val route = task.toProcessRoute()
                         val existingIndex = backStack.indexOf(route)
                         if (existingIndex >= 0) {
                             while (backStack.lastIndex > existingIndex) {
@@ -186,7 +201,7 @@ class MainActivity : ComponentActivity() {
                         } else {
                             backStack.add(route)
                         }
-                        _backupTaskId.value = null
+                        _taskToOpen.value = null
                     }
                 }
 
@@ -253,9 +268,24 @@ class MainActivity : ComponentActivity() {
                                 BackupConfigScreen(navigator, viewModel)
                             }
 
+                            entry<RestoreProcessRoute> { route ->
+                                val processViewModel = koinViewModel<RestoreProcessViewModel> { parametersOf(route.taskId) }
+                                RestoreProcessScreen(processViewModel, onFinish = navigator::popBackStackSafely)
+                            }
+
                             entry<RestoreRoute> { route ->
                                 val viewModel = koinViewModel<RestoreViewModel> { parametersOf(route) }
-                                RestoreNavigationHost(navigator, viewModel)
+                                RestoreNavigationHost(
+                                    navigator = navigator,
+                                    viewModel = viewModel,
+                                    onStarted = { taskId ->
+                                        if (backStack.lastOrNull() == route) {
+                                            backStack.removeLastOrNull()
+                                        }
+                                        backStack.add(RestoreProcessRoute(taskId))
+                                    },
+                                    onOpenTask = { _taskToOpen.value = it },
+                                )
                             }
 
                             entry<BackupAppsRoute> {

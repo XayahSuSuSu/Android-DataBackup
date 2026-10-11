@@ -4,71 +4,64 @@ import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.data.RestoreProcessRepository
-import com.xayah.databackup.data.RestoreRepository
+import com.xayah.databackup.entity.BackupBackendType
+import com.xayah.databackup.entity.restore.RestoreProcessItem
+import com.xayah.databackup.entity.restore.RestoreProcessState
+import com.xayah.databackup.entity.restore.RestoreProcessStatus
+import com.xayah.databackup.service.RestoreService
 import com.xayah.databackup.util.BaseViewModel
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-internal class RestoreProcessViewModel(
-    restoreRepo: RestoreRepository,
-    processRepo: RestoreProcessRepository,
-) : BaseViewModel() {
-    private val _uiState = MutableStateFlow(RestoreProcessUiState())
-    val uiState: StateFlow<RestoreProcessUiState> = _uiState.asStateFlow()
-    val overallProgress: StateFlow<String> = uiState
-        .map { calculateRestoreProgress(it.items) }
-        .stateIn(
-            scope = viewModelScope,
-            initialValue = "0",
-            started = SharingStarted.WhileSubscribed(5_000),
-        )
-    private var mIsCancelRequested = false
+internal data class RestoreProcessUiState(
+    val status: RestoreProcessStatus = RestoreProcessStatus.Processing,
+    val backendType: BackupBackendType = BackupBackendType.Archive,
+    val items: List<RestoreProcessItem> = emptyList(),
+    val errorMessage: String = "",
+) {
+    val isProcessing: Boolean get() = status == RestoreProcessStatus.Pending || status == RestoreProcessStatus.Processing
+    val isCanceling: Boolean get() = status == RestoreProcessStatus.Canceling
+    val isFailed: Boolean get() = status == RestoreProcessStatus.Failed || status == RestoreProcessStatus.Interrupted
+    val isTerminal: Boolean get() = !isProcessing && !isCanceling
+    val canCancel: Boolean get() = backendType == BackupBackendType.Archive && status == RestoreProcessStatus.Processing
+    val canLeave: Boolean get() = backendType == BackupBackendType.Rustic && isProcessing
+}
 
-    init {
-        // Consumed once: recreation after process death must not repeat destructive writes.
-        val request = restoreRepo.consumeRestoreRequest()
-        if (request == null) {
-            _uiState.value = RestoreProcessUiState(
-                status = RestoreProcessStatus.Failed,
-                errorMessage = App.application.getString(R.string.restore_session_expired),
-            )
-        } else {
-            _uiState.value = request.toInitialProcessUiState(restoreRepo.state.value.inventory)
-            viewModelScope.launch {
-                runCatching {
-                    val finished = processRepo.restore(request, { mIsCancelRequested }) { event ->
-                        _uiState.update { it.reduceRestoreProcessState(event) }
-                    }
-                    _uiState.update { it.toTerminalState(finished) }
-                }.onFailure { error ->
-                    if (error is CancellationException || error !is Exception) throw error
-                    // Parser and Binder exceptions can contain private data. Show a localized summary.
-                    _uiState.update { it.toFailedState(App.application.getString(R.string.restore_process_failed)) }
-                }
-            }
-        }
-    }
+internal class RestoreProcessViewModel(private val mProcessRepo: RestoreProcessRepository, private val mTaskId: String) : BaseViewModel() {
+    private val mState = mProcessRepo.getState(mTaskId)
+    val uiState: StateFlow<RestoreProcessUiState> = mState.map { it.toUiState() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), mState.value.toUiState())
+    val overallProgress: StateFlow<String> = mState.map { calculateRestoreProgress(it.items) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), calculateRestoreProgress(mState.value.items))
 
     fun cancel() {
-        if (!uiState.value.isProcessing) return
-        mIsCancelRequested = true
-        _uiState.update { it.copy(status = RestoreProcessStatus.Canceling) }
+        val state = mState.value
+        if (state.backendType == BackupBackendType.Archive && state.status == RestoreProcessStatus.Processing) {
+            RestoreService.cancel(App.application, mTaskId)
+        }
     }
 }
 
+private fun RestoreProcessState.toUiState(): RestoreProcessUiState = RestoreProcessUiState(
+    status = status,
+    backendType = backendType,
+    items = items,
+    errorMessage = when {
+        isExpired -> App.application.getString(R.string.restore_session_expired)
+        status == RestoreProcessStatus.Interrupted -> App.application.getString(R.string.restore_process_failed)
+        status == RestoreProcessStatus.Failed -> App.application.getString(R.string.restore_process_failed)
+        else -> ""
+    },
+)
+
 internal fun calculateRestoreProgress(items: List<RestoreProcessItem>): String {
-    val currentIndex = items.sumOf { it.completedCount }
-    val totalCount = items.sumOf { it.totalCount }
-    return if (totalCount != 0) {
-        ((currentIndex.toFloat() / totalCount) * 100).roundToInt().toString()
+    val completedCount = items.sumOf { it.completedCount.toLong() }
+    val totalCount = items.sumOf { it.totalCount.toLong() }
+    return if (totalCount > 0) {
+        ((completedCount.toDouble() / totalCount) * 100).roundToInt().toString()
     } else {
         "0"
     }

@@ -53,6 +53,11 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
+        <service
+            android:name=".service.RestoreService$RestoreServiceImpl"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
         <activity
             android:name=".feature.MainActivity"
             android:windowSoftInputMode="adjustResize"

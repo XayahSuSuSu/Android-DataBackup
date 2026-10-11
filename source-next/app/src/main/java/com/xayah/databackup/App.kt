@@ -19,6 +19,7 @@ import com.xayah.databackup.data.NetworkRepository
 import com.xayah.databackup.data.RestoreProcessRepository
 import com.xayah.databackup.data.RestoreRepository
 import com.xayah.databackup.data.RusticRepository
+import com.xayah.databackup.data.TaskRepository
 import com.xayah.databackup.data.TranslatorRepository
 import com.xayah.databackup.feature.about.TranslatorsViewModel
 import com.xayah.databackup.feature.backup.BackupConfigViewModel
@@ -89,17 +90,19 @@ class App : Application(), SingletonImageLoader.Factory {
         singleOf(::BackupSerializationHelper)
         singleOf(::BackupMetadataHelper)
 
+        singleOf(::TaskRepository)
+
         // Backup backends and execution
         singleOf(::ArchiveBackupAppsHelper)
         singleOf(::ArchiveBackupHelper)
         singleOf(::RusticBackupSourceHelper)
         singleOf(::RusticBackupHelper)
-        single { BackupProcessRepository(get<ArchiveBackupHelper>(), get<RusticBackupHelper>(), get()) }
+        single { BackupProcessRepository(get<ArchiveBackupHelper>(), get<RusticBackupHelper>(), get(), get()) }
 
         // Restore backends and execution
         singleOf(::ArchiveRestoreHelper)
         singleOf(::RusticRestoreHelper)
-        single { RestoreProcessRepository(get<RusticRestoreHelper>(), get<ArchiveRestoreHelper>()) }
+        single { RestoreProcessRepository(get<RusticRestoreHelper>(), get<ArchiveRestoreHelper>(), get()) }
         // Each restore navigation entry owns its selection and pending request.
         factory { RestoreRepository(get(), get(), get()) }
 
@@ -123,7 +126,7 @@ class App : Application(), SingletonImageLoader.Factory {
         viewModelOf(::RestoreCallLogsViewModel)
         viewModelOf(::RestoreMessagesViewModel)
         viewModelOf(::RestoreSetupViewModel)
-        viewModelOf(::RestoreProcessViewModel)
+        viewModel { parameters -> RestoreProcessViewModel(get(), parameters.get()) }
 
         // Dashboard, updates and about screens
         viewModelOf(::DashboardViewModel)

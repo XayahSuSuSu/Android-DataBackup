@@ -10,9 +10,9 @@ import com.xayah.databackup.entity.backup.BackupStatus
 import com.xayah.databackup.entity.backup.finish
 import com.xayah.databackup.entity.backup.reduce
 import com.xayah.databackup.entity.backup.toInitialState
+import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.service.backup.BackupHelper
 import com.xayah.databackup.util.LogHelper
-import com.xayah.databackup.util.ShellHelper
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +30,8 @@ class BackupProcessRepository(
     private val mArchiveHelper: BackupHelper,
     private val mRusticHelper: BackupHelper,
     private val mConfigRepo: BackupConfigRepository,
+    private val mTaskRepo: TaskRepository,
+    private val mStopRootService: suspend () -> Unit = { RemoteRootService.stopService() },
 ) {
     companion object {
         private const val TAG = "BackupProcessRepository"
@@ -41,6 +43,8 @@ class BackupProcessRepository(
         var job: Job? = null
         var stopCompletion: CompletableDeferred<Unit>? = null
         var isInterrupted: Boolean = false
+        var hasStopFailure: Boolean = false
+        val task = TaskInfo(request.id, TaskType.Backup, request.backendType)
     }
 
     private val mLock = Any()
@@ -65,7 +69,9 @@ class BackupProcessRepository(
         val state = request.toInitialState()
         synchronized(mLock) {
             check(mSessions.values.none { it.state.value.isActive || it.job != null }) { "A backup is already running" }
-            mSessions[request.id] = Session(request, state)
+            val session = Session(request, state)
+            mTaskRepo.acquire(session.task)
+            mSessions[request.id] = session
             _latestState.value = state
         }
         return state
@@ -83,6 +89,7 @@ class BackupProcessRepository(
             }
             session.pendingRequest = null
             updateState(id) { it.finish(BackupStatus.Failed) }
+            mTaskRepo.release(session.task)
         }
     }
 
@@ -99,6 +106,9 @@ class BackupProcessRepository(
             executionJob.invokeOnCompletion {
                 synchronized(mLock) {
                     session.job = null
+                    if (!session.hasStopFailure) {
+                        mTaskRepo.release(session.task)
+                    }
                 }
             }
             updateState(id) { it.copy(status = BackupStatus.Running) }
@@ -122,6 +132,14 @@ class BackupProcessRepository(
             terminalStatus = if (result.hasFailures) BackupStatus.PartialFailure else BackupStatus.Completed
         } catch (error: CancellationException) {
             terminalStatus = BackupStatus.Canceled
+            withContext(NonCancellable) {
+                val hasStopRequest = synchronized(mLock) { mSessions[id]?.stopCompletion != null }
+                if (!hasStopRequest) {
+                    runCatching { cancel(id, isInterrupted = true) }.onFailure {
+                        LogHelper.w(TAG, "execute", "Cannot confirm Root termination")
+                    }
+                }
+            }
             throw error
         } catch (error: Exception) {
             LogHelper.w(TAG, "execute", "Backup failed: error=${error.javaClass.simpleName}")
@@ -131,7 +149,11 @@ class BackupProcessRepository(
                 stopCompletion?.await()
                 synchronized(mLock) {
                     val session = checkNotNull(mSessions[id])
-                    val status = if (session.isInterrupted) BackupStatus.Interrupted else terminalStatus
+                    val status = when {
+                        session.isInterrupted || session.hasStopFailure -> BackupStatus.Interrupted
+                        session.stopCompletion != null -> BackupStatus.Canceled
+                        else -> terminalStatus
+                    }
                     updateState(id) { it.finish(status) }
                 }
             }
@@ -162,10 +184,17 @@ class BackupProcessRepository(
         withContext(NonCancellable + Dispatchers.IO) {
             try {
                 if (job != null) {
-                    ShellHelper.killRootService()
+                    mStopRootService()
                 } else {
-                    updateState(id) { it.finish(if (isInterrupted) BackupStatus.Interrupted else BackupStatus.Canceled) }
+                    synchronized(mLock) {
+                        val session = checkNotNull(mSessions[id])
+                        updateState(id) { it.finish(if (session.isInterrupted) BackupStatus.Interrupted else BackupStatus.Canceled) }
+                        mTaskRepo.release(session.task)
+                    }
                 }
+            } catch (error: Exception) {
+                synchronized(mLock) { mSessions[id]?.hasStopFailure = true }
+                throw error
             } finally {
                 stopCompletion.complete(Unit)
             }

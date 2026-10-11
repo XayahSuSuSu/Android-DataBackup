@@ -3,6 +3,7 @@ package com.xayah.databackup.data
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.backup.BackupSourceCategory
 import com.xayah.databackup.entity.restore.RestoreCategory
+import com.xayah.databackup.entity.restore.RestoreProcessState
 import com.xayah.databackup.entity.restore.RestoreRequest
 import com.xayah.databackup.entity.restore.RestoreState
 import com.xayah.databackup.entity.restore.selectAppPart
@@ -10,6 +11,7 @@ import com.xayah.databackup.entity.restore.selectAppParts
 import com.xayah.databackup.entity.restore.selectCategory
 import com.xayah.databackup.entity.restore.selectItem
 import com.xayah.databackup.entity.restore.selectItems
+import com.xayah.databackup.entity.restore.toInitialState
 import com.xayah.databackup.entity.restore.toRestoreRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,11 +42,17 @@ class RestoreRepository(
         }
     }
 
-    internal fun prepareRestore() {
+    @Synchronized
+    internal fun prepareRestore(): RestoreProcessState {
         mPendingRequest = null
-        mPendingRequest = state.value.toRestoreRequest()
+        val selection = state.value
+        val request = selection.toRestoreRequest()
+        val initialState = request.toInitialState(selection.inventory, selection.config?.name.orEmpty())
+        mPendingRequest = request
+        return initialState
     }
 
+    @Synchronized
     internal fun consumeRestoreRequest(): RestoreRequest? = mPendingRequest.also { mPendingRequest = null }
 
     internal fun updateState(state: RestoreState) {

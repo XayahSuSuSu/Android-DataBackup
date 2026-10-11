@@ -2,7 +2,6 @@
 
 package com.xayah.databackup.rootservice
 
-import android.Manifest
 import android.app.ActivityManagerHidden
 import android.app.ActivityThread
 import android.content.ComponentName
@@ -26,8 +25,6 @@ import android.os.ParcelFileDescriptor
 import android.os.RemoteException
 import android.os.StatFs
 import android.os.UserManagerHidden
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.adapter
 import com.topjohnwu.superuser.ipc.RootService
 import com.xayah.databackup.App
 import com.xayah.databackup.R
@@ -43,8 +40,6 @@ import com.xayah.databackup.parcelables.FilePathParcelable
 import com.xayah.databackup.parcelables.StatFsParcelable
 import com.xayah.databackup.service.archive.ArchiveStreamHelper
 import com.xayah.databackup.service.restore.InstallApkHelper
-import com.xayah.databackup.service.restore.RestoreCallLogsHelper
-import com.xayah.databackup.service.restore.RestoreContactsHelper
 import com.xayah.databackup.service.restore.RestoreNetworksHelper
 import com.xayah.databackup.service.restore.archive.ArchiveRestoreAppHelper
 import com.xayah.databackup.service.restore.archive.ArchiveRestoreMessagesHelper
@@ -62,11 +57,13 @@ import com.xayah.databackup.util.ParcelableHelper.unmarshall
 import com.xayah.databackup.util.PathHelper
 import com.xayah.databackup.util.PathHelper.TMP_PARCEL_PREFIX
 import com.xayah.databackup.util.PathHelper.TMP_SUFFIX
+import com.xayah.databackup.util.ShellHelper
 import com.xayah.hiddenapi.castTo
 import com.xayah.libnative.NativeLib
 import com.xayah.libnative.RusticWrapper
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.runBlocking
@@ -74,6 +71,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
 import java.util.UUID
@@ -111,8 +109,11 @@ object RemoteRootService {
     }
 
     private var mMutex = Mutex()
+    @Volatile
     private var mBinder: IBinder? = null
+    @Volatile
     private var mService: IRemoteRootService? = null
+    @Volatile
     private var mConnection: ServiceConnection? = null
     private val mServiceIntent by lazy { Intent().apply { component = ComponentName(App.application.packageName, Service::class.java.name) } }
     private var mRetries = 0
@@ -625,6 +626,20 @@ object RemoteRootService {
         }
     }
 
+    /** Stops the Root service and waits for its Binder to die before clearing the connection. */
+    internal suspend fun stopService() = withContext(NonCancellable + Dispatchers.IO) {
+        mMutex.withLock {
+            val binder = mBinder
+            ShellHelper.killRootService()
+            withTimeout(TIMEOUT_10S.seconds) {
+                while (binder?.isBinderAlive == true) {
+                    delay(50)
+                }
+            }
+            destroyService()
+        }
+    }
+
     private fun destroyService() {
         if (mConnection != null || mService != null || mBinder != null) {
             LogHelper.i(TAG, "destroyService", "Destroy the root service.")
@@ -643,6 +658,9 @@ object RemoteRootService {
                     LogHelper.i(TAG, "bindService", "Bind the root service, retries: $mRetries.")
                     val connection = object : ServiceConnection {
                         override fun onServiceConnected(name: ComponentName, service: IBinder) {
+                            if (mConnection !== this) {
+                                return
+                            }
                             val ipc = IRemoteRootService.Stub.asInterface(service)
                             mBinder = service
                             mService = ipc
@@ -652,6 +670,9 @@ object RemoteRootService {
                         }
 
                         override fun onServiceDisconnected(name: ComponentName) {
+                            if (mConnection !== this) {
+                                return
+                            }
                             val msg = "Service disconnected."
                             LogHelper.w(TAG, "bindService", msg)
                             destroyService()
@@ -659,6 +680,9 @@ object RemoteRootService {
                         }
 
                         override fun onBindingDied(name: ComponentName) {
+                            if (mConnection !== this) {
+                                return
+                            }
                             val msg = "Binding died."
                             LogHelper.e(TAG, "bindService", msg)
                             destroyService()
@@ -666,14 +690,17 @@ object RemoteRootService {
                         }
 
                         override fun onNullBinding(name: ComponentName) {
+                            if (mConnection !== this) {
+                                return
+                            }
                             val msg = "Null binding."
                             LogHelper.e(TAG, "bindService", msg)
                             destroyService()
                             if (continuation.context.isActive) continuation.resumeWithException(RemoteException(msg))
                         }
                     }
-                    RootService.bind(mServiceIntent, connection)
                     mConnection = connection
+                    RootService.bind(mServiceIntent, connection)
                 } else {
                     mRetries = 0
                     mService
@@ -938,79 +965,8 @@ object RemoteRootService {
         service.restoreRusticNetworks(repositoryPath, password, snapshotId, networkIds, callback.asBinderCallback())
     }
 
-    /**
-     * Restores selected contact records from a Rustic snapshot.
-     *
-     * Imports records as local contacts for the app's current user without overwriting existing contacts.
-     * Requires WRITE_CONTACTS permission. The root service reads the snapshot, and the app writes to Contacts Provider.
-     * Allocates new raw contact and data IDs; source IDs, account/sync metadata and group memberships are not imported.
-     * Skips deleted records and records with no remaining data rows after filtering group memberships and photos.
-     * Repeated selection keys are imported once per call, but repeated calls can create duplicate contacts.
-     * Each contact is inserted in one transaction. Earlier imports are not rolled back if restoration fails.
-     *
-     * @param repositoryPath Path to the Rustic repository on the device.
-     * @param password Password used to access the repository.
-     * @param snapshotId Full 64-character hexadecimal snapshot ID.
-     * @param contactIds Non-empty list of restore inventory keys in the form `contact:<index>`,
-     * where `index` is the zero-based record position in the snapshot, not a source-device contact ID.
-     * @param callback Synchronously receives restore progress and results for each record.
-     * @return Distinct inventory keys of skipped records in selection order. Empty if no records were
-     * skipped, or all selected keys if no records contain restorable data.
-     * @throws IllegalArgumentException If the snapshot ID, selection or selected contact backup data is invalid.
-     * @throws IllegalStateException If WRITE_CONTACTS permission is missing, the root service is unavailable,
-     * or shared contact restore setup fails.
-     */
-    internal suspend fun restoreRusticContacts(
-        repositoryPath: String,
-        password: String,
-        snapshotId: String,
-        contactIds: List<String>,
-        callback: RestoreProgressCallback,
-    ): List<String> = withContext(Dispatchers.IO) {
-        requireFullSnapshotId(snapshotId)
-        require(contactIds.isNotEmpty()) { "No contacts selected" }
-        check(App.application.checkSelfPermission(Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            "Contacts restore requires WRITE_CONTACTS permission"
-        }
-        val path = PathHelper.getRusticSnapshotMetadataFilePath(PathHelper.getBackupContactsConfigFileRelativePath())
-        val serialized = readRusticSnapshotTextFiles(repositoryPath, password, snapshotId, listOf(path))
-        RestoreContactsHelper(App.application.contentResolver).restore(serialized, path, contactIds, callback)
-    }
 
-    /**
-     * Restores selected call logs from a Rustic snapshot for the app's current user.
-     *
-     * Requires READ_CALL_LOG and WRITE_CALL_LOG. The root service reads the snapshot, and the app writes to CallLogProvider.
-     * Imports portable fields supported by the target Android version without source IDs or SIM/account associations.
-     * Skips duplicates, voicemail and unsupported call types. Restored calls are marked read.
-     * Earlier imports are not rolled back if restoration fails.
-     *
-     * @param repositoryPath Path to the Rustic repository on the device.
-     * @param password Password used to access the repository.
-     * @param snapshotId Full 64-character hexadecimal snapshot ID.
-     * @param callLogIds Non-empty list of inventory keys in the form `call:<index>`, where `index` is the
-     * zero-based record position in the snapshot, not a source-device call ID.
-     * @param callback Synchronously receives restore progress and results for each record.
-     * @return Distinct inventory keys of skipped records in selection order. Empty if none were skipped.
-     * @throws IllegalArgumentException If the snapshot ID, selection or selected call log data is invalid.
-     * @throws IllegalStateException If permissions are missing, the root service is unavailable or restoration fails.
-     */
-    internal suspend fun restoreRusticCallLogs(
-        repositoryPath: String,
-        password: String,
-        snapshotId: String,
-        callLogIds: List<String>,
-        callback: RestoreProgressCallback,
-    ): List<String> = withContext(Dispatchers.IO) {
-        requireFullSnapshotId(snapshotId)
-        require(callLogIds.isNotEmpty()) { "No call logs selected" }
-        check(listOf(Manifest.permission.READ_CALL_LOG, Manifest.permission.WRITE_CALL_LOG).all {
-            App.application.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
-        }) { "Call logs restore requires READ_CALL_LOG and WRITE_CALL_LOG permissions" }
-        val path = PathHelper.getRusticSnapshotMetadataFilePath(PathHelper.getBackupCallLogsConfigFileRelativePath())
-        val serialized = readRusticSnapshotTextFiles(repositoryPath, password, snapshotId, listOf(path))
-        RestoreCallLogsHelper(App.application.contentResolver).restore(serialized, path, callLogIds, callback)
-    }
+
 
     /**
      * Restores selected SMS/MMS records from a Rustic snapshot.
@@ -1092,28 +1048,5 @@ object RemoteRootService {
     internal suspend fun restoreArchiveMessages(archivePath: String, ids: List<String>, callback: RestoreProgressCallback): List<String> =
         withContext(Dispatchers.IO) {
             checkNotNull(getService()) { "Root service is unavailable" }.restoreArchiveMessages(archivePath, ids, callback.asBinderCallback())
-        }
-
-    internal suspend fun restoreArchiveContacts(archivePath: String, ids: List<String>, callback: RestoreProgressCallback): List<String> =
-        withContext(Dispatchers.IO) {
-            check(App.application.checkSelfPermission(Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-                "Contacts restore requires WRITE_CONTACTS permission"
-            }
-            val path = PathHelper.getBackupContactsConfigFilePath(archivePath)
-            val serialized = Moshi.Builder().build().adapter<Map<String, String>>().toJson(mapOf(path to readText(path)))
-            RestoreContactsHelper(App.application.contentResolver).restore(serialized, path, ids, callback)
-        }
-
-    internal suspend fun restoreArchiveCallLogs(archivePath: String, ids: List<String>, callback: RestoreProgressCallback): List<String> =
-        withContext(Dispatchers.IO) {
-            check(
-                listOf(
-                    Manifest.permission.READ_CALL_LOG,
-                    Manifest.permission.WRITE_CALL_LOG
-                ).all { App.application.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED }
-            ) { "Call logs restore requires READ_CALL_LOG and WRITE_CALL_LOG permissions" }
-            val path = PathHelper.getBackupCallLogsConfigFilePath(archivePath)
-            val serialized = Moshi.Builder().build().adapter<Map<String, String>>().toJson(mapOf(path to readText(path)))
-            RestoreCallLogsHelper(App.application.contentResolver).restore(serialized, path, ids, callback)
         }
 }

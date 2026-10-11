@@ -9,12 +9,12 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.xayah.databackup.data.RestoreRepository
+import com.xayah.databackup.data.TaskInfo
 import com.xayah.databackup.feature.RestoreAppsRoute
 import com.xayah.databackup.feature.RestoreCallLogsRoute
 import com.xayah.databackup.feature.RestoreContactsRoute
 import com.xayah.databackup.feature.RestoreMessagesRoute
 import com.xayah.databackup.feature.RestoreNetworksRoute
-import com.xayah.databackup.feature.RestoreProcessRoute
 import com.xayah.databackup.feature.RestoreSetupRoute
 import com.xayah.databackup.feature.restore.apps.AppsViewModel
 import com.xayah.databackup.feature.restore.apps.RestoreAppsScreen
@@ -34,8 +34,19 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun RestoreNavigationHost(navigator: Navigator, viewModel: RestoreViewModel) {
-    RestoreNavigationContent(viewModel.repository, onBack = navigator::popBackStackSafely, onRetry = viewModel::load)
+fun RestoreNavigationHost(
+    navigator: Navigator,
+    viewModel: RestoreViewModel,
+    onStarted: (String) -> Unit,
+    onOpenTask: (TaskInfo) -> Unit,
+) {
+    RestoreNavigationContent(
+        viewModel.repository,
+        onBack = navigator::popBackStackSafely,
+        onRetry = viewModel::load,
+        onStarted = onStarted,
+        onOpenTask = onOpenTask,
+    )
 }
 
 @Composable
@@ -44,6 +55,8 @@ internal fun RestoreNavigationContent(
     onBack: () -> Unit,
     onRetry: () -> Unit = {},
     initialRoute: NavKey = RestoreSetupRoute,
+    onStarted: (String) -> Unit = {},
+    onOpenTask: (TaskInfo) -> Unit = {},
 ) {
     val backStack = rememberNavBackStack(initialRoute)
     val navigator = remember(backStack) { Navigator(backStack) }
@@ -55,13 +68,9 @@ internal fun RestoreNavigationContent(
         popTransitionSpec = { backwardNavigationTransition() },
         predictivePopTransitionSpec = { backwardNavigationTransition() },
         entryProvider = entryProvider {
-            entry<RestoreProcessRoute> {
-                val viewModel = koinViewModel<RestoreProcessViewModel> { parametersOf(restoreRepo) }
-                RestoreProcessScreen(viewModel, onFinish = onBack)
-            }
             entry<RestoreSetupRoute> {
                 val viewModel = koinViewModel<RestoreSetupViewModel> { parametersOf(restoreRepo) }
-                RestoreSetupScreen(navigator, viewModel, onBack, onRetry)
+                RestoreSetupScreen(navigator, viewModel, onBack, onRetry, onStarted, onOpenTask)
             }
             entry<RestoreAppsRoute> {
                 val viewModel = koinViewModel<AppsViewModel> { parametersOf(restoreRepo) }

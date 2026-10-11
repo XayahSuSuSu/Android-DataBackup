@@ -13,6 +13,11 @@ import androidx.compose.ui.unit.dp
 import com.xayah.databackup.R
 import com.xayah.databackup.entity.backup.BackupSourceCategory
 import com.xayah.databackup.entity.restore.RestoreCategory
+import com.xayah.databackup.entity.restore.RestoreItemStatus
+import com.xayah.databackup.entity.restore.RestoreProcessItem
+import com.xayah.databackup.entity.restore.RestoreProcessStatus
+import com.xayah.databackup.entity.restore.RestoreRecordResult
+import com.xayah.databackup.entity.restore.RestoreRecordStatus
 import com.xayah.databackup.ui.component.ProcessItemCard
 import com.xayah.databackup.ui.component.ProcessItemCardState
 import com.xayah.databackup.ui.component.ProcessScaffold
@@ -24,14 +29,18 @@ internal fun RestoreProcessContent(
     overallProgress: String,
     onRequestCancel: () -> Unit,
     onFinish: () -> Unit,
+    onRequestLeave: () -> Unit = onFinish,
 ) {
     val onBack: () -> Unit = {
         when {
             uiState.isTerminal -> onFinish()
-            uiState.isProcessing -> onRequestCancel()
+            uiState.canCancel -> onRequestCancel()
+            uiState.canLeave -> onRequestLeave()
         }
     }
     val statusLabel = when (uiState.status) {
+        RestoreProcessStatus.Pending -> stringResource(R.string.waiting_to_start)
+        RestoreProcessStatus.Interrupted -> stringResource(R.string.restore_interrupted)
         RestoreProcessStatus.Canceling -> stringResource(R.string.processing)
         RestoreProcessStatus.Canceled -> stringResource(R.string.canceled)
         RestoreProcessStatus.Processing -> stringResource(R.string.restoring)
@@ -45,7 +54,7 @@ internal fun RestoreProcessContent(
         isProcessing = uiState.isProcessing,
         isCanceling = uiState.isCanceling,
         isTerminal = uiState.isTerminal,
-        isBackEnabled = !uiState.isCanceling,
+        isBackEnabled = uiState.isTerminal || uiState.canCancel || uiState.canLeave,
         notice = if (uiState.isFailed) uiState.errorMessage.ifEmpty { stringResource(R.string.failed) } else "",
         onBack = onBack,
         onFinish = onFinish,
@@ -86,7 +95,7 @@ private fun RestoreProcessItemCard(item: RestoreProcessItem, isTerminal: Boolean
             } else if (item.skippedCount > 0) {
                 stringResource(R.string.restore_skipped_count, statusLabel, item.skippedCount)
             } else {
-                item.message.ifEmpty { statusLabel }
+                statusLabel
             },
             progress = item.progress,
             isProcessing = item.status == RestoreItemStatus.Processing,
@@ -132,10 +141,10 @@ private fun RestoreFailedPreview() = RestoreProcessPreviewContent(RestoreProcess
 @Composable
 private fun RestoreProcessPreviewContent(status: RestoreProcessStatus) {
     val itemStatus = when (status) {
-        RestoreProcessStatus.Processing, RestoreProcessStatus.Canceling -> RestoreItemStatus.Processing
+        RestoreProcessStatus.Pending, RestoreProcessStatus.Processing, RestoreProcessStatus.Canceling -> RestoreItemStatus.Processing
         RestoreProcessStatus.Canceled -> RestoreItemStatus.Canceled
         RestoreProcessStatus.Finished -> RestoreItemStatus.Finished
-        RestoreProcessStatus.Failed, RestoreProcessStatus.FinishedWithErrors -> RestoreItemStatus.Failed
+        RestoreProcessStatus.Interrupted, RestoreProcessStatus.Failed, RestoreProcessStatus.FinishedWithErrors -> RestoreItemStatus.Failed
     }
     DataBackupTheme(dynamicColor = false) {
         RestoreProcessContent(
@@ -205,6 +214,7 @@ private val RestoreRecordStatus.titleRes: Int
         RestoreRecordStatus.Restored -> R.string.restore_result_restored
         RestoreRecordStatus.Skipped -> R.string.restore_result_skipped
         RestoreRecordStatus.Failed -> R.string.failed
+        RestoreRecordStatus.Interrupted -> R.string.restore_interrupted
         RestoreRecordStatus.NotProcessed -> R.string.restore_result_not_processed
     }
 
