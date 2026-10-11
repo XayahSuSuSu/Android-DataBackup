@@ -557,4 +557,7 @@
     <string name="restore_result_not_processed">Nie przetworzono</string>
     <string name="restore_skipped_count">%1$s · %2$d pominięto</string>
     <string name="restore_result_counts">%1$s · %2$d nie powiodło się · %3$d pominięto</string>
+    <string name="backup_partial_failure">Niektóre elementy kopii zapasowej nie powiodły się lub nie zostały przetworzone</string>
+    <string name="backup_start_failed">Nie udało się uruchomić kopii zapasowej</string>
+    <string name="backup_interrupted">Kopia zapasowa przerwana</string>
 </resources>
