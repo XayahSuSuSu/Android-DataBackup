@@ -549,7 +549,7 @@
     <string name="restore_snapshot_description">Herstel opname %1$s (%2$s)</string>
     <string name="restore_snapshot_load_failed">Kon opname niet laden</string>
     <string name="restore_session_expired">Hersteltaak is niet meer beschikbaar. Selecteer de opname opnieuw.</string>
-    <string name="restore_cancel_description">Stop met herstellen? Herstelde gegevens worden opgeslagen.</string>
+    <string name="restore_cancel_description">Stop nu met herstellen? Herstelde gegevens worden opgeslagen. Het huidige item wordt mogelijk slecths gedeeltelijk hersteld.</string>
     <string name="restore_process_failed">Herstellen is onverwacht gestopt. Sommige gegevens zijn mogelijk al hersteld.</string>
     <string name="restore_finished_with_errors">Herstel beëindigd met fouten</string>
     <string name="restore_result_restored">Hersteld</string>
@@ -557,4 +557,11 @@
     <string name="restore_result_not_processed">Niet verwerkt</string>
     <string name="restore_skipped_count">%1$s · %2$d overgeslagen</string>
     <string name="restore_result_counts">%1$s · %2$d mislukt · %3$d overgeslagen</string>
+    <string name="backup_interrupted">Back-up onderbroken</string>
+    <string name="backup_partial_failure">Sommige back-up items zijn mislukt of niet verwerkt</string>
+    <string name="backup_start_failed">Back-up starten mislukt</string>
+    <string name="restore_interrupted">Herstel onderbroken</string>
+    <string name="restore_background_description">Herstel zal doorgaan in de achtergrond. Open de melding om terug te gaan naar de voortgang.</string>
+    <string name="backup_restore_busy">Een back-up of herstelactie wordt uitgevoerd of gestopt. Wacht tot deze eindigt voordat u een nieuwe taak start.</string>
+    <string name="view_active_task">Bekijk huidige taak</string>
 </resources>
