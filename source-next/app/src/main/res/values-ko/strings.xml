@@ -548,4 +548,20 @@
     <string name="restore_snapshot">스낸샷 복원</string>
     <string name="restore_snapshot_description">스냅샷 %1$s (%2$s) 복원</string>
     <string name="restore_snapshot_load_failed">스냅샷을 불러올 수 없습니다</string>
+    <string name="restore_session_expired">복원 작업을 더 이상 사용할 수 없습니다. 스냅샷을 다시 선택해 주세요.</string>
+    <string name="restore_cancel_description">지금 복원을 중단하시겠습니까? 복원된 데이터는 유지되지만, 현재 항목은 일부만 복원될 수 있습니다.</string>
+    <string name="restore_process_failed">복원이 비정상적으로 종료되었습니다. 일부 데이터는 이미 복원되었을 수 있습니다.</string>
+    <string name="restore_finished_with_errors">복원 완료 (일부 실패)</string>
+    <string name="restore_result_restored">복원됨</string>
+    <string name="restore_result_skipped">건너뜀</string>
+    <string name="restore_result_not_processed">처리되지 않음</string>
+    <string name="restore_skipped_count">%1$s · %2$d개 건너뜀</string>
+    <string name="restore_result_counts">%1$s · %2$d개 실패 · %3$d개 건너뜀</string>
+    <string name="backup_interrupted">백업 중단됨</string>
+    <string name="backup_partial_failure">일부 백업 항목이 실패했거나 처리되지 않았습니다</string>
+    <string name="backup_start_failed">백업을 시작할 수 없습니다</string>
+    <string name="restore_interrupted">복원 중단됨</string>
+    <string name="restore_background_description">백그라운드에서 복원이 계속 진행됩니다. 진행 상황을 확인하려면 알림을 여세요.</string>
+    <string name="backup_restore_busy">백업 또는 복원 작업이 진행 중이거나 중단되는 중입니다. 다른 작업을 시작하기 전에 작업이 끝날 때까지 기다려 주세요.</string>
+    <string name="view_active_task">현재 작업 보기</string>
 </resources>
