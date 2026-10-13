@@ -540,10 +540,18 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
 #   define PTRDIFF_MAX  _STDINT_MAX (1, 32, 0)
 #  endif
 # else
-#  define PTRDIFF_MIN  \
+/* 32-bit Android ptrdiff_t is int. A 64-bit constant overflows that type. */
+#  if defined __SIZEOF_PTRDIFF_T__ && __SIZEOF_PTRDIFF_T__ == 4
+#   define PTRDIFF_MIN  \
+    _STDINT_SIGNED_MIN (32, 0)
+#   define PTRDIFF_MAX  \
+    _STDINT_MAX (1, 32, 0)
+#  else
+#   define PTRDIFF_MIN  \
     _STDINT_SIGNED_MIN (64, 0l)
-#  define PTRDIFF_MAX  \
+#   define PTRDIFF_MAX  \
     _STDINT_MAX (1, 64, 0l)
+#  endif
 # endif
 
 /* sig_atomic_t limits */
@@ -570,7 +578,12 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
 #   define SIZE_MAX  _STDINT_MAX (0, 32, 0ul)
 #  endif
 # else
-#  define SIZE_MAX  _STDINT_MAX (0, 64, 0ul)
+/* 32-bit Android size_t is unsigned int, so the limit uses a 32-bit u suffix. */
+#  if defined __SIZEOF_SIZE_T__ && __SIZEOF_SIZE_T__ == 4
+#   define SIZE_MAX  _STDINT_MAX (0, 32, 0u)
+#  else
+#   define SIZE_MAX  _STDINT_MAX (0, 64, 0ul)
+#  endif
 # endif
 
 /* wchar_t limits */

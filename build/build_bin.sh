@@ -86,6 +86,21 @@ set_up_environment() {
     export KCONFIG_NOTIMESTAMP=1 # Busybox
 }
 
+check_tar_integer_limits() {
+    # Same include directories as libgnu. An incorrect limit must not be packaged.
+    TAR_DIR=$ROOT_PATH/../source/native/src/main/jni/external/tar
+    TAR_LIMITS_PROBE=$ROOT_PATH/tests/tar_integer_limits.c
+    TAR_LIMITS_OUT=$LOCAL_PATH/tar_integer_limits.o
+    echo "Checking tar integer limits ($TARGET_ARCH)"
+    $CC -c \
+        -I$TAR_DIR/tar-config \
+        -I$TAR_DIR/tar-gnu-embedded \
+        -I$TAR_DIR/tar/gnu \
+        -o $TAR_LIMITS_OUT \
+        $TAR_LIMITS_PROBE || exit 1
+    rm -f $TAR_LIMITS_OUT
+}
+
 build_zlib() {
     # For zstd
     if [ ! -f $LOCAL_PATH/zlib-$ZLIB_VERSION.tar.gz ]; then
@@ -277,6 +292,7 @@ build() {
  
 package() {
     # $1: type
+    check_tar_integer_limits
     case "$1" in
     built-in)
         package_built_in
