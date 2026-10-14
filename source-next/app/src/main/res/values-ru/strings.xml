@@ -537,4 +537,10 @@
     <string name="back_up_now">Создать резервную копию</string>
     <string name="no_matching_backups">Нет подходящих резервных копий</string>
     <string name="no_matching_backups_desc">Попробуйте изменить параметры поиска или фильтры.</string>
+    <string name="recent_backups">Недавние резервные копии</string>
+    <string name="view_all">Посмотреть все</string>
+    <string name="snapshots">Снимок</string>
+    <string name="snapshot_summary">%1$s · %2$s</string>
+    <string name="delete_snapshot">Удалить снимок</string>
+    <string name="delete_snapshot_description">Удалить снимок %1$s (%2$s)</string>
 </resources>
