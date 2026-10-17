@@ -543,4 +543,25 @@
     <string name="snapshot_summary">%1$s · %2$s</string>
     <string name="delete_snapshot">Удалить снимок</string>
     <string name="delete_snapshot_description">Удалить снимок %1$s (%2$s)</string>
+    <string name="confirm_delete_snapshot">Вы больше не сможете восстановиться из этого снимка.</string>
+    <string name="delete_snapshot_failed">Не удалось удалить снимок. Проверьте доступ к репозиторию и попробуйте снова.</string>
+    <string name="restore_snapshot">Восстановить снимок</string>
+    <string name="restore_snapshot_description">Восстановить снимок %1$s (%2$s)</string>
+    <string name="restore_snapshot_load_failed">Не удалось загрузить снимок</string>
+    <string name="restore_session_expired">Задача восстановления больше недоступна. Выберите снимок заново.</string>
+    <string name="restore_cancel_description">Остановить восстановление сейчас? Восстановленные данные будут сохранены. Текущий элемент может быть восстановлен лишь частично.</string>
+    <string name="restore_process_failed">Восстановление неожиданно остановилось. Некоторые данные могли быть уже восстановлены.</string>
+    <string name="restore_finished_with_errors">Восстановление завершилось с ошибками</string>
+    <string name="restore_result_restored">Восстановлено</string>
+    <string name="restore_result_skipped">Пропущено</string>
+    <string name="restore_result_not_processed">Не обработано</string>
+    <string name="restore_skipped_count">%1$s · пропущено: %2$d</string>
+    <string name="restore_result_counts">%1$s · ошибок: %2$d · пропущено: %3$d</string>
+    <string name="backup_interrupted">Резервное копирование прервано</string>
+    <string name="backup_partial_failure">Некоторые элементы резервной копии не выполнены или не обработаны</string>
+    <string name="backup_start_failed">Не удалось запустить резервное копирование</string>
+    <string name="restore_interrupted">Восстановление прервано</string>
+    <string name="restore_background_description">Восстановление продолжится в фоновом режиме. Откройте уведомление, чтобы вернуться к его ходу.</string>
+    <string name="backup_restore_busy">Выполняется или останавливается резервное копирование или восстановление. Дождитесь его завершения, прежде чем запускать другую задачу.</string>
+    <string name="view_active_task">Просмотреть текущую задачу</string>
 </resources>
