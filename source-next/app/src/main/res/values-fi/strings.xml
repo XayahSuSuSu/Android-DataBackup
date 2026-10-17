@@ -498,4 +498,11 @@
     <string name="current">Nykyinen</string>
     <string name="github_api_rate_limited">GitHub API:n nopeusraja saavutettu. Yritä uudelleen %1$s kuluttua.</string>
     <string name="retry_after">Yritä uudelleen tämän kuluttua: %1$s</string>
+    <string name="save_backup_failed">Varmuuskopion tallentaminen epäonnistui.</string>
+    <string name="sms">SMS</string>
+    <string name="mms">MMS</string>
+    <string name="bytes_written">Kirjoitetut tavut</string>
+    <string name="transfer_speed">Siirtonopeus</string>
+    <string name="current_stage">Nykyinen vaihe</string>
+    <string name="step_count">Vaihe %1$d %2$d:stä</string>
 </resources>
