@@ -8,14 +8,24 @@
 /* Define if building universal (internal helper macro) */
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
 
-/* Define to the number of bits in type 'ptrdiff_t'. */
+/* Define to the number of bits in type 'ptrdiff_t'.
+   Width follows the compiler target: 32-bit Android is ILP32. */
+#if defined __SIZEOF_PTRDIFF_T__ && __SIZEOF_PTRDIFF_T__ == 4
+#define BITSIZEOF_PTRDIFF_T 32
+#else
 #define BITSIZEOF_PTRDIFF_T 64
+#endif
 
 /* Define to the number of bits in type 'sig_atomic_t'. */
 #define BITSIZEOF_SIG_ATOMIC_T 32
 
-/* Define to the number of bits in type 'size_t'. */
+/* Define to the number of bits in type 'size_t'.
+   Width follows the compiler target: 32-bit Android is ILP32. */
+#if defined __SIZEOF_SIZE_T__ && __SIZEOF_SIZE_T__ == 4
+#define BITSIZEOF_SIZE_T 32
+#else
 #define BITSIZEOF_SIZE_T 64
+#endif
 
 /* Define to the number of bits in type 'wchar_t'. */
 #define BITSIZEOF_WCHAR_T 32
@@ -2212,8 +2222,12 @@
 /* #undef PTHREAD_IN_USE_DETECTION_HARD */
 
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
-   'ptrdiff_t'. */
+   'ptrdiff_t'. 32-bit Android ptrdiff_t is int; 64-bit is long. */
+#if defined __SIZEOF_PTRDIFF_T__ && __SIZEOF_PTRDIFF_T__ == 4
+#define PTRDIFF_T_SUFFIX
+#else
 #define PTRDIFF_T_SUFFIX l
+#endif
 
 /* Define to 1 if readlink fails to recognize a trailing slash. */
 /* #undef READLINK_TRAILING_SLASH_BUG */
@@ -2282,8 +2296,12 @@
 #endif
 
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
-   'size_t'. */
+   'size_t'. 32-bit Android size_t is unsigned int; 64-bit is unsigned long. */
+#if defined __SIZEOF_SIZE_T__ && __SIZEOF_SIZE_T__ == 4
+#define SIZE_T_SUFFIX u
+#else
 #define SIZE_T_SUFFIX ul
+#endif
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
