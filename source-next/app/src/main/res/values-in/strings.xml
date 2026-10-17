@@ -339,7 +339,7 @@
     <string name="backup_configs">Konfigurasi cadangan</string>
     <string name="backup_configs_desc">Ekspor konfigurasi ke direktori cadangan</string>
     <string name="compression_level_desc">Angka yang lebih rendah memberikan kompresi yang lebih cepat, angka yang lebih tinggi menghasilkan rasio kompresi yang lebih baik</string>
-    <string name="app_name">DataBackup</string>
+    <string name="app_name">CadangData</string>
     <string name="update_records">Perbarui catatan</string>
     <string name="args_current_level">Level saat ini: %1$s</string>
     <string name="compression_level">Tingkat kompresi</string>
