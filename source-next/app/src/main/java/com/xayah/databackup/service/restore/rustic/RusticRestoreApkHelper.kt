@@ -3,7 +3,6 @@ package com.xayah.databackup.service.restore.rustic
 import android.system.Os
 import android.system.OsConstants
 import androidx.annotation.WorkerThread
-import com.xayah.databackup.service.restore.InstallApkHelper
 import com.xayah.databackup.util.PathHelper
 import com.xayah.libnative.RusticWrapper
 import java.io.File
@@ -13,12 +12,12 @@ import java.util.UUID
  * Restores an application's APKs from a Rustic snapshot.
  *
  * Extracts all selected APKs into a temporary directory unique to each invocation,
- * then delegates installation to [InstallApkHelper]. Attempts to remove that directory
+ * then delegates installation to the supplied installation operation. Attempts to remove that directory
  * after either success or failure, without following symbolic links during cleanup.
  */
 internal class RusticRestoreApkHelper(
     private val mCacheDir: File,
-    private val mInstaller: InstallApkHelper,
+    private val mInstallApks: (String, List<File>) -> Unit,
 ) {
     @WorkerThread
     fun restore(repositoryPath: String, password: String, snapshotId: String, packageName: String, apkPaths: List<String>) {
@@ -33,7 +32,7 @@ internal class RusticRestoreApkHelper(
                 check(!apk.isSymbolicLink() && apk.isFile && apk.length() > 0) { "Failed to extract APK: $path" }
                 apk
             }
-            mInstaller.install(packageName, apks)
+            mInstallApks(packageName, apks)
         }
 
         runCatching {

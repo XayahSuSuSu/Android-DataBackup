@@ -24,6 +24,7 @@ import android.os.Parcel
 import android.os.ParcelFileDescriptor
 import android.os.RemoteException
 import android.os.StatFs
+import android.os.UserHandleHidden
 import android.os.UserManagerHidden
 import com.topjohnwu.superuser.ipc.RootService
 import com.xayah.databackup.App
@@ -38,8 +39,10 @@ import com.xayah.databackup.parcelables.ArchiveOperationResultParcelable
 import com.xayah.databackup.parcelables.BytesParcelable
 import com.xayah.databackup.parcelables.FilePathParcelable
 import com.xayah.databackup.parcelables.StatFsParcelable
+import com.xayah.databackup.rootservice.install.ApkInstallConnection
+import com.xayah.databackup.rootservice.install.ApkInstallSession
 import com.xayah.databackup.service.archive.ArchiveStreamHelper
-import com.xayah.databackup.service.restore.InstallApkHelper
+import com.xayah.databackup.service.restore.ApkInstallProcess
 import com.xayah.databackup.service.restore.RestoreNetworksHelper
 import com.xayah.databackup.service.restore.archive.ArchiveRestoreAppHelper
 import com.xayah.databackup.service.restore.archive.ArchiveRestoreMessagesHelper
@@ -128,7 +131,17 @@ object RemoteRootService {
             RusticWrapper.initLogger()
         }
 
-        override fun onBind(intent: Intent): IBinder = Impl(applicationContext).apply { onBind() }
+        private var mImpl: Impl? = null
+
+        override fun onBind(intent: Intent): IBinder = Impl(applicationContext).apply {
+            onBind()
+            mImpl = this
+        }
+
+        override fun onDestroy() {
+            mImpl?.closeApkInstallers()
+            super.onDestroy()
+        }
     }
 
     private class Impl(private val mContext: Context) : IRemoteRootService.Stub() {
@@ -139,6 +152,36 @@ object RemoteRootService {
         private lateinit var mWifiManager: WifiManagerHidden
         private lateinit var mActivityManager: ActivityManagerHidden
         private val mLock = Any()
+        private var mApkInstallSession: ApkInstallSession? = null
+
+        override fun openApkInstallSession(action: String, owner: IBinder): IApkInstallerConnection = synchronized(mLock) {
+            check(mApkInstallSession == null || mApkInstallSession?.isClosed == true) { "Another APK install session is active" }
+            require(action.startsWith(ApkInstallConnection.getActionPrefix(mContext.packageName))) { "Invalid installer action" }
+            ApkInstallSession(
+                mContext = mContext,
+                mSystemContext = mSystemContext,
+                action = action,
+                mClientUserId = UserHandleHidden.getUserId(getCallingUid()),
+                mOwner = owner
+            ).also {
+                mApkInstallSession = it
+            }
+        }
+
+        override fun closeApkInstallSession(action: String) = synchronized(mLock) {
+            if (mApkInstallSession?.action == action) {
+                closeApkInstallers()
+            }
+        }
+
+        fun closeApkInstallers() {
+            mApkInstallSession?.close()
+            mApkInstallSession = null
+        }
+
+        private fun getApkInstaller(userId: Int): ApkInstallProcess =
+            checkNotNull(mApkInstallSession) { "No active APK install session" }.getInstaller(userId)
+
 
         fun onBind() {
             mSystemContext = ActivityThread.systemMain().systemContext
@@ -382,8 +425,8 @@ object RemoteRootService {
         ) = synchronized(mLock) {
             require(packageName != mContext.packageName) { "Cannot restore DataBackup while it is running" }
             require(mUserManager.users.any { it.id == userId }) { "Target user does not exist: $userId" }
-            val installer = InstallApkHelper(mSystemContext, userId)
-            RusticRestoreApkHelper(mContext.cacheDir, installer).restore(
+            val installer = getApkInstaller(userId)
+            RusticRestoreApkHelper(mContext.cacheDir, installer::install).restore(
                 repositoryPath = repositoryPath,
                 password = password,
                 snapshotId = snapshotId,
@@ -438,7 +481,7 @@ object RemoteRootService {
                         paths = paths,
                         app = applicationInfo,
                         seInfo = seInfo,
-                        installer = InstallApkHelper(mSystemContext, userId),
+                        installApks = { appPackageName, apks -> getApkInstaller(userId).install(appPackageName, apks) },
                     ) { mActivityManager.forceStopPackageAsUser(packageName, userId) }
                 }
                 check(mPackageManagerHidden.getPackageInfoAsUser(packageName, 0, userId).applicationInfo != null) {
@@ -624,6 +667,10 @@ object RemoteRootService {
                 throw IllegalStateException(e.message ?: "Internal data restore failed", e)
             }
         }
+    }
+
+    internal suspend fun openApkInstallSession(): java.io.Closeable = withContext(Dispatchers.IO) {
+        ApkInstallConnection.open(App.application, checkNotNull(getService()) { "Root service is unavailable" })
     }
 
     /** Stops the Root service and waits for its Binder to die before clearing the connection. */

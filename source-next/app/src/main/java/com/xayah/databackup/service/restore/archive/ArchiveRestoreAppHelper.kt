@@ -4,7 +4,6 @@ import android.content.pm.ApplicationInfo
 import android.system.Os
 import android.system.OsConstants
 import com.xayah.databackup.entity.backup.BackupSourceCategory
-import com.xayah.databackup.service.restore.InstallApkHelper
 import com.xayah.databackup.service.restore.RestoreExternalDataHelper
 import com.xayah.databackup.service.restore.RestoreInternalDataHelper
 import com.xayah.databackup.util.PathHelper
@@ -17,7 +16,7 @@ import java.util.UUID
  *
  * Streams selected Zstandard archives through [ArchiveTarHelper] for validation before installing APKs
  * or modifying app data, then streams them again for extraction. Sources must remain unchanged during restore.
- * Delegates installation to [InstallApkHelper] and data restoration to [RestoreInternalDataHelper]
+ * Delegates installation to the supplied installation operation and data restoration to [RestoreInternalDataHelper]
  * or [RestoreExternalDataHelper], which handle destination preparation and metadata repair.
  * App data is restored in place without rollback. Attempts to remove the temporary directory after
  * either success or failure, without following symbolic links during cleanup.
@@ -29,7 +28,7 @@ internal class ArchiveRestoreAppHelper(private val mCacheDir: File) {
         paths: List<String>,
         app: ApplicationInfo?,
         seInfo: String?,
-        installer: InstallApkHelper,
+        installApks: (String, List<File>) -> Unit,
         stopApp: () -> Unit,
     ) {
         val categoryByArchivePath = ArchiveRestorePaths.getAppArchivePaths(archivePath, packageName)
@@ -66,7 +65,7 @@ internal class ArchiveRestoreAppHelper(private val mCacheDir: File) {
                     val apkExtractDir = File(stagingDir, "apk")
                     check(apkExtractDir.mkdir())
                     tarHelperByArchivePath.values.single().extract(apkExtractDir)
-                    installer.install(packageName, checkNotNull(apkExtractDir.listFiles()).toList())
+                    installApks(packageName, checkNotNull(apkExtractDir.listFiles()).toList())
                 }
                 BackupSourceCategory.InternalData -> {
                     val archivePathByIsCe = mapOf(

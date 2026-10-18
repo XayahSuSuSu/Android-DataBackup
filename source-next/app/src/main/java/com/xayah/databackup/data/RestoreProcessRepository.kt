@@ -26,11 +26,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.job
 import kotlinx.coroutines.withContext
+import java.io.Closeable
 
 internal class RestoreProcessRepository(
     private val mRusticHelper: RestoreHelper,
     private val mArchiveHelper: RestoreHelper,
     private val mTaskRepo: TaskRepository,
+    private val mOpenApkInstallSession: suspend () -> Closeable = { RemoteRootService.openApkInstallSession() },
     private val mStopRootService: suspend () -> Unit = { RemoteRootService.stopService() },
 ) {
     companion object {
@@ -121,7 +123,17 @@ internal class RestoreProcessRepository(
             }
         }
         var terminalStatus = RestoreProcessStatus.Failed
+        var apkInstallSession: Closeable? = null
         try {
+            if (request.tasks.any { task ->
+                task is RestoreTask.App && task.source.paths.any { it.category == BackupSourceCategory.Apk }
+            }) {
+                // Retain the handle even if cancellation arrives while the remote session is opening.
+                withContext(NonCancellable) {
+                    apkInstallSession = mOpenApkInstallSession()
+                }
+                currentCoroutineContext().ensureActive()
+            }
             val helper: RestoreHelper = when (request.source) {
                 is RestoreSource.Archive -> mArchiveHelper
                 is RestoreSource.Rustic -> mRusticHelper
@@ -223,6 +235,15 @@ internal class RestoreProcessRepository(
             withContext(NonCancellable) {
                 val stopCompletion = synchronized(mLock) { mSessions[id]?.stopCompletion }
                 stopCompletion?.await()
+                withContext(Dispatchers.IO) {
+                    runCatching { apkInstallSession?.close() }.onFailure {
+                        terminalStatus = RestoreProcessStatus.Failed
+                        LogHelper.w(TAG, "execute", "Cannot close APK install session")
+                        runCatching { mStopRootService() }.onFailure {
+                            synchronized(mLock) { mSessions[id]?.hasStopFailure = true }
+                        }
+                    }
+                }
                 synchronized(mLock) {
                     val session = checkNotNull(mSessions[id])
                     val status = when {
