@@ -19,6 +19,16 @@ add_link_options(
         -Wl,-allow-multiple-definition
 )
 
+# Compile ABI checks without linking them into tar.
+add_library(tar-abi-limits OBJECT tests/abi-limits.c)
+target_compile_features(tar-abi-limits PRIVATE c_std_11)
+target_include_directories(tar-abi-limits
+        PRIVATE
+        tar-config
+        tar-gnu-embedded
+        tar/gnu
+)
+
 # libgnu.a
 add_library(libgnu STATIC
         tar/gnu/acl-errno-valid.c
