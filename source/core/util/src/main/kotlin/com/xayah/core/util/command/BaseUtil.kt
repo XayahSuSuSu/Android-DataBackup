@@ -156,6 +156,39 @@ object BaseUtil {
         }
     }
 
+    /**
+     * Force-stops [packageName] and suspends it afterwards.
+     *
+     * Suspension keeps the package from being started again by the launcher, broadcasts,
+     * services, jobs or alarms for as long as it lasts, and the launcher shows its icon greyed out.
+     * It has to be lifted by [unsuspendPackage]; otherwise the package stays unusable.
+     * `pm suspend` requires `android.permission.SUSPEND_APPS`, which only root/shell holds.
+     */
+    suspend fun suspendPackage(context: Context, userId: Int, packageName: String) {
+        val shell = getNewShell(context)
+        if (shell != null) {
+            val cmd = """
+            am force-stop --user "$userId" "$packageName" &>/dev/null
+            pm suspend --user "$userId" "$packageName" &>/dev/null
+        """.trimIndent()
+            execute(cmd, shell = shell, timeout = 5)
+        } else {
+            log { "suspendPackage" to "Failed to get a new shell!" }
+        }
+    }
+
+    suspend fun unsuspendPackage(context: Context, userId: Int, packageName: String) {
+        val shell = getNewShell(context)
+        if (shell != null) {
+            val cmd = """
+            pm unsuspend --user "$userId" "$packageName" &>/dev/null
+        """.trimIndent()
+            execute(cmd, shell = shell, timeout = 5)
+        } else {
+            log { "unsuspendPackage" to "Failed to get a new shell!" }
+        }
+    }
+
     suspend fun mkdirs(dst: String) = withIOContext {
         runCatching {
             val file = File(dst)

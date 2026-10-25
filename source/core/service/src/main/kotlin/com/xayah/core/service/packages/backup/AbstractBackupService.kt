@@ -141,6 +141,9 @@ internal abstract class AbstractBackupService : AbstractPackagesService() {
         val killAppOption = mContext.readKillAppOption().first()
         log { "Kill app option: $killAppOption" }
 
+        // Lift the suspensions that a previous, interrupted task could not lift by itself.
+        releaseApps()
+
         mPkgEntities.forEachIndexed { index, pkg ->
             executeAtLeast {
                 NotificationUtil.notify(
@@ -154,50 +157,53 @@ internal abstract class AbstractBackupService : AbstractPackagesService() {
                 log { "Current package: ${pkg.packageEntity}" }
 
                 killApp(killAppOption, pkg)
+                try {
+                    pkg.update(state = OperationState.PROCESSING)
+                    val p = pkg.packageEntity
+                    val dstDir = "${mAppsDir}/${p.archivesRelativeDir}"
+                    var restoreEntity = mPackageDao.query(p.packageName, OpType.RESTORE, p.userId, p.preserveId, p.indexInfo.compressionType, mTaskEntity.cloud, mTaskEntity.backupDir)
+                    mRootService.mkdirs(dstDir)
+                    if (onAppDirCreated(archivesRelativeDir = p.archivesRelativeDir)) {
+                        backup(type = DataType.PACKAGE_APK, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
+                        backup(type = DataType.PACKAGE_USER, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
+                        backup(type = DataType.PACKAGE_USER_DE, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
+                        backup(type = DataType.PACKAGE_DATA, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
+                        backup(type = DataType.PACKAGE_OBB, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
+                        backup(type = DataType.PACKAGE_MEDIA, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
+                        mPackagesBackupUtil.backupPermissions(p = p)
+                        mPackagesBackupUtil.backupSsaid(p = p)
 
-                pkg.update(state = OperationState.PROCESSING)
-                val p = pkg.packageEntity
-                val dstDir = "${mAppsDir}/${p.archivesRelativeDir}"
-                var restoreEntity = mPackageDao.query(p.packageName, OpType.RESTORE, p.userId, p.preserveId, p.indexInfo.compressionType, mTaskEntity.cloud, mTaskEntity.backupDir)
-                mRootService.mkdirs(dstDir)
-                if (onAppDirCreated(archivesRelativeDir = p.archivesRelativeDir)) {
-                    backup(type = DataType.PACKAGE_APK, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
-                    backup(type = DataType.PACKAGE_USER, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
-                    backup(type = DataType.PACKAGE_USER_DE, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
-                    backup(type = DataType.PACKAGE_DATA, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
-                    backup(type = DataType.PACKAGE_OBB, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
-                    backup(type = DataType.PACKAGE_MEDIA, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
-                    mPackagesBackupUtil.backupPermissions(p = p)
-                    mPackagesBackupUtil.backupSsaid(p = p)
-
-                    if (pkg.isSuccess) {
-                        // Save config
-                        p.extraInfo.lastBackupTime = DateUtil.getTimestamp()
-                        val id = restoreEntity?.id ?: 0
-                        restoreEntity = p.copy(
-                            id = id,
-                            indexInfo = p.indexInfo.copy(opType = OpType.RESTORE, cloud = mTaskEntity.cloud, backupDir = mTaskEntity.backupDir),
-                            extraInfo = p.extraInfo.copy(activated = false)
-                        )
-                        val configDst = PathUtil.getPackageRestoreConfigDst(dstDir = dstDir)
-                        mRootService.writeJson(data = restoreEntity, dst = configDst)
-                        onConfigSaved(path = configDst, archivesRelativeDir = p.archivesRelativeDir)
-                        mPackageDao.upsert(restoreEntity)
-                        mPackageDao.upsert(p)
-                        pkg.update(packageEntity = p)
-                        mTaskEntity.update(successCount = mTaskEntity.successCount + 1)
+                        if (pkg.isSuccess) {
+                            // Save config
+                            p.extraInfo.lastBackupTime = DateUtil.getTimestamp()
+                            val id = restoreEntity?.id ?: 0
+                            restoreEntity = p.copy(
+                                id = id,
+                                indexInfo = p.indexInfo.copy(opType = OpType.RESTORE, cloud = mTaskEntity.cloud, backupDir = mTaskEntity.backupDir),
+                                extraInfo = p.extraInfo.copy(activated = false)
+                            )
+                            val configDst = PathUtil.getPackageRestoreConfigDst(dstDir = dstDir)
+                            mRootService.writeJson(data = restoreEntity, dst = configDst)
+                            onConfigSaved(path = configDst, archivesRelativeDir = p.archivesRelativeDir)
+                            mPackageDao.upsert(restoreEntity)
+                            mPackageDao.upsert(p)
+                            pkg.update(packageEntity = p)
+                            mTaskEntity.update(successCount = mTaskEntity.successCount + 1)
+                        } else {
+                            mTaskEntity.update(failureCount = mTaskEntity.failureCount + 1)
+                        }
                     } else {
-                        mTaskEntity.update(failureCount = mTaskEntity.failureCount + 1)
+                        pkg.update(dataType = DataType.PACKAGE_APK, state = OperationState.ERROR)
+                        pkg.update(dataType = DataType.PACKAGE_USER, state = OperationState.ERROR)
+                        pkg.update(dataType = DataType.PACKAGE_USER_DE, state = OperationState.ERROR)
+                        pkg.update(dataType = DataType.PACKAGE_DATA, state = OperationState.ERROR)
+                        pkg.update(dataType = DataType.PACKAGE_OBB, state = OperationState.ERROR)
+                        pkg.update(dataType = DataType.PACKAGE_MEDIA, state = OperationState.ERROR)
                     }
-                } else {
-                    pkg.update(dataType = DataType.PACKAGE_APK, state = OperationState.ERROR)
-                    pkg.update(dataType = DataType.PACKAGE_USER, state = OperationState.ERROR)
-                    pkg.update(dataType = DataType.PACKAGE_USER_DE, state = OperationState.ERROR)
-                    pkg.update(dataType = DataType.PACKAGE_DATA, state = OperationState.ERROR)
-                    pkg.update(dataType = DataType.PACKAGE_OBB, state = OperationState.ERROR)
-                    pkg.update(dataType = DataType.PACKAGE_MEDIA, state = OperationState.ERROR)
+                    pkg.update(state = if (pkg.isSuccess) OperationState.DONE else OperationState.ERROR)
+                } finally {
+                    releaseApp(killAppOption, pkg)
                 }
-                pkg.update(state = if (pkg.isSuccess) OperationState.DONE else OperationState.ERROR)
             }
             mTaskEntity.update(processingIndex = mTaskEntity.processingIndex + 1)
         }
