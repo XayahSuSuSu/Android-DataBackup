@@ -3,6 +3,9 @@ package com.xayah.core.util
 import android.content.Context
 import com.xayah.core.util.command.BaseUtil
 import java.io.File
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
 
 /**
  * Tracks the packages that were paused (force-stopped and suspended) by the running task.
@@ -10,6 +13,9 @@ import java.io.File
  * A suspended package stays unusable until it is unsuspended, so the list is persisted to the app's
  * private storage: a task that is killed before it can resume its packages leaves a record behind and
  * [resumeAll] lifts every leftover suspension the next time a task starts.
+ *
+ * Every entry point is non-cancellable and never throws: pausing an app is a best-effort helper of the
+ * task, a failure in here must not change the outcome of the backup or of the restore it belongs to.
  */
 object SuspendUtil {
     private const val PendingFileName = "suspended_packages.txt"
@@ -41,12 +47,20 @@ object SuspendUtil {
         return entry.substring(0, separator).toIntOrNull()?.let { userId -> userId to entry.substring(separator + 1) }
     }
 
+    private suspend fun <T> nonCancellable(default: T, block: suspend () -> T): T =
+        withContext(Dispatchers.IO + NonCancellable) {
+            runCatching { block() }.getOrElse { default }
+        }
+
     /**
      * Force-stops and suspends [packageName], and remembers it until [resumePackage] or [resumeAll] runs.
      *
-     * @return false when the package was skipped.
+     * Safe to call repeatedly: an already suspended package is force-stopped and suspended again, which is
+     * exactly what is needed when the user (or the system) managed to start it in the meantime.
+     *
+     * @return false when the package was skipped or the suspension failed.
      */
-    suspend fun suspendPackage(context: Context, userId: Int, packageName: String): Boolean = withIOContext {
+    suspend fun suspendPackage(context: Context, userId: Int, packageName: String): Boolean = nonCancellable(false) {
         if (packageName == context.packageName || packageName == "android") {
             // Suspending the running task or the framework itself could not be undone in time.
             false
@@ -54,28 +68,24 @@ object SuspendUtil {
             // Recorded before suspending: an interruption in between only causes a harmless unsuspend.
             writeEntries(context, readEntries(context) + entryOf(userId, packageName))
             BaseUtil.suspendPackage(context = context, userId = userId, packageName = packageName)
-            true
         }
     }
 
     /**
      * Lifts the suspension of [packageName] and drops its record.
      */
-    suspend fun resumePackage(context: Context, userId: Int, packageName: String) = withIOContext {
+    suspend fun resumePackage(context: Context, userId: Int, packageName: String) = nonCancellable(Unit) {
         val entry = entryOf(userId, packageName)
-        val entries = readEntries(context)
-        if (entries.contains(entry)) {
-            BaseUtil.unsuspendPackage(context = context, userId = userId, packageName = packageName)
-            writeEntries(context, entries.filter { it != entry })
-        }
+        // Always unsuspend: the record may be missing after an update while the package is still paused.
+        BaseUtil.unsuspendPackage(context = context, userId = userId, packageName = packageName)
+        writeEntries(context, readEntries(context).filter { it != entry })
     }
 
     /**
      * Lifts every suspension recorded by a previous task.
      */
-    suspend fun resumeAll(context: Context) = withIOContext {
-        val entries = readEntries(context)
-        entries.mapNotNull { parseEntry(it) }.forEach { (userId, packageName) ->
+    suspend fun resumeAll(context: Context) = nonCancellable(Unit) {
+        readEntries(context).mapNotNull { parseEntry(it) }.forEach { (userId, packageName) ->
             BaseUtil.unsuspendPackage(context = context, userId = userId, packageName = packageName)
         }
         writeEntries(context, emptyList())

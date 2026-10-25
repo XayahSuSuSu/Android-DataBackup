@@ -165,8 +165,10 @@ internal abstract class AbstractBackupService : AbstractPackagesService() {
                     mRootService.mkdirs(dstDir)
                     if (onAppDirCreated(archivesRelativeDir = p.archivesRelativeDir)) {
                         backup(type = DataType.PACKAGE_APK, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
+                        reinforcePause(killAppOption, pkg)
                         backup(type = DataType.PACKAGE_USER, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
                         backup(type = DataType.PACKAGE_USER_DE, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
+                        reinforcePause(killAppOption, pkg)
                         backup(type = DataType.PACKAGE_DATA, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
                         backup(type = DataType.PACKAGE_OBB, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)
                         backup(type = DataType.PACKAGE_MEDIA, p = p, r = restoreEntity, t = pkg, dstDir = dstDir)

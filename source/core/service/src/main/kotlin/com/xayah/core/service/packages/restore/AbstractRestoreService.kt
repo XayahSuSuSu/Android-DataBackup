@@ -136,6 +136,9 @@ internal abstract class AbstractRestoreService : AbstractPackagesService() {
                     restore(type = DataType.PACKAGE_APK, userId = userId, p = p, t = pkg, srcDir = srcDir)
                     restore(type = DataType.PACKAGE_USER, userId = userId, p = p, t = pkg, srcDir = srcDir)
                     restore(type = DataType.PACKAGE_USER_DE, userId = userId, p = p, t = pkg, srcDir = srcDir)
+                    // Re-apply the pause: a restore that just installed the package has started it, and the
+                    // data must not be written while the app is running.
+                    reinforcePause(killAppOption, pkg)
                     restore(type = DataType.PACKAGE_DATA, userId = userId, p = p, t = pkg, srcDir = srcDir)
                     restore(type = DataType.PACKAGE_OBB, userId = userId, p = p, t = pkg, srcDir = srcDir)
                     restore(type = DataType.PACKAGE_MEDIA, userId = userId, p = p, t = pkg, srcDir = srcDir)
