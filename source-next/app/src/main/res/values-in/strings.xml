@@ -548,4 +548,13 @@
     <string name="restore_snapshot">Kembalikan snapshot</string>
     <string name="restore_snapshot_description">Kembalikan snapshot %1$s (%2$s)</string>
     <string name="restore_snapshot_load_failed">Tidak dapat memuat snapshot</string>
+    <string name="restore_session_expired">Tugas pemulihan tidak lagi tersedia. Pilih snapshot lagi.</string>
+    <string name="restore_cancel_description">Berhenti memulihkan sekarang? Data yang dipulihkan akan disimpan. Item saat ini mungkin hanya dipulihkan sebagian.</string>
+    <string name="restore_process_failed">Pemulihan terhenti tiba-tiba. Beberapa data mungkin sudah dipulihkan.</string>
+    <string name="restore_result_skipped">Dilewati</string>
+    <string name="restore_result_not_processed">Tidak diproses</string>
+    <string name="restore_skipped_count">%1$s · %2$d dilewati</string>
+    <string name="restore_result_counts">%1$s · %2$d gagal · %3$d dilewati</string>
+    <string name="backup_partial_failure">Beberapa item cadangan gagal atau tidak diproses</string>
+    <string name="backup_start_failed">Tidak dapat memulai pencadangan</string>
 </resources>
