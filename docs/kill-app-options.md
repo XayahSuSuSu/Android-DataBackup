@@ -11,6 +11,10 @@ choice applies to backups and restores alike.
   then applied per package with `AbstractPackagesService.killApp()`.
 * When option III is active, the suspension is lifted again by `releaseApp()` once the package has
   been processed.
+* Stopping and suspending a package is a **best-effort helper** of the task: a failure in any of those
+  steps – including the user trying to open the app in the meantime – only writes a log line, it never
+  aborts the task and never fails the package. See
+  [Opening the app while it is being backed up](#opening-the-app-while-it-is-being-backed-up).
 
 | Option | Enum | Mechanism | Runs as |
 | --- | --- | --- | --- |
@@ -105,3 +109,66 @@ adb shell pm unsuspend --user 0 <package>                 # lift it manually
 ```
 
 `pm suspend` exists since Android 7.0 (API 24), which matches the app's `minSdk`.
+
+## Opening the app while it is being backed up
+
+Two things have to hold **at the same time**: the app cannot be opened while it is being backed up,
+and the attempt to open it does not change the outcome of the backup. Three layers take care of that.
+
+### 1. It does not open, because the package is suspended
+
+After `pm suspend`, the platform refuses every start request – `am start` answers
+`Activity not started`, a tap on the launcher does nothing and the icon is greyed out. This was
+verified against a control group on an emulator (android-33 x86_64):
+
+| State | Result of one `am start` | Does the app record a launch |
+| --- | --- | --- |
+| Not suspended | `pid: 20094`, process created | yes |
+| Suspended | `pid: (none)`, no process | no |
+
+### 2. The attempt does not fail the backup: `tar` exit code 1 is accepted
+
+Before the suspension lands – or right after the system lifted it on its own – the app may already
+be running. Reading its data then hits "a file changed while it was being read", and `tar` exits
+with code **1** (`file changed as we read it`). The archive is still perfectly readable, but
+`ShellResult.isSuccess` used to accept only 0, so the package was reported as failed.
+
+`PackagesBackupUtil.isAcceptableTarResult()` changes the verdict to:
+
+| Exit code | Meaning | Outcome |
+| --- | --- | --- |
+| 0 | Finished normally | pass |
+| 1 | Some files changed or vanished while being read | **pass**, `testArchive()` is the verdict |
+| 2 | Fatal error | fail |
+| anything else / no result / timeout | Command broke | fail |
+
+In other words, whether the archive can be decompressed and listed is what decides, not whether
+somebody touched the files.
+
+### 3. Started in between: `reinforcePause()` pauses it again
+
+`killApp()` runs once per package, but reading the data takes several passes (APK, user data,
+device-protected data, app data). To close the window where the APK pass is done and the app is
+already up again by the time the data is read, the pause is re-applied in between:
+
+```
+backup(APK) -> reinforcePause() -> backup(USER) -> backup(USER_DE) -> reinforcePause() -> backup(DATA) -> ...
+```
+
+A restore has the same window: installing the APK may start the app, so `reinforcePause()` is called
+again before `PACKAGE_DATA` is written. It only does something for option III and for non-system
+packages, and running it repeatedly is safe (`pm suspend` on an already suspended package is a no-op).
+
+### 4. No failure along the way can drag the task down
+
+`killApp()` / `releaseApp()` / `releaseApps()` / `SuspendUtil` / `BaseUtil.suspendPackage()` are all
+wrapped in `runCatching` and only log the failure:
+
+```
+Failed to pause <package>: ...
+Failed to re-apply the pause of <package>: ...
+```
+
+`SuspendUtil` itself runs on `Dispatchers.IO + NonCancellable`, so a cancelled task still lifts every
+suspension it applied and never leaves an app greyed out.
+

@@ -8,6 +8,9 @@
 * 每个任务开始时读取一次：`AbstractBackupService.onProcessing()` /
   `AbstractRestoreService.onProcessing()`，随后按应用逐个调用 `AbstractPackagesService.killApp()`。
 * 选中「高级暂停」时，应用处理结束后由 `releaseApp()` 解除挂起。
+* 停止/挂起应用都只是任务里的**尽力而为的辅助步骤**：任何一步失败（包括用户在此期间尝试打开应用）
+  只写日志，不会中止任务，也不会把该应用判定为备份失败。详见
+  [备份过程中尝试打开被备份的应用](#备份过程中尝试打开被备份的应用)。
 
 | 选项 | 枚举 | 实现方式 | 执行身份 |
 | --- | --- | --- | --- |
@@ -92,3 +95,62 @@ adb shell pm unsuspend --user 0 <包名>                 # 手动解除
 ```
 
 `pm suspend` 自 Android 7.0（API 24）起提供，与本应用的 `minSdk` 一致。
+
+## 备份过程中尝试打开被备份的应用
+
+目标语义是两条**同时**成立：备份期间被备份的应用打不开；而用户「尝试打开」这个动作本身
+**不影响备份结果**。实现上分三层保障。
+
+### 1. 打不开由挂起保证
+
+`pm suspend` 之后，任何启动请求都会被系统拒绝——`am start` 返回
+`Activity not started`，桌面点击无反应，图标变灰。这一点在模拟器（android-33 x86_64）上做过对照验证：
+
+| 场景 | 一次 `am start` 的结果 | 应用是否写入启动记录 |
+| --- | --- | --- |
+| 未挂起 | `pid: 20094`，进程拉起 | 写入 |
+| 已挂起 | `pid: (none)`，进程未创建 | 不写入 |
+
+### 2. 「尝试打开」不导致失败：`tar` 退出码 1 视为可接受
+
+挂起之前，或者挂起被系统自动解除的瞬间，应用可能已经在运行。这时读它的数据会出现
+「读的时候文件变了」，`tar` 会以退出码 **1** 结束（`file changed as we read it`）。
+归档本身仍然完整可读，但在旧逻辑里 `ShellResult.isSuccess` 只认 0，于是整包被判失败。
+
+`PackagesBackupUtil.isAcceptableTarResult()` 把判定改为：
+
+| 退出码 | 含义 | 处理 |
+| --- | --- | --- |
+| 0 | 正常结束 | 通过 |
+| 1 | 有文件在读取过程中变化/消失 | **通过**，以 `testArchive()` 的解压校验为准 |
+| 2 | 致命错误 | 失败 |
+| 其它 / 缺少结果 / 超时 | 命令异常 | 失败 |
+
+也就是说，真正决定成败的是 `testArchive()` 能否正常解压并列出归档内容，而不是「有没有人动过文件」。
+
+### 3. 处理中途被拉起：`reinforcePause()` 重新挂起
+
+`killApp()` 只在每个应用开始时执行一次，而读数据分成 APK、用户数据（DE）、应用数据等多趟。
+为了不留下「APK 读完了、数据开始读的时候应用已经起来了」这个窗口，读完前两趟之后会再挂起一次：
+
+```
+backup(APK) -> reinforcePause() -> backup(USER) -> backup(USER_DE) -> reinforcePause() -> backup(DATA) -> ...
+```
+
+恢复同理：安装完 APK 之后系统可能把应用拉起来，因此在写 `PACKAGE_DATA` 之前也调一次
+`reinforcePause()`。只有在「高级暂停」且非系统应用时才会真正执行，重复执行是安全的
+（`pm suspend` 对已挂起的包再次执行不会报错）。
+
+### 4. 任何一步出错都不拖垮任务
+
+`killApp()` / `releaseApp()` / `releaseApps()` / `SuspendUtil` / `BaseUtil.suspendPackage()`
+全部用 `runCatching` 包住，失败只写一条日志：
+
+```
+Failed to pause <包名>: ...
+Failed to re-apply the pause of <包名>: ...
+```
+
+`SuspendUtil` 内部跑在 `Dispatchers.IO + NonCancellable` 上，所以即使任务被取消，
+该解除的挂起仍然会被解除，不会把应用留在灰掉的状态。
+
