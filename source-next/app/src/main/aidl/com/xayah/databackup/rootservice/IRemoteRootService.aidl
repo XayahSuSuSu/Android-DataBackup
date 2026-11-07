@@ -49,4 +49,5 @@ interface IRemoteRootService {
 
     IApkInstallerConnection openApkInstallSession(String action, IBinder owner);
     void closeApkInstallSession(String action);
+    String getApkInstallSource(String packageName, int userId);
 }

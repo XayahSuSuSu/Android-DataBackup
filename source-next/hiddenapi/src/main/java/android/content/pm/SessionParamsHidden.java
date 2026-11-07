@@ -16,6 +16,10 @@
 
 package android.content.pm;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import dev.rikka.tools.refine.RefineAs;
 
 /**
@@ -24,6 +28,12 @@ import dev.rikka.tools.refine.RefineAs;
 @RefineAs(PackageInstaller.SessionParams.class)
 public class SessionParamsHidden {
     public int installFlags;
+
+    /**
+     * See <a href="https://cs.android.com/android/platform/superproject/+/android-9.0.0_r1:frameworks/base/core/java/android/content/pm/PackageInstaller.java;l=1123">PackageInstaller.java</a>.
+     */
+    @RequiresApi(Build.VERSION_CODES.P)
+    public String installerPackageName;
 }
 
 // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/base/core/java/android/content/pm/PackageInstaller.java;l=852

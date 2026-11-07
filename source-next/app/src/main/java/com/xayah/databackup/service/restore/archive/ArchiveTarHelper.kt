@@ -2,7 +2,9 @@ package com.xayah.databackup.service.restore.archive
 
 import android.system.Os
 import android.system.StructStat
+import com.xayah.databackup.entity.backup.ApkInstallSource
 import com.xayah.databackup.service.archive.ArchiveStreamHelper
+import com.xayah.databackup.util.PathHelper
 import java.io.ByteArrayOutputStream
 import java.io.File
 
@@ -88,7 +90,9 @@ internal class ArchiveTarHelper(
             val path = relativePath(name, packageName, archiveType)
             require(path.isNotEmpty() || kind == 'd') { "Invalid app data root" }
             if (archiveType == ArchiveTarType.Apk) {
-                require(kind == '-' && '/' !in path && path.endsWith(".apk")) { "Invalid APK archive" }
+                require(kind == '-' && '/' !in path && (path.endsWith(PathHelper.APK_FILE_SUFFIX) || path == ApkInstallSource.FILE_NAME)) {
+                    "Invalid APK archive"
+                }
             }
             if (path in listOf("cache", "code_cache")) require(kind == 'd') { "Invalid app cache root" }
             val link = if (kind in listOf('l', 'h')) {

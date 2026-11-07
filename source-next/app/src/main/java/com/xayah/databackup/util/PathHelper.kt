@@ -9,6 +9,7 @@ import java.io.File
 @SuppressLint("SdCardPath")
 object PathHelper {
     const val CACHE_SUBDIR_FIFO = "fifo"
+    const val CACHE_SUBDIR_APK_SOURCE = "apk-source"
     const val CACHE_SUBDIR_RESTORE_APK = "restore-apk"
     const val CACHE_SUBDIR_RESTORE_MESSAGES = "restore-messages"
     private const val CACHE_SUBDIR_RUSTIC = "rustic"
@@ -37,6 +38,7 @@ object PathHelper {
     private const val SUBDIR_APP_PARTS = "app_parts"
     private const val SUBDIR_REPO = "repo"
 
+    const val APK_FILE_SUFFIX = ".apk"
     private const val CONFIG_FILE_SUFFIX = ".config"
 
     private const val APK_FILE_NAME = "apk.tar.zst"

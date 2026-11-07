@@ -2,10 +2,13 @@ package com.xayah.databackup.rootservice.install
 
 import android.annotation.SuppressLint
 import android.app.ActivityThread
+import android.app.AppGlobals
 import android.content.Context
 import android.content.ContextHidden
 import android.content.Intent
 import android.content.pm.PackageInstaller
+import android.content.pm.PackageInstallerHidden
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,8 +16,12 @@ import android.os.ParcelFileDescriptor
 import android.os.UserHandleHidden
 import android.system.Os
 import androidx.annotation.Keep
+import androidx.annotation.RequiresApi
 import com.xayah.databackup.rootservice.IApkInstallCallback
 import com.xayah.databackup.rootservice.IApkInstaller
+import com.xayah.databackup.service.restore.ApkInstallFailure
+import com.xayah.databackup.service.restore.ApkInstallProcess.Companion.GOOGLE_PACKAGE_INSTALLER_PACKAGE_NAME
+import com.xayah.databackup.service.restore.ApkInstallProcess.Companion.GOOGLE_PLAY_PACKAGE_NAME
 import com.xayah.databackup.service.restore.InstallApkHelper
 import com.xayah.hiddenapi.castTo
 import java.util.concurrent.atomic.AtomicBoolean
@@ -22,35 +29,44 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.system.exitProcess
 
 /**
- * Entry point for the child process that handles APK installation requests under the target user's Google Play UID.
+ * Entry point for the child process that handles APK installation requests under Google Play or the system UID for the target user.
  */
 @Keep
 internal object ApkInstallerMain {
     internal const val EXTRA_BINDER = "installer"
     internal const val EXTRA_TOKEN = "token"
     internal const val EXTRA_USER_ID = "userId"
-    private const val GOOGLE_PLAY_PACKAGE_NAME = "com.android.vending"
     private const val MAX_OUTPUT_LENGTH = 8192
     private const val OWNER_MONITOR_THREAD_NAME = "apk-installer-owner"
 
-    // Send the cross-user bootstrap broadcast as root before switching to the target user's Google Play UID.
+    // Send the cross-user bootstrap broadcast as root before switching to the installer identity.
     @SuppressLint("MissingPermission")
     @JvmStatic
     fun main(args: Array<String>) {
         val result = runCatching {
             check(Os.getuid() == 0) { "APK installer must start as root" }
-            require(args.size == 5)
+            require(args.size == 6)
             val targetUserId = args[0].toInt()
             val appPackageName = args[1]
             val clientUserId = args[2].toInt()
             val action = args[3]
             val token = args[4]
+            val isPlay = args[5].toBooleanStrict()
             Looper.prepareMainLooper()
             val systemContext: Context = ActivityThread.systemMain().systemContext
             val installerContext = systemContext.castTo<ContextHidden>().createPackageContextAsUser(
-                GOOGLE_PLAY_PACKAGE_NAME, 0, UserHandleHidden.of(targetUserId),
+                if (isPlay) GOOGLE_PLAY_PACKAGE_NAME else appPackageName,
+                0,
+                UserHandleHidden.of(if (isPlay) targetUserId else clientUserId),
             )
-            val worker = InstallWorker(installerContext.packageManager.packageInstaller)
+            val installer = if (isPlay) {
+                installerContext.packageManager.packageInstaller
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                createSystemInstaller(appPackageName, targetUserId)
+            } else {
+                error("System APK installer requires Android 9 or later")
+            }
+            val worker = InstallWorker(installer, isPlay)
             val extras = Bundle().apply {
                 putBinder(EXTRA_BINDER, worker)
                 putString(EXTRA_TOKEN, token)
@@ -61,7 +77,7 @@ internal object ApkInstallerMain {
                 Intent(action).setPackage(appPackageName).putExtras(extras),
                 UserHandleHidden.of(clientUserId),
             )
-            Os.setuid(installerContext.applicationInfo.uid)
+            Os.setuid(if (isPlay) installerContext.applicationInfo.uid else android.os.Process.SYSTEM_UID)
             worker.startOwnerMonitor()
             Looper.loop()
         }
@@ -69,8 +85,18 @@ internal object ApkInstallerMain {
         exitProcess(if (result.isSuccess) 0 else 1)
     }
 
-    private class InstallWorker(private val mInstaller: PackageInstaller) : IApkInstaller.Stub() {
-        private val mHelper = InstallApkHelper(mInstaller)
+    @RequiresApi(Build.VERSION_CODES.P)
+    private fun createSystemInstaller(appPackageName: String, userId: Int): PackageInstaller {
+        val installerService = AppGlobals.getPackageManager().getPackageInstaller()
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PackageInstallerHidden(installerService, appPackageName, null, userId).castTo<PackageInstaller>()
+        } else {
+            PackageInstallerHidden(installerService, appPackageName, userId).castTo<PackageInstaller>()
+        }
+    }
+
+    private class InstallWorker(private val mInstaller: PackageInstaller, isPlay: Boolean) : IApkInstaller.Stub() {
+        private val mHelper = InstallApkHelper(mInstaller, if (isPlay) null else GOOGLE_PACKAGE_INSTALLER_PACKAGE_NAME)
         private val mHandler = Handler(Looper.getMainLooper())
         private val mIsBusy = AtomicBoolean(false)
         private val mSessionId = AtomicInteger(-1)
@@ -99,6 +125,11 @@ internal object ApkInstallerMain {
             mIsBusy.set(false)
             runCatching {
                 val error = installation.exceptionOrNull()
+                if (error != null && error !is ApkInstallFailure) {
+                    // The installation may have committed despite the error. Exit without a reply to prevent a duplicate installation.
+                    error.printStackTrace(System.err)
+                    exitProcess(1)
+                }
                 val message = error?.let { (it.message ?: it.javaClass.simpleName).take(MAX_OUTPUT_LENGTH) }
                 callback.onFinished(message)
             }.onFailure { exitProcess(1) }

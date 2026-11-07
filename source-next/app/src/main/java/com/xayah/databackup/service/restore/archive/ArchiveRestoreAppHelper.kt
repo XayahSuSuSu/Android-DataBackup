@@ -3,6 +3,7 @@ package com.xayah.databackup.service.restore.archive
 import android.content.pm.ApplicationInfo
 import android.system.Os
 import android.system.OsConstants
+import com.xayah.databackup.entity.backup.ApkInstallSource
 import com.xayah.databackup.entity.backup.BackupSourceCategory
 import com.xayah.databackup.service.restore.RestoreExternalDataHelper
 import com.xayah.databackup.service.restore.RestoreInternalDataHelper
@@ -28,7 +29,7 @@ internal class ArchiveRestoreAppHelper(private val mCacheDir: File) {
         paths: List<String>,
         app: ApplicationInfo?,
         seInfo: String?,
-        installApks: (String, List<File>) -> Unit,
+        installApks: (String, List<File>, ApkInstallSource?) -> Unit,
         stopApp: () -> Unit,
     ) {
         val categoryByArchivePath = ArchiveRestorePaths.getAppArchivePaths(archivePath, packageName)
@@ -65,7 +66,14 @@ internal class ArchiveRestoreAppHelper(private val mCacheDir: File) {
                     val apkExtractDir = File(stagingDir, "apk")
                     check(apkExtractDir.mkdir())
                     tarHelperByArchivePath.values.single().extract(apkExtractDir)
-                    installApks(packageName, checkNotNull(apkExtractDir.listFiles()).toList())
+                    val metadataFile = File(apkExtractDir, ApkInstallSource.FILE_NAME)
+                    val installSource = if (metadataFile.exists()) {
+                        ApkInstallSource.deserialize(metadataFile.readText())
+                    } else {
+                        null
+                    }
+                    val apks = checkNotNull(apkExtractDir.listFiles()).filter { it.name.endsWith(PathHelper.APK_FILE_SUFFIX) }
+                    installApks(packageName, apks, installSource)
                 }
                 BackupSourceCategory.InternalData -> {
                     val archivePathByIsCe = mapOf(

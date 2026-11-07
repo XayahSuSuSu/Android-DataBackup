@@ -3,6 +3,9 @@ package com.xayah.databackup.service.restore.rustic
 import android.system.Os
 import android.system.OsConstants
 import androidx.annotation.WorkerThread
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapter
+import com.xayah.databackup.entity.backup.ApkInstallSource
 import com.xayah.databackup.util.PathHelper
 import com.xayah.libnative.RusticWrapper
 import java.io.File
@@ -17,10 +20,10 @@ import java.util.UUID
  */
 internal class RusticRestoreApkHelper(
     private val mCacheDir: File,
-    private val mInstallApks: (String, List<File>) -> Unit,
+    private val mInstallApks: (String, List<File>, ApkInstallSource?) -> Unit,
 ) {
     @WorkerThread
-    fun restore(repositoryPath: String, password: String, snapshotId: String, packageName: String, apkPaths: List<String>) {
+    fun restore(repositoryPath: String, password: String, snapshotId: String, packageName: String, userId: Int, apkPaths: List<String>) {
         require(apkPaths.isNotEmpty()) { "No APK sources selected" }
         val cacheDir = PathHelper.getCacheDir(PathHelper.CACHE_SUBDIR_RESTORE_APK, mCacheDir)
         val staging = File(cacheDir, UUID.randomUUID().toString())
@@ -32,7 +35,12 @@ internal class RusticRestoreApkHelper(
                 check(!apk.isSymbolicLink() && apk.isFile && apk.length() > 0) { "Failed to extract APK: $path" }
                 apk
             }
-            mInstallApks(packageName, apks)
+            val manifestPath = PathHelper.getRusticSnapshotMetadataFilePath(PathHelper.getRusticManifestFileRelativePath())
+            val serialized = RusticWrapper.readSnapshotTextFiles(repositoryPath, password, snapshotId, listOf(manifestPath))
+            val files = requireNotNull(Moshi.Builder().build().adapter<Map<String, String>>().fromJson(serialized))
+            val manifest = RusticRestoreMetadataHelper().deserializeManifest(files.getValue(manifestPath))
+            val app = manifest.apps.single { it.packageName == packageName && it.userId == userId }
+            mInstallApks(packageName, apks, app.installSource)
         }
 
         runCatching {

@@ -2,6 +2,7 @@ package com.xayah.databackup.service.backup.archive
 
 import com.xayah.databackup.App.Companion.application
 import com.xayah.databackup.database.entity.App
+import com.xayah.databackup.entity.backup.ApkInstallSource
 import com.xayah.databackup.entity.backup.BackupEvent
 import com.xayah.databackup.entity.backup.BackupOutcome
 import com.xayah.databackup.entity.backup.BackupSourceCategory
@@ -12,6 +13,8 @@ import com.xayah.databackup.service.backup.BackupAppSourceHelper
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.PathHelper
 import com.xayah.databackup.util.ShellHelper
+import java.io.File
+import java.util.UUID
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.currentCoroutineContext
@@ -47,80 +50,99 @@ class ArchiveBackupAppsHelper(private val mSourceHelper: BackupAppSourceHelper) 
                 onEvent(BackupEvent.PartChanged(app.pkgUserKey, part, index, BackupOutcome.Running))
                 var bytes = 0L
                 var hasStartedArchive = false
-                val outcome = runCatching {
-                    val inputs = if (part == BackupSourceCategory.Apk) {
-                        RemoteRootService.getPackageSourceDir(app.packageName, app.userId).also {
-                            check(it.isNotEmpty()) { "Failed to get APK sources" }
+                var metadataDir: File? = null
+                val outcome = try {
+                    runCatching {
+                        val inputs = if (part == BackupSourceCategory.Apk) {
+                            RemoteRootService.getPackageSourceDir(app.packageName, app.userId).also {
+                                check(it.isNotEmpty()) { "Failed to get APK sources" }
+                            }
+                        } else {
+                            listOf(sourcePaths[index])
                         }
-                    } else {
-                        listOf(sourcePaths[index])
-                    }
-                    if (part != BackupSourceCategory.Apk && !RemoteRootService.exists(inputs.single())) {
-                        check(!app.option.internalData || inputs.single() != PathHelper.getAppUserDir(app.userId, app.packageName)) {
-                            "Internal CE data path does not exist for ${app.packageName}: ${inputs.single()}"
+                        if (part != BackupSourceCategory.Apk && !RemoteRootService.exists(inputs.single())) {
+                            check(!app.option.internalData || inputs.single() != PathHelper.getAppUserDir(app.userId, app.packageName)) {
+                                "Internal CE data path does not exist for ${app.packageName}: ${inputs.single()}"
+                            }
+                            onEvent(BackupEvent.PartChanged(app.pkgUserKey, part, index, BackupOutcome.Skipped))
+                            return@runCatching false
                         }
-                        onEvent(BackupEvent.PartChanged(app.pkgUserKey, part, index, BackupOutcome.Skipped))
-                        return@runCatching false
-                    }
-                    check(RemoteRootService.mkdirs(PathHelper.getParentPath(outputPath))) { "Cannot create archive directory" }
-                    val args = inputs.flatMap { listOf("-C", PathHelper.getParentPath(it), PathHelper.getChildPath(it)) }
-                    hasStartedArchive = true
-                    val result = RemoteRootService.packageAndCompressArchive(outputPath, args.toTypedArray(), object : ICallback.Stub() {
-                        override fun onProgress(bytesWritten: Long, speed: Long, progress: Float) {
-                            bytes = bytesWritten
-                            onEvent(BackupEvent.PartChanged(app.pkgUserKey, part, index, BackupOutcome.Running, bytesWritten, speed))
+                        check(RemoteRootService.mkdirs(PathHelper.getParentPath(outputPath))) { "Cannot create archive directory" }
+                        val archiveInputs = if (part == BackupSourceCategory.Apk) {
+                            val directory = File(PathHelper.getCacheDir(PathHelper.CACHE_SUBDIR_APK_SOURCE), UUID.randomUUID().toString())
+                            metadataDir = directory
+                            check(directory.mkdir()) { "Cannot create APK metadata directory" }
+                            val metadataFile = File(directory, ApkInstallSource.FILE_NAME)
+                            metadataFile.writeText(RemoteRootService.getApkInstallSource(app.packageName, app.userId).serialize())
+                            inputs + metadataFile.path
+                        } else {
+                            inputs
                         }
-                    })
-                    currentCoroutineContext().ensureActive()
-                    val diagnostics = removeRootProcessPrefix(result.mDiagnostics)
-                    val isFailed = result.mExitCode != 0
-                    onEvent(
-                        BackupEvent.PartChanged(
-                            key = app.pkgUserKey,
-                            category = part,
-                            index = index,
-                            outcome = if (isFailed) {
-                                BackupOutcome.Failed
-                            } else {
-                                BackupOutcome.Completed
-                            },
-                            bytes = bytes,
-                            exitCode = result.mExitCode,
-                            diagnostics = diagnostics
+                        val args = archiveInputs.flatMap { listOf("-C", PathHelper.getParentPath(it), PathHelper.getChildPath(it)) }
+                        hasStartedArchive = true
+                        val result = RemoteRootService.packageAndCompressArchive(outputPath, args.toTypedArray(), object : ICallback.Stub() {
+                            override fun onProgress(bytesWritten: Long, speed: Long, progress: Float) {
+                                bytes = bytesWritten
+                                onEvent(BackupEvent.PartChanged(app.pkgUserKey, part, index, BackupOutcome.Running, bytesWritten, speed))
+                            }
+                        })
+                        currentCoroutineContext().ensureActive()
+                        val diagnostics = removeRootProcessPrefix(result.mDiagnostics)
+                        val isFailed = result.mExitCode != 0
+                        onEvent(
+                            BackupEvent.PartChanged(
+                                key = app.pkgUserKey,
+                                category = part,
+                                index = index,
+                                outcome = if (isFailed) {
+                                    BackupOutcome.Failed
+                                } else {
+                                    BackupOutcome.Completed
+                                },
+                                bytes = bytes,
+                                exitCode = result.mExitCode,
+                                diagnostics = diagnostics
+                            )
                         )
-                    )
-                    isFailed
-                }.getOrElse { error ->
-                    // A canceled blocking Binder call often returns a RemoteException rather than CancellationException.
-                    val isCanceled = error is CancellationException || !currentCoroutineContext().job.isActive
-                    if (hasStartedArchive) {
-                        withContext(NonCancellable) {
-                            runCatching {
-                                if (!isCanceled) {
-                                    ShellHelper.killRootService()
-                                }
-                                RemoteRootService.deleteRecursively(outputPath)
-                            }.onFailure { LogHelper.w(TAG, "backup", "Failed to clean incomplete archive") }
+                        isFailed
+                    }.getOrElse { error ->
+                        // A canceled blocking Binder call often returns a RemoteException rather than CancellationException.
+                        val isCanceled = error is CancellationException || !currentCoroutineContext().job.isActive
+                        if (hasStartedArchive) {
+                            withContext(NonCancellable) {
+                                runCatching {
+                                    if (!isCanceled) {
+                                        ShellHelper.killRootService()
+                                    }
+                                    RemoteRootService.deleteRecursively(outputPath)
+                                }.onFailure { LogHelper.w(TAG, "backup", "Failed to clean incomplete archive") }
+                            }
                         }
-                    }
-                    currentCoroutineContext().ensureActive()
-                    if (error is CancellationException || error !is Exception) {
-                        throw error
-                    }
-                    LogHelper.w(TAG, "backup", "Archive part failed: category=$part, error=${error.javaClass.simpleName}")
-                    RemoteRootService.checkENOSPC(error.message.orEmpty())
-                    onEvent(
-                        BackupEvent.PartChanged(
-                            key = app.pkgUserKey,
-                            category = part,
-                            index = index,
-                            outcome = BackupOutcome.Failed,
-                            bytes = bytes,
-                            exitCode = STATUS_ERROR,
-                            diagnostics = "Archive operation failed"
+                        currentCoroutineContext().ensureActive()
+                        if (error is CancellationException || error !is Exception) {
+                            throw error
+                        }
+                        LogHelper.w(TAG, "backup", "Archive part failed: category=$part, error=${error.javaClass.simpleName}")
+                        RemoteRootService.checkENOSPC(error.message.orEmpty())
+                        onEvent(
+                            BackupEvent.PartChanged(
+                                key = app.pkgUserKey,
+                                category = part,
+                                index = index,
+                                outcome = BackupOutcome.Failed,
+                                bytes = bytes,
+                                exitCode = STATUS_ERROR,
+                                diagnostics = "Archive operation failed"
+                            )
                         )
-                    )
-                    true
+                        true
+                    }
+                } finally {
+                    metadataDir?.let { directory ->
+                        runCatching {
+                            check(directory.deleteRecursively()) { "Cannot clean APK metadata directory" }
+                        }.onFailure { LogHelper.w(TAG, "backup", "Failed to clean APK metadata directory") }
+                    }
                 }
                 hasFailures = hasFailures || outcome
             }

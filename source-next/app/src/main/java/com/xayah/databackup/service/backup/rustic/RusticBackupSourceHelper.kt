@@ -88,6 +88,11 @@ class RusticBackupSourceHelper(
                     additionalData = plan.option.additionalData,
                     included = plan.included,
                     skipped = plan.skipped,
+                    installSource = if (plan.option.apk) {
+                        RemoteRootService.getApkInstallSource(plan.packageName, plan.userId)
+                    } else {
+                        null
+                    },
                 )
             },
             included = included.distinctBy { it.path },

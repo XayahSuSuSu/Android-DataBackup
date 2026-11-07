@@ -15,6 +15,7 @@ import com.xayah.databackup.rootservice.IApkInstallCallback
 import com.xayah.databackup.rootservice.IApkInstaller
 import com.xayah.databackup.rootservice.install.ApkInstallerMain
 import com.xayah.hiddenapi.castTo
+import kotlinx.coroutines.CancellationException
 import java.io.Closeable
 import java.io.File
 import java.io.FileInputStream
@@ -34,6 +35,7 @@ internal class ApkInstallProcess(
     private val mAppPackageName: String,
     private val mClientUserId: Int,
     private val mAction: String,
+    private val mIsPlay: Boolean,
 ) : Closeable {
     private val mLock = Any()
     private val mToken = UUID.randomUUID().toString()
@@ -62,7 +64,7 @@ internal class ApkInstallProcess(
         // Check the target user's UID rather than the root service's own user or calling Binder identity.
         mSystemContext.checkPermission(permission, -1, uid) == PackageManager.PERMISSION_GRANTED
 
-    private fun canInstallWithPlay(packageName: String, apks: List<File>): Boolean {
+    fun canInstallWithPlay(packageName: String, apks: List<File>): Boolean {
         val playApplicationInfo = getPlayApplicationInfo() ?: return false
         if (!hasPermission(Manifest.permission.INSTALL_PACKAGES, playApplicationInfo.uid)) {
             return false
@@ -90,33 +92,65 @@ internal class ApkInstallProcess(
         }
     }
 
-    fun install(packageName: String, apks: List<File>) {
+    fun install(packageName: String, apks: List<File>): String? {
         require(packageName.isNotBlank())
         require(apks.isNotEmpty() && apks.all { it.isFile && it.length() > 0 }) { "Missing or empty APK files" }
         synchronized(mLock) { check(!mIsClosed) { "APK installer is closed" } }
-        if (canInstallWithPlay(packageName, apks)) {
-            installWithWorker(packageName, apks)
-        } else {
-            installAsShell(packageName, apks)
+        // Before Android 9, the installer package must match the calling UID, including SYSTEM_UID.
+        if (!mIsPlay && (Build.VERSION.SDK_INT < Build.VERSION_CODES.P || !hasGooglePackageInstaller())) {
+            installAsRoot(packageName, apks)
+            return null
+        }
+        return installWithWorker(packageName, apks)
+    }
+
+    private fun hasGooglePackageInstaller(): Boolean {
+        val packageManager = mSystemContext.castTo<ContextHidden>()
+            .createPackageContextAsUser(SYSTEM_PACKAGE_NAME, 0, UserHandleHidden.of(mUserId)).packageManager
+        return try {
+            packageManager.getApplicationInfo(GOOGLE_PACKAGE_INSTALLER_PACKAGE_NAME, 0)
+            true
+        } catch (_: PackageManager.NameNotFoundException) {
+            false
         }
     }
 
-    private fun installAsShell(packageName: String, apks: List<File>) {
+    private fun installAsRoot(packageName: String, apks: List<File>) {
+        val installerPackageName = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+            SHELL_PACKAGE_NAME
+        } else if (getPlayApplicationInfo() != null) {
+            GOOGLE_PLAY_PACKAGE_NAME
+        } else {
+            SHELL_PACKAGE_NAME
+        }
+        val installer = mSystemContext.castTo<ContextHidden>()
+            .createPackageContextAsUser(installerPackageName, 0, UserHandleHidden.of(mUserId)).packageManager.packageInstaller
         val inputs = ArrayList<FileInputStream>(apks.size)
         try {
             apks.forEach { inputs.add(it.inputStream()) }
-            InstallApkHelper(getShellInstaller()).install(packageName, inputs)
+            InstallApkHelper(installer).install(packageName, inputs)
         } finally {
             inputs.forEach { runCatching { it.close() } }
         }
     }
 
-    private fun installWithWorker(packageName: String, apks: List<File>) {
+    private fun installWithWorker(packageName: String, apks: List<File>): String? {
+        val installer = runCatching { getInstaller() }.getOrElse { error ->
+            runCatching { close() }.onFailure { error.addSuppressed(it) }
+            if (error is InterruptedException) {
+                Thread.currentThread().interrupt()
+                throw error
+            }
+            // No install request was sent, so falling back to the system installer is safe.
+            if (error is CancellationException || error !is Exception) {
+                throw error
+            }
+            return "APK installer could not start: ${error.message ?: error.javaClass.simpleName}"
+        }
         val descriptors = ArrayList<ParcelFileDescriptor>(apks.size)
         val result = CompletableFuture<String?>()
         val installationError: String?
         try {
-            val installer = getInstaller()
             synchronized(mLock) {
                 check(!mIsClosed && mPendingResult == null) { "APK installer is unavailable or busy" }
                 mPendingResult = result
@@ -144,7 +178,7 @@ internal class ApkInstallProcess(
             descriptors.forEach { runCatching { it.close() } }
             synchronized(mLock) { mPendingResult = null }
         }
-        check(installationError == null) { installationError.orEmpty() }
+        return installationError
     }
 
     private fun getInstaller(): IApkInstaller {
@@ -160,6 +194,7 @@ internal class ApkInstallProcess(
                     mClientUserId.toString(),
                     mAction,
                     mToken,
+                    mIsPlay.toString(),
                 ).apply {
                     environment()["CLASSPATH"] = mAppApkPath
                     redirectErrorStream(true)
@@ -249,8 +284,10 @@ internal class ApkInstallProcess(
             .packageManager.packageInstaller
 
     companion object {
+        internal const val SYSTEM_PACKAGE_NAME = "android"
+        internal const val GOOGLE_PACKAGE_INSTALLER_PACKAGE_NAME = "com.google.android.packageinstaller"
+        internal const val GOOGLE_PLAY_PACKAGE_NAME = "com.android.vending"
         private const val INSTALL_TEST_ONLY_PACKAGE_PERMISSION = "android.permission.INSTALL_TEST_ONLY_PACKAGE"
-        private const val GOOGLE_PLAY_PACKAGE_NAME = "com.android.vending"
         private const val SHELL_PACKAGE_NAME = "com.android.shell"
         private const val MAX_OUTPUT_LENGTH = 8192
         private const val PROCESS_MONITOR_THREAD_NAME_PREFIX = "apk-installer-"
@@ -262,7 +299,7 @@ internal class ApkInstallProcess(
 
 /**
  * Checks whether Play has the permissions required by the APK and meets the device's target SDK threshold.
- * Returns false to select shell installation when permission is missing or, on Android 14+, the target SDK is too low or unknown.
+ * Returns false to select system installation when permission is missing or, on Android 14+, the target SDK is too low or unknown.
  * Call before starting installation; switching installers after a failure could repeat an already committed installation.
  */
 internal fun canUsePlayInstaller(
@@ -280,7 +317,7 @@ internal fun canUsePlayInstaller(
         return true
     }
     // Use target SDK 23 as the minimum on Android 14 and 24 on Android 15+.
-    // On Android 15+, route APKs targeting 23 through shell even if the system allows them.
+    // On Android 15+, route APKs targeting 23 through the system installer even if the system allows them.
     // https://cs.android.com/android/platform/superproject/+/android-15.0.0_r1:frameworks/base/services/core/java/com/android/server/pm/PackageManagerService.java;l=565
     val minimumTargetSdk = if (sdkInt == Build.VERSION_CODES.UPSIDE_DOWN_CAKE) Build.VERSION_CODES.M else Build.VERSION_CODES.N
     val targetSdk = readTargetSdk() ?: return false

@@ -1,6 +1,7 @@
 package com.xayah.databackup.entity.rustic
 
 import com.squareup.moshi.JsonClass
+import com.xayah.databackup.entity.backup.ApkInstallSource
 import com.xayah.databackup.entity.backup.BackupSkippedSource
 import com.xayah.databackup.entity.backup.BackupSourcePath
 
@@ -26,6 +27,7 @@ data class RusticAppManifest(
     val additionalData: Boolean,
     val included: List<BackupSourcePath>,
     val skipped: List<BackupSkippedSource>,
+    val installSource: ApkInstallSource?,
 )
 
 /** Describes the DataBackup metadata and source inventory stored in a Rustic snapshot. */
