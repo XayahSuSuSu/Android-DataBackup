@@ -531,19 +531,12 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
 /* ptrdiff_t limits */
 # undef PTRDIFF_MIN
 # undef PTRDIFF_MAX
-# if 0
-#  ifdef _LP64
-#   define PTRDIFF_MIN  _STDINT_SIGNED_MIN (64, 0l)
-#   define PTRDIFF_MAX  _STDINT_MAX (1, 64, 0l)
-#  else
-#   define PTRDIFF_MIN  _STDINT_SIGNED_MIN (32, 0)
-#   define PTRDIFF_MAX  _STDINT_MAX (1, 32, 0)
-#  endif
+# if __SIZEOF_PTRDIFF_T__ == 8
+#  define PTRDIFF_MIN  _STDINT_SIGNED_MIN (64, 0l)
+#  define PTRDIFF_MAX  _STDINT_MAX (1, 64, 0l)
 # else
-#  define PTRDIFF_MIN  \
-    _STDINT_SIGNED_MIN (64, 0l)
-#  define PTRDIFF_MAX  \
-    _STDINT_MAX (1, 64, 0l)
+#  define PTRDIFF_MIN  _STDINT_SIGNED_MIN (32, 0)
+#  define PTRDIFF_MAX  _STDINT_MAX (1, 32, 0)
 # endif
 
 /* sig_atomic_t limits */
@@ -563,14 +556,10 @@ typedef int _verify_intmax_size[sizeof (intmax_t) == sizeof (uintmax_t)
 
 /* size_t limit */
 # undef SIZE_MAX
-# if 0
-#  ifdef _LP64
-#   define SIZE_MAX  _STDINT_MAX (0, 64, 0ul)
-#  else
-#   define SIZE_MAX  _STDINT_MAX (0, 32, 0ul)
-#  endif
-# else
+# if __SIZEOF_SIZE_T__ == 8
 #  define SIZE_MAX  _STDINT_MAX (0, 64, 0ul)
+# else
+#  define SIZE_MAX  _STDINT_MAX (0, 32, 0u)
 # endif
 
 /* wchar_t limits */
