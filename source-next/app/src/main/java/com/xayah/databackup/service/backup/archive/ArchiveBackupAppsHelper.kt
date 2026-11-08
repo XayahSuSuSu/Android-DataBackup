@@ -13,14 +13,14 @@ import com.xayah.databackup.service.backup.BackupAppSourceHelper
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.PathHelper
 import com.xayah.databackup.util.ShellHelper
-import java.io.File
-import java.util.UUID
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.job
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.util.UUID
 
 class ArchiveBackupAppsHelper(private val mSourceHelper: BackupAppSourceHelper) {
     companion object {
@@ -46,7 +46,7 @@ class ArchiveBackupAppsHelper(private val mSourceHelper: BackupAppSourceHelper) 
             val count = if (part == BackupSourceCategory.Apk) 1 else sourcePaths.size
             for (index in 0 until count) {
                 currentCoroutineContext().ensureActive()
-                val outputPath = getOutputPath(backupPath, app.packageName, part, index)
+                val outputPath = getOutputPath(backupPath, app.packageName, app.userId, part, index)
                 onEvent(BackupEvent.PartChanged(app.pkgUserKey, part, index, BackupOutcome.Running))
                 var bytes = 0L
                 var hasStartedArchive = false
@@ -156,18 +156,25 @@ class ArchiveBackupAppsHelper(private val mSourceHelper: BackupAppSourceHelper) 
         return diagnostics.lineSequence().joinToString("\n") { it.replace(prefix, "") }
     }
 
-    private fun getOutputPath(backupPath: String, packageName: String, category: BackupSourceCategory, index: Int): String = when (category) {
-        BackupSourceCategory.Apk -> PathHelper.getBackupAppsApkFilePath(backupPath, packageName)
+    private fun getOutputPath(
+        backupPath: String,
+        packageName: String,
+        userId: Int,
+        category: BackupSourceCategory,
+        index: Int,
+    ): String = when (category) {
+        BackupSourceCategory.Apk -> PathHelper.getBackupAppsApkFilePath(backupPath, packageName, userId)
         BackupSourceCategory.InternalData -> if (index == 0) {
-            PathHelper.getBackupAppsUserFilePath(backupPath, packageName)
+            PathHelper.getBackupAppsUserFilePath(backupPath, packageName, userId)
         } else {
-            PathHelper.getBackupAppsUserDeFilePath(backupPath, packageName)
+            PathHelper.getBackupAppsUserDeFilePath(backupPath, packageName, userId)
         }
-        BackupSourceCategory.ExternalData -> PathHelper.getBackupAppsDataFilePath(backupPath, packageName)
+
+        BackupSourceCategory.ExternalData -> PathHelper.getBackupAppsDataFilePath(backupPath, packageName, userId)
         BackupSourceCategory.AdditionalData -> if (index == 0) {
-            PathHelper.getBackupAppsObbFilePath(backupPath, packageName)
+            PathHelper.getBackupAppsObbFilePath(backupPath, packageName, userId)
         } else {
-            PathHelper.getBackupAppsMediaFilePath(backupPath, packageName)
+            PathHelper.getBackupAppsMediaFilePath(backupPath, packageName, userId)
         }
         else -> error("Not an app part")
     }

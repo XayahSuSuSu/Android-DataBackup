@@ -467,7 +467,8 @@ object RemoteRootService {
                 ArchiveRestorePaths.validatePackageName(packageName)
                 require(packageName != mContext.packageName) { "Cannot restore DataBackup while it is running" }
                 require(mUserManager.users.any { it.id == userId }) { "Target user does not exist" }
-                val isApkRestore = paths == listOf(PathHelper.getBackupAppsApkFilePath(archivePath, packageName))
+                ArchiveRestorePaths.validateAppSelection(archivePath, packageName, userId, paths)
+                val isApkRestore = paths == listOf(PathHelper.getBackupAppsApkFilePath(archivePath, packageName, userId))
                 val applicationInfo = if (isApkRestore) {
                     null
                 } else {
@@ -476,7 +477,7 @@ object RemoteRootService {
                 var seInfo: String? = null
                 if (applicationInfo != null) {
                     check(applicationInfo.flags and ApplicationInfo.FLAG_PERSISTENT == 0) { "Cannot safely stop persistent package" }
-                    val isDeviceProtectedDataOnly = paths == listOf(PathHelper.getBackupAppsUserDeFilePath(archivePath, packageName))
+                    val isDeviceProtectedDataOnly = paths == listOf(PathHelper.getBackupAppsUserDeFilePath(archivePath, packageName, userId))
                     check(isDeviceProtectedDataOnly || mUserManager.isUserUnlocked(userId)) { "Target user storage is locked" }
                     val applicationInfoHidden: ApplicationInfoHidden = applicationInfo.castTo()
                     seInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -497,6 +498,7 @@ object RemoteRootService {
                     ArchiveRestoreAppHelper(mContext.cacheDir).restore(
                         archivePath = archivePath,
                         packageName = packageName,
+                        userId = userId,
                         paths = paths,
                         app = applicationInfo,
                         seInfo = seInfo,

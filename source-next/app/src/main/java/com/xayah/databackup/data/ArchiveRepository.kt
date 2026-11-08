@@ -1,7 +1,5 @@
 package com.xayah.databackup.data
 
-import android.os.Process
-import android.os.UserHandleHidden
 import com.xayah.databackup.database.entity.App
 import com.xayah.databackup.database.entity.Info
 import com.xayah.databackup.database.entity.Option
@@ -31,13 +29,13 @@ class ArchiveRepository {
                 }
             }
         }
-        // Archive keeps one backup per package; restore it to the user running DataBackup.
-        val userId = UserHandleHidden.getUserId(Process.myUid())
         val apps = mutableMapOf<String, App>()
         val sources = mutableMapOf<String, List<BackupSourcePath>>()
         for (directory in RemoteRootService.listFilePaths(path = PathHelper.getBackupAppsDir(config.path), listFiles = false, listDirs = true)) {
-            val packageName = PathHelper.getChildPath(directory.path)
-            val paths = ArchiveRestorePaths.getAppArchivePaths(config.path, packageName).filterKeys { RemoteRootService.exists(it) }
+            val source = ArchiveRestorePaths.parseAppDirectory(PathHelper.getChildPath(directory.path)) ?: continue
+            val packageName = source.packageName
+            val userId = source.userId
+            val paths = ArchiveRestorePaths.getAppArchivePaths(config.path, packageName, source.userId).filterKeys { RemoteRootService.exists(it) }
             if (paths.isEmpty()) {
                 continue
             }
@@ -57,7 +55,7 @@ class ArchiveRepository {
             sources[id] = paths.map { (path, category) -> BackupSourcePath(path, category) }
         }
         val inventory = RestoreMetadataHelper().deserializeInventory(files).copy(
-            usersMap = mapOf(userId to userId.toString()),
+            usersMap = apps.values.map { it.userId }.distinct().associateWith { it.toString() },
             apps = apps,
             appSources = sources,
             availableAppParts = sources.mapValues { (_, paths) -> paths.map { it.category }.toSet() },
