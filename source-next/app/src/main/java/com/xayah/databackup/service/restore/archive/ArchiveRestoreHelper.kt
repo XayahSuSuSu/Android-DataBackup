@@ -2,6 +2,8 @@ package com.xayah.databackup.service.restore.archive
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Process
+import android.os.UserHandleHidden
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
 import com.xayah.databackup.App
@@ -14,6 +16,7 @@ import com.xayah.databackup.entity.restore.RestoreSource
 import com.xayah.databackup.entity.restore.RestoreTask
 import com.xayah.databackup.entity.restore.pathsFor
 import com.xayah.databackup.rootservice.RemoteRootService
+import com.xayah.databackup.service.archive.ArchiveRecordPaths
 import com.xayah.databackup.service.restore.RestoreCallLogsHelper
 import com.xayah.databackup.service.restore.RestoreContactsHelper
 import com.xayah.databackup.service.restore.RestoreHelper
@@ -64,7 +67,11 @@ internal class ArchiveRestoreHelper : RestoreHelper {
             check(App.application.checkSelfPermission(Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
                 "Contacts restore requires WRITE_CONTACTS permission"
             }
-            val metadataPath = PathHelper.getBackupContactsConfigFilePath(archivePath)
+            val metadataPath = ArchiveRecordPaths.getFilePath(
+                parent = archivePath,
+                metadataPath = PathHelper.getBackupContactsConfigFileRelativePath(),
+                userId = UserHandleHidden.getUserId(Process.myUid()),
+            )
             val serializedFiles = mMetadataAdapter.toJson(mapOf(metadataPath to RemoteRootService.readText(metadataPath)))
             RestoreContactsHelper(App.application.contentResolver).restore(serializedFiles, metadataPath, ids, callback)
         }
@@ -77,7 +84,11 @@ internal class ArchiveRestoreHelper : RestoreHelper {
                     Manifest.permission.WRITE_CALL_LOG
                 ).all { App.application.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED }
             ) { "Call logs restore requires READ_CALL_LOG and WRITE_CALL_LOG permissions" }
-            val metadataPath = PathHelper.getBackupCallLogsConfigFilePath(archivePath)
+            val metadataPath = ArchiveRecordPaths.getFilePath(
+                parent = archivePath,
+                metadataPath = PathHelper.getBackupCallLogsConfigFileRelativePath(),
+                userId = UserHandleHidden.getUserId(Process.myUid()),
+            )
             val serializedFiles = mMetadataAdapter.toJson(mapOf(metadataPath to RemoteRootService.readText(metadataPath)))
             RestoreCallLogsHelper(App.application.contentResolver).restore(serializedFiles, metadataPath, ids, callback)
         }

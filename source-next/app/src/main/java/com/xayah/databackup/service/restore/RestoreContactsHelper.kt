@@ -73,7 +73,9 @@ internal class RestoreContactsHelper(private val mResolver: ContentResolver) {
             require(contactIds.isNotEmpty()) { "No contacts selected" }
             val moshi = Moshi.Builder().build()
             val records =
-                requireNotNull(moshi.adapter<List<Contact>>().fromJson(content)).mapIndexed { index, contact -> "contact:$index" to contact }.toMap()
+                requireNotNull(moshi.adapter<List<Contact>>().fromJson(content)).mapIndexed { index, contact ->
+                    RestoreRecordId.getContactId(index) to contact
+                }.toMap()
             return contactIds.distinct().associateWith { id ->
                 runCatching {
                     val record = requireNotNull(records[id]) { "Unknown contact record" }

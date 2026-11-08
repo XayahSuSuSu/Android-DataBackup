@@ -6,6 +6,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
 import com.xayah.databackup.database.entity.CallLog
 import com.xayah.databackup.database.entity.FieldMap
+import com.xayah.databackup.service.restore.RestoreRecordId.CALL_LOG_PREFIX
 
 /**
  * Parses selected call log records from backup metadata and prepares fields for the target Android version.
@@ -16,7 +17,7 @@ internal object CallLogRestorePreparer {
     private val mMoshi = Moshi.Builder().build()
     private val mRecordsAdapter = mMoshi.adapter<List<CallLog>>()
     private val mFieldsAdapter = mMoshi.adapter<FieldMap>()
-    private val mKeyPattern = Regex("call:(0|[1-9][0-9]*)")
+    private val mKeyPattern = Regex("${Regex.escape(CALL_LOG_PREFIX)}(0|[1-9][0-9]*)")
 
     /**
      * Prepares distinct selected records in selection order, keyed by their inventory IDs.

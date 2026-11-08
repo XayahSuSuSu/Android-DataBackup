@@ -1,5 +1,7 @@
 package com.xayah.databackup.data
 
+import android.os.Process
+import android.os.UserHandleHidden
 import com.xayah.databackup.database.entity.App
 import com.xayah.databackup.database.entity.Info
 import com.xayah.databackup.database.entity.Option
@@ -10,6 +12,7 @@ import com.xayah.databackup.entity.restore.RestoreSource
 import com.xayah.databackup.entity.restore.RestoreSourceInfo
 import com.xayah.databackup.entity.restore.RestoreState
 import com.xayah.databackup.rootservice.RemoteRootService
+import com.xayah.databackup.service.archive.ArchiveRecordPaths
 import com.xayah.databackup.service.restore.RestoreMetadataHelper
 import com.xayah.databackup.service.restore.RestoreRecordId
 import com.xayah.databackup.service.restore.archive.ArchiveRestorePaths
@@ -21,11 +24,12 @@ class ArchiveRepository {
     suspend fun loadRestoreState(config: BackupConfig): RestoreState = withContext(Dispatchers.IO) {
         require(config.path.isNotBlank()) { "Archive path is empty" }
         check(RemoteRootService.exists(config.path)) { "Archive is unavailable" }
+        val recordUserId = UserHandleHidden.getUserId(Process.myUid())
         val files = buildMap {
-            for (relative in ArchiveRestorePaths.structuredFileRelativePaths) {
+            for ((metadataPath, relative) in ArchiveRecordPaths.getRelativePaths(recordUserId)) {
                 val path = "${config.path}/$relative"
                 if (RemoteRootService.exists(path)) {
-                    put(relative, RemoteRootService.readText(path))
+                    put(metadataPath, RemoteRootService.readText(path))
                 }
             }
         }

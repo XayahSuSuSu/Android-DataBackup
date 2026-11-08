@@ -10,6 +10,8 @@ import com.xayah.databackup.entity.rustic.RusticBackupManifest
 import com.xayah.databackup.entity.rustic.requireFullSnapshotId
 import com.xayah.databackup.service.restore.MessageRestorePreparer
 import com.xayah.databackup.service.restore.RestoreMessagesHelper
+import com.xayah.databackup.service.restore.RestoreRecordId.MMS_PREFIX
+import com.xayah.databackup.service.restore.RestoreRecordId.SMS_PREFIX
 import com.xayah.databackup.util.PathHelper
 import com.xayah.libnative.RusticWrapper
 import java.io.File
@@ -41,8 +43,8 @@ internal class RusticRestoreMessagesHelper(private val mContext: Context, privat
         val mmsPath = getMetadataPath(PathHelper.getBackupMessagesMmsConfigFileRelativePath())
         val manifestPath = getMetadataPath(PathHelper.getRusticManifestFileRelativePath())
         val paths = buildList {
-            if (messageIds.any { it.startsWith("sms:") }) add(smsPath)
-            if (messageIds.any { it.startsWith("mms:") }) { add(mmsPath); add(manifestPath) }
+            if (messageIds.any { it.startsWith(SMS_PREFIX) }) add(smsPath)
+            if (messageIds.any { it.startsWith(MMS_PREFIX) }) { add(mmsPath); add(manifestPath) }
         }
         val moshi = Moshi.Builder().build()
         val files = requireNotNull(moshi.adapter<Map<String, String>>().fromJson(
@@ -50,7 +52,7 @@ internal class RusticRestoreMessagesHelper(private val mContext: Context, privat
         ))
         // Validate all selected metadata before any provider writes.
         val prepared = MessageRestorePreparer.prepare(files[smsPath], files[mmsPath], messageIds)
-        val includedAttachments = if (messageIds.any { it.startsWith("mms:") }) {
+        val includedAttachments = if (messageIds.any { it.startsWith(MMS_PREFIX) }) {
             val manifest = requireNotNull(moshi.adapter<RusticBackupManifest>().fromJson(requireNotNull(files[manifestPath])))
             require(manifest.schemaVersion == RusticBackupManifest.CURRENT_SCHEMA_VERSION) { "Unsupported backup schema" }
             manifest.included.filter { it.category == BackupSourceCategory.MmsAttachment }.map { it.path }.toSet()

@@ -43,6 +43,7 @@ import com.xayah.databackup.parcelables.FilePathParcelable
 import com.xayah.databackup.parcelables.StatFsParcelable
 import com.xayah.databackup.rootservice.install.ApkInstallConnection
 import com.xayah.databackup.rootservice.install.ApkInstallSession
+import com.xayah.databackup.service.archive.ArchiveRecordPaths
 import com.xayah.databackup.service.archive.ArchiveStreamHelper
 import com.xayah.databackup.service.restore.ApkInstallProcess.Companion.SYSTEM_PACKAGE_NAME
 import com.xayah.databackup.service.restore.RestoreNetworksHelper
@@ -520,8 +521,13 @@ object RemoteRootService {
             archivePath: String, networkIds: List<String>, callback: IRestoreCallback,
         ): List<String> = synchronized(mLock) {
             runCatching {
+                val metadataPath = ArchiveRecordPaths.getFilePath(
+                    parent = archivePath,
+                    metadataPath = PathHelper.getBackupNetworksConfigFileRelativePath(),
+                    userId = UserHandleHidden.getUserId(getCallingUid()),
+                )
                 RestoreNetworksHelper(mWifiManager).restore(
-                    File(PathHelper.getBackupNetworksConfigFilePath(archivePath)).readText(), networkIds, callback.asProgressCallback(),
+                    File(metadataPath).readText(), networkIds, callback.asProgressCallback(),
                 )
             }.getOrElse { error ->
                 if (error is CancellationException || error !is Exception) throw error
@@ -533,10 +539,12 @@ object RemoteRootService {
             archivePath: String, messageIds: List<String>, callback: IRestoreCallback,
         ): List<String> = synchronized(mLock) {
             runCatching {
+                // Capture the app user before clearing Binder identity to root.
+                val recordUserId = UserHandleHidden.getUserId(getCallingUid())
                 val identity = clearCallingIdentity()
                 try {
                     ArchiveRestoreMessagesHelper(mSystemContext, mContext.cacheDir).restore(
-                        archivePath, messageIds, callback.asProgressCallback(),
+                        archivePath, recordUserId, messageIds, callback.asProgressCallback(),
                     )
                 } finally {
                     restoreCallingIdentity(identity)

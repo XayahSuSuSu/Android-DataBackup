@@ -13,7 +13,7 @@ import com.xayah.databackup.entity.backup.BackupSelection
 import com.xayah.databackup.entity.backup.BackupStagedFile
 import com.xayah.databackup.util.PathHelper
 
-/** Serializes selected structured backup data to the shared backup directory layout. */
+/** Serializes selected structured backup data using shared metadata keys. */
 class BackupSerializationHelper {
     private val mMoshi = Moshi.Builder()
         .add(WifiConfigurationAdapter())

@@ -54,11 +54,4 @@ internal object ArchiveRestorePaths {
         }
     }
 
-    val structuredFileRelativePaths: List<String> = listOf(
-        PathHelper.getBackupNetworksConfigFileRelativePath(),
-        PathHelper.getBackupContactsConfigFileRelativePath(),
-        PathHelper.getBackupCallLogsConfigFileRelativePath(),
-        PathHelper.getBackupMessagesSmsConfigFileRelativePath(),
-        PathHelper.getBackupMessagesMmsConfigFileRelativePath(),
-    )
 }

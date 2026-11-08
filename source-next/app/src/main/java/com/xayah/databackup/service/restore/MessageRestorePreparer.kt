@@ -11,6 +11,8 @@ import com.xayah.databackup.database.entity.FieldMap
 import com.xayah.databackup.database.entity.MessageConstant
 import com.xayah.databackup.database.entity.Mms
 import com.xayah.databackup.database.entity.Sms
+import com.xayah.databackup.service.restore.RestoreRecordId.MMS_PREFIX
+import com.xayah.databackup.service.restore.RestoreRecordId.SMS_PREFIX
 
 /**
  * Prepares backup messages for restoration without writing to providers or accessing attachments.
@@ -33,7 +35,7 @@ internal object MessageRestorePreparer {
     private val mMmsAdapter = mMoshi.adapter<List<Mms>>()
     private val mFieldsAdapter = mMoshi.adapter<FieldMap>()
     private val mRowsAdapter = mMoshi.adapter<List<FieldMap>>()
-    private val mMessageKeyPattern = Regex("(sms|mms):(0|[1-9][0-9]*)")
+    private val mMessageKeyPattern = Regex("(${Regex.escape(SMS_PREFIX)}|${Regex.escape(MMS_PREFIX)})(0|[1-9][0-9]*)")
 
     private val mReadRestrictionNumbers = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
         setOf(ReadRestriction.RESTRICTED)
@@ -77,10 +79,10 @@ internal object MessageRestorePreparer {
             require(mMessageKeyPattern.matches(id)) { "Invalid message key: $id" }
             requireNotNull(id.substringAfter(':').toIntOrNull()) { "Invalid message index: $id" }
         }
-        val sms = if (selectedIds.keys.any { it.startsWith("sms:") }) {
+        val sms = if (selectedIds.keys.any { it.startsWith(SMS_PREFIX) }) {
             requireNotNull(mSmsAdapter.fromJson(requireNotNull(smsJson) { "Missing SMS metadata" })) { "Missing SMS records" }
         } else emptyList()
-        val mms = if (selectedIds.keys.any { it.startsWith("mms:") }) {
+        val mms = if (selectedIds.keys.any { it.startsWith(MMS_PREFIX) }) {
             requireNotNull(mMmsAdapter.fromJson(requireNotNull(mmsJson) { "Missing MMS metadata" })) { "Missing MMS records" }
         } else emptyList()
         val preparedSms = linkedMapOf<String, SmsRecord>()
@@ -89,7 +91,7 @@ internal object MessageRestorePreparer {
         val failures = linkedMapOf<String, Exception>()
         selectedIds.forEach { (id, index) ->
             runCatching {
-                if (id.startsWith("sms:")) {
+                if (id.startsWith(SMS_PREFIX)) {
                     val record = prepareSms(requireNotNull(sms.getOrNull(index)) { "Unknown SMS record" })
                     if (record == null) skippedIds.add(id) else preparedSms[id] = record
                 } else {

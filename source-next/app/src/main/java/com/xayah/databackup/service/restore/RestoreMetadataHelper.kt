@@ -88,11 +88,19 @@ class RestoreMetadataHelper {
 }
 
 internal object RestoreRecordId {
-    fun getAppId(userId: Int, packageName: String): String = "app:$userId:$packageName"
-    fun getFileId(path: String): String = "file:$path"
-    fun getNetworkId(index: Int): String = "network:$index"
-    fun getContactId(index: Int): String = "contact:$index"
-    fun getCallLogId(index: Int): String = "call:$index"
-    fun getSmsId(index: Int): String = "sms:$index"
-    fun getMmsId(index: Int): String = "mms:$index"
+    const val APP_PREFIX = "app:"
+    const val FILE_PREFIX = "file:"
+    const val NETWORK_PREFIX = "network:"
+    const val CONTACT_PREFIX = "contact:"
+    const val CALL_LOG_PREFIX = "call:"
+    const val SMS_PREFIX = "sms:"
+    const val MMS_PREFIX = "mms:"
+
+    fun getAppId(userId: Int, packageName: String): String = "$APP_PREFIX$userId:$packageName"
+    fun getFileId(path: String): String = "$FILE_PREFIX$path"
+    fun getNetworkId(index: Int): String = "$NETWORK_PREFIX$index"
+    fun getContactId(index: Int): String = "$CONTACT_PREFIX$index"
+    fun getCallLogId(index: Int): String = "$CALL_LOG_PREFIX$index"
+    fun getSmsId(index: Int): String = "$SMS_PREFIX$index"
+    fun getMmsId(index: Int): String = "$MMS_PREFIX$index"
 }

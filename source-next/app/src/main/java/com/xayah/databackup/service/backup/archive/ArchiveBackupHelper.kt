@@ -1,5 +1,7 @@
 package com.xayah.databackup.service.backup.archive
 
+import android.os.Process
+import android.os.UserHandleHidden
 import com.xayah.databackup.entity.BackupBackendType
 import com.xayah.databackup.entity.backup.BackupCategory
 import com.xayah.databackup.entity.backup.BackupEvent
@@ -10,6 +12,7 @@ import com.xayah.databackup.entity.backup.BackupSkippedSource
 import com.xayah.databackup.entity.backup.BackupSourceCategory
 import com.xayah.databackup.entity.backup.BackupStage
 import com.xayah.databackup.rootservice.RemoteRootService
+import com.xayah.databackup.service.archive.ArchiveRecordPaths
 import com.xayah.databackup.service.backup.BackupHelper
 import com.xayah.databackup.service.backup.BackupMetadataHelper
 import com.xayah.databackup.service.backup.BackupMmsSourceHelper
@@ -34,6 +37,8 @@ class ArchiveBackupHelper(
         check(request.backendType == BackupBackendType.Archive) { "Archive backup requires an Archive destination" }
         val selection = request.getSelection()
         val backupPath = selection.config.path
+        val recordUserId = UserHandleHidden.getUserId(Process.myUid())
+        val recordPaths = ArchiveRecordPaths.getRelativePaths(recordUserId)
         var hasFailures = false
         val skippedSources = mutableListOf<BackupSkippedSource>()
         onEvent(BackupEvent.StageChanged(BackupStage.WriteBackup))
@@ -69,12 +74,15 @@ class ArchiveBackupHelper(
             currentCoroutineContext().ensureActive()
             onEvent(BackupEvent.CategoryStarted(category))
             val isCompleted = runCatching {
-                mMetadataHelper.writeFiles(backupPath, mSerializationHelper.serializeCategory(selection, category))
+                val files = mSerializationHelper.serializeCategory(selection, category).map { file ->
+                    file.copy(relativePath = recordPaths.getValue(file.relativePath))
+                }
+                mMetadataHelper.writeFiles(backupPath, files)
                 var hasAttachmentFailures = false
                 if (category == BackupCategory.Messages) {
                     val sources = mMmsHelper.getSources(selection.mms.orEmpty())
                     hasAttachmentFailures = sources.failedRecordIds.isNotEmpty()
-                    val attachmentsPath = PathHelper.getBackupAppPartsDir(PathHelper.getBackupMessagesDir(backupPath))
+                    val attachmentsPath = ArchiveRecordPaths.getMmsAttachmentsDir(backupPath, recordUserId)
                     check(RemoteRootService.mkdirs(attachmentsPath)) { "Cannot create attachment directory" }
                     for (sourcePath in sources.paths) {
                         currentCoroutineContext().ensureActive()

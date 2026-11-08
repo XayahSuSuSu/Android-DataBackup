@@ -88,7 +88,7 @@ internal class RestoreNetworksHelper(private val mWifiManager: WifiManagerHidden
             val records = requireNotNull(Moshi.Builder().build().adapter<List<Network>>().fromJson(content)) {
                 "Missing Wi-Fi records"
             }
-            val recordsById = records.mapIndexed { index, network -> "network:$index" to network }.toMap()
+            val recordsById = records.mapIndexed { index, network -> RestoreRecordId.getNetworkId(index) to network }.toMap()
             return networkIds.distinct().associateWith { id ->
                 val record = requireNotNull(recordsById[id]) { "Unknown Wi-Fi record" }
                 listOfNotNull(record.config1, record.config2)

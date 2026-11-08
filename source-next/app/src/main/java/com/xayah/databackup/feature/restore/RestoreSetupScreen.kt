@@ -53,6 +53,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.xayah.databackup.service.restore.RestoreRecordId
 import com.xayah.databackup.R
 import com.xayah.databackup.data.TaskInfo
 import com.xayah.databackup.database.entity.ContactDeserialized
@@ -391,7 +392,9 @@ private val RestoreCategory.iconRes: Int
 @Composable
 private fun RestoreSetupPreview() {
     val inventory = RestoreInventory(
-        contacts = (0..1).associate { "contact:$it" to ContactDeserialized(it.toLong(), mapOf("display_name" to "Contact $it"), emptyList(), false) },
+        contacts = (0..1).associate {
+            RestoreRecordId.getContactId(it) to ContactDeserialized(it.toLong(), mapOf("display_name" to "Contact $it"), emptyList(), false)
+        },
     )
     MaterialTheme {
         RestoreSetupContent(
