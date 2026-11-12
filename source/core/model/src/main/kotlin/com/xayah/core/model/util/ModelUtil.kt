@@ -78,6 +78,7 @@ fun SFTPAuthMode.Companion.indexOf(index: Int): SFTPAuthMode = when (index) {
 fun KillAppOption.Companion.indexOf(index: Int): KillAppOption = when (index) {
     1 -> KillAppOption.OPTION_I
     2 -> KillAppOption.OPTION_II
+    3 -> KillAppOption.OPTION_III
     else -> KillAppOption.DISABLED
 }
 

@@ -60,6 +60,10 @@
     <item name="unknown" type="string" />
     <item name="kill_app_options" type="string" />
     <item name="kill_app_options_desc" type="string" />
+    <item name="kill_app_option_disabled_desc" type="string" />
+    <item name="kill_app_option_i_desc" type="string" />
+    <item name="kill_app_option_ii_desc" type="string" />
+    <item name="kill_app_option_iii_desc" type="string" />
     <item name="language" type="string" />
     <item name="system" type="string" />
     <item name="backup_configs" type="string" />

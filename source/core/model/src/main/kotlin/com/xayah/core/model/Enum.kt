@@ -157,7 +157,14 @@ enum class ThemeType {
 enum class KillAppOption {
     DISABLED,
     OPTION_I,
-    OPTION_II;
+    OPTION_II,
+
+    /**
+     * Force-stops the package and suspends it with `pm suspend` until it has been processed.
+     * A suspended package cannot be started by the launcher, broadcasts, services or jobs,
+     * and its launcher icon is greyed out.
+     */
+    OPTION_III;
 
     companion object
 }

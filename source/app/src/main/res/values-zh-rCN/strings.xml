@@ -339,9 +339,14 @@
     <string name="no_root_directory">请勿选择根目录</string>
     <string name="option_i">方案I</string>
     <string name="option_ii">方案II</string>
+    <string name="option_iii">高级暂停</string>
     <string name="disabled">禁用</string>
     <string name="kill_app_options">杀死应用选项</string>
     <string name="kill_app_options_desc">备份应用前行为</string>
+    <string name="kill_app_option_disabled_desc">不做任何处理，应用在数据复制期间保持运行。</string>
+    <string name="kill_app_option_i_desc">在 root shell 中循环执行 killall -9、am force-stop 与 am kill，直到该应用从 dumpsys activity processes 中消失；3 秒后仍未消失则放弃。</string>
+    <string name="kill_app_option_ii_desc">由 root 服务通过 Binder 调用一次 IActivityManager.forceStopPackageAsUser()，该应用的全部进程会被一次性停止。</string>
+    <string name="kill_app_option_iii_desc">先强行停止应用，再用 pm suspend 挂起：桌面、广播、服务与任务都无法再拉起它，图标随之变灰；该应用处理完成后立刻解除挂起。系统应用只会被强行停止。</string>
     <string name="language">语言</string>
     <string name="download">下载</string>
     <string name="changelog">更新日志</string>

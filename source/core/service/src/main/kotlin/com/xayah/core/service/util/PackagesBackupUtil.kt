@@ -188,6 +188,16 @@ class PackagesBackupUtil @Inject constructor(
 
     private val tarCt = CompressionType.TAR
     fun getIconsDst(dstDir: String) = "${dstDir}/$IconRelativeDir.${tarCt.suffix}"
+
+    /**
+     * `tar` exits with 1 when some files differ, meaning a file changed or disappeared while it was
+     * being read. That is exactly what happens when the data of an app that is still running is
+     * archived, and the archive itself is perfectly readable, so "some files differ" must not fail
+     * the package on its own: [CommonBackupUtil.testArchive] is the real verdict on the archive.
+     * Exit code 2 (fatal) and a missing/timed out result still fail.
+     */
+    private fun ShellResult.isAcceptableTarResult() = code == 0 || code == 1
+
     suspend fun backupIcons(dstDir: String): ShellResult = run {
         log { "Backing up icons..." }
 
@@ -244,7 +254,7 @@ class PackagesBackupUtil @Inject constructor(
                 } else {
                     Tar.compressInCur(cur = srcDir, src = "./*.apk", dst = dst, extra = ct.getCompressPara(context.readCompressionLevel().first()))
                         .also { result ->
-                            isSuccess = result.isSuccess
+                            isSuccess = result.isAcceptableTarResult()
                             out.addAll(result.out)
                         }
                     commonBackupUtil.testArchive(src = dst, ct = ct).also { result ->
@@ -338,7 +348,7 @@ class PackagesBackupUtil @Inject constructor(
                     dst = dst,
                     extra = ct.getCompressPara(context.readCompressionLevel().first())
                 ).also { result ->
-                    isSuccess = result.isSuccess
+                    isSuccess = result.isAcceptableTarResult()
                     out.addAll(result.out)
                 }
                 commonBackupUtil.testArchive(src = dst, ct = ct).also { result ->
