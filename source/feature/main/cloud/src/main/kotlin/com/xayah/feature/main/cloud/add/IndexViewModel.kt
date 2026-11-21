@@ -11,6 +11,7 @@ import com.xayah.core.model.SmbAuthMode
 import com.xayah.core.model.SmbVersion
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.FTPExtra
+import com.xayah.core.model.database.HybridXferExtra
 import com.xayah.core.model.database.SFTPExtra
 import com.xayah.core.model.database.SMBExtra
 import com.xayah.core.model.database.WebDAVExtra
@@ -137,6 +138,56 @@ class IndexViewModel @Inject constructor(
                 password = password,
                 extra = extra,
                 remote = remote,
+            )
+        )
+    }
+
+    suspend fun updateHybridXferEntity(
+        name: String,
+        remote: String,
+        port: String,
+        enabledInterfaces: List<String>,
+        maxBufferMb: String,
+        chunkSizeMb: Int,
+        continuousStream: Boolean,
+        usbParallelChannels: Int,
+        socketBufferMb: Int,
+        localBufferCount: Int,
+        inlineCrc32: Boolean,
+    ) {
+        val parsedPort = port.toIntOrNull() ?: 5740
+        val parsedMaxBuffer = (maxBufferMb.toIntOrNull() ?: 1024).coerceIn(64, 16384)
+        val parsedChunk = chunkSizeMb.coerceIn(16, (parsedMaxBuffer / 2).coerceAtLeast(16))
+        val parsedUsb = usbParallelChannels.coerceIn(1, 24)
+        val parsedSockBuf = socketBufferMb.coerceIn(1, 16)
+        val parsedLocalBuf = localBufferCount.coerceIn(32, 1024)
+        val ifaces = enabledInterfaces.ifEmpty { listOf("USB_ADB") }
+        val extraObj = HybridXferExtra(
+            port = parsedPort,
+            enabledInterfaces = ifaces,
+            maxBufferMb = parsedMaxBuffer,
+            chunkSizeMb = parsedChunk,
+            localBufferCount = parsedLocalBuf,
+            remoteBufferCount = maxOf(256, parsedLocalBuf).coerceIn(128, 1024),
+            continuousStream = continuousStream,
+            usbParallelChannels = parsedUsb,
+            socketBufferMb = parsedSockBuf,
+            inlineCrc32 = inlineCrc32,
+        )
+        val modeSummary = if (continuousStream) {
+            "极速连续流 | USB×$parsedUsb | RAM ${parsedLocalBuf}MB | 磁盘上限 ${parsedMaxBuffer}MB"
+        } else {
+            "分片缓冲 ≤${parsedMaxBuffer}MB/${parsedChunk}MB | USB×$parsedUsb | RAM ${parsedLocalBuf}MB"
+        }
+        emitIntent(
+            IndexUiIntent.UpdateEntity(
+                name = name,
+                type = CloudType.HYBRID_XFER,
+                url = ifaces.joinToString("+") + ":$parsedPort",
+                username = modeSummary,
+                password = "none",
+                extra = GsonUtil().toJson(extraObj),
+                remote = remote.ifEmpty { "/DataBackup" },
             )
         )
     }

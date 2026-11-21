@@ -29,6 +29,20 @@ data class WebDAVExtra(
     val insecure: Boolean,
 )
 
+data class HybridXferExtra(
+    val port: Int = 5740,
+    val enabledInterfaces: List<String> = listOf("USB_ADB", "wlan0"),
+    val maxBufferMb: Int = 1024,
+    val chunkSizeMb: Int = 64,
+    val localBufferCount: Int = 64,
+    val remoteBufferCount: Int = 128,
+    val connectTimeoutSec: Int = 30,
+    val continuousStream: Boolean = true,
+    val usbParallelChannels: Int = 2,
+    val socketBufferMb: Int = 4,
+    val inlineCrc32: Boolean = true,
+)
+
 @Entity
 data class CloudEntity(
     @PrimaryKey var name: String,

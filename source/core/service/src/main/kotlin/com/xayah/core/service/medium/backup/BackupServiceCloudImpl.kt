@@ -14,8 +14,11 @@ import com.xayah.core.model.database.ProcessingInfoEntity
 import com.xayah.core.model.database.TaskDetailMediaEntity
 import com.xayah.core.model.database.TaskEntity
 import com.xayah.core.network.client.CloudClient
+import com.xayah.core.network.client.StreamingCloudClient
 import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.service.util.BoundedBufferPool
 import com.xayah.core.service.util.CommonBackupUtil
+import java.io.File
 import com.xayah.core.service.util.MediumBackupUtil
 import com.xayah.core.util.PathUtil
 import dagger.hilt.android.AndroidEntryPoint
@@ -71,6 +74,13 @@ internal class BackupServiceCloudImpl @Inject constructor() : AbstractBackupServ
         log { "Trying to create: $mRemoteConfigsDir." }
         mClient.mkdirRecursively(mRemoteFilesDir)
         mClient.mkdirRecursively(mRemoteConfigsDir)
+        (mClient as? StreamingCloudClient)?.let { sc ->
+            mBufferPool = BoundedBufferPool(
+                streamRootDir = File(mContext.cacheDir, "hfx_stream"),
+                configuredMaxBytes = sc.maxBufferBytes,
+                configuredChunkBytes = sc.chunkSizeBytes,
+            )
+        }
     }
 
     private fun getRemoteFileDir(archivesRelativeDir: String) = "${mRemoteFilesDir}/${archivesRelativeDir}"
@@ -81,6 +91,14 @@ internal class BackupServiceCloudImpl @Inject constructor() : AbstractBackupServ
 
     override suspend fun backup(m: MediaEntity, r: MediaEntity?, t: TaskDetailMediaEntity, dstDir: String) {
         val remoteFileDir = getRemoteFileDir(m.archivesRelativeDir)
+        val streamingClient = mClient as? StreamingCloudClient
+        val pool = mBufferPool
+        if (streamingClient != null && pool != null) {
+            mMediumBackupUtil.backupMediaStreaming(client = streamingClient, bufferPool = pool, m = m, t = t, remoteFileDir = remoteFileDir)
+            t.update(progress = 1f)
+            t.update(processingIndex = t.processingIndex + 1)
+            return
+        }
 
         val result = mMediumBackupUtil.backupMedia(m = m, t = t, r = r, dstDir = dstDir)
         if (result.isSuccess && t.mediaInfo.state != OperationState.SKIP) {
@@ -131,6 +149,7 @@ internal class BackupServiceCloudImpl @Inject constructor() : AbstractBackupServ
     }
 
     override suspend fun clear() {
+        mBufferPool?.reset()
         mRootService.deleteRecursively(mRootDir)
         mClient.disconnect()
     }
@@ -153,6 +172,7 @@ internal class BackupServiceCloudImpl @Inject constructor() : AbstractBackupServ
 
     private lateinit var mCloudEntity: CloudEntity
     private lateinit var mClient: CloudClient
+    private var mBufferPool: BoundedBufferPool? = null
     private lateinit var mRemotePath: String
     private lateinit var mRemoteFilesDir: String
     private lateinit var mRemoteConfigsDir: String

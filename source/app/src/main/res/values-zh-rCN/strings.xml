@@ -408,4 +408,19 @@
     <string name="notification_desc">这是发布必要通知所必需的</string>
     <string name="permission_is_denied">权限被拒绝</string>
     <string name="root_denied_msg">请检查您的Root管理器并重新启动应用程序</string>
+    <string name="hybridxfer_setup">双轨快传设置</string>
+    <string name="hybridxfer_channels">传输通道（USB ADB + Wi-Fi 聚合）</string>
+    <string name="hybridxfer_refresh_channels">刷新网卡列表</string>
+    <string name="hybridxfer_buffer_settings">手机缓冲上限与分片大小</string>
+    <string name="hybridxfer_max_buffer_mb">手机最大磁盘缓冲上限 (MB, ≥ 64)</string>
+    <string name="hybridxfer_max_buffer_desc">硬上限防满盘保护（如 256GB 已用 255GB 时可设 ≤ 512~1024MB，绝不超限报错；开启连续流时归档磁盘占用为 0MB）</string>
+    <string name="hybridxfer_perf_settings">极速传输性能调优</string>
+    <string name="hybridxfer_continuous_stream">极速连续流模式（零磁盘落盘）</string>
+    <string name="hybridxfer_continuous_stream_desc">开启：0手机存储占用且无分片停顿（最快）；关闭：使用磁盘分片缓冲并支持断线续传</string>
+    <string name="hybridxfer_usb_parallel">USB ADB 并行通道数</string>
+    <string name="hybridxfer_usb_parallel_desc">提示：根据“USB 传输速度 ÷ Wi-Fi 传输速度”的倍数来设置（如 USB 350MB/s、Wi-Fi 50MB/s 约为 7 倍，范围 1~24）</string>
+    <string name="hybridxfer_socket_buffer_mb">TCP Socket 缓冲区大小</string>
+    <string name="hybridxfer_ram_buffer_mb">手机内存传输缓冲池 (32MB ~ 1GB)</string>
+    <string name="hybridxfer_inline_crc32">每 1MB 块内联 CRC32 校验</string>
+    <string name="hybridxfer_inline_crc32_desc">电脑多核边收边校验，无需回读磁盘，关闭可测极限裸速</string>
 </resources>

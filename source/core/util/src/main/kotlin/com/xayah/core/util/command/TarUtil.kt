@@ -165,4 +165,29 @@ object Tar {
             )
         }
     }
+
+    fun buildCompressInCurStreamCmd(cur: String, src: String, extra: String): String {
+        val quotedCur = "${SymbolUtil.QUOTE}$cur${SymbolUtil.QUOTE}"
+        val tarCmd = "cd $quotedCur && tar --totals -cpf - $src"
+        return if (extra.isEmpty()) tarCmd else "$tarCmd | $extra"
+    }
+
+    fun buildCompressStreamCmd(
+        exclusionList: List<String>,
+        h: String,
+        srcDir: String,
+        src: String,
+        extra: String,
+    ): String {
+        val exclusion = exclusionList.trim().map { "--exclude=$it" }.toSpaceString()
+        val parts = listOf(
+            "tar", "--totals", "--warning=no-file-changed", "--warning=no-file-removed",
+            exclusion, h, "-cpf", "-",
+            "-C", "${SymbolUtil.QUOTE}$srcDir${SymbolUtil.QUOTE}",
+            "--", "${SymbolUtil.QUOTE}$src${SymbolUtil.QUOTE}"
+        ).filter { it.isNotBlank() }.joinToString(" ")
+        // GNU tar 退出码 1 表示打包期间有文件被后台修改（非致命，例如 QQ/微信推送进程），退出码 2 才是致命错误
+        val safeTar = "($parts; rc=\$?; [ \$rc -eq 0 ] || [ \$rc -eq 1 ])"
+        return if (extra.isEmpty()) safeTar else "$safeTar | $extra"
+    }
 }

@@ -13,6 +13,8 @@ import com.xayah.core.model.database.MediaEntity
 import com.xayah.core.model.database.TaskDetailMediaEntity
 import com.xayah.core.model.util.getCompressPara
 import com.xayah.core.network.client.CloudClient
+import com.xayah.core.network.client.StreamingCloudClient
+import com.xayah.core.util.binDir
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.LogUtil
 import com.xayah.core.util.PathUtil
@@ -140,5 +142,77 @@ class MediumBackupUtil @Inject constructor(
             flag = false
             t.updateInfo(state = if (isSuccess) OperationState.DONE else OperationState.ERROR, log = t.getLog() + "\n${outString}", content = "100%")
         }
+    }
+
+    private fun formatCompactSize(bytes: Long): String {
+        val mb = bytes / (1024.0 * 1024.0)
+        return if (mb >= 1024.0) String.format("%.2fGB", mb / 1024.0) else String.format("%.1fMB", mb)
+    }
+
+    suspend fun backupMediaStreaming(
+        client: StreamingCloudClient,
+        bufferPool: BoundedBufferPool,
+        m: MediaEntity,
+        t: TaskDetailMediaEntity,
+        remoteFileDir: String,
+    ): ShellResult = run {
+        log { "Streaming backup ${DataType.MEDIA_MEDIA.type}..." }
+        val ct = m.indexInfo.compressionType
+        val out = mutableListOf<String>()
+        val src = m.path
+        val srcDir = PathUtil.getParentPath(src)
+
+        if (rootService.exists(src).not()) {
+            out.add(log { "Not exist: $src" })
+            t.updateInfo(state = OperationState.ERROR, log = out.toLineString())
+            return@run ShellResult(code = -1, input = listOf(), out = out)
+        }
+
+        val sizeBytes = rootService.calculateSize(src)
+        t.updateInfo(state = OperationState.UPLOADING, bytes = sizeBytes)
+        val cmd = Tar.buildCompressStreamCmd(
+            exclusionList = listOf(),
+            h = if (context.readFollowSymlinks().first()) "-h" else "",
+            srcDir = srcDir,
+            src = PathUtil.getFileName(src),
+            extra = ct.getCompressPara(context.readCompressionLevel().first()),
+        )
+        val remoteTarget = mediaRepository.getArchiveDst(dstDir = remoteFileDir, ct = ct)
+
+        var lastUiUpdate = 0L
+        val uiScope = CoroutineScope(coroutineContext)
+        val streamResult = StreamingBackupPipeline.streamArchiveToRemote(
+            client = client,
+            rootService = rootService,
+            bufferPool = bufferPool,
+            binDir = context.binDir(),
+            streamCommand = cmd,
+            remoteTargetPath = remoteTarget,
+            onProgress = { uploaded, speed, bufUsed, bufMax ->
+                val now = System.currentTimeMillis()
+                if (now - lastUiUpdate >= 500L) {
+                    lastUiUpdate = now
+                    val bufText = if (bufMax <= 0L) "0MB落盘" else "Buf ${formatCompactSize(bufUsed)}/${formatCompactSize(bufMax)}"
+                    val info = "${formatCompactSize(uploaded)} | ${formatCompactSize(speed)}/s | $bufText"
+                    uiScope.launch {
+                        t.updateInfo(content = info)
+                    }
+                }
+            },
+        )
+        out.addAll(streamResult.logs)
+        if (!streamResult.isSuccess) {
+            log { "Streaming media failed: ${streamResult.logs.joinToString(" | ")}" }
+        }
+        if (streamResult.isSuccess) {
+            m.setDataBytes(sizeBytes)
+            m.setDisplayBytes(streamResult.compressedBytes)
+        }
+        t.updateInfo(
+            state = if (streamResult.isSuccess) OperationState.DONE else OperationState.ERROR,
+            log = out.toLineString(),
+            content = if (streamResult.isSuccess) formatCompactSize(streamResult.compressedBytes) else "ERROR",
+        )
+        ShellResult(code = if (streamResult.isSuccess) 0 else -1, input = listOf(), out = out)
     }
 }

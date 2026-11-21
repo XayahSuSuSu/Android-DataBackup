@@ -4,6 +4,7 @@ import android.content.Context
 import com.xayah.core.model.CloudType
 import com.xayah.core.model.database.CloudEntity
 import com.xayah.core.model.database.FTPExtra
+import com.xayah.core.model.database.HybridXferExtra
 import com.xayah.core.model.database.SFTPExtra
 import com.xayah.core.model.database.SMBExtra
 import com.xayah.core.model.database.WebDAVExtra
@@ -50,5 +51,10 @@ fun CloudEntity.getCloud() = when (this.type) {
     CloudType.SFTP -> {
         val extra = getExtraEntity<SFTPExtra>()!!
         SFTPClientImpl(this, extra)
+    }
+
+    CloudType.HYBRID_XFER -> {
+        val extra = getExtraEntity<HybridXferExtra>() ?: HybridXferExtra()
+        HybridXferClientImpl(this, extra)
     }
 }

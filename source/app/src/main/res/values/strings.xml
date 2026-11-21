@@ -420,4 +420,19 @@
     <string name="notification_desc">This is needed to post necessary notifications</string>
     <string name="permission_is_denied">Permission is denied</string>
     <string name="root_denied_msg">Please check your root manager and restart app</string>
+    <string name="hybridxfer_setup">HybridXfer setup</string>
+    <string name="hybridxfer_channels">Transfer channels (USB ADB + Wi-Fi)</string>
+    <string name="hybridxfer_refresh_channels">Refresh network interfaces</string>
+    <string name="hybridxfer_buffer_settings">Bounded buffer &amp; chunk size</string>
+    <string name="hybridxfer_max_buffer_mb">Max disk buffer ceiling (MB, >= 64)</string>
+    <string name="hybridxfer_max_buffer_desc">Hard limit to prevent storage full errors when phone space is nearly exhausted (continuous mode uses 0 MB disk for streams)</string>
+    <string name="hybridxfer_perf_settings">High-speed performance tuning</string>
+    <string name="hybridxfer_continuous_stream">Zero-pause continuous stream</string>
+    <string name="hybridxfer_continuous_stream_desc">Zero phone disk I/O, no chunk barriers; turn off for disk-buffered chunk resume</string>
+    <string name="hybridxfer_usb_parallel">USB ADB parallel channels</string>
+    <string name="hybridxfer_usb_parallel_desc">Tip: Set based on (USB speed / Wi-Fi speed) ratio (e.g. USB 350MB/s vs Wi-Fi 50MB/s ≈ 7x, range 1–24)</string>
+    <string name="hybridxfer_socket_buffer_mb">TCP Socket buffer size</string>
+    <string name="hybridxfer_ram_buffer_mb">Phone RAM transfer buffer (32MB – 1GB)</string>
+    <string name="hybridxfer_inline_crc32">Inline 1MB block CRC32 verify</string>
+    <string name="hybridxfer_inline_crc32_desc">Parallel per-block integrity check with zero disk re-read</string>
 </resources>

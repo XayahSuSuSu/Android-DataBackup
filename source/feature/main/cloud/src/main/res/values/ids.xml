@@ -21,6 +21,21 @@
     <item name="webdav_setup" type="string"/>
     <item name="smb_setup" type="string"/>
     <item name="sftp_setup" type="string"/>
+    <item name="hybridxfer_setup" type="string"/>
+    <item name="hybridxfer_channels" type="string"/>
+    <item name="hybridxfer_refresh_channels" type="string"/>
+    <item name="hybridxfer_buffer_settings" type="string"/>
+    <item name="hybridxfer_max_buffer_mb" type="string"/>
+    <item name="hybridxfer_perf_settings" type="string"/>
+    <item name="hybridxfer_continuous_stream" type="string"/>
+    <item name="hybridxfer_continuous_stream_desc" type="string"/>
+    <item name="hybridxfer_usb_parallel" type="string"/>
+    <item name="hybridxfer_usb_parallel_desc" type="string"/>
+    <item name="hybridxfer_socket_buffer_mb" type="string"/>
+    <item name="hybridxfer_ram_buffer_mb" type="string"/>
+    <item name="hybridxfer_max_buffer_desc" type="string"/>
+    <item name="hybridxfer_inline_crc32" type="string"/>
+    <item name="hybridxfer_inline_crc32_desc" type="string"/>
     <item name="server" type="string"/>
     <item name="add_account" type="string"/>
     <item name="provider" type="string"/>
