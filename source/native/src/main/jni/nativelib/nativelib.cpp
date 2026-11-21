@@ -3,6 +3,7 @@
 #include <ftw.h>
 #include <sys/stat.h>
 #include <climits>
+#include <cstdlib>
 
 namespace NativeNS {
     thread_local size_t total_size{0};
@@ -36,4 +37,27 @@ Java_com_xayah_libnative_NativeLib_getUidGid(JNIEnv *env, jobject, jstring path)
     }
     env->ReleaseIntArrayElements(result, p_result, 0);
     return result;
+}
+
+extern "C" JNIEXPORT jobject JNICALL
+Java_com_xayah_libnative_NativeLib_allocateLargeBuffer(JNIEnv *env, jobject, jint size) {
+    if (size <= 0) {
+        return nullptr;
+    }
+    void *buffer = malloc(static_cast<size_t>(size));
+    if (buffer == nullptr) {
+        return nullptr;
+    }
+    return env->NewDirectByteBuffer(buffer, size);
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_xayah_libnative_NativeLib_freeBuffer(JNIEnv *env, jobject, jobject byteBuffer) {
+    if (byteBuffer == nullptr) {
+        return;
+    }
+    void *buffer = env->GetDirectBufferAddress(byteBuffer);
+    if (buffer != nullptr) {
+        free(buffer);
+    }
 }
