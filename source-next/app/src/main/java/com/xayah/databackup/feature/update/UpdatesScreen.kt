@@ -143,23 +143,16 @@ private fun UpdateOverviewCard(
     uiState: UpdatesUiState,
     onCheckUpdates: () -> Unit,
 ) {
-    val context = LocalContext.current
-    val statusText = remember(uiState.status) {
-        when (uiState.status) {
-            UpdatesStatus.Loading,
-            UpdatesStatus.Refreshing -> context.getString(R.string.checking_updates)
-
-            UpdatesStatus.UpdateAvailable -> context.getString(R.string.new_version_available)
-            UpdatesStatus.UpToDate -> context.getString(R.string.version_up_to_date)
-            is UpdatesStatus.Error -> context.getString(R.string.loading_failed)
-        }
+    val statusTextRes = when (uiState.status) {
+        UpdatesStatus.Loading, UpdatesStatus.Refreshing -> R.string.checking_updates
+        UpdatesStatus.UpdateAvailable -> R.string.new_version_available
+        UpdatesStatus.UpToDate -> R.string.version_up_to_date
+        is UpdatesStatus.Error -> R.string.loading_failed
     }
-    val actionText = remember(uiState.status) {
-        when (uiState.status) {
-            UpdatesStatus.Loading, UpdatesStatus.Refreshing -> context.getString(R.string.checking_updates)
-            UpdatesStatus.UpdateAvailable -> context.getString(R.string.download)
-            UpdatesStatus.UpToDate, is UpdatesStatus.Error -> context.getString(R.string.check_updates)
-        }
+    val actionTextRes = when (uiState.status) {
+        UpdatesStatus.Loading, UpdatesStatus.Refreshing -> R.string.checking_updates
+        UpdatesStatus.UpdateAvailable -> R.string.download
+        UpdatesStatus.UpToDate, is UpdatesStatus.Error -> R.string.check_updates
     }
     val colorScheme = MaterialTheme.colorScheme
     val statusColor = remember(uiState.status, colorScheme) {
@@ -242,7 +235,7 @@ private fun UpdateOverviewCard(
                 Column {
                     OverviewStatusRow(
                         modifier = Modifier.padding(bottom = 16.dp),
-                        statusText = statusText,
+                        statusText = stringResource(statusTextRes),
                         statusColor = statusColor,
                     )
 
@@ -262,7 +255,7 @@ private fun UpdateOverviewCard(
                     UpdateActionButton(
                         enabled = checkingUpdates.not() && updateAvailable.not(),
                         containerColor = buttonContainerColor,
-                        actionText = actionText,
+                        actionText = stringResource(actionTextRes),
                         onClick = onCheckUpdates,
                     )
                 }

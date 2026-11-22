@@ -20,6 +20,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    lint {
+        disable += "MissingTranslation"
+    }
+
     buildFeatures {
         buildConfig = true
         compose = true

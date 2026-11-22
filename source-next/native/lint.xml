@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lint>
+    <issue id="all">
+        <ignore path="src/main/jni/external/zstd/zstd-jni/**" />
+    </issue>
+</lint>
