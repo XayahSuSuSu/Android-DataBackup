@@ -14,6 +14,7 @@ import android.content.pm.ApplicationInfoHidden
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.pm.PackageManagerHidden
+import android.content.pm.ProviderInfo
 import android.content.pm.UserInfo
 import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiConfigurationHidden
@@ -27,14 +28,22 @@ import android.os.RemoteException
 import android.os.StatFs
 import android.os.UserHandleHidden
 import android.os.UserManagerHidden
+import android.provider.Telephony
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapter
 import com.topjohnwu.superuser.ipc.RootService
 import com.xayah.databackup.App
 import com.xayah.databackup.R
 import com.xayah.databackup.database.entity.AppInfo
 import com.xayah.databackup.database.entity.AppStorage
+import com.xayah.databackup.database.entity.CallLog
+import com.xayah.databackup.database.entity.Contact
 import com.xayah.databackup.database.entity.Info
+import com.xayah.databackup.database.entity.Mms
+import com.xayah.databackup.database.entity.Sms
 import com.xayah.databackup.database.entity.Storage
 import com.xayah.databackup.entity.backup.ApkInstallSource
+import com.xayah.databackup.entity.backup.BackupCategory
 import com.xayah.databackup.entity.restore.RestoreProgressCallback
 import com.xayah.databackup.entity.rustic.requireFullSnapshotId
 import com.xayah.databackup.parcelables.ArchiveOperationResultParcelable
@@ -45,8 +54,13 @@ import com.xayah.databackup.rootservice.install.ApkInstallConnection
 import com.xayah.databackup.rootservice.install.ApkInstallSession
 import com.xayah.databackup.service.archive.ArchiveRecordPaths
 import com.xayah.databackup.service.archive.ArchiveStreamHelper
+import com.xayah.databackup.service.backup.BackupRecordsHelper
 import com.xayah.databackup.service.restore.ApkInstallProcess.Companion.SYSTEM_PACKAGE_NAME
+import com.xayah.databackup.service.restore.RestoreCallLogsHelper
+import com.xayah.databackup.service.restore.RestoreContactsHelper
 import com.xayah.databackup.service.restore.RestoreNetworksHelper
+import com.xayah.databackup.service.restore.addNetworkForUser
+import com.xayah.databackup.service.restore.requireWifiUser
 import com.xayah.databackup.service.restore.archive.ArchiveRestoreAppHelper
 import com.xayah.databackup.service.restore.archive.ArchiveRestoreMessagesHelper
 import com.xayah.databackup.service.restore.archive.ArchiveRestorePaths
@@ -79,6 +93,9 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
+import okio.buffer
+import okio.sink
+import okio.source
 import java.io.File
 import java.util.UUID
 import kotlin.coroutines.resume
@@ -89,6 +106,22 @@ object RemoteRootService {
     private const val TAG = "RemoteRootService"
     private const val TIMEOUT_10S = 10
     private const val TIMEOUT_30S = 30
+    private val mMoshi = Moshi.Builder().build()
+
+    private inline fun <reified T> writeRecords(context: Context, records: List<T>): ParcelFileDescriptor {
+        val file = File.createTempFile(TMP_PARCEL_PREFIX, TMP_SUFFIX, context.cacheDir)
+        try {
+            file.sink().buffer().use { mMoshi.adapter<List<T>>().toJson(it, records) }
+            return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
+        } finally {
+            file.delete()
+        }
+    }
+
+    private inline fun <reified T> readRecords(descriptor: ParcelFileDescriptor): List<T> =
+        ParcelFileDescriptor.AutoCloseInputStream(descriptor).source().buffer().use {
+            checkNotNull(mMoshi.adapter<List<T>>().fromJson(it))
+        }
 
     private fun writeToParcel(context: Context, block: (Parcel) -> Unit): ParcelFileDescriptor {
         val parcel = Parcel.obtain()
@@ -270,21 +303,134 @@ object RemoteRootService {
             return mUserManager.users
         }
 
+        private inline fun <T> withRecordUser(operation: (Int) -> T): T {
+            val userId = UserHandleHidden.getUserId(getCallingUid())
+            val identity = clearCallingIdentity()
+            try {
+                check(mUserManager.isUserUnlocked(userId)) { "Record user is locked" }
+                return operation(userId)
+            } finally {
+                restoreCallingIdentity(identity)
+            }
+        }
+
+        private fun requireMessageUser(userId: Int) {
+            // A singleUser provider can return device-wide rows when called by root.
+            val userContext = mSystemContext.castTo<ContextHidden>().createPackageContextAsUser(SYSTEM_PACKAGE_NAME, 0, UserHandleHidden.of(userId))
+            val providerUris = listOf(Telephony.Sms.CONTENT_URI, Telephony.Mms.CONTENT_URI, Telephony.MmsSms.CONTENT_URI)
+            for (uri in providerUris) {
+                val provider = checkNotNull(userContext.packageManager.resolveContentProvider(checkNotNull(uri.authority), 0)) {
+                    "Telephony provider unavailable for the calling user"
+                }
+                if (provider.flags and ProviderInfo.FLAG_SINGLE_USER != 0) {
+                    check(userId == 0 && mUserManager.users.all { it.id == userId }) {
+                        "The shared Telephony provider cannot isolate this user's messages"
+                    }
+                }
+            }
+        }
+
+        override fun requireWifiBackupAccessForCurrentUser() = withRecordUser(::requireWifiUser)
+
+        override fun requireMessageBackupAccessForCurrentUser() = withRecordUser(::requireMessageUser)
+
+        override fun readContacts(): ParcelFileDescriptor = withRecordUser { userId ->
+            val records = BackupRecordsHelper(RootContentResolver(mSystemContext, userId)).readContacts()
+            writeRecords(mContext, records)
+        }
+
+        override fun readCallLogs(): ParcelFileDescriptor = withRecordUser { userId ->
+            val records = BackupRecordsHelper(RootContentResolver(mSystemContext, userId)).readCallLogs()
+            writeRecords(mContext, records)
+        }
+
+        override fun readSms(): ParcelFileDescriptor = withRecordUser { userId ->
+            requireMessageUser(userId)
+            val records = BackupRecordsHelper(RootContentResolver(mSystemContext, userId)).readSms()
+            writeRecords(mContext, records)
+        }
+
+        override fun readMms(): ParcelFileDescriptor = withRecordUser { userId ->
+            requireMessageUser(userId)
+            val records = BackupRecordsHelper(RootContentResolver(mSystemContext, userId)).readMms()
+            writeRecords(mContext, records)
+        }
+
+        override fun restoreArchiveContacts(archivePath: String, ids: List<String>, callback: IRestoreCallback): List<String> = synchronized(mLock) {
+            withRecordUser { userId ->
+                val relativePath = PathHelper.getBackupContactsConfigFileRelativePath()
+                val path = ArchiveRecordPaths.getFilePath(archivePath, relativePath, userId)
+                val content = File(path).readText()
+                RestoreContactsHelper(RootContentResolver(mSystemContext, userId)).restore(content, ids, callback.asProgressCallback())
+            }
+        }
+
+        override fun restoreArchiveCallLogs(archivePath: String, ids: List<String>, callback: IRestoreCallback): List<String> = synchronized(mLock) {
+            withRecordUser { userId ->
+                val relativePath = PathHelper.getBackupCallLogsConfigFileRelativePath()
+                val path = ArchiveRecordPaths.getFilePath(archivePath, relativePath, userId)
+                val content = File(path).readText()
+                RestoreCallLogsHelper(RootContentResolver(mSystemContext, userId)).restore(content, ids, callback.asProgressCallback())
+            }
+        }
+
+        override fun restoreRusticContacts(
+            repositoryPath: String,
+            password: String,
+            snapshotId: String,
+            ids: List<String>,
+            callback: IRestoreCallback,
+        ): List<String> = synchronized(mLock) {
+            withRecordUser { userId ->
+                val relativePath = PathHelper.getBackupContactsConfigFileRelativePath()
+                requireFullSnapshotId(snapshotId)
+                val path = PathHelper.getRusticSnapshotMetadataFilePath(relativePath)
+                val files = RusticWrapper.readSnapshotTextFiles(repositoryPath, password, snapshotId, listOf(path))
+                val content = checkNotNull(mMoshi.adapter<Map<String, String>>().fromJson(files)).getValue(path)
+                RestoreContactsHelper(RootContentResolver(mSystemContext, userId)).restore(content, ids, callback.asProgressCallback())
+            }
+        }
+
+        override fun restoreRusticCallLogs(
+            repositoryPath: String,
+            password: String,
+            snapshotId: String,
+            ids: List<String>,
+            callback: IRestoreCallback,
+        ): List<String> = synchronized(mLock) {
+            withRecordUser { userId ->
+                val relativePath = PathHelper.getBackupCallLogsConfigFileRelativePath()
+                requireFullSnapshotId(snapshotId)
+                val path = PathHelper.getRusticSnapshotMetadataFilePath(relativePath)
+                val files = RusticWrapper.readSnapshotTextFiles(repositoryPath, password, snapshotId, listOf(path))
+                val content = checkNotNull(mMoshi.adapter<Map<String, String>>().fromJson(files)).getValue(path)
+                RestoreCallLogsHelper(RootContentResolver(mSystemContext, userId)).restore(content, ids, callback.asProgressCallback())
+            }
+        }
+
         override fun getPrivilegedConfiguredNetworks(): List<BytesParcelable> {
+            val userId = UserHandleHidden.getUserId(getCallingUid())
+            requireWifiUser(userId)
             val networks = mutableListOf<BytesParcelable>()
-            mWifiManager.privilegedConfiguredNetworks.forEach {
-                val bytes = it.marshall()
+            for (config in mWifiManager.privilegedConfiguredNetworks) {
+                val metadata = config.castTo<WifiConfigurationHidden>()
+                if (!metadata.shared && (metadata.creatorUid < 0 || UserHandleHidden.getUserId(metadata.creatorUid) != userId)) {
+                    continue
+                }
+                val bytes = config.marshall()
                 networks.add(BytesParcelable(bytes.size, bytes))
             }
+            requireWifiUser(userId)
             return networks
         }
 
         override fun addNetworks(configs: List<BytesParcelable>): IntArray {
+            val userId = UserHandleHidden.getUserId(getCallingUid())
             val networkIds = mutableListOf<Int>()
             configs.forEach {
                 it.bytes.unmarshall { parcel ->
                     val config = WifiConfigurationHidden.CREATOR.createFromParcel(parcel)
-                    val id = mWifiManager.addNetwork(config)
+                    val id = mWifiManager.addNetworkForUser(userId, config)
                     networkIds.add(id)
                 }
             }
@@ -526,8 +672,10 @@ object RemoteRootService {
                     metadataPath = PathHelper.getBackupNetworksConfigFileRelativePath(),
                     userId = UserHandleHidden.getUserId(getCallingUid()),
                 )
+                val userId = UserHandleHidden.getUserId(getCallingUid())
+                requireWifiUser(userId)
                 RestoreNetworksHelper(mWifiManager).restore(
-                    File(metadataPath).readText(), networkIds, callback.asProgressCallback(),
+                    File(metadataPath).readText(), userId, networkIds, callback.asProgressCallback(),
                 )
             }.getOrElse { error ->
                 if (error is CancellationException || error !is Exception) throw error
@@ -541,6 +689,7 @@ object RemoteRootService {
             runCatching {
                 // Capture the app user before clearing Binder identity to root.
                 val recordUserId = UserHandleHidden.getUserId(getCallingUid())
+                requireMessageUser(recordUserId)
                 val identity = clearCallingIdentity()
                 try {
                     ArchiveRestoreMessagesHelper(mSystemContext, mContext.cacheDir).restore(
@@ -567,10 +716,13 @@ object RemoteRootService {
             callback: IRestoreCallback,
         ): List<String> = synchronized(mLock) {
             runCatching {
+                val userId = UserHandleHidden.getUserId(getCallingUid())
+                requireWifiUser(userId)
                 RusticRestoreNetworksHelper(mWifiManager).restore(
                     repositoryPath = repositoryPath,
                     password = password,
                     snapshotId = snapshotId,
+                    userId = userId,
                     networkIds = networkIds,
                     callback = callback.asProgressCallback(),
                 )
@@ -589,9 +741,11 @@ object RemoteRootService {
             callback: IRestoreCallback,
         ): List<String> = synchronized(mLock) {
             runCatching {
+                val recordUserId = UserHandleHidden.getUserId(getCallingUid())
+                requireMessageUser(recordUserId)
                 val identity = clearCallingIdentity()
                 try {
-                    RusticRestoreMessagesHelper(mSystemContext, mContext.cacheDir).restore(
+                    RusticRestoreMessagesHelper(mSystemContext, mContext.cacheDir, recordUserId).restore(
                         repositoryPath = repositoryPath,
                         password = password,
                         snapshotId = snapshotId,
@@ -699,7 +853,7 @@ object RemoteRootService {
     }
 
     internal suspend fun openApkInstallSession(): java.io.Closeable = withContext(Dispatchers.IO) {
-        ApkInstallConnection.open(App.application, checkNotNull(getService()) { "Root service is unavailable" })
+        ApkInstallConnection.open(App.application, requireService())
     }
 
     /** Stops the Root service and waits for its Binder to die before clearing the connection. */
@@ -785,6 +939,8 @@ object RemoteRootService {
         }
     }
 
+    private suspend fun requireService(): IRemoteRootService = checkNotNull(getService()) { "Root service is unavailable" }
+
     private suspend fun getService(): IRemoteRootService? {
         try {
             mMutex.withLock {
@@ -868,9 +1024,74 @@ object RemoteRootService {
         return getService()?.users ?: listOf()
     }
 
+    internal suspend fun requireBackupAccessForCurrentUser(categories: Collection<BackupCategory>) {
+        if (BackupCategory.Networks in categories) {
+            requireService().requireWifiBackupAccessForCurrentUser()
+        }
+        if (BackupCategory.Messages in categories) {
+            requireService().requireMessageBackupAccessForCurrentUser()
+        }
+    }
+
+    internal suspend fun readContacts(): List<Contact> {
+        val descriptor = requireService().readContacts()
+        return readRecords(descriptor)
+    }
+
+    internal suspend fun readCallLogs(): List<CallLog> {
+        val descriptor = requireService().readCallLogs()
+        return readRecords(descriptor)
+    }
+
+    internal suspend fun readSms(): List<Sms> {
+        val descriptor = requireService().readSms()
+        return readRecords(descriptor)
+    }
+
+    internal suspend fun readMms(): List<Mms> {
+        val descriptor = requireService().readMms()
+        return readRecords(descriptor)
+    }
+
+    internal suspend fun restoreArchiveContacts(
+        archivePath: String,
+        ids: List<String>,
+        callback: RestoreProgressCallback
+    ): List<String> = withContext(Dispatchers.IO) {
+        requireService().restoreArchiveContacts(archivePath, ids, callback.asBinderCallback())
+    }
+
+    internal suspend fun restoreArchiveCallLogs(
+        archivePath: String,
+        ids: List<String>,
+        callback: RestoreProgressCallback
+    ): List<String> = withContext(Dispatchers.IO) {
+        requireService().restoreArchiveCallLogs(archivePath, ids, callback.asBinderCallback())
+    }
+
+    internal suspend fun restoreRusticContacts(
+        repositoryPath: String,
+        password: String,
+        snapshotId: String,
+        ids: List<String>,
+        callback: RestoreProgressCallback,
+    ): List<String> = withContext(Dispatchers.IO) {
+        requireService().restoreRusticContacts(repositoryPath, password, snapshotId, ids, callback.asBinderCallback())
+    }
+
+    internal suspend fun restoreRusticCallLogs(
+        repositoryPath: String,
+        password: String,
+        snapshotId: String,
+        ids: List<String>,
+        callback: RestoreProgressCallback,
+    ): List<String> = withContext(Dispatchers.IO) {
+        requireService().restoreRusticCallLogs(repositoryPath, password, snapshotId, ids, callback.asBinderCallback())
+    }
+
     suspend fun getPrivilegedConfiguredNetworks(): List<WifiConfiguration> {
         val networks = mutableListOf<WifiConfiguration>()
-        getService()?.getPrivilegedConfiguredNetworks()?.forEach {
+        requireService().getPrivilegedConfiguredNetworks().forEach {
             it.bytes.unmarshall { parcel ->
                 networks.add(WifiConfigurationHidden.CREATOR.createFromParcel(parcel))
             }
@@ -915,7 +1136,7 @@ object RemoteRootService {
     }
 
     suspend fun getApkInstallSource(packageName: String, userId: Int): ApkInstallSource =
-        ApkInstallSource.deserialize(checkNotNull(getService()).getApkInstallSource(packageName, userId))
+        ApkInstallSource.deserialize(requireService().getApkInstallSource(packageName, userId))
 
     suspend fun getPackageSourceDir(packageName: String, userId: Int): List<String> {
         return getService()?.getPackageSourceDir(packageName, userId) ?: listOf()
@@ -926,7 +1147,7 @@ object RemoteRootService {
         inputArgs: Array<String>,
         callback: ICallback?,
     ): ArchiveOperationResultParcelable = withContext(Dispatchers.IO) {
-        checkNotNull(getService()) { "Root service is unavailable" }.packageAndCompressArchive(outputPath, inputArgs, callback)
+        requireService().packageAndCompressArchive(outputPath, inputArgs, callback)
     }
 
     suspend fun mkdirs(path: String): Boolean {
@@ -968,7 +1189,7 @@ object RemoteRootService {
     }
 
     suspend fun readRusticSnapshotTextFiles(repositoryPath: String, password: String, snapshotId: String, paths: List<String>): String {
-        val service = checkNotNull(getService()) { "Root service is unavailable" }
+        val service = requireService()
         return service.readRusticSnapshotTextFiles(repositoryPath, password, snapshotId, paths).use { pfd ->
             var result: String? = null
             readFromParcel(pfd) { result = it.readString() }
@@ -977,7 +1198,7 @@ object RemoteRootService {
     }
 
     suspend fun deleteRusticSnapshot(repositoryPath: String, password: String, snapshotId: String): String {
-        val service = checkNotNull(getService()) { "Root service is unavailable" }
+        val service = requireService()
         return service.deleteRusticSnapshot(repositoryPath, password, snapshotId).use { pfd ->
             var snapshots: String? = null
             readFromParcel(pfd) { parcel -> snapshots = parcel.readString() }
@@ -986,7 +1207,7 @@ object RemoteRootService {
     }
 
     suspend fun listRusticSnapshots(repositoryPath: String, password: String): String {
-        val service = checkNotNull(getService()) { "Root service is unavailable" }
+        val service = requireService()
         return service.listRusticSnapshots(repositoryPath, password).use { pfd ->
             var snapshots: String? = null
             readFromParcel(pfd) { parcel -> snapshots = parcel.readString() }
@@ -1006,7 +1227,7 @@ object RemoteRootService {
         userId: Int,
         apkPaths: List<String>,
     ) = withContext(Dispatchers.IO) {
-        val service = checkNotNull(getService()) { "Root service is unavailable" }
+        val service = requireService()
         service.restoreRusticAppApk(repositoryPath, password, snapshotId, packageName, userId, apkPaths)
     }
 
@@ -1040,7 +1261,7 @@ object RemoteRootService {
         networkIds: List<String>,
         callback: RestoreProgressCallback,
     ): List<String> = withContext(Dispatchers.IO) {
-        val service = checkNotNull(getService()) { "Root service is unavailable" }
+        val service = requireService()
         service.restoreRusticNetworks(repositoryPath, password, snapshotId, networkIds, callback.asBinderCallback())
     }
 
@@ -1073,7 +1294,7 @@ object RemoteRootService {
     ): List<String> = withContext(Dispatchers.IO) {
         requireFullSnapshotId(snapshotId)
         require(messageIds.isNotEmpty()) { "No messages selected" }
-        val service = checkNotNull(getService()) { "Root service is unavailable" }
+        val service = requireService()
         service.restoreRusticMessages(repositoryPath, password, snapshotId, messageIds, callback.asBinderCallback())
     }
 
@@ -1093,7 +1314,7 @@ object RemoteRootService {
         sourceUserId: Int,
         internalDataPaths: List<String>,
     ) = withContext(Dispatchers.IO) {
-        val service = checkNotNull(getService()) { "Root service is unavailable" }
+        val service = requireService()
         service.restoreRusticAppInternalData(repositoryPath, password, snapshotId, packageName, userId, sourceUserId, internalDataPaths)
     }
 
@@ -1111,21 +1332,21 @@ object RemoteRootService {
         sourceUserId: Int,
         externalDataPaths: List<String>,
     ) = withContext(Dispatchers.IO) {
-        val service = checkNotNull(getService()) { "Root service is unavailable" }
+        val service = requireService()
         service.restoreRusticAppExternalData(repositoryPath, password, snapshotId, packageName, userId, sourceUserId, externalDataPaths)
     }
 
     suspend fun restoreArchiveApp(archivePath: String, packageName: String, userId: Int, paths: List<String>) = withContext(Dispatchers.IO) {
-        checkNotNull(getService()) { "Root service is unavailable" }.restoreArchiveApp(archivePath, packageName, userId, paths)
+        requireService().restoreArchiveApp(archivePath, packageName, userId, paths)
     }
 
     internal suspend fun restoreArchiveNetworks(archivePath: String, ids: List<String>, callback: RestoreProgressCallback): List<String> =
         withContext(Dispatchers.IO) {
-            checkNotNull(getService()) { "Root service is unavailable" }.restoreArchiveNetworks(archivePath, ids, callback.asBinderCallback())
+            requireService().restoreArchiveNetworks(archivePath, ids, callback.asBinderCallback())
         }
 
     internal suspend fun restoreArchiveMessages(archivePath: String, ids: List<String>, callback: RestoreProgressCallback): List<String> =
         withContext(Dispatchers.IO) {
-            checkNotNull(getService()) { "Root service is unavailable" }.restoreArchiveMessages(archivePath, ids, callback.asBinderCallback())
+            requireService().restoreArchiveMessages(archivePath, ids, callback.asBinderCallback())
         }
 }

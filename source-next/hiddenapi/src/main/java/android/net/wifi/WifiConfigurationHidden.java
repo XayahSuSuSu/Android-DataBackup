@@ -23,6 +23,18 @@ public class WifiConfigurationHidden {
     @RequiresApi(Build.VERSION_CODES.R)
     public boolean allowAutojoin;
 
+    /**
+     * @hide This network configuration is visible to and usable by other users on the
+     * same device.
+     */
+    public boolean shared;
+
+    /**
+     * @hide
+     * Uid of app creating the configuration
+     */
+    public int creatorUid;
+
     public static final Parcelable.Creator<WifiConfiguration> CREATOR =
             new Parcelable.Creator<WifiConfiguration>() {
                 public WifiConfiguration createFromParcel(Parcel in) {

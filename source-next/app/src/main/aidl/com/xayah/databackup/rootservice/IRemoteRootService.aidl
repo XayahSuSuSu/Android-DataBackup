@@ -50,4 +50,15 @@ interface IRemoteRootService {
     IApkInstallerConnection openApkInstallSession(String action, IBinder owner);
     void closeApkInstallSession(String action);
     String getApkInstallSource(String packageName, int userId);
+
+    ParcelFileDescriptor readContacts();
+    ParcelFileDescriptor readCallLogs();
+    ParcelFileDescriptor readSms();
+    ParcelFileDescriptor readMms();
+    List<String> restoreArchiveContacts(String archivePath, in List<String> ids, IRestoreCallback callback);
+    List<String> restoreArchiveCallLogs(String archivePath, in List<String> ids, IRestoreCallback callback);
+    List<String> restoreRusticContacts(String repositoryPath, String password, String snapshotId, in List<String> ids, IRestoreCallback callback);
+    List<String> restoreRusticCallLogs(String repositoryPath, String password, String snapshotId, in List<String> ids, IRestoreCallback callback);
+    void requireWifiBackupAccessForCurrentUser();
+    void requireMessageBackupAccessForCurrentUser();
 }

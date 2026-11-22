@@ -5,17 +5,13 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.provider.CallLog.Calls
 import androidx.annotation.WorkerThread
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.adapter
 import com.xayah.databackup.database.entity.FieldMap
 import com.xayah.databackup.entity.restore.RestoreProgressCallback
 import com.xayah.databackup.util.LogHelper
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.ensureActive
 
 /**
- * Restores selected Rustic call logs through CallLogProvider for the app's current user.
- * Requires READ_CALL_LOG and WRITE_CALL_LOG. Validates all selected metadata before the first write.
+ * Restores selected call logs through CallLogProvider for the app's current user.
+ * Validates all selected metadata before the first write.
  * The caller must serialize restores because duplicate checks and inserts are separate provider operations.
  * Skips duplicate and unsupported records, returning their inventory keys in selection order.
  * Inserts new rows without replacing existing calls; earlier inserts are not rolled back on failure.
@@ -25,23 +21,20 @@ import kotlinx.coroutines.ensureActive
  */
 internal class RestoreCallLogsHelper(private val mResolver: ContentResolver) {
     @WorkerThread
-    suspend fun restore(
-        serialized: String,
-        path: String,
+    fun restore(
+        content: String,
         callLogIds: List<String>,
         callback: RestoreProgressCallback,
     ): List<String> {
         // Validate every selected record before the first write. Do not expose call log JSON in errors.
         val callLogs = runCatching {
-            val files = requireNotNull(Moshi.Builder().build().adapter<Map<String, String>>().fromJson(serialized))
-            CallLogRestorePreparer.prepare(requireNotNull(files[path]), callLogIds)
-        }.getOrElse { e ->
-            LogHelper.e(TAG, "restore", "", e)
+            CallLogRestorePreparer.prepare(content, callLogIds)
+        }.getOrElse { error ->
+            LogHelper.w(TAG, "restore", "Invalid record metadata: $error")
             throw IllegalArgumentException("Invalid call logs backup or selection")
         }
         val skipped = mutableListOf<String>()
         for ((id, prepared) in callLogs) {
-            currentCoroutineContext().ensureActive()
             val result = restoreRecord(id, callback) {
                 val callLog = prepared.getOrThrow()
                 if (callLog == null || callLogExists(callLog)) {

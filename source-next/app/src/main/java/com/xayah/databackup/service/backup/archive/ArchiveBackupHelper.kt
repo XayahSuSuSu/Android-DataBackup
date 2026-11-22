@@ -56,24 +56,11 @@ class ArchiveBackupHelper(
             hasFailures = true
             onEvent(BackupEvent.CategoryCompleted(BackupCategory.Files, BackupOutcome.Unprocessed))
         }
-        val categories = buildList {
-            if (selection.networks != null) {
-                add(BackupCategory.Networks)
-            }
-            if (selection.contacts != null) {
-                add(BackupCategory.Contacts)
-            }
-            if (selection.callLogs != null) {
-                add(BackupCategory.CallLogs)
-            }
-            if (selection.sms != null || selection.mms != null) {
-                add(BackupCategory.Messages)
-            }
-        }
-        for (category in categories) {
+        for (category in selection.getSelectedRecordCategories()) {
             currentCoroutineContext().ensureActive()
             onEvent(BackupEvent.CategoryStarted(category))
             val isCompleted = runCatching {
+                RemoteRootService.requireBackupAccessForCurrentUser(listOf(category))
                 val files = mSerializationHelper.serializeCategory(selection, category).map { file ->
                     file.copy(relativePath = recordPaths.getValue(file.relativePath))
                 }

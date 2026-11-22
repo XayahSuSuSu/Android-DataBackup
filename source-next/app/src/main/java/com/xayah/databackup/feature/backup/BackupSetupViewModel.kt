@@ -1,7 +1,5 @@
 package com.xayah.databackup.feature.backup
 
-import android.content.pm.PackageManager
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
 import com.xayah.databackup.App
 import com.xayah.databackup.data.AppRepository
@@ -19,15 +17,8 @@ import com.xayah.databackup.entity.BackupConfig
 import com.xayah.databackup.entity.backup.BackupState
 import com.xayah.databackup.rootservice.RemoteRootService
 import com.xayah.databackup.service.BackupService
-import com.xayah.databackup.ui.component.CallLogPermissions
-import com.xayah.databackup.ui.component.ContactPermissions
-import com.xayah.databackup.ui.component.MessagePermissions
 import com.xayah.databackup.util.BaseViewModel
-import com.xayah.databackup.util.CallLogsOptionSelectedBackup
-import com.xayah.databackup.util.ContactsOptionSelectedBackup
-import com.xayah.databackup.util.MessagesOptionSelectedBackup
 import com.xayah.databackup.util.combine
-import com.xayah.databackup.util.saveBoolean
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -215,37 +206,6 @@ open class BackupSetupViewModel(
         started = SharingStarted.WhileSubscribed(5_000),
     )
 
-    private suspend fun checkPermissions() {
-        withContext(Dispatchers.Default) {
-            var isContactPermissionsGranted = true
-            ContactPermissions.forEach {
-                isContactPermissionsGranted = isContactPermissionsGranted &&
-                        ContextCompat.checkSelfPermission(App.application, it) == PackageManager.PERMISSION_GRANTED
-            }
-            if (isContactPermissionsGranted.not()) {
-                App.application.saveBoolean(ContactsOptionSelectedBackup.first, false)
-            }
-
-            var isCallLogPermissionsGranted = true
-            CallLogPermissions.forEach {
-                isCallLogPermissionsGranted = isCallLogPermissionsGranted &&
-                        ContextCompat.checkSelfPermission(App.application, it) == PackageManager.PERMISSION_GRANTED
-            }
-            if (isCallLogPermissionsGranted.not()) {
-                App.application.saveBoolean(CallLogsOptionSelectedBackup.first, false)
-            }
-
-            var isMessagePermissionsGranted = true
-            MessagePermissions.forEach {
-                isMessagePermissionsGranted = isMessagePermissionsGranted
-                        && ContextCompat.checkSelfPermission(App.application, it) == PackageManager.PERMISSION_GRANTED
-            }
-            if (isMessagePermissionsGranted.not()) {
-                App.application.saveBoolean(MessagesOptionSelectedBackup.first, false)
-            }
-        }
-    }
-
     private suspend fun initBackupConfigs() {
         withContext(Dispatchers.IO) {
             _isLoadingConfigs.value = true
@@ -256,7 +216,6 @@ open class BackupSetupViewModel(
 
     fun initialize() {
         withLock {
-            checkPermissions()
             initBackupConfigs()
         }
     }

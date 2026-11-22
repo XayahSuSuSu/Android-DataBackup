@@ -38,17 +38,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.R
 import com.xayah.databackup.ui.component.CustomSUFileDialog
-import com.xayah.databackup.ui.component.FadeVisibility
 import com.xayah.databackup.ui.component.OnResume
 import com.xayah.databackup.ui.component.PermissionCard
 import com.xayah.databackup.ui.component.SectionHeader
-import com.xayah.databackup.ui.component.rememberCallLogPermissionsState
-import com.xayah.databackup.ui.component.rememberContactPermissionsState
-import com.xayah.databackup.ui.component.rememberMessagePermissionsState
 import com.xayah.databackup.ui.component.verticalFadingEdges
+import com.xayah.databackup.util.Navigator
 import com.xayah.databackup.util.navigateSafely
 import com.xayah.databackup.util.popBackStackSafely
 import kotlinx.coroutines.launch
@@ -136,22 +132,6 @@ fun PermissionsScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var openCustomSUFileDialog by remember { mutableStateOf(false) }
-    val contactsPermissionState = rememberContactPermissionsState { result ->
-        viewModel.viewModelScope.launch {
-            viewModel.checkContact(context, result)
-        }
-    }
-    val callLogsPermissionState = rememberCallLogPermissionsState { result ->
-        viewModel.viewModelScope.launch {
-            viewModel.checkCallLog(context, result)
-        }
-    }
-    val messagesPermissionState = rememberMessagePermissionsState { result ->
-        viewModel.viewModelScope.launch {
-            viewModel.checkMessage(context, result)
-        }
-    }
-
     OnResume {
         if (viewModel.mIsGrantingNotificationPermission) {
             viewModel.viewModelScope.launch {
@@ -241,47 +221,6 @@ fun PermissionsScreen(
                             }
                         },
                     )
-
-                    SectionHeader(
-                        modifier = Modifier.fillMaxWidth(),
-                        title = stringResource(R.string.optional),
-                    )
-
-                    PermissionCard(
-                        state = uiState.contactProp.state,
-                        icon = ImageVector.vectorResource(uiState.contactProp.icon),
-                        title = uiState.contactProp.title,
-                        content = uiState.contactProp.content,
-                        onClick = {
-                            viewModel.withLock {
-                                viewModel.validateContact(contactsPermissionState)
-                            }
-                        },
-                    )
-
-                    PermissionCard(
-                        state = uiState.callLogProp.state,
-                        icon = ImageVector.vectorResource(uiState.callLogProp.icon),
-                        title = uiState.callLogProp.title,
-                        content = uiState.callLogProp.content,
-                        onClick = {
-                            viewModel.withLock {
-                                viewModel.validateCallLog(callLogsPermissionState)
-                            }
-                        },
-                    )
-
-                    PermissionCard(
-                        state = uiState.messageProp.state,
-                        icon = ImageVector.vectorResource(uiState.messageProp.icon),
-                        title = uiState.messageProp.title,
-                        content = uiState.messageProp.content,
-                        onClick = {
-                            viewModel.withLock {
-                                viewModel.validateMessage(messagesPermissionState)
-                            }
-                        },
-                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -308,28 +247,15 @@ fun PermissionsScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                FadeVisibility(visible = viewModel.misRequiredGranted && viewModel.misAllGranted.not()) {
-                    TextButton(
-                        enabled = permissions.enableBackBtn,
-                        modifier = Modifier
-                            .wrapContentSize()
-                            .padding(end = 16.dp),
-                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.primary),
-                        onClick = { viewModel.onSkipButtonClick(context) }
-                    ) {
-                        Text(text = stringResource(R.string.skip))
-                    }
-                }
-
                 Button(
                     modifier = Modifier
                         .wrapContentSize()
                         .animateContentSize(),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                    onClick = { viewModel.onNextButtonClick(context, contactsPermissionState, callLogsPermissionState, messagesPermissionState) }
+                    onClick = { viewModel.onNextButtonClick(context) }
                 ) {
                     AnimatedContent(
-                        targetState = if (viewModel.misAllGranted) stringResource(R.string.next) else stringResource(R.string.grant_all),
+                        targetState = if (viewModel.isRequiredGranted) stringResource(R.string.next) else stringResource(R.string.grant_all),
                         label = "Animated content"
                     ) { targetContent ->
                         Text(text = targetContent)

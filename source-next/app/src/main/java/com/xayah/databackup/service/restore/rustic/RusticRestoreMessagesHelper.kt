@@ -27,7 +27,7 @@ import java.io.File
  * @see [TelephonyBackupAgent.java](https://cs.android.com/android/platform/superproject/+/android-17.0.0_r1:packages/providers/TelephonyProvider/src/com/android/providers/telephony/TelephonyBackupAgent.java)
  * @see [PduPersister.java](https://cs.android.com/android/platform/superproject/+/android-17.0.0_r1:frameworks/base/telephony/common/com/google/android/mms/pdu/PduPersister.java)
  */
-internal class RusticRestoreMessagesHelper(private val mContext: Context, private val mCacheDir: File) {
+internal class RusticRestoreMessagesHelper(private val mContext: Context, private val mCacheDir: File, private val mUserId: Int) {
     @WorkerThread
     fun restore(
         repositoryPath: String,
@@ -57,7 +57,7 @@ internal class RusticRestoreMessagesHelper(private val mContext: Context, privat
             require(manifest.schemaVersion == RusticBackupManifest.CURRENT_SCHEMA_VERSION) { "Unsupported backup schema" }
             manifest.included.filter { it.category == BackupSourceCategory.MmsAttachment }.map { it.path }.toSet()
         } else emptySet()
-        return RestoreMessagesHelper(mContext, mCacheDir).restore(prepared, messageIds, includedAttachments, callback) { path, file ->
+        return RestoreMessagesHelper(mContext, mCacheDir, mUserId).restore(prepared, messageIds, includedAttachments, callback) { path, file ->
             RusticWrapper.restoreSnapshot(
                 repositoryPath = repositoryPath,
                 password = password,

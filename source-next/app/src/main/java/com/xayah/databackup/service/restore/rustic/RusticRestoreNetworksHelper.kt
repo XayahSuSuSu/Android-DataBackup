@@ -26,6 +26,7 @@ internal class RusticRestoreNetworksHelper(private val mWifiManager: WifiManager
         repositoryPath: String,
         password: String,
         snapshotId: String,
+        userId: Int,
         networkIds: List<String>,
         callback: RestoreProgressCallback,
     ): List<String> {
@@ -36,6 +37,6 @@ internal class RusticRestoreNetworksHelper(private val mWifiManager: WifiManager
         val moshi = Moshi.Builder().add(WifiConfigurationAdapter()).build()
         val files = requireNotNull(moshi.adapter<Map<String, String>>().fromJson(serialized))
         val content = requireNotNull(files[path]) { "Missing Wi-Fi backup file" }
-        return RestoreNetworksHelper(mWifiManager).restore(content, networkIds, callback)
+        return RestoreNetworksHelper(mWifiManager).restore(content, userId, networkIds, callback)
     }
 }

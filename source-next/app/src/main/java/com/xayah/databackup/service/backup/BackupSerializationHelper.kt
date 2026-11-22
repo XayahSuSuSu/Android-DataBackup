@@ -2,7 +2,6 @@ package com.xayah.databackup.service.backup
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
-import com.xayah.databackup.adapter.WifiConfigurationAdapter
 import com.xayah.databackup.database.entity.CallLog
 import com.xayah.databackup.database.entity.Contact
 import com.xayah.databackup.database.entity.Mms
@@ -15,9 +14,7 @@ import com.xayah.databackup.util.PathHelper
 
 /** Serializes selected structured backup data using shared metadata keys. */
 class BackupSerializationHelper {
-    private val mMoshi = Moshi.Builder()
-        .add(WifiConfigurationAdapter())
-        .build()
+    private val mMoshi = Moshi.Builder().build()
 
     fun serializeCategory(selection: BackupSelection, category: BackupCategory): List<BackupStagedFile> = serialize(
         BackupSelection(

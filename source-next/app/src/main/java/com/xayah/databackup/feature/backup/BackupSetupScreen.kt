@@ -51,7 +51,6 @@ import com.xayah.databackup.feature.BackupNetworksRoute
 import com.xayah.databackup.feature.BackupProcessRoute
 import com.xayah.databackup.feature.RusticBackupProcessRoute
 import com.xayah.databackup.feature.toProcessRoute
-import com.xayah.databackup.ui.component.ActionButtonState
 import com.xayah.databackup.ui.component.AutoScreenOffSwitch
 import com.xayah.databackup.ui.component.Preference
 import com.xayah.databackup.ui.component.PreferenceGroup
@@ -59,9 +58,6 @@ import com.xayah.databackup.ui.component.ResetBackupListSwitch
 import com.xayah.databackup.ui.component.SectionHeader
 import com.xayah.databackup.ui.component.SmallCheckActionButton
 import com.xayah.databackup.ui.component.TaskBusyDialog
-import com.xayah.databackup.ui.component.rememberCallLogPermissionsState
-import com.xayah.databackup.ui.component.rememberContactPermissionsState
-import com.xayah.databackup.ui.component.rememberMessagePermissionsState
 import com.xayah.databackup.ui.component.shimmer
 import com.xayah.databackup.ui.component.surfaceTopAppBarColors
 import com.xayah.databackup.ui.component.verticalFadingEdges
@@ -299,21 +295,15 @@ private fun TargetRow(
                 navigator.navigateSafely(BackupNetworksRoute)
             }
 
-            val contactsPermissionState = rememberContactPermissionsState()
             SmallCheckActionButton(
                 modifier = Modifier
                     .weight(1f)
                     .wrapContentSize(),
-                state = if (contactsPermissionState.allPermissionsGranted) ActionButtonState.NORMAL else ActionButtonState.ERROR,
                 checked = contactsItem?.selected ?: false,
-                checkBoxVisible = contactsPermissionState.allPermissionsGranted,
                 icon = ImageVector.vectorResource(R.drawable.ic_user_round),
                 title = stringResource(R.string.contacts),
                 titleShimmer = contactsItem == null,
-                subtitle = if (contactsPermissionState.allPermissionsGranted)
-                    stringResource(R.string.items_selected, contactsItem?.selections?.first ?: 0, contactsItem?.selections?.second ?: 0)
-                else
-                    stringResource(R.string.no_permissions),
+                subtitle = stringResource(R.string.items_selected, contactsItem?.selections?.first ?: 0, contactsItem?.selections?.second ?: 0),
                 subtitleShimmer = contactsItem == null,
                 onCheckedChange = {
                     viewModel.withLock(Dispatchers.Default) {
@@ -321,11 +311,7 @@ private fun TargetRow(
                     }
                 }
             ) {
-                if (contactsPermissionState.allPermissionsGranted) {
-                    navigator.navigateSafely(BackupContactsRoute)
-                } else {
-                    contactsPermissionState.launchMultiplePermissionRequest()
-                }
+                navigator.navigateSafely(BackupContactsRoute)
             }
         }
 
@@ -333,21 +319,15 @@ private fun TargetRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            val callLogsPermissionState = rememberCallLogPermissionsState()
             SmallCheckActionButton(
                 modifier = Modifier
                     .weight(1f)
                     .wrapContentSize(),
-                state = if (callLogsPermissionState.allPermissionsGranted) ActionButtonState.NORMAL else ActionButtonState.ERROR,
                 checked = callLogsItem?.selected ?: false,
-                checkBoxVisible = callLogsPermissionState.allPermissionsGranted,
                 icon = ImageVector.vectorResource(R.drawable.ic_phone),
                 title = stringResource(R.string.call_logs),
                 titleShimmer = callLogsItem == null,
-                subtitle = if (callLogsPermissionState.allPermissionsGranted)
-                    stringResource(R.string.items_selected, callLogsItem?.selections?.first ?: 0, callLogsItem?.selections?.second ?: 0)
-                else
-                    stringResource(R.string.no_permissions),
+                subtitle = stringResource(R.string.items_selected, callLogsItem?.selections?.first ?: 0, callLogsItem?.selections?.second ?: 0),
                 subtitleShimmer = callLogsItem == null,
                 onCheckedChange = {
                     viewModel.withLock(Dispatchers.Default) {
@@ -355,28 +335,18 @@ private fun TargetRow(
                     }
                 }
             ) {
-                if (callLogsPermissionState.allPermissionsGranted) {
-                    navigator.navigateSafely(BackupCallLogsRoute)
-                } else {
-                    callLogsPermissionState.launchMultiplePermissionRequest()
-                }
+                navigator.navigateSafely(BackupCallLogsRoute)
             }
 
-            val messagesPermissionState = rememberMessagePermissionsState()
             SmallCheckActionButton(
                 modifier = Modifier
                     .weight(1f)
                     .wrapContentSize(),
-                state = if (messagesPermissionState.allPermissionsGranted) ActionButtonState.NORMAL else ActionButtonState.ERROR,
                 checked = messagesItem?.selected ?: false,
-                checkBoxVisible = messagesPermissionState.allPermissionsGranted,
                 icon = ImageVector.vectorResource(R.drawable.ic_message_circle),
                 title = stringResource(R.string.messages),
                 titleShimmer = messagesItem == null,
-                subtitle = if (messagesPermissionState.allPermissionsGranted)
-                    stringResource(R.string.items_selected, messagesItem?.selections?.first ?: 0, messagesItem?.selections?.second ?: 0)
-                else
-                    stringResource(R.string.no_permissions),
+                subtitle = stringResource(R.string.items_selected, messagesItem?.selections?.first ?: 0, messagesItem?.selections?.second ?: 0),
                 subtitleShimmer = messagesItem == null,
                 onCheckedChange = {
                     viewModel.withLock(Dispatchers.Default) {
@@ -384,11 +354,7 @@ private fun TargetRow(
                     }
                 }
             ) {
-                if (messagesPermissionState.allPermissionsGranted) {
-                    navigator.navigateSafely(BackupMessagesRoute)
-                } else {
-                    messagesPermissionState.launchMultiplePermissionRequest()
-                }
+                navigator.navigateSafely(BackupMessagesRoute)
             }
         }
     }

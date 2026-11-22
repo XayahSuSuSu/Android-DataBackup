@@ -32,6 +32,7 @@ class RusticBackupHelper(
 
     override suspend fun backup(request: BackupRequest, onEvent: (BackupEvent) -> Unit): BackupResult {
         val selection = request.getSelection()
+        RemoteRootService.requireBackupAccessForCurrentUser(selection.getSelectedRecordCategories())
         val backend = checkNotNull(selection.config.backupBackend as? BackupBackend.Rustic)
         val repositoryPath = PathHelper.getBackupRepoDir(selection.config.path)
         val stagingPath = PathHelper.getRusticStagingDir(selection.config.uuidString, request.createdAt)

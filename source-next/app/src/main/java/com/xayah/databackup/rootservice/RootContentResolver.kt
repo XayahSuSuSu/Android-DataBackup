@@ -15,6 +15,9 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.os.Process
+import android.os.UserHandleHidden
+import android.provider.CallLog
+import android.provider.ContactsContract
 import android.provider.Telephony
 import androidx.annotation.RequiresApi
 import com.xayah.hiddenapi.castTo
@@ -25,7 +28,7 @@ import java.util.ArrayDeque
  * Provides access to content providers from a root process (UID 0).
  * Acquires and releases external provider references through ActivityManager and attributes calls to root.
  */
-internal class RootContentResolver(context: Context) : ContentResolverHidden(
+internal class RootContentResolver(context: Context, private val mUserId: Int) : ContentResolverHidden(
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) AttributionContext(context) else RootContext(context)
 ) {
     init {
@@ -64,21 +67,26 @@ internal class RootContentResolver(context: Context) : ContentResolverHidden(
 
     @Synchronized
     override fun acquireProvider(context: Context, name: String): IContentProvider? {
-        // Telephony providers are singleUser and shared by the device.
-        require(name in supportedAuthorities) { "Unsupported message provider" }
+        // An external provider reference must be released for the same user it was acquired for.
+        check(mUserId == 0 || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) { "Secondary-user provider access requires Android 10" }
+        require(name in supportedAuthorities) { "Unsupported record provider" }
         val token = Binder()
         val provider = when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
-                val holder = mActivityManager.getContentProviderExternal(name, 0, token, "databackup-restore") ?: return null
+                val holder = mActivityManager.getContentProviderExternal(name, mUserId, token, "databackup-records") ?: return null
+                if (UserHandleHidden.getUserId(holder.info.applicationInfo.uid) != mUserId) {
+                    releaseProviderReference(ProviderReference(name, token))
+                    error("Provider belongs to a different Android user")
+                }
                 holder.provider
             }
 
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
-                val holder = mActivityManager.castTo<IActivityManagerApi26>().getContentProviderExternal(name, 0, token) ?: return null
+                val holder = mActivityManager.castTo<IActivityManagerApi26>().getContentProviderExternal(name, mUserId, token) ?: return null
                 holder.provider
             }
             else -> {
-                val holder = mActivityManager.castTo<IActivityManagerApi24>().getContentProviderExternal(name, 0, token) ?: return null
+                val holder = mActivityManager.castTo<IActivityManagerApi24>().getContentProviderExternal(name, mUserId, token) ?: return null
                 holder.provider
             }
         }
@@ -112,8 +120,11 @@ internal class RootContentResolver(context: Context) : ContentResolverHidden(
     }
 
     private fun releaseProviderReference(providerReference: ProviderReference) {
-        // This overload derives the user ID from the Binder caller; root resolves to user 0.
-        mActivityManager.removeContentProviderExternal(providerReference.authority, providerReference.token)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            mActivityManager.removeContentProviderExternalAsUser(providerReference.authority, providerReference.token, mUserId)
+        } else {
+            mActivityManager.removeContentProviderExternal(providerReference.authority, providerReference.token)
+        }
     }
 
     private data class ProviderReference(val authority: String, val token: IBinder)
@@ -129,6 +140,8 @@ internal class RootContentResolver(context: Context) : ContentResolverHidden(
 
     companion object {
         private val supportedAuthorities = setOf(
+            ContactsContract.AUTHORITY,
+            CallLog.AUTHORITY,
             Telephony.Sms.CONTENT_URI.authority,
             Telephony.Mms.CONTENT_URI.authority,
             Telephony.MmsSms.CONTENT_URI.authority,

@@ -20,4 +20,19 @@ data class BackupSelection(
     val sms: List<Sms>? = null,
     val mms: List<Mms>? = null,
     val totalCounts: Map<BackupCategory, Int> = emptyMap(),
-)
+) {
+    fun getSelectedRecordCategories(): List<BackupCategory> = buildList {
+        if (networks != null) {
+            add(BackupCategory.Networks)
+        }
+        if (contacts != null) {
+            add(BackupCategory.Contacts)
+        }
+        if (callLogs != null) {
+            add(BackupCategory.CallLogs)
+        }
+        if (sms != null || mms != null) {
+            add(BackupCategory.Messages)
+        }
+    }
+}

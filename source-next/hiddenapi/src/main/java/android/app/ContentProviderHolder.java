@@ -17,6 +17,7 @@
 package android.app;
 
 import android.content.IContentProvider;
+import android.content.pm.ProviderInfo;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -30,6 +31,7 @@ import androidx.annotation.RequiresApi;
  */
 @RequiresApi(Build.VERSION_CODES.O)
 public class ContentProviderHolder implements Parcelable {
+    public ProviderInfo info;
     public IContentProvider provider;
     public static final Parcelable.Creator<ContentProviderHolder> CREATOR = null;
 

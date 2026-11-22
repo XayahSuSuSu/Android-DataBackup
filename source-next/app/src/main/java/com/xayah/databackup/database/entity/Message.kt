@@ -14,6 +14,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 object MessageConstant {
+    internal const val MMS_ADDR_PATH = "addr"
+    internal const val MMS_PART_PATH = "part"
+
     // https://cs.android.com/android/platform/superproject/+/android-7.0.0_r1:frameworks/opt/telephony/src/java/com/google/android/mms/ContentType.java
     const val APP_SMIL = "application/smil"
     const val TEXT_PLAIN = "text/plain"

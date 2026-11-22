@@ -14,12 +14,10 @@ import com.xayah.databackup.database.entity.Contact
 import com.xayah.databackup.database.entity.FieldMap
 import com.xayah.databackup.entity.restore.RestoreProgressCallback
 import com.xayah.databackup.util.LogHelper
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.ensureActive
 
 /**
  * Restores contact records read from backup metadata through Contacts Provider without rolling back earlier imports.
- * The caller must provide the snapshot metadata and an app ContentResolver with WRITE_CONTACTS permission.
+ * The caller must provide the snapshot metadata and a ContentResolver scoped to the calling user.
  * Inserts local contacts in the app's current user, with each raw contact and its data rows in one transaction.
  * Links data rows to newly allocated raw contact IDs without overwriting existing contacts.
  * Omits source IDs, account/sync metadata, group memberships and photos; repeated calls can create duplicates.
@@ -29,23 +27,20 @@ import kotlinx.coroutines.ensureActive
  */
 internal class RestoreContactsHelper(private val mResolver: ContentResolver) {
     @WorkerThread
-    suspend fun restore(
-        serialized: String,
-        path: String,
+    fun restore(
+        content: String,
         contactIds: List<String>,
         callback: RestoreProgressCallback,
     ): List<String> {
         // Validate every selected record before the first write. Do not expose contact JSON in errors.
         val contacts = runCatching {
-            val files = requireNotNull(Moshi.Builder().build().adapter<Map<String, String>>().fromJson(serialized))
-            prepareContacts(requireNotNull(files[path]), contactIds)
-        }.getOrElse { e ->
-            LogHelper.e(TAG, "restore", "", e)
+            prepareContacts(content, contactIds)
+        }.getOrElse { error ->
+            LogHelper.w(TAG, "restore", "Invalid record metadata: $error")
             throw IllegalArgumentException("Invalid contacts backup or selection")
         }
         val skipped = mutableListOf<String>()
         for ((id, prepared) in contacts) {
-            currentCoroutineContext().ensureActive()
             val result = restoreRecord(id, callback) {
                 val contact = prepared.getOrThrow()
                 if (contact == null) {

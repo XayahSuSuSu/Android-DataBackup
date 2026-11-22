@@ -13,6 +13,8 @@ import android.system.Os
 import android.system.OsConstants
 import androidx.annotation.WorkerThread
 import com.xayah.databackup.database.entity.FieldMap
+import com.xayah.databackup.database.entity.MessageConstant.MMS_ADDR_PATH
+import com.xayah.databackup.database.entity.MessageConstant.MMS_PART_PATH
 import com.xayah.databackup.entity.restore.RestoreProgressCallback
 import com.xayah.databackup.entity.restore.RestoreRecordEvent
 import com.xayah.databackup.rootservice.RootContentResolver
@@ -35,14 +37,12 @@ import java.util.UUID
  * @see [TelephonyBackupAgent.java](https://cs.android.com/android/platform/superproject/+/android-17.0.0_r1:packages/providers/TelephonyProvider/src/com/android/providers/telephony/TelephonyBackupAgent.java)
  * @see [PduPersister.java](https://cs.android.com/android/platform/superproject/+/android-17.0.0_r1:frameworks/base/telephony/common/com/google/android/mms/pdu/PduPersister.java)
  */
-internal class RestoreMessagesHelper(context: Context, private val mCacheDir: File) {
+internal class RestoreMessagesHelper(context: Context, private val mCacheDir: File, userId: Int) {
     companion object {
         private const val TAG = "RestoreMessagesHelper"
-        private const val MMS_ADDR_PATH = "addr"
-        private const val MMS_PART_PATH = "part"
     }
 
-    private val mResolver = RootContentResolver(context)
+    private val mResolver = RootContentResolver(context, userId)
     private val mConversationContext = object : ContextWrapper(context) {
         override fun getContentResolver() = mResolver
     }

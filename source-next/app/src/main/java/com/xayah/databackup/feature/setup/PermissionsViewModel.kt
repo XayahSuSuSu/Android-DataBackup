@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.annotation.DrawableRes
 import androidx.lifecycle.viewModelScope
-import com.google.accompanist.permissions.MultiplePermissionsState
 import com.topjohnwu.superuser.Shell
 import com.xayah.databackup.App
 import com.xayah.databackup.R
@@ -49,24 +48,6 @@ data class UiState(
         title = App.application.getString(R.string.notification),
         content = App.application.getString(R.string.notification_desc)
     ),
-    val contactProp: CardProp = CardProp(
-        state = CardState.Idle,
-        icon = R.drawable.ic_user_round,
-        title = App.application.getString(R.string.contacts),
-        content = App.application.getString(R.string.contact_permission_desc)
-    ),
-    val callLogProp: CardProp = CardProp(
-        state = CardState.Idle,
-        icon = R.drawable.ic_phone,
-        title = App.application.getString(R.string.call_logs),
-        content = App.application.getString(R.string.call_log_permission_desc)
-    ),
-    val messageProp: CardProp = CardProp(
-        state = CardState.Idle,
-        icon = R.drawable.ic_message_circle,
-        title = App.application.getString(R.string.messages),
-        content = App.application.getString(R.string.message_permission_desc)
-    ),
 )
 
 class PermissionsViewModel : BaseViewModel() {
@@ -77,13 +58,8 @@ class PermissionsViewModel : BaseViewModel() {
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
     var mIsGrantingNotificationPermission: Boolean = false
-    val misRequiredGranted: Boolean
+    val isRequiredGranted: Boolean
         get() = uiState.value.rootCardProp.state == CardState.Success && uiState.value.notificationProp.state == CardState.Success
-    val misAllGranted: Boolean
-        get() = uiState.value.rootCardProp.state == CardState.Success && uiState.value.notificationProp.state == CardState.Success &&
-                uiState.value.contactProp.state == CardState.Success && uiState.value.callLogProp.state == CardState.Success &&
-                uiState.value.messageProp.state == CardState.Success
-
 
     suspend fun validateRoot(context: Context) {
         withContext(Dispatchers.Default) {
@@ -220,235 +196,8 @@ class PermissionsViewModel : BaseViewModel() {
         }
     }
 
-    suspend fun checkContact(context: Context, result: Map<String, Boolean>) {
-        withContext(Dispatchers.Default) {
-            fun onSuccess() {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        contactProp = currentState.contactProp.copy(
-                            state = CardState.Success,
-                            content = context.getString(R.string.granted)
-                        )
-                    )
-                }
-            }
-
-            fun onFailure(msg: String) {
-                _uiState.update { currentState ->
-                    currentState.copy(contactProp = currentState.contactProp.copy(state = CardState.Error, content = msg))
-                }
-            }
-
-            var validated = true
-            result.forEach {
-                if (it.value.not()) {
-                    validated = false
-                }
-            }
-            if (validated) {
-                onSuccess()
-            } else {
-                onFailure(context.getString(R.string.permission_is_denied))
-            }
-            uiState.value.contactProp.continuation?.resume(Unit) { _, _, _ -> }
-            _uiState.update { currentState ->
-                currentState.copy(contactProp = currentState.contactProp.copy(continuation = null))
-            }
-        }
-    }
-
-    suspend fun validateContact(state: MultiplePermissionsState) {
-        withContext(Dispatchers.Default) {
-            if (uiState.value.contactProp.state != CardState.Success) {
-                fun onWaiting() {
-                    _uiState.update { currentState ->
-                        currentState.copy(contactProp = currentState.contactProp.copy(state = CardState.Waiting))
-                    }
-                }
-                onWaiting()
-                withContext(Dispatchers.Main) {
-                    state.launchMultiplePermissionRequest()
-                }
-                runCatching {
-                    withTimeoutOrNull(TIMEOUT) {
-                        suspendCancellableCoroutine {
-                            // Suspend here util receiving the result
-                            _uiState.update { currentState ->
-                                currentState.copy(contactProp = currentState.contactProp.copy(continuation = it))
-                            }
-                        }
-                    }
-                }.onFailure {
-                    if (it is CancellationException) throw it
-                }
-            }
-        }
-    }
-
-    suspend fun checkCallLog(context: Context, result: Map<String, Boolean>) {
-        withContext(Dispatchers.Default) {
-            fun onSuccess() {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        callLogProp = currentState.callLogProp.copy(
-                            state = CardState.Success,
-                            content = context.getString(R.string.granted)
-                        )
-                    )
-                }
-            }
-
-            fun onFailure(msg: String) {
-                _uiState.update { currentState ->
-                    currentState.copy(callLogProp = currentState.callLogProp.copy(state = CardState.Error, content = msg))
-                }
-            }
-
-            var validated = true
-            result.forEach {
-                if (it.value.not()) {
-                    validated = false
-                }
-            }
-            if (validated) {
-                onSuccess()
-            } else {
-                onFailure(context.getString(R.string.permission_is_denied))
-            }
-            uiState.value.callLogProp.continuation?.resume(Unit) { _, _, _ -> }
-            _uiState.update { currentState ->
-                currentState.copy(callLogProp = currentState.callLogProp.copy(continuation = null))
-            }
-        }
-    }
-
-    suspend fun validateCallLog(state: MultiplePermissionsState) {
-        withContext(Dispatchers.Default) {
-            if (uiState.value.callLogProp.state != CardState.Success) {
-                fun onWaiting() {
-                    _uiState.update { currentState ->
-                        currentState.copy(callLogProp = currentState.callLogProp.copy(state = CardState.Waiting))
-                    }
-                }
-                onWaiting()
-                withContext(Dispatchers.Main) {
-                    state.launchMultiplePermissionRequest()
-                }
-                runCatching {
-                    withTimeoutOrNull(TIMEOUT) {
-                        suspendCancellableCoroutine {
-                            // Suspend here util receiving the result
-                            _uiState.update { currentState ->
-                                currentState.copy(callLogProp = currentState.callLogProp.copy(continuation = it))
-                            }
-                        }
-                    }
-                }.onFailure {
-                    if (it is CancellationException) throw it
-                }
-            }
-        }
-    }
-
-    suspend fun checkMessage(context: Context, result: Map<String, Boolean>) {
-        withContext(Dispatchers.Default) {
-            fun onSuccess() {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        messageProp = currentState.messageProp.copy(
-                            state = CardState.Success,
-                            content = context.getString(R.string.granted)
-                        )
-                    )
-                }
-            }
-
-            fun onFailure(msg: String) {
-                _uiState.update { currentState ->
-                    currentState.copy(messageProp = currentState.messageProp.copy(state = CardState.Error, content = msg))
-                }
-            }
-
-            var validated = true
-            result.forEach {
-                if (it.value.not()) {
-                    validated = false
-                }
-            }
-            if (validated) {
-                onSuccess()
-            } else {
-                onFailure(context.getString(R.string.permission_is_denied))
-            }
-            uiState.value.messageProp.continuation?.resume(Unit) { _, _, _ -> }
-            _uiState.update { currentState ->
-                currentState.copy(messageProp = currentState.messageProp.copy(continuation = null))
-            }
-        }
-    }
-
-    suspend fun validateMessage(state: MultiplePermissionsState) {
-        withContext(Dispatchers.Default) {
-            if (uiState.value.messageProp.state != CardState.Success) {
-                fun onWaiting() {
-                    _uiState.update { currentState ->
-                        currentState.copy(messageProp = currentState.messageProp.copy(state = CardState.Waiting))
-                    }
-                }
-                onWaiting()
-                withContext(Dispatchers.Main) {
-                    state.launchMultiplePermissionRequest()
-                }
-                runCatching {
-                    withTimeoutOrNull(TIMEOUT) {
-                        suspendCancellableCoroutine {
-                            // Suspend here util receiving the result
-                            _uiState.update { currentState ->
-                                currentState.copy(messageProp = currentState.messageProp.copy(continuation = it))
-                            }
-                        }
-                    }
-                }.onFailure {
-                    if (it is CancellationException) throw it
-                }
-            }
-        }
-    }
-
-    private fun validateAll(
-        context: Context,
-        contactsPermissionState: MultiplePermissionsState,
-        callLogsPermissionState: MultiplePermissionsState,
-        messagesPermissionState: MultiplePermissionsState
-    ) {
-        withLock {
-            validateRoot(context)
-            validateNotification(context)
-            validateContact(contactsPermissionState)
-            validateCallLog(callLogsPermissionState)
-            validateMessage(messagesPermissionState)
-        }
-    }
-
-    fun onSkipButtonClick(context: Context) {
-        if (misRequiredGranted) {
-            viewModelScope.launch {
-                withContext(Dispatchers.Default) {
-                    context.saveBoolean(KeyFirstLaunch, false)
-                    context.startActivity(Intent(context, MainActivity::class.java))
-                    (context as Activity).finish()
-                }
-            }
-        }
-    }
-
-    fun onNextButtonClick(
-        context: Context,
-        contactsPermissionState: MultiplePermissionsState,
-        callLogsPermissionState: MultiplePermissionsState,
-        messagesPermissionState: MultiplePermissionsState
-    ) {
-        if (misAllGranted) {
+    fun onNextButtonClick(context: Context) {
+        if (isRequiredGranted) {
             viewModelScope.launch {
                 withContext(Dispatchers.Default) {
                     context.saveBoolean(KeyFirstLaunch, false)
@@ -457,7 +206,10 @@ class PermissionsViewModel : BaseViewModel() {
                 }
             }
         } else {
-            validateAll(context, contactsPermissionState, callLogsPermissionState, messagesPermissionState)
+            withLock {
+                validateRoot(context)
+                validateNotification(context)
+            }
         }
     }
 }

@@ -27,6 +27,15 @@ import dev.rikka.tools.refine.RefineAs;
 @RefineAs(ActivityManager.class)
 public class ActivityManagerHidden {
     /**
+     * Gets the userId of the current foreground user. Requires system permissions.
+     *
+     * @hide
+     */
+    public static int getCurrentUser() {
+        throw new RuntimeException("Stub!");
+    }
+
+    /**
      * @see <a href="https://cs.android.com/android/platform/superproject/+/android-8.0.0_r1:frameworks/base/core/java/android/app/ActivityManager.java;l=4199">ActivityManager.java</a>
      */
     @RequiresApi(Build.VERSION_CODES.O)

@@ -1,5 +1,6 @@
 package com.xayah.databackup.service.restore
 
+import android.app.ActivityManagerHidden
 import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiConfigurationHidden
 import android.net.wifi.WifiManagerHidden
@@ -26,6 +27,7 @@ internal class RestoreNetworksHelper(private val mWifiManager: WifiManagerHidden
     @WorkerThread
     fun restore(
         content: String,
+        userId: Int,
         networkIds: List<String>,
         callback: RestoreProgressCallback,
     ): List<String> {
@@ -51,7 +53,7 @@ internal class RestoreNetworksHelper(private val mWifiManager: WifiManagerHidden
             val result = restoreRecord(recordId, callback) {
                 val variants = prepared.getOrThrow()
                 variants.forEachIndexed { index, config ->
-                    val id = mWifiManager.addNetwork(config)
+                    val id = mWifiManager.addNetworkForUser(userId, config)
                     check(id >= 0) { "Failed to add Wi-Fi configuration $index" }
                     check(mWifiManager.enableNetwork(id, false)) { "Failed to enable Wi-Fi configuration $index" }
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -95,4 +97,16 @@ internal class RestoreNetworksHelper(private val mWifiManager: WifiManagerHidden
             }
         }
     }
+}
+
+internal fun requireWifiUser(userId: Int) {
+    check(userId == ActivityManagerHidden.getCurrentUser()) { "Wi-Fi records require the foreground Android user" }
+}
+
+internal fun WifiManagerHidden.addNetworkForUser(userId: Int, config: WifiConfiguration): Int {
+    requireWifiUser(userId)
+    check(userId == 0 || config.castTo<WifiConfigurationHidden>().shared) {
+        "Cannot create a private secondary-user network as root"
+    }
+    return addNetwork(config)
 }

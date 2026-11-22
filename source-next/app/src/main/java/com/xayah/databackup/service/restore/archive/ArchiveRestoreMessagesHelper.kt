@@ -35,7 +35,7 @@ internal class ArchiveRestoreMessagesHelper(private val mContext: Context, priva
         val available = attachments.filterValues { file ->
             file.exists() && file.canonicalFile.parentFile == parts.canonicalFile && OsConstants.S_ISREG(Os.lstat(file.path).st_mode)
         }
-        return RestoreMessagesHelper(mContext, mCacheDir).restore(prepared, messageIds, available.keys, callback) { path, target ->
+        return RestoreMessagesHelper(mContext, mCacheDir, userId).restore(prepared, messageIds, available.keys, callback) { path, target ->
             available.getValue(path).copyTo(target)
         }
     }

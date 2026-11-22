@@ -27,6 +27,7 @@ import android.app.ContentProviderHolder;
  */
 interface IActivityManager {
     ContentProviderHolder getContentProviderExternal(String name, int userId, IBinder token, String tag);
+    void removeContentProviderExternalAsUser(String name, IBinder token, int userId);
     void removeContentProviderExternal(String name, IBinder token);
 }
 

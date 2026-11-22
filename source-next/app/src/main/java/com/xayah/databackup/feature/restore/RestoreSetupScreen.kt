@@ -1,7 +1,5 @@
 package com.xayah.databackup.feature.restore
 
-import android.Manifest
-import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -52,8 +49,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.xayah.databackup.service.restore.RestoreRecordId
 import com.xayah.databackup.R
 import com.xayah.databackup.data.TaskInfo
 import com.xayah.databackup.database.entity.ContactDeserialized
@@ -65,8 +60,7 @@ import com.xayah.databackup.feature.RestoreCallLogsRoute
 import com.xayah.databackup.feature.RestoreContactsRoute
 import com.xayah.databackup.feature.RestoreMessagesRoute
 import com.xayah.databackup.feature.RestoreNetworksRoute
-import com.xayah.databackup.feature.setup.NoPermKey
-import com.xayah.databackup.feature.setup.SetupActivity
+import com.xayah.databackup.service.restore.RestoreRecordId
 import com.xayah.databackup.ui.component.InlineNotice
 import com.xayah.databackup.ui.component.Preference
 import com.xayah.databackup.ui.component.PreferenceGroup
@@ -91,23 +85,10 @@ internal fun RestoreSetupScreen(
     onStarted: (String) -> Unit,
     onOpenTask: (TaskInfo) -> Unit,
 ) {
-    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val activeTask by viewModel.activeTask.collectAsStateWithLifecycle()
     var isBusyDialogVisible by rememberSaveable { mutableStateOf(false) }
-    val state = uiState.restoreState
     var restorePreparationFailed by rememberSaveable { mutableStateOf(false) }
-    val permissions = rememberMultiplePermissionsState(
-        buildList {
-            if (state.inventory?.getIds(RestoreCategory.Contacts).orEmpty().any { it in state.selected }) {
-                add(Manifest.permission.WRITE_CONTACTS)
-            }
-            if (state.inventory?.getIds(RestoreCategory.CallLogs).orEmpty().any { it in state.selected }) {
-                add(Manifest.permission.READ_CALL_LOG)
-                add(Manifest.permission.WRITE_CALL_LOG)
-            }
-        }
-    )
     if (isBusyDialogVisible) {
         activeTask?.let { task ->
             TaskBusyDialog(
@@ -127,8 +108,6 @@ internal fun RestoreSetupScreen(
             restorePreparationFailed = false
             if (activeTask != null) {
                 isBusyDialogVisible = true
-            } else if (!permissions.allPermissionsGranted) {
-                context.startActivity(Intent(context, SetupActivity::class.java).putExtra(NoPermKey, true))
             } else {
                 val taskId = viewModel.startRestore()
                 if (taskId != null) {
@@ -140,10 +119,10 @@ internal fun RestoreSetupScreen(
                 }
             }
         },
-        startErrorMessage = when {
-            restorePreparationFailed -> stringResource(R.string.restore_session_expired)
-            !permissions.allPermissionsGranted -> stringResource(R.string.no_permissions)
-            else -> null
+        startErrorMessage = if (restorePreparationFailed) {
+            stringResource(R.string.restore_session_expired)
+        } else {
+            null
         },
         onSelectCategory = viewModel::selectCategory,
         onOpenCategory = { category ->
