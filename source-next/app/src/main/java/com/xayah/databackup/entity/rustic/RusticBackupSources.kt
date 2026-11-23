@@ -13,4 +13,6 @@ data class RusticBackupSources(
     val skippedSources: List<BackupSkippedSource>,
     val hasFailures: Boolean = false,
     val apps: List<BackupAppSources> = emptyList(),
+    /** Physical subtrees below [sourcePaths] that are omitted from the snapshot, such as app caches. */
+    val excludedPaths: List<String> = emptyList(),
 )

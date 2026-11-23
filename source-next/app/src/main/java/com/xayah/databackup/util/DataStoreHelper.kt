@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.xayah.databackup.entity.backup.ArchiveCompression
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -89,6 +90,21 @@ val AutoScreenOff = Pair(KeyAutoScreenOff, DefAutoScreenOff)
 val KeyResetBackupList = booleanPreferencesKey("reset_backup_list")
 const val DefResetBackupList = false
 val ResetBackupList = Pair(KeyResetBackupList, DefResetBackupList)
+
+// Android recreates cache roots on restore, and apps rebuild their cache contents on demand.
+val KeySkipAppCache = booleanPreferencesKey("skip_app_cache")
+const val DefSkipAppCache = true
+val SkipAppCache = Pair(KeySkipAppCache, DefSkipAppCache)
+
+val KeyArchiveCompression = stringPreferencesKey("archive_compression")
+val DefArchiveCompression = ArchiveCompression.Balanced
+val ArchiveCompressionSetting = Pair(KeyArchiveCompression, DefArchiveCompression)
+
+const val MinParallelAppBackups = 1
+const val MaxParallelAppBackups = 3
+val KeyParallelAppBackups = intPreferencesKey("parallel_app_backups")
+const val DefParallelAppBackups = 2
+val ParallelAppBackups = Pair(KeyParallelAppBackups, DefParallelAppBackups)
 
 // ----------------------------------------------------------------------------------------------------------------------------Backup
 

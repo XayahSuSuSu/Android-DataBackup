@@ -2,6 +2,7 @@ package com.xayah.databackup.service.restore
 
 import android.annotation.SuppressLint
 import android.content.pm.PackageInstaller
+import android.content.pm.PackageManager
 import android.content.pm.PackageManagerHidden
 import android.content.pm.SessionParamsHidden
 import android.os.Build
@@ -24,6 +25,12 @@ internal class InstallApkHelper(
         PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL).apply {
             setAppPackageName(packageName)
             setSize(apkInputs.sumOf { it.channel.size() })
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                // Bulk installs use the lightweight "install-bulk" dexopt filter (typically verify) instead of a full
+                // speed-profile compilation, which dominates restoring many apps. ART compiles them later in the
+                // background dexopt job, as it does after a device-to-device restore.
+                setInstallScenario(PackageManager.INSTALL_SCENARIO_BULK)
+            }
             castTo<SessionParamsHidden>().apply {
                 // Android 9+ supports overriding the installer package; older versions use PackageInstaller's package name.
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && mInstallingPackageName != null) {

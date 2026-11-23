@@ -122,7 +122,9 @@ fn restores_only_selected_snapshot_path() -> Result<(), Box<dyn Error>> {
         "password",
         &format!("{snapshot}:data/base.apk"),
         numeric_file.to_str().unwrap(),
-        &rustic_core::RestoreOptions::default().numeric_id(true).verify_existing(true),
+        &rustic_core::RestoreOptions::default()
+            .numeric_id(true)
+            .verify_existing(true),
     )?;
     assert_eq!(fs::read_to_string(numeric_file)?, "apk bytes");
     assert_eq!(fs::read_to_string(restore.join("settings"))?, "app data");
@@ -141,7 +143,9 @@ fn restores_only_selected_snapshot_path() -> Result<(), Box<dyn Error>> {
         "password",
         &format!("{snapshot}:data/app"),
         restore.to_str().unwrap(),
-        &rustic_core::RestoreOptions::default().numeric_id(true).verify_existing(true),
+        &rustic_core::RestoreOptions::default()
+            .numeric_id(true)
+            .verify_existing(true),
     )?;
     assert_eq!(fs::read_to_string(restore.join("settings"))?, "app data");
     #[cfg(unix)]
@@ -647,6 +651,173 @@ fn metadata_only_snapshot_supports_progress_and_validates_mapping() -> Result<()
         );
     }
     rustic::check_repository(repo, "password")?;
+    fs::remove_dir_all(root)?;
+    Ok(())
+}
+
+#[test]
+fn excludes_requested_subtrees_but_keeps_nested_directories_with_the_same_name()
+-> Result<(), Box<dyn Error>> {
+    let root = temp_path("excluded-subtrees")?;
+    let repository = root.join("repo");
+    let app = root.join("com.example");
+    let restore = root.join("restore");
+    let password = "password";
+    fs::create_dir_all(app.join("cache/nested"))?;
+    fs::create_dir_all(app.join("code_cache"))?;
+    fs::create_dir_all(app.join("files/cache"))?;
+    fs::write(app.join("cache/nested/blob"), b"cache")?;
+    fs::write(app.join("code_cache/compiled"), b"code cache")?;
+    fs::write(app.join("files/cache/keep"), b"user data")?;
+    fs::write(app.join("files/settings"), b"settings")?;
+
+    rustic::init_repository(repository.to_str().unwrap(), password)?;
+    let app_path = app.to_string_lossy().into_owned();
+    let excluded_paths = [
+        format!("{app_path}/cache"),
+        format!("{app_path}/code_cache"),
+        // Missing paths and paths outside every source are ignored.
+        format!("{app_path}/missing"),
+        root.join("elsewhere").to_string_lossy().into_owned(),
+    ];
+    let snapshot_id = rustic::create_snapshot_excluding(
+        repository.to_str().unwrap(),
+        password,
+        &mapped_paths(&[], &app_path, "/app"),
+        &excluded_paths,
+        &["databackup".to_string()],
+    )?;
+    rustic::restore_snapshot(
+        repository.to_str().unwrap(),
+        password,
+        &snapshot_id,
+        restore.to_str().unwrap(),
+    )?;
+
+    assert!(!restore.join("app/cache").exists());
+    assert!(!restore.join("app/code_cache").exists());
+    assert_eq!(
+        fs::read(restore.join("app/files/cache/keep"))?,
+        b"user data"
+    );
+    assert_eq!(fs::read(restore.join("app/files/settings"))?, b"settings");
+
+    fs::remove_dir_all(root)?;
+    Ok(())
+}
+
+#[test]
+fn uses_latest_snapshot_with_same_tags_as_parent_when_paths_change() -> Result<(), Box<dyn Error>> {
+    let root = temp_path("tag-parent")?;
+    let repository = root.join("repo");
+    let first = root.join("first");
+    let second = root.join("second");
+    let password = "password";
+    let tags = ["databackup".to_string(), "config:parent".to_string()];
+    fs::create_dir_all(&first)?;
+    fs::create_dir_all(&second)?;
+    fs::write(first.join("unchanged"), b"unchanged")?;
+    fs::write(second.join("added"), b"added")?;
+
+    rustic::init_repository(repository.to_str().unwrap(), password)?;
+    let first_path = first.to_string_lossy().into_owned();
+    let second_path = second.to_string_lossy().into_owned();
+    let first_snapshot = rustic::create_snapshot(
+        repository.to_str().unwrap(),
+        password,
+        &mapped_paths(&[], &first_path, "/first"),
+        &tags,
+    )?;
+    // A different path set, as after an app update or a changed app selection.
+    let mut mappings = mapped_paths(&[], &first_path, "/first");
+    mappings.extend(mapped_paths(&[], &second_path, "/second"));
+    let second_snapshot =
+        rustic::create_snapshot(repository.to_str().unwrap(), password, &mappings, &tags)?;
+
+    let snapshots: serde_json::Value = serde_json::from_str(&rustic::list_snapshots(
+        repository.to_str().unwrap(),
+        password,
+    )?)?;
+    let second = snapshots
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|snapshot| snapshot["id"] == second_snapshot.as_str())
+        .unwrap();
+    let parent_ids: Vec<&str> = second["parents"]
+        .as_array()
+        .map(|parents| {
+            parents
+                .iter()
+                .filter_map(|id| id.as_str())
+                .collect::<Vec<_>>()
+        })
+        .unwrap_or_default()
+        .into_iter()
+        .chain(second["parent"].as_str())
+        .collect();
+    assert!(parent_ids.contains(&first_snapshot.as_str()));
+    assert!(second["summary"]["files_unmodified"].as_u64().unwrap() >= 1);
+
+    fs::remove_dir_all(root)?;
+    Ok(())
+}
+
+#[test]
+fn restores_new_snapshot_after_repeated_restores_reuse_the_index() -> Result<(), Box<dyn Error>> {
+    let root = temp_path("indexed-cache")?;
+    let repository = root.join("repo");
+    let source = root.join("source");
+    let password = "password";
+    fs::create_dir_all(&source)?;
+    fs::write(source.join("first"), b"first")?;
+
+    rustic::init_repository(repository.to_str().unwrap(), password)?;
+    let source_path = source.to_string_lossy().into_owned();
+    let first_snapshot = rustic::create_snapshot(
+        repository.to_str().unwrap(),
+        password,
+        &mapped_paths(&[], &source_path, "/source"),
+        &[],
+    )?;
+    for index in 0..3 {
+        let destination = root.join(format!("restore-{index}"));
+        rustic::restore_snapshot(
+            repository.to_str().unwrap(),
+            password,
+            &first_snapshot,
+            destination.to_str().unwrap(),
+        )?;
+        assert_eq!(fs::read(destination.join("source/first"))?, b"first");
+    }
+    // A wrong password must not be served from the cached repository.
+    assert!(
+        rustic::read_snapshot_text_files(
+            repository.to_str().unwrap(),
+            "incorrect-password",
+            &first_snapshot,
+            &["source/first".to_string()],
+        )
+        .is_err()
+    );
+
+    // New blobs are only visible if creating a snapshot invalidates the cached index.
+    fs::write(source.join("second"), b"second")?;
+    let second_snapshot = rustic::create_snapshot(
+        repository.to_str().unwrap(),
+        password,
+        &mapped_paths(&[], &source_path, "/source"),
+        &[],
+    )?;
+    let destination = root.join("restore-second");
+    rustic::restore_snapshot(
+        repository.to_str().unwrap(),
+        password,
+        &second_snapshot,
+        destination.to_str().unwrap(),
+    )?;
+    assert_eq!(fs::read(destination.join("source/second"))?, b"second");
+
     fs::remove_dir_all(root)?;
     Ok(())
 }

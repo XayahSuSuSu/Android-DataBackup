@@ -1,5 +1,6 @@
 package com.xayah.databackup.service.backup.rustic
 
+import com.xayah.databackup.App.Companion.application
 import com.xayah.databackup.data.RusticRepository
 import com.xayah.databackup.entity.BackupBackend
 import com.xayah.databackup.entity.backup.BackupCategory
@@ -16,9 +17,12 @@ import com.xayah.databackup.service.backup.BackupAppSourceHelper
 import com.xayah.databackup.service.backup.BackupHelper
 import com.xayah.databackup.util.LogHelper
 import com.xayah.databackup.util.PathHelper
+import com.xayah.databackup.util.SkipAppCache
+import com.xayah.databackup.util.readBoolean
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 class RusticBackupHelper(
@@ -42,11 +46,21 @@ class RusticBackupHelper(
             mRusticRepo.prepareRepository(repositoryPath, backend.password)
             currentCoroutineContext().ensureActive()
             onEvent(BackupEvent.StageChanged(BackupStage.CollectSources))
-            val sources = mSourceHelper.collectSources(selection, stagingPath, request.createdAt)
+            val sources = mSourceHelper.collectSources(
+                selection = selection,
+                stagingPath = stagingPath,
+                isAppCacheSkipped = application.readBoolean(SkipAppCache).first(),
+                createdAt = request.createdAt,
+            )
             currentCoroutineContext().ensureActive()
             onEvent(BackupEvent.StageChanged(BackupStage.WriteBackup))
-            val snapshotId = mRusticRepo.createSnapshot(repositoryPath, backend.password, sources.sourcePaths,
-                RusticSnapshot.createBackupTags(selection.config.uuidString)) { bytes, speed, progress ->
+            val snapshotId = mRusticRepo.createSnapshot(
+                repositoryPath = repositoryPath,
+                password = backend.password,
+                sourcePaths = sources.sourcePaths,
+                excludedPaths = sources.excludedPaths,
+                tags = RusticSnapshot.createBackupTags(selection.config.uuidString),
+            ) { bytes, speed, progress ->
                 onEvent(BackupEvent.Progress(bytes, speed, progress))
             }
             check(snapshotId.isNotBlank()) { "Rustic returned an empty snapshot ID" }

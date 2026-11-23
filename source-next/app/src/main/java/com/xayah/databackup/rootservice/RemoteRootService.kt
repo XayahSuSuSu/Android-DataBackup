@@ -43,6 +43,7 @@ import com.xayah.databackup.database.entity.Mms
 import com.xayah.databackup.database.entity.Sms
 import com.xayah.databackup.database.entity.Storage
 import com.xayah.databackup.entity.backup.ApkInstallSource
+import com.xayah.databackup.entity.backup.ArchiveCompression
 import com.xayah.databackup.entity.backup.BackupCategory
 import com.xayah.databackup.entity.restore.RestoreProgressCallback
 import com.xayah.databackup.entity.rustic.requireFullSnapshotId
@@ -496,23 +497,34 @@ object RemoteRootService {
             return sourceDirList
         }
 
+        // Not serialized with mLock: each call owns its working directory, FIFO, tar child process and output file,
+        // so Archive backups can process several apps concurrently. The caller bounds the concurrency.
         override fun packageAndCompressArchive(
             outputPath: String,
             inputArgs: Array<String>,
+            compressionLevel: Int,
+            longWindowLog: Int,
             callback: ICallback?,
-        ): ArchiveOperationResultParcelable = synchronized(mLock) {
+        ): ArchiveOperationResultParcelable {
             val workDir = File(PathHelper.getCacheDir("archive-backup", mContext.cacheDir), UUID.randomUUID().toString())
             check(workDir.mkdir()) { "Cannot create archive working directory" }
             val result = runCatching {
                 val (exitCode, diagnostics) = runBlocking {
-                    ArchiveStreamHelper.packageAndCompress(outputPath, workDir, callback, *inputArgs)
+                    ArchiveStreamHelper.packageAndCompress(
+                        outputPath = outputPath,
+                        workDir = workDir,
+                        compressionLevel = compressionLevel,
+                        longWindowLog = longWindowLog,
+                        callback = callback,
+                        inputArgs = inputArgs,
+                    )
                 }
                 ArchiveOperationResultParcelable(exitCode, diagnostics)
             }
             runCatching { check(workDir.deleteRecursively()) { "Failed to remove archive working directory" } }.onFailure { error ->
                 result.exceptionOrNull()?.addSuppressed(error) ?: throw error
             }
-            result.getOrElse { error -> throw IllegalStateException(error.message ?: "Archive backup failed", error) }
+            return result.getOrElse { error -> throw IllegalStateException(error.message ?: "Archive backup failed", error) }
         }
 
         override fun mkdirs(path: String): Boolean {
@@ -551,9 +563,17 @@ object RemoteRootService {
             password: String,
             sourcePaths: Map<String, String>,
             tags: List<String>,
+            excludedPaths: List<String>,
             callback: ICallback?
         ): String {
-            return RusticWrapper.createSnapshot(repositoryPath, password, sourcePaths, tags, callback)
+            return RusticWrapper.createSnapshot(
+                repositoryPath = repositoryPath,
+                password = password,
+                sourcePaths = sourcePaths,
+                tags = tags,
+                excludedPaths = excludedPaths,
+                callback = callback,
+            )
         }
 
         override fun readRusticSnapshotTextFiles(
@@ -1145,9 +1165,10 @@ object RemoteRootService {
     suspend fun packageAndCompressArchive(
         outputPath: String,
         inputArgs: Array<String>,
+        compression: ArchiveCompression,
         callback: ICallback?,
     ): ArchiveOperationResultParcelable = withContext(Dispatchers.IO) {
-        requireService().packageAndCompressArchive(outputPath, inputArgs, callback)
+        requireService().packageAndCompressArchive(outputPath, inputArgs, compression.level, compression.longWindowLog, callback)
     }
 
     suspend fun mkdirs(path: String): Boolean {
@@ -1183,9 +1204,10 @@ object RemoteRootService {
         password: String,
         sourcePaths: Map<String, String>,
         tags: List<String> = emptyList(),
+        excludedPaths: List<String> = emptyList(),
         callback: ICallback? = null,
     ): String {
-        return getService()?.createRusticSnapshot(repositoryPath, password, sourcePaths, tags, callback) ?: ""
+        return getService()?.createRusticSnapshot(repositoryPath, password, sourcePaths, tags, excludedPaths, callback) ?: ""
     }
 
     suspend fun readRusticSnapshotTextFiles(repositoryPath: String, password: String, snapshotId: String, paths: List<String>): String {

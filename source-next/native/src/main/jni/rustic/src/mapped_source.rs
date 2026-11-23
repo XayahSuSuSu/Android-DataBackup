@@ -4,7 +4,9 @@ use std::io::ErrorKind;
 use std::path::{Component, Path, PathBuf};
 
 use rustic_core::repofile::Node;
-use rustic_core::{LocalSource, LocalSourceSaveOptions, ReadSource, ReadSourceEntry, RusticResult};
+use rustic_core::{
+    Excludes, LocalSource, LocalSourceSaveOptions, ReadSource, ReadSourceEntry, RusticResult,
+};
 
 use crate::Result;
 
@@ -31,8 +33,29 @@ pub(crate) struct MappedSource {
     roots: Vec<MappedRoot>,
 }
 
+/// Escapes glob metacharacters so a physical path is matched literally by Rustic's exclude globs.
+fn escape_glob(path: &Path) -> String {
+    let mut escaped = String::new();
+    for character in path.to_string_lossy().chars() {
+        if matches!(character, '\\' | '*' | '?' | '[' | ']' | '{' | '}' | '!') {
+            escaped.push('\\');
+        }
+        escaped.push(character);
+    }
+    escaped
+}
+
 impl MappedSource {
+    #[cfg(test)]
     pub fn new(mappings: &[SourceMapping]) -> Result<Self> {
+        Self::new_excluding(mappings, &[])
+    }
+
+    /// Creates a mapped source that omits the given physical subtrees.
+    ///
+    /// Each excluded path must lie strictly below a mapped source directory. Missing paths and paths outside
+    /// every source are ignored, so callers can pass optional directories such as app caches without checking them.
+    pub fn new_excluding(mappings: &[SourceMapping], excluded_paths: &[String]) -> Result<Self> {
         if mappings.is_empty() {
             return Err("At least one source mapping is required".into());
         }
@@ -96,6 +119,20 @@ impl MappedSource {
                     .collect()
             })
             .collect();
+        // Caller exclusions only prune content; they never take part in overlap validation below.
+        let mut requested_exclusions: Vec<Vec<PathBuf>> = vec![Vec::new(); retained.len()];
+        for excluded in excluded_paths {
+            let excluded = match Path::new(excluded).canonicalize() {
+                Ok(path) => path,
+                Err(error) if error.kind() == ErrorKind::NotFound => continue,
+                Err(error) => return Err(error.into()),
+            };
+            for (index, (source, _)) in retained.iter().enumerate() {
+                if excluded != *source && excluded.starts_with(source) {
+                    requested_exclusions[index].push(excluded.clone());
+                }
+            }
+        }
         // Destination roots may nest only when they do not overwrite content from another source.
         for (index, (source, destination)) in retained.iter().enumerate() {
             for (other, (_, nested)) in retained.iter().enumerate() {
@@ -134,7 +171,17 @@ impl MappedSource {
         let roots = retained
             .into_iter()
             .zip(exclusions)
-            .map(|((source, destination), excluded)| {
+            .zip(requested_exclusions)
+            .map(|(((source, destination), mut excluded), requested)| {
+                // Negated absolute globs stop the walker from descending into excluded directories.
+                // The prefix filter in `entries` still drops them in case a glob cannot match.
+                let excludes = Excludes::default().globs(
+                    requested
+                        .iter()
+                        .map(|path| format!("!{}", escape_glob(path)))
+                        .collect::<Vec<_>>(),
+                );
+                excluded.extend(requested);
                 // LocalSource skips directory roots. Use its own metadata mapper so
                 // empty roots, permissions, ownership and xattrs survive mapping too.
                 // The snapshot root itself has no named node in Rustic's tree format.
@@ -151,7 +198,7 @@ impl MappedSource {
                     };
                 let reader = LocalSource::new(
                     Default::default(),
-                    &Default::default(),
+                    &excludes,
                     &Default::default(),
                     std::slice::from_ref(&source),
                 )?;

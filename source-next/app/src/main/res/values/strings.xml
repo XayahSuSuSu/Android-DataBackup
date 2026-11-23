@@ -579,4 +579,14 @@
     <string name="restore_background_description">Restoration will continue in the background. Open the notification to return to its progress.</string>
     <string name="backup_restore_busy">A backup or restore is running or stopping. Wait for it to finish before starting another task.</string>
     <string name="view_active_task">View current task</string>
+    <string name="skip_app_cache">Skip app cache</string>
+    <string name="skip_app_cache_desc">Leave out cache and code_cache folders. Apps rebuild them after restore, so backups are smaller and faster</string>
+    <string name="archive_compression">Archive compression</string>
+    <string name="archive_compression_fast">Fast: quickest backups, larger files</string>
+    <string name="archive_compression_balanced">Balanced: smaller files at nearly the same speed</string>
+    <string name="archive_compression_small">Small: smallest files, slower backups, one app at a time</string>
+    <string name="parallel_app_backups">Parallel app backups</string>
+    <string name="parallel_app_backups_desc">Archive back up %1$d app(s) at once</string>
+    <string name="parallel_app_backups_unavailable">Unavailable with Small compression, which backs up one app at a time</string>
+    <string name="tap_to_change">%1$s. Tap to change</string>
 </resources>

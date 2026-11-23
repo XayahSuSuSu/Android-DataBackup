@@ -7,8 +7,8 @@ use crate::SourceMapping;
 use crate::error::NativeError;
 use crate::jni_progress::JniProgressCallback;
 use crate::repository::{
-    check_repository, create_snapshot, create_snapshot_with_progress, delete_snapshot,
-    init_repository, list_snapshots, read_snapshot_text_files, repository_exists,
+    check_repository, create_snapshot_excluding, create_snapshot_excluding_with_progress,
+    delete_snapshot, init_repository, list_snapshots, read_snapshot_text_files, repository_exists,
     validate_repository,
 };
 
@@ -75,6 +75,7 @@ pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeCreateSnapsh
     password: JString<'local>,
     source_paths: JObjectArray<'local, JString<'local>>,
     snapshot_paths: JObjectArray<'local, JString<'local>>,
+    excluded_paths: JObjectArray<'local, JString<'local>>,
     tags: JObjectArray<'local, JString<'local>>,
     callback: JObject<'local>,
 ) -> JString<'local> {
@@ -82,6 +83,7 @@ pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeCreateSnapsh
         .with_env(|env| -> Result<JString<'local>, NativeError> {
             let source_paths = string_array_to_vec(env, &source_paths)?;
             let snapshot_paths = string_array_to_vec(env, &snapshot_paths)?;
+            let excluded_paths = string_array_to_vec(env, &excluded_paths)?;
             let tags = string_array_to_vec(env, &tags)?;
             let repository_path = repository_path.to_string();
             let password = password.to_string();
@@ -99,17 +101,24 @@ pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeCreateSnapsh
                 })
                 .collect();
             let snapshot_id = if callback.as_raw().is_null() {
-                create_snapshot(&repository_path, &password, &source_paths, &tags)
-                    .map_err(NativeError::from)?
+                create_snapshot_excluding(
+                    &repository_path,
+                    &password,
+                    &source_paths,
+                    &excluded_paths,
+                    &tags,
+                )
+                .map_err(NativeError::from)?
             } else {
                 let vm = env.get_java_vm()?;
                 // Keep the callback accessible from Rustic worker threads.
                 let callback = env.new_global_ref(&callback)?;
                 let callback = JniProgressCallback::new(env, vm, callback)?;
-                create_snapshot_with_progress(
+                create_snapshot_excluding_with_progress(
                     &repository_path,
                     &password,
                     &source_paths,
+                    &excluded_paths,
                     &tags,
                     callback,
                 )
@@ -152,7 +161,9 @@ pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeRestoreSnaps
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeValidateExternalSnapshot<'local>(
+pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeValidateExternalSnapshot<
+    'local,
+>(
     mut unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
     repository_path: JString<'local>,
@@ -172,7 +183,9 @@ pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeValidateExte
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeRestoreExternalSnapshot<'local>(
+pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeRestoreExternalSnapshot<
+    'local,
+>(
     mut unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
     repository_path: JString<'local>,
@@ -194,7 +207,9 @@ pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeRestoreExter
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeReadSnapshotDirectoryUid<'local>(
+pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeReadSnapshotDirectoryUid<
+    'local,
+>(
     mut unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
     repository_path: JString<'local>,
@@ -257,7 +272,9 @@ fn string_array_to_vec<'local>(
 }
 
 #[unsafe(no_mangle)]
-pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeReadSnapshotTextFiles<'local>(
+pub extern "system" fn Java_com_xayah_libnative_RusticWrapper_nativeReadSnapshotTextFiles<
+    'local,
+>(
     mut unowned_env: EnvUnowned<'local>,
     _this: JObject<'local>,
     repository_path: JString<'local>,

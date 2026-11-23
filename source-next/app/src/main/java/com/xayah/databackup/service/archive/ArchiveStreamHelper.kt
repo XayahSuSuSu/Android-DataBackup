@@ -35,12 +35,30 @@ import kotlin.time.Duration.Companion.milliseconds
  * Callers own archive validation and destination preparation.
  */
 internal object ArchiveStreamHelper {
+    /** Copy buffer for the TAR and Zstandard streams; large chunks keep JNI calls into Zstandard infrequent. */
+    private const val STREAM_BUFFER_SIZE = 1024 * 1024
+
+    /** Largest long-distance window (128 MiB) that every Zstandard decoder accepts without extra parameters. */
+    private const val MAX_LONG_WINDOW_LOG = 27
+
+    /** Compression workers per archive stream; several app archives may run at the same time. */
+    private const val MAX_WORKERS_PER_STREAM = 4
+
+    /**
+     * Packs [inputArgs] with tar and compresses the stream to [outputPath].
+     *
+     * @param compressionLevel Zstandard level.
+     * @param longWindowLog Long-distance matching window (log2), or 0 to disable it. Must not exceed 27.
+     */
     suspend fun packageAndCompress(
         outputPath: String,
         workDir: File,
+        compressionLevel: Int,
+        longWindowLog: Int,
         callback: ICallback? = null,
-        vararg inputArgs: String,
+        inputArgs: Array<String>,
     ): Pair<Int, String> = withContext(Dispatchers.IO) {
+        require(longWindowLog == 0 || longWindowLog in 10..MAX_LONG_WINDOW_LOG) { "Invalid Zstandard window" }
         val operationContext = currentCoroutineContext()
         val result = runCatching {
             withFifo(workDir) { fifo ->
@@ -50,12 +68,12 @@ internal object ArchiveStreamHelper {
                 try {
                     processTar(fifo.path, workDir, arrayOf("tar", "-cpf", "-", *inputArgs)) { isTarFinished ->
                         val input = FifoInputStream(reader, isTarFinished, operationContext)
-                        val compressionResult = runCatching { compress(input, outputPath, 1, callback) }
+                        val compressionResult = runCatching { compress(input, outputPath, compressionLevel, longWindowLog, callback) }
                         // Drain the FIFO even if compression fails, so tar can finish writing.
                         // Closing our reader is insufficient: tar inherits a read descriptor and may block on a full FIFO.
                         val drainResult = runCatching {
                             val remainingInput = FifoInputStream(reader, isTarFinished)
-                            val buffer = ByteArray(64 * 1024)
+                            val buffer = ByteArray(STREAM_BUFFER_SIZE)
                             while (remainingInput.read(buffer) >= 0) {
                                 // Discard the remaining TAR bytes after a failed output write.
                             }
@@ -79,7 +97,7 @@ internal object ArchiveStreamHelper {
         result.getOrThrow()
     }
 
-    private fun compress(input: InputStream, outputPath: String, level: Int, callback: ICallback?) {
+    private fun compress(input: InputStream, outputPath: String, level: Int, longWindowLog: Int, callback: ICallback?) {
         FileOutputStream(outputPath).use { output ->
             CountingOutputStream(
                 source = output,
@@ -90,8 +108,13 @@ internal object ArchiveStreamHelper {
                 },
             ).use { countingOutput ->
                 ZstdOutputStream(countingOutput, level).use { compressedOutput ->
-                    compressedOutput.setWorkers(Runtime.getRuntime().availableProcessors())
-                    input.copyTo(compressedOutput)
+                    // Each worker holds its own job buffers. Cap them so concurrent app archives stay within memory limits.
+                    compressedOutput.setWorkers(Runtime.getRuntime().availableProcessors().coerceAtMost(MAX_WORKERS_PER_STREAM))
+                    if (longWindowLog > 0) {
+                        // Long-distance matching finds repeats far apart in large files, such as databases and APKs.
+                        compressedOutput.setLong(longWindowLog)
+                    }
+                    input.copyTo(compressedOutput, STREAM_BUFFER_SIZE)
                 }
             }
         }
@@ -101,7 +124,7 @@ internal object ArchiveStreamHelper {
         val operationContext = currentCoroutineContext()
         withFifo(workDir) { fifo ->
             // Open the source before starting tar so an input-open failure cannot strand a FIFO reader.
-            ZstdInputStream(archive.inputStream().buffered()).use { input ->
+            ZstdInputStream(archive.inputStream().buffered(STREAM_BUFFER_SIZE)).setLongMax(MAX_LONG_WINDOW_LOG).use { input ->
                 val (exitCode, diagnostics) = processTar(
                     stdoutPath = stdoutPath,
                     workDir = workDir,
@@ -110,7 +133,7 @@ internal object ArchiveStreamHelper {
                     var writer: FileDescriptor? = null
                     val streamResult = runCatching {
                         writer = openWriter(fifo, isTarFinished, operationContext)
-                        val buffer = ByteArray(64 * 1024)
+                        val buffer = ByteArray(STREAM_BUFFER_SIZE)
                         var hasReader = writer != null
                         while (true) {
                             operationContext.ensureActive()

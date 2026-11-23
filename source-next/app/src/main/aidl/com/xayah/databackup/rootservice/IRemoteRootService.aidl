@@ -21,7 +21,7 @@ interface IRemoteRootService {
     void writeText(String path, in ParcelFileDescriptor pfd);
     long calculateTreeSize(String path);
     List<String> getPackageSourceDir(String packageName, int userId);
-    ArchiveOperationResultParcelable packageAndCompressArchive(String outputPath, in String[] inputArgs, ICallback callback);
+    ArchiveOperationResultParcelable packageAndCompressArchive(String outputPath, in String[] inputArgs, int compressionLevel, int longWindowLog, ICallback callback);
     boolean mkdirs(String path);
     boolean exists(String path);
     boolean deleteRecursively(String path);
@@ -31,7 +31,7 @@ interface IRemoteRootService {
     void initRusticRepository(String repositoryPath, String password);
     boolean rusticRepositoryExists(String repositoryPath);
     void validateRusticRepository(String repositoryPath, String password);
-    String createRusticSnapshot(String repositoryPath, String password, in Map<String, String> sourcePaths, in List<String> tags, ICallback callback);
+    String createRusticSnapshot(String repositoryPath, String password, in Map<String, String> sourcePaths, in List<String> tags, in List<String> excludedPaths, ICallback callback);
     ParcelFileDescriptor readRusticSnapshotTextFiles(String repositoryPath, String password, String snapshotId, in List<String> paths);
     ParcelFileDescriptor deleteRusticSnapshot(String repositoryPath, String password, String snapshotId);
     ParcelFileDescriptor listRusticSnapshots(String repositoryPath, String password);

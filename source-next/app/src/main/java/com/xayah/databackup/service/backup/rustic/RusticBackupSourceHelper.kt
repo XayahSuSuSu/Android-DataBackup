@@ -28,10 +28,12 @@ class RusticBackupSourceHelper(
     /**
      * Builds the complete source list for a Rustic snapshot and writes generated JSON and
      * manifest files under [stagingPath]. Missing optional paths are returned as skipped sources.
+     * When [isAppCacheSkipped] is set, app cache roots are returned as excluded paths.
      */
     suspend fun collectSources(
         selection: BackupSelection,
         stagingPath: String,
+        isAppCacheSkipped: Boolean,
         createdAt: Long,
     ): RusticBackupSources {
         // Resolve each app's enabled options into existing source paths and missing optional paths.
@@ -115,12 +117,19 @@ class RusticBackupSourceHelper(
 
         // Ordinary sources keep their paths; generated metadata uses a fixed snapshot directory.
         val sourcePaths = included.associate { it.path to it.path }
+        // Restores recreate app cache roots, so their contents only cost time and space in a snapshot.
+        val excludedPaths = if (isAppCacheSkipped) {
+            appPlans.flatMap { plan -> plan.included }.flatMap(mAppSourceHelper::getCachePaths).distinct()
+        } else {
+            emptyList()
+        }
         return RusticBackupSources(
             sourcePaths = sourcePaths + (stagingPath to PathHelper.getRusticSnapshotMetadataDir()),
             includedCount = sourcePaths.size,
             hasFailures = mmsSources.failedRecordIds.isNotEmpty(),
             apps = appPlans,
             skippedSources = skipped.distinctBy { it.path },
+            excludedPaths = excludedPaths,
         )
     }
 

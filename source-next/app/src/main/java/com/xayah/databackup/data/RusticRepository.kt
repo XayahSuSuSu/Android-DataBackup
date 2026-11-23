@@ -97,6 +97,7 @@ class RusticRepository {
         repositoryPath: String,
         password: String,
         sourcePaths: Map<String, String>,
+        excludedPaths: List<String>,
         tags: List<String>,
         onProgress: (Long, Long, Float) -> Unit,
     ): String {
@@ -109,6 +110,7 @@ class RusticRepository {
             password = password,
             sourcePaths = sourcePaths,
             tags = tags,
+            excludedPaths = excludedPaths,
             callback = object : ICallback.Stub() {
                 override fun onProgress(bytesWritten: Long, speed: Long, progress: Float) {
                     onProgress(bytesWritten, speed, progress)

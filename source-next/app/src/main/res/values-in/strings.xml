@@ -557,4 +557,14 @@
     <string name="restore_result_counts">%1$s · %2$d gagal · %3$d dilewati</string>
     <string name="backup_partial_failure">Beberapa item cadangan gagal atau tidak diproses</string>
     <string name="backup_start_failed">Tidak dapat memulai pencadangan</string>
+    <string name="skip_app_cache">Lewati cache aplikasi</string>
+    <string name="skip_app_cache_desc">Jangan ikutkan folder cache dan code_cache. Aplikasi membuatnya ulang setelah dipulihkan, jadi cadangan lebih kecil dan lebih cepat</string>
+    <string name="archive_compression">Kompresi Archive</string>
+    <string name="archive_compression_fast">Cepat: cadangan tercepat, ukuran lebih besar</string>
+    <string name="archive_compression_balanced">Seimbang: ukuran lebih kecil dengan kecepatan hampir sama</string>
+    <string name="archive_compression_small">Kecil: ukuran terkecil, lebih lambat, satu aplikasi sekaligus</string>
+    <string name="parallel_app_backups">Pencadangan aplikasi paralel</string>
+    <string name="parallel_app_backups_desc">Archive mencadangkan %1$d aplikasi sekaligus</string>
+    <string name="parallel_app_backups_unavailable">Tidak tersedia dengan kompresi Kecil, yang mencadangkan satu aplikasi sekaligus</string>
+    <string name="tap_to_change">%1$s. Ketuk untuk mengganti</string>
 </resources>

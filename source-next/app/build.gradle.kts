@@ -18,6 +18,22 @@ android {
         versionName = libs.versions.versionName.get()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // CI builds append a suffix such as "-perf.1" to tell fork releases apart.
+        providers.environmentVariable("VERSION_NAME_SUFFIX").orNull?.let { versionNameSuffix = it }
+    }
+
+    // Release signing is configured only when CI provides a keystore; local release builds stay unsigned.
+    val releaseStoreFile = providers.environmentVariable("STORE_FILE").orNull
+    if (releaseStoreFile != null) {
+        signingConfigs {
+            create("release") {
+                storeFile = file(releaseStoreFile)
+                storePassword = providers.environmentVariable("STORE_PASSWORD").get()
+                keyAlias = providers.environmentVariable("KEY_ALIAS").get()
+                keyPassword = providers.environmentVariable("KEY_PASSWORD").get()
+            }
+        }
     }
 
     lint {
@@ -34,6 +50,9 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            if (releaseStoreFile != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
     compileOptions {

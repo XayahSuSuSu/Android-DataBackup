@@ -51,11 +51,14 @@ import com.xayah.databackup.feature.BackupNetworksRoute
 import com.xayah.databackup.feature.BackupProcessRoute
 import com.xayah.databackup.feature.RusticBackupProcessRoute
 import com.xayah.databackup.feature.toProcessRoute
+import com.xayah.databackup.ui.component.ArchiveCompressionPreference
 import com.xayah.databackup.ui.component.AutoScreenOffSwitch
+import com.xayah.databackup.ui.component.ParallelAppBackupsPreference
 import com.xayah.databackup.ui.component.Preference
 import com.xayah.databackup.ui.component.PreferenceGroup
 import com.xayah.databackup.ui.component.ResetBackupListSwitch
 import com.xayah.databackup.ui.component.SectionHeader
+import com.xayah.databackup.ui.component.SkipAppCacheSwitch
 import com.xayah.databackup.ui.component.SmallCheckActionButton
 import com.xayah.databackup.ui.component.TaskBusyDialog
 import com.xayah.databackup.ui.component.shimmer
@@ -424,5 +427,8 @@ private fun Settings() {
     PreferenceGroup(modifier = Modifier.padding(horizontal = 16.dp)) {
         AutoScreenOffSwitch()
         ResetBackupListSwitch()
+        SkipAppCacheSwitch()
+        ArchiveCompressionPreference()
+        ParallelAppBackupsPreference()
     }
 }

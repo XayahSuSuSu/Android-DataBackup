@@ -1,5 +1,7 @@
 #include <jni.h>
 #include <string>
+#include <cstring>
+#include <cstdlib>
 #include <ftw.h>
 #include <sys/stat.h>
 #include <climits>
@@ -31,8 +33,10 @@ Java_com_xayah_libnative_TarWrapper_callCli(JNIEnv *env, jobject, jstring std_ou
     int saved_stdout = dup(STDOUT_FILENO);
     int saved_stderr = dup(STDERR_FILENO);
 
-    int out_fd = open(out_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    int err_fd = open(err_path, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    // O_CLOEXEC keeps tar processes forked concurrently for other archives from inheriting these files.
+    // dup2 clears the flag on the child's STDOUT/STDERR copies.
+    int out_fd = open(out_path, O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0644);
+    int err_fd = open(err_path, O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0644);
 
     // Release jni strings
     env->ReleaseStringUTFChars(std_out, out_path);
@@ -46,6 +50,27 @@ Java_com_xayah_libnative_TarWrapper_callCli(JNIEnv *env, jobject, jstring std_ou
         if (saved_stderr != -1) close(saved_stderr);
         return -1;
     }
+
+    // Build argv before forking. After fork() only the calling thread exists in the child, so JNI and runtime locks
+    // held by other threads (GC, other binder calls archiving apps concurrently) would never be released there.
+    jsize argc = env->GetArrayLength(j_argv);
+    char **argv = (char **) calloc(argc + 1, sizeof(char *));
+    if (argv == nullptr) {
+        ALOGE("Failed to allocate argv.");
+        close(out_fd);
+        close(err_fd);
+        if (saved_stdout != -1) close(saved_stdout);
+        if (saved_stderr != -1) close(saved_stderr);
+        return -1;
+    }
+    for (int i = 0; i < argc; i++) {
+        auto arg_str = (jstring) env->GetObjectArrayElement(j_argv, i);
+        const char *arg_utf = env->GetStringUTFChars(arg_str, nullptr);
+        argv[i] = strdup(arg_utf);  // Copy then release to avoid memory leak
+        env->ReleaseStringUTFChars(arg_str, arg_utf);
+        env->DeleteLocalRef(arg_str);
+    }
+    argv[argc] = nullptr;
 
     pid_t pid = fork();
     if (pid == 0) {
@@ -66,27 +91,17 @@ Java_com_xayah_libnative_TarWrapper_callCli(JNIEnv *env, jobject, jstring std_ou
         close(saved_stdout);
         close(saved_stderr);
 
-        // Build argv
-        jsize argc = env->GetArrayLength(j_argv);
-        char **argv = (char **) malloc((argc + 1) * sizeof(char *));
-        for (int i = 0; i < argc; i++) {
-            auto arg_str = (jstring) env->GetObjectArrayElement(j_argv, i);
-            const char *arg_utf = env->GetStringUTFChars(arg_str, nullptr);
-            argv[i] = strdup(arg_utf);  // Copy then release to avoid memory leak
-            env->ReleaseStringUTFChars(arg_str, arg_utf);
-            env->DeleteLocalRef(arg_str);
-        }
-        argv[argc] = nullptr;
-
         int result = main(argc, argv);
-
-        // Release string resources
-        for (int i = 0; i < argc; i++) {
-            free(argv[i]);
-        }
-        free(argv);
         _exit(result);
-    } else if (pid > 0) {
+    }
+
+    // Release string resources in the parent; the child exits through _exit().
+    for (int i = 0; i < argc; i++) {
+        free(argv[i]);
+    }
+    free(argv);
+
+    if (pid > 0) {
         // Close idle fds
         close(out_fd);
         close(err_fd);

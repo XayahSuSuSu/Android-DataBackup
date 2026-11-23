@@ -25,12 +25,19 @@ object RusticWrapper {
         nativeValidateRepository(repositoryPath, password)
     }
 
-    /** Creates a snapshot and returns its full 64-character hexadecimal ID. */
+    /**
+     * Creates a snapshot and returns its full 64-character hexadecimal ID.
+     *
+     * [excludedPaths] are physical subtrees strictly below a source directory that are omitted from the snapshot.
+     * Missing paths and paths outside every source are ignored. The latest snapshot with the same tags is used as
+     * parent, so files with unchanged metadata are not read again.
+     */
     fun createSnapshot(
         repositoryPath: String,
         password: String,
         sourcePaths: Map<String, String>,
         tags: List<String> = emptyList(),
+        excludedPaths: List<String> = emptyList(),
         callback: Any? = null,
     ): String {
         val paths = sourcePaths.toList()
@@ -39,6 +46,7 @@ object RusticWrapper {
             password = password,
             sourcePaths = paths.map { it.first }.toTypedArray(),
             snapshotPaths = paths.map { it.second }.toTypedArray(),
+            excludedPaths = excludedPaths.toTypedArray(),
             tags = tags.toTypedArray(),
             callback = callback,
         )
@@ -99,6 +107,7 @@ object RusticWrapper {
         password: String,
         sourcePaths: Array<String>,
         snapshotPaths: Array<String>,
+        excludedPaths: Array<String>,
         tags: Array<String>,
         callback: Any?,
     ): String

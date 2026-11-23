@@ -29,6 +29,13 @@ android {
                 arguments.addAll(listOf("-DANDROID_PLATFORM=24"))
             }
         }
+
+        // Optional comma-separated ABI list (for example -Pdatabackup.abis=arm64-v8a) to shorten native builds.
+        providers.gradleProperty("databackup.abis").orNull?.let { abis ->
+            ndk {
+                abiFilters += abis.split(",").map(String::trim).filter(String::isNotEmpty)
+            }
+        }
     }
 
     buildTypes {

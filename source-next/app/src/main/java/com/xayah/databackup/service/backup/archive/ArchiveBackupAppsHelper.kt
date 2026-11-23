@@ -3,9 +3,11 @@ package com.xayah.databackup.service.backup.archive
 import com.xayah.databackup.App.Companion.application
 import com.xayah.databackup.database.entity.App
 import com.xayah.databackup.entity.backup.ApkInstallSource
+import com.xayah.databackup.entity.backup.ArchiveCompression
 import com.xayah.databackup.entity.backup.BackupEvent
 import com.xayah.databackup.entity.backup.BackupOutcome
 import com.xayah.databackup.entity.backup.BackupSourceCategory
+import com.xayah.databackup.entity.backup.BackupSourcePath
 import com.xayah.databackup.entity.backup.STATUS_ERROR
 import com.xayah.databackup.rootservice.ICallback
 import com.xayah.databackup.rootservice.RemoteRootService
@@ -22,12 +24,23 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.UUID
 
+/**
+ * Archive settings read once when a backup starts, so every app in the run uses the same values.
+ *
+ * @property isAppCacheSkipped Omits app cache roots from internal and external data archives.
+ * @property compression Zstandard preset for every app part.
+ */
+data class ArchiveBackupOptions(
+    val isAppCacheSkipped: Boolean,
+    val compression: ArchiveCompression,
+)
+
 class ArchiveBackupAppsHelper(private val mSourceHelper: BackupAppSourceHelper) {
     companion object {
         private const val TAG = "ArchiveBackupAppsHelper"
     }
 
-    suspend fun backup(app: App, backupPath: String, onEvent: (BackupEvent) -> Unit): Boolean {
+    suspend fun backup(app: App, backupPath: String, options: ArchiveBackupOptions, onEvent: (BackupEvent) -> Unit): Boolean {
         currentCoroutineContext().ensureActive()
         onEvent(BackupEvent.AppStarted(app.pkgUserKey))
         var hasFailures = false
@@ -78,14 +91,24 @@ class ArchiveBackupAppsHelper(private val mSourceHelper: BackupAppSourceHelper) 
                         } else {
                             inputs
                         }
-                        val args = archiveInputs.flatMap { listOf("-C", PathHelper.getParentPath(it), PathHelper.getChildPath(it)) }
+                        val excludeArgs = if (part != BackupSourceCategory.Apk && options.isAppCacheSkipped) {
+                            getCacheExcludeArgs(BackupSourcePath(inputs.single(), part))
+                        } else {
+                            emptyList()
+                        }
+                        val args = excludeArgs + archiveInputs.flatMap { listOf("-C", PathHelper.getParentPath(it), PathHelper.getChildPath(it)) }
                         hasStartedArchive = true
-                        val result = RemoteRootService.packageAndCompressArchive(outputPath, args.toTypedArray(), object : ICallback.Stub() {
-                            override fun onProgress(bytesWritten: Long, speed: Long, progress: Float) {
-                                bytes = bytesWritten
-                                onEvent(BackupEvent.PartChanged(app.pkgUserKey, part, index, BackupOutcome.Running, bytesWritten, speed))
-                            }
-                        })
+                        val result = RemoteRootService.packageAndCompressArchive(
+                            outputPath = outputPath,
+                            inputArgs = args.toTypedArray(),
+                            compression = options.compression,
+                            callback = object : ICallback.Stub() {
+                                override fun onProgress(bytesWritten: Long, speed: Long, progress: Float) {
+                                    bytes = bytesWritten
+                                    onEvent(BackupEvent.PartChanged(app.pkgUserKey, part, index, BackupOutcome.Running, bytesWritten, speed))
+                                }
+                            },
+                        )
                         currentCoroutineContext().ensureActive()
                         val diagnostics = removeRootProcessPrefix(result.mDiagnostics)
                         val isFailed = result.mExitCode != 0
@@ -149,6 +172,20 @@ class ArchiveBackupAppsHelper(private val mSourceHelper: BackupAppSourceHelper) 
         }
         onEvent(BackupEvent.AppCompleted(app.pkgUserKey))
         return hasFailures
+    }
+
+    /**
+     * Builds GNU tar options that omit cache roots below [source]. Tar applies exclusion options only to
+     * operands that follow them, so callers must place these arguments before `-C`. Patterns are literal and
+     * anchored at the archive member root (the source directory name), so nested folders named `cache` are kept.
+     */
+    private fun getCacheExcludeArgs(source: BackupSourcePath): List<String> {
+        val cachePaths = mSourceHelper.getCachePaths(source)
+        if (cachePaths.isEmpty()) {
+            return emptyList()
+        }
+        val memberRoot = PathHelper.getChildPath(source.path)
+        return listOf("--anchored", "--no-wildcards") + cachePaths.map { "--exclude=$memberRoot/${PathHelper.getChildPath(it)}" }
     }
 
     private fun removeRootProcessPrefix(diagnostics: String): String {

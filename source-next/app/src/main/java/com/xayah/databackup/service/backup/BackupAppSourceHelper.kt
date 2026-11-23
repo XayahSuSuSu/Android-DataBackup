@@ -12,6 +12,14 @@ import com.xayah.databackup.util.PathHelper
  * whether paths exist; [getAppSources] checks them, skips missing paths, and fails if selected internal CE data is missing.
  */
 class BackupAppSourceHelper {
+    companion object {
+        /** Cache roots managed by installd in both credential-encrypted and device-encrypted app data. */
+        val INTERNAL_CACHE_DIR_NAMES = listOf("cache", "code_cache")
+
+        /** Cache root returned by Context.getExternalCacheDir(). */
+        val EXTERNAL_CACHE_DIR_NAMES = listOf("cache")
+    }
+
     fun getCandidatePaths(app: App, apkPaths: List<String>): List<BackupSourcePath> = buildList {
         if (app.option.apk) {
             apkPaths.filter { it.isNotBlank() }.forEach { add(BackupSourcePath(it, BackupSourceCategory.Apk)) }
@@ -28,6 +36,17 @@ class BackupAppSourceHelper {
             add(BackupSourcePath(PathHelper.getAppMediaDir(app.userId, app.packageName), BackupSourceCategory.AdditionalData))
         }
     }.distinctBy(BackupSourcePath::path)
+
+    /**
+     * Returns the cache directories inside a data source that can be omitted from a backup.
+     * Internal data restores recreate `cache` and `code_cache` with system ownership, permissions and quota attributes;
+     * apps recreate external caches through the platform. Paths may not exist.
+     */
+    fun getCachePaths(source: BackupSourcePath): List<String> = when (source.category) {
+        BackupSourceCategory.InternalData -> INTERNAL_CACHE_DIR_NAMES.map { "${source.path}/$it" }
+        BackupSourceCategory.ExternalData -> EXTERNAL_CACHE_DIR_NAMES.map { "${source.path}/$it" }
+        else -> emptyList()
+    }
 
     suspend fun getAppSources(
         app: App,
