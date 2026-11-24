@@ -557,4 +557,11 @@
     <string name="restore_result_counts">%1$s · %2$d gagal · %3$d dilewati</string>
     <string name="backup_partial_failure">Beberapa item cadangan gagal atau tidak diproses</string>
     <string name="backup_start_failed">Tidak dapat memulai pencadangan</string>
+    <string name="restore_finished_with_errors">Pemulihan selesai dengan kegagalan</string>
+    <string name="restore_result_restored">Dipulihkan</string>
+    <string name="backup_interrupted">Cadangan terputus</string>
+    <string name="restore_interrupted">Pemulihan terhenti</string>
+    <string name="restore_background_description">Proses pemulihan akan terus berjalan di latar belakang. Buka notifikasi untuk kembali melihat progresnya.</string>
+    <string name="backup_restore_busy">Proses pencadangan atau pemulihan sedang berjalan atau berhenti. Tunggu hingga selesai sebelum memulai tugas lain.</string>
+    <string name="view_active_task">Lihat tugas saat ini</string>
 </resources>
