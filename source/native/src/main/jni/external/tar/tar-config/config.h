@@ -9,13 +9,13 @@
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
 
 /* Define to the number of bits in type 'ptrdiff_t'. */
-#define BITSIZEOF_PTRDIFF_T 64
+#define BITSIZEOF_PTRDIFF_T (__SIZEOF_PTRDIFF_T__ * 8)
 
 /* Define to the number of bits in type 'sig_atomic_t'. */
 #define BITSIZEOF_SIG_ATOMIC_T 32
 
 /* Define to the number of bits in type 'size_t'. */
-#define BITSIZEOF_SIZE_T 64
+#define BITSIZEOF_SIZE_T (__SIZEOF_SIZE_T__ * 8)
 
 /* Define to the number of bits in type 'wchar_t'. */
 #define BITSIZEOF_WCHAR_T 32
@@ -2213,7 +2213,11 @@
 
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
    'ptrdiff_t'. */
-#define PTRDIFF_T_SUFFIX l
+#if __SIZEOF_PTRDIFF_T__ == 8
+# define PTRDIFF_T_SUFFIX l
+#else
+# define PTRDIFF_T_SUFFIX
+#endif
 
 /* Define to 1 if readlink fails to recognize a trailing slash. */
 /* #undef READLINK_TRAILING_SLASH_BUG */
@@ -2283,7 +2287,11 @@
 
 /* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
    'size_t'. */
-#define SIZE_T_SUFFIX ul
+#if __SIZEOF_SIZE_T__ == 8
+# define SIZE_T_SUFFIX ul
+#else
+# define SIZE_T_SUFFIX u
+#endif
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
