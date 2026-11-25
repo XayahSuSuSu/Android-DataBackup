@@ -69,6 +69,12 @@ fun PageCloudAddAccount() {
                 ) {
                     navController.navigateSingle(MainRoutes.SFTPSetup.getRoute(encodedURLWithSpace))
                 }
+                Clickable(
+                    icon = CloudType.HYBRID_XFER.icon,
+                    title = CloudType.HYBRID_XFER.title,
+                ) {
+                    navController.navigateSingle(MainRoutes.HybridXferSetup.getRoute(encodedURLWithSpace))
+                }
             }
         }
     }

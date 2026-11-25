@@ -377,4 +377,17 @@ class RemoteRootService(private val context: Context) {
         val bytes = readBytes(src = src)
         ProtoBuf.decodeFromByteArray<T>(bytes)
     }.onFailure(onFailure).getOrNull()
+
+    suspend fun startStreamingCommand(sessionId: String, binDir: String, shellScript: String): ParcelFileDescriptor =
+        getService().startStreamingCommand(sessionId, binDir, shellScript)
+
+    suspend fun waitStreamingCommand(sessionId: String): Int =
+        getService().waitStreamingCommand(sessionId)
+
+    suspend fun getStreamingCommandStderr(sessionId: String): String =
+        getService().getStreamingCommandStderr(sessionId)
+
+    suspend fun killStreamingCommand(sessionId: String) {
+        runCatching { getService().killStreamingCommand(sessionId) }
+    }
 }

@@ -516,4 +516,116 @@ internal class RemoteRootServiceImpl(private val context: Context) : IRemoteRoot
     }
 
     override fun calculateMD5(src: String): String = synchronized(lock) { HashUtil.calculateMD5(src) }
+
+    private data class StreamingSession(
+        val process: Process,
+        val writePipe: ParcelFileDescriptor,
+        val stdoutThread: Thread,
+        val stderrThread: Thread,
+        val stderrBuffer: StringBuilder,
+    )
+
+    private val streamingSessions = java.util.concurrent.ConcurrentHashMap<String, StreamingSession>()
+
+    override fun startStreamingCommand(sessionId: String, binDir: String, shellScript: String): ParcelFileDescriptor {
+        val pipe = ParcelFileDescriptor.createPipe()
+        val readEnd = pipe[0]
+        val writeEnd = pipe[1]
+
+        val fullScript = "export PATH=\"$binDir:\$PATH\"; set -o pipefail; $shellScript"
+        val pb = ProcessBuilder(
+            "nsenter", "--mount=/proc/1/ns/mnt", "--",
+            "$binDir/busybox", "sh", "-c", fullScript
+        )
+        pb.redirectErrorStream(false)
+        val env = pb.environment()
+        val oldPath = env["PATH"] ?: "/system/bin"
+        env["PATH"] = "$binDir:$oldPath"
+
+        val process = try {
+            pb.start()
+        } catch (e: Exception) {
+            runCatching { readEnd.close() }
+            runCatching { writeEnd.close() }
+            throw e
+        }
+
+        val stderrBuf = StringBuilder()
+
+        val stdoutThread = Thread({
+            val buf = ByteArray(256 * 1024)
+            try {
+                ParcelFileDescriptor.AutoCloseOutputStream(writeEnd).use { out ->
+                    process.inputStream.use { inp ->
+                        while (true) {
+                            val n = inp.read(buf)
+                            if (n == -1) break
+                            out.write(buf, 0, n)
+                        }
+                        out.flush()
+                    }
+                }
+            } catch (_: Exception) {
+                // App 提前关闭读端触发 EPIPE 或取消，强杀子进程防止僵尸 tar/zstd
+                runCatching { process.destroyForcibly() }
+            }
+        }, "RootStreamOut-$sessionId").apply {
+            isDaemon = true
+            start()
+        }
+
+        val stderrThread = Thread({
+            try {
+                process.errorStream.bufferedReader().use { reader ->
+                    val charBuf = CharArray(4096)
+                    while (true) {
+                        val n = reader.read(charBuf)
+                        if (n == -1) break
+                        synchronized(stderrBuf) {
+                            if (stderrBuf.length < 65536) {
+                                stderrBuf.append(charBuf, 0, n)
+                            }
+                        }
+                    }
+                }
+            } catch (_: Exception) {
+            }
+        }, "RootStreamErr-$sessionId").apply {
+            isDaemon = true
+            start()
+        }
+
+        streamingSessions[sessionId] = StreamingSession(
+            process = process,
+            writePipe = writeEnd,
+            stdoutThread = stdoutThread,
+            stderrThread = stderrThread,
+            stderrBuffer = stderrBuf,
+        )
+        return readEnd
+    }
+
+    override fun waitStreamingCommand(sessionId: String): Int {
+        val session = streamingSessions[sessionId] ?: return -1
+        val code = try {
+            session.process.waitFor()
+        } catch (_: InterruptedException) {
+            runCatching { session.process.destroyForcibly() }
+            -1
+        }
+        runCatching { session.stdoutThread.join(5000) }
+        runCatching { session.stderrThread.join(5000) }
+        return code
+    }
+
+    override fun getStreamingCommandStderr(sessionId: String): String {
+        val session = streamingSessions.remove(sessionId) ?: return ""
+        return synchronized(session.stderrBuffer) { session.stderrBuffer.toString() }
+    }
+
+    override fun killStreamingCommand(sessionId: String) {
+        val session = streamingSessions.remove(sessionId) ?: return
+        runCatching { session.process.destroyForcibly() }
+        runCatching { session.writePipe.close() }
+    }
 }

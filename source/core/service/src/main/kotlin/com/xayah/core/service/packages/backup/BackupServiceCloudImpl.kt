@@ -16,8 +16,11 @@ import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.database.TaskEntity
 import com.xayah.core.model.util.get
 import com.xayah.core.network.client.CloudClient
+import com.xayah.core.network.client.StreamingCloudClient
 import com.xayah.core.rootservice.service.RemoteRootService
+import com.xayah.core.service.util.BoundedBufferPool
 import com.xayah.core.service.util.CommonBackupUtil
+import java.io.File
 import com.xayah.core.service.util.PackagesBackupUtil
 import com.xayah.core.util.PathUtil
 import dagger.hilt.android.AndroidEntryPoint
@@ -73,6 +76,13 @@ internal class BackupServiceCloudImpl @Inject constructor() : AbstractBackupServ
         log { "Trying to create: $mRemoteConfigsDir." }
         mClient.mkdirRecursively(mRemoteAppsDir)
         mClient.mkdirRecursively(mRemoteConfigsDir)
+        (mClient as? StreamingCloudClient)?.let { sc ->
+            mBufferPool = BoundedBufferPool(
+                streamRootDir = File(mContext.cacheDir, "hfx_stream"),
+                configuredMaxBytes = sc.maxBufferBytes,
+                configuredChunkBytes = sc.chunkSizeBytes,
+            )
+        }
     }
 
     private fun getRemoteAppDir(archivesRelativeDir: String) = "${mRemoteAppsDir}/${archivesRelativeDir}"
@@ -83,6 +93,18 @@ internal class BackupServiceCloudImpl @Inject constructor() : AbstractBackupServ
 
     override suspend fun backup(type: DataType, p: PackageEntity, r: PackageEntity?, t: TaskDetailPackageEntity, dstDir: String) {
         val remoteAppDir = getRemoteAppDir(p.archivesRelativeDir)
+        val streamingClient = mClient as? StreamingCloudClient
+        val pool = mBufferPool
+        if (streamingClient != null && pool != null) {
+            if (type == DataType.PACKAGE_APK) {
+                mPackagesBackupUtil.backupApkStreaming(client = streamingClient, bufferPool = pool, p = p, t = t, remoteAppDir = remoteAppDir)
+            } else {
+                mPackagesBackupUtil.backupDataStreaming(client = streamingClient, bufferPool = pool, p = p, t = t, dataType = type, remoteAppDir = remoteAppDir)
+            }
+            t.update(dataType = type, progress = 1f)
+            t.update(processingIndex = t.processingIndex + 1)
+            return
+        }
         val result = if (type == DataType.PACKAGE_APK) {
             mPackagesBackupUtil.backupApk(p = p, t = t, r = r, dstDir = dstDir)
         } else {
@@ -154,6 +176,7 @@ internal class BackupServiceCloudImpl @Inject constructor() : AbstractBackupServ
     }
 
     override suspend fun clear() {
+        mBufferPool?.reset()
         mRootService.deleteRecursively(mRootDir)
         mClient.disconnect()
     }
@@ -176,6 +199,7 @@ internal class BackupServiceCloudImpl @Inject constructor() : AbstractBackupServ
 
     private lateinit var mCloudEntity: CloudEntity
     private lateinit var mClient: CloudClient
+    private var mBufferPool: BoundedBufferPool? = null
     private lateinit var mRemotePath: String
     private lateinit var mRemoteAppsDir: String
     private lateinit var mRemoteConfigsDir: String

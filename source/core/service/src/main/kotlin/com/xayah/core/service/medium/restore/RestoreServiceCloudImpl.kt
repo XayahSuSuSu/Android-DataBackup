@@ -82,6 +82,13 @@ internal class RestoreServiceCloudImpl @Inject constructor() : AbstractRestoreSe
         t.update(processingIndex = t.processingIndex + 1)
     }
 
+    override suspend fun clear() {
+        mRootService.deleteRecursively(mRootDir)
+        if (::mClient.isInitialized) {
+            runCatching { mClient.disconnect() }
+        }
+    }
+
     @Inject
     override lateinit var mMediaDao: MediaDao
 

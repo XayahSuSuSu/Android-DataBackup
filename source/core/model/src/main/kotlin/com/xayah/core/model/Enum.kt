@@ -94,6 +94,7 @@ enum class CloudType(val title: String) {
     WEBDAV("WebDAV"),
     SMB("SMB / CIFS"),
     SFTP("SFTP"),
+    HYBRID_XFER("HybridXfer"),
 }
 
 enum class SmbVersion(val text: String) {

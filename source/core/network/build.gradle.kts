@@ -14,6 +14,8 @@ dependencies {
     implementation(project(":core:database"))
     implementation(project(":core:model"))
     implementation(project(":core:rootservice"))
+    implementation(project(":core:hfx"))
+    implementation(project(":native"))
 
     // OkHttp
     implementation(libs.okhttp)

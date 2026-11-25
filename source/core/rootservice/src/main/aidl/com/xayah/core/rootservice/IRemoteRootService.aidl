@@ -47,4 +47,9 @@ interface IRemoteRootService {
     void setOpsMode(int code, int uid, String packageName, int mode);
 
     String calculateMD5(String src);
+
+    ParcelFileDescriptor startStreamingCommand(String sessionId, String binDir, String shellScript);
+    int waitStreamingCommand(String sessionId);
+    String getStreamingCommandStderr(String sessionId);
+    void killStreamingCommand(String sessionId);
 }

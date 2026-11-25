@@ -17,6 +17,8 @@ import com.xayah.core.model.database.PackageEntity
 import com.xayah.core.model.database.TaskDetailPackageEntity
 import com.xayah.core.model.util.getCompressPara
 import com.xayah.core.network.client.CloudClient
+import com.xayah.core.network.client.StreamingCloudClient
+import com.xayah.core.util.binDir
 import com.xayah.core.rootservice.service.RemoteRootService
 import com.xayah.core.util.IconRelativeDir
 import com.xayah.core.util.LogUtil
@@ -406,5 +408,178 @@ class PackagesBackupUtil @Inject constructor(
             flag = false
             t.updateInfo(dataType = dataType, state = if (isSuccess) OperationState.DONE else OperationState.ERROR, log = t.getLog(dataType) + "\n${outString}", content = "100%")
         }
+    }
+
+    private fun formatCompactSize(bytes: Long): String {
+        val mb = bytes / (1024.0 * 1024.0)
+        return if (mb >= 1024.0) String.format("%.2fGB", mb / 1024.0) else String.format("%.1fMB", mb)
+    }
+
+    suspend fun backupApkStreaming(
+        client: StreamingCloudClient,
+        bufferPool: BoundedBufferPool,
+        p: PackageEntity,
+        t: TaskDetailPackageEntity,
+        remoteAppDir: String,
+    ): ShellResult = run {
+        log { "Streaming backup apk..." }
+        val dataType = DataType.PACKAGE_APK
+        val packageName = p.packageName
+        val userId = p.userId
+        val ct = p.indexInfo.compressionType
+        val out = mutableListOf<String>()
+        val srcDir = getPackageSourceDir(packageName = packageName, userId = userId)
+
+        if (p.getDataSelected(dataType).not()) {
+            t.updateInfo(dataType = dataType, state = OperationState.SKIP)
+            return@run ShellResult(code = 0, input = listOf(), out = out)
+        }
+        if (srcDir.isEmpty()) {
+            out.add(log { "Failed to get apk path of $packageName." })
+            t.updateInfo(dataType = dataType, state = OperationState.ERROR, log = out.toLineString())
+            return@run ShellResult(code = -1, input = listOf(), out = out)
+        }
+
+        val sizeBytes = rootService.calculateSize(srcDir)
+        t.updateInfo(dataType = dataType, state = OperationState.UPLOADING, bytes = sizeBytes)
+        val cmd = Tar.buildCompressInCurStreamCmd(
+            cur = srcDir,
+            src = "./*.apk",
+            extra = ct.getCompressPara(context.readCompressionLevel().first()),
+        )
+        val remoteTarget = packageRepository.getArchiveDst(dstDir = remoteAppDir, dataType = dataType, ct = ct)
+
+        var lastUiUpdate = 0L
+        val uiScope = CoroutineScope(coroutineContext)
+        val streamResult = StreamingBackupPipeline.streamArchiveToRemote(
+            client = client,
+            rootService = rootService,
+            bufferPool = bufferPool,
+            binDir = context.binDir(),
+            streamCommand = cmd,
+            remoteTargetPath = remoteTarget,
+            onProgress = { uploaded, speed, bufUsed, bufMax ->
+                val now = System.currentTimeMillis()
+                if (now - lastUiUpdate >= 500L) {
+                    lastUiUpdate = now
+                    val bufText = if (bufMax <= 0L) "0MB落盘" else "Buf ${formatCompactSize(bufUsed)}/${formatCompactSize(bufMax)}"
+                    val info = "${formatCompactSize(uploaded)} | ${formatCompactSize(speed)}/s | $bufText"
+                    uiScope.launch {
+                        t.updateInfo(dataType = dataType, content = info)
+                    }
+                }
+            },
+        )
+        out.addAll(streamResult.logs)
+        if (!streamResult.isSuccess) {
+            log { "Streaming apk failed: ${streamResult.logs.joinToString(" | ")}" }
+        }
+        if (streamResult.isSuccess) {
+            p.setDataBytes(dataType, sizeBytes)
+            p.setDisplayBytes(dataType, streamResult.compressedBytes)
+        }
+        t.updateInfo(
+            dataType = dataType,
+            state = if (streamResult.isSuccess) OperationState.DONE else OperationState.ERROR,
+            log = out.toLineString(),
+            content = if (streamResult.isSuccess) formatCompactSize(streamResult.compressedBytes) else "ERROR",
+        )
+        ShellResult(code = if (streamResult.isSuccess) 0 else -1, input = listOf(), out = out)
+    }
+
+    suspend fun backupDataStreaming(
+        client: StreamingCloudClient,
+        bufferPool: BoundedBufferPool,
+        p: PackageEntity,
+        t: TaskDetailPackageEntity,
+        dataType: DataType,
+        remoteAppDir: String,
+    ): ShellResult = run {
+        log { "Streaming backup ${dataType.type}..." }
+        val packageName = p.packageName
+        val userId = p.userId
+        val ct = p.indexInfo.compressionType
+        val out = mutableListOf<String>()
+        val srcDir = packageRepository.getDataSrcDir(dataType, userId)
+
+        if (p.getDataSelected(dataType).not()) {
+            t.updateInfo(dataType = dataType, state = OperationState.SKIP)
+            return@run ShellResult(code = 0, input = listOf(), out = out)
+        }
+
+        val src = packageRepository.getDataSrc(srcDir, packageName)
+        if (rootService.exists(src).not()) {
+            if (dataType == DataType.PACKAGE_USER) {
+                out.add(log { "Not exist: $src" })
+                t.updateInfo(dataType = dataType, state = OperationState.ERROR, log = out.toLineString())
+                return@run ShellResult(code = -1, input = listOf(), out = out)
+            } else {
+                out.add(log { "Not exist and skip: $src" })
+                t.updateInfo(dataType = dataType, state = OperationState.SKIP, log = out.toLineString())
+                return@run ShellResult(code = -2, input = listOf(), out = out)
+            }
+        }
+
+        val exclusionList = mutableListOf<String>()
+        when (dataType) {
+            DataType.PACKAGE_USER, DataType.PACKAGE_USER_DE -> {
+                val folders = listOf(".ota", "cache", "lib", "code_cache", "no_backup")
+                exclusionList.addAll(folders.map { "${SymbolUtil.QUOTE}$packageName/$it${SymbolUtil.QUOTE}" })
+            }
+            DataType.PACKAGE_DATA, DataType.PACKAGE_OBB, DataType.PACKAGE_MEDIA -> {
+                val folders = listOf("cache")
+                exclusionList.addAll(folders.map { "${SymbolUtil.QUOTE}$packageName/$it${SymbolUtil.QUOTE}" })
+                exclusionList.add("${SymbolUtil.QUOTE}Backup_${SymbolUtil.QUOTE}*")
+            }
+            else -> {}
+        }
+
+        val sizeBytes = rootService.calculateSize(src)
+        t.updateInfo(dataType = dataType, state = OperationState.UPLOADING, bytes = sizeBytes)
+        val cmd = Tar.buildCompressStreamCmd(
+            exclusionList = exclusionList,
+            h = if (context.readFollowSymlinks().first()) "-h" else "",
+            srcDir = srcDir,
+            src = packageName,
+            extra = ct.getCompressPara(context.readCompressionLevel().first()),
+        )
+        val remoteTarget = packageRepository.getArchiveDst(dstDir = remoteAppDir, dataType = dataType, ct = ct)
+
+        var lastUiUpdate = 0L
+        val uiScope = CoroutineScope(coroutineContext)
+        val streamResult = StreamingBackupPipeline.streamArchiveToRemote(
+            client = client,
+            rootService = rootService,
+            bufferPool = bufferPool,
+            binDir = context.binDir(),
+            streamCommand = cmd,
+            remoteTargetPath = remoteTarget,
+            onProgress = { uploaded, speed, bufUsed, bufMax ->
+                val now = System.currentTimeMillis()
+                if (now - lastUiUpdate >= 500L) {
+                    lastUiUpdate = now
+                    val bufText = if (bufMax <= 0L) "0MB落盘" else "Buf ${formatCompactSize(bufUsed)}/${formatCompactSize(bufMax)}"
+                    val info = "${formatCompactSize(uploaded)} | ${formatCompactSize(speed)}/s | $bufText"
+                    uiScope.launch {
+                        t.updateInfo(dataType = dataType, content = info)
+                    }
+                }
+            },
+        )
+        out.addAll(streamResult.logs)
+        if (!streamResult.isSuccess) {
+            log { "Streaming ${dataType.type} failed: ${streamResult.logs.joinToString(" | ")}" }
+        }
+        if (streamResult.isSuccess) {
+            p.setDataBytes(dataType, sizeBytes)
+            p.setDisplayBytes(dataType, streamResult.compressedBytes)
+        }
+        t.updateInfo(
+            dataType = dataType,
+            state = if (streamResult.isSuccess) OperationState.DONE else OperationState.ERROR,
+            log = out.toLineString(),
+            content = if (streamResult.isSuccess) formatCompactSize(streamResult.compressedBytes) else "ERROR",
+        )
+        ShellResult(code = if (streamResult.isSuccess) 0 else -1, input = listOf(), out = out)
     }
 }
