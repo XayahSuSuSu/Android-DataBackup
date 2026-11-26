@@ -83,9 +83,16 @@ fun PageBackupSettings() {
                 }
 
                 val items = stringArrayResource(id = R.array.kill_app_options)
-                val dialogItems by remember(items) {
+                // Describe how every option is implemented, so the names alone are not the only hint.
+                val descs = listOf(
+                    R.string.kill_app_option_disabled_desc,
+                    R.string.kill_app_option_i_desc,
+                    R.string.kill_app_option_ii_desc,
+                    R.string.kill_app_option_iii_desc,
+                ).map { stringResource(id = it) }
+                val dialogItems by remember(items, descs) {
                     mutableStateOf(items.mapIndexed { index, s ->
-                        DialogRadioItem(enum = KillAppOption.indexOf(index), title = s, desc = null)
+                        DialogRadioItem(enum = KillAppOption.indexOf(index), title = s, desc = descs.getOrNull(index))
                     })
                 }
                 val currentOption by context.readKillAppOption().collectAsStateWithLifecycle(initialValue = KillAppOption.OPTION_II)
@@ -93,6 +100,7 @@ fun PageBackupSettings() {
                 Selectable(
                     title = stringResource(id = R.string.kill_app_options),
                     value = stringResource(id = R.string.kill_app_options_desc),
+                    desc = descs.getOrNull(currentIndex),
                     current = items[currentIndex]
                 ) {
                     val (state, selectedIndex) = dialogState.select(

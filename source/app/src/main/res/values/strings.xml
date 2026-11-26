@@ -350,9 +350,14 @@
     <string name="no_root_directory">Please do not select the root directory</string>
     <string name="option_i">Option One</string>
     <string name="option_ii">Option II</string>
+    <string name="option_iii">Advanced pause</string>
     <string name="disabled">Disabled</string>
     <string name="kill_app_options">Killing app options</string>
     <string name="kill_app_options_desc">Behavior before backup</string>
+    <string name="kill_app_option_disabled_desc">Nothing is done. The app keeps running while its data is being copied.</string>
+    <string name="kill_app_option_i_desc">Root shell loop: killall -9, am force-stop and am kill are repeated until the package is gone from dumpsys activity processes. Gives up after 3 seconds.</string>
+    <string name="kill_app_option_ii_desc">A single IActivityManager.forceStopPackageAsUser() call made by the root service over Binder, so every process of the package is stopped at once.</string>
+    <string name="kill_app_option_iii_desc">Force-stops the app and then suspends it with pm suspend, so the launcher, broadcasts, services and jobs can no longer start it and its icon is greyed out. Lifted as soon as the app is processed. System apps are only force-stopped.</string>
     <string name="language">Language</string>
     <string name="download">Download</string>
     <string name="changelog">Changelog</string>

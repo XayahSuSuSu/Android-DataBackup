@@ -30,5 +30,6 @@
         <item>@string/disabled</item>
         <item>@string/option_i</item>
         <item>@string/option_ii</item>
+        <item>@string/option_iii</item>
     </string-array>
 </resources>
